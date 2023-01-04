@@ -78,7 +78,8 @@ declare interface PluginOptions {
      */
     basePathname?: string;
     /**
-     * Ensure a trailing slash ends page urls. Defaults to `false`.
+     * Ensure a trailing slash ends page urls. Defaults to `true`.
+     * (Note: Previous versions defaulted to `false`).
      */
     trailingSlash?: boolean;
     /**
@@ -112,6 +113,7 @@ export declare interface QwikCityPlugin {
  * @alpha
  */
 declare interface QwikCityPluginApi {
+    getBasePathname: () => string;
     getRoutes: () => BuildRoute[];
     getServiceWorkers: () => BuildEntry[];
 }

@@ -1,28 +1,6 @@
-import type { QwikManifest } from '@builder.io/qwik/optimizer';
-import type { SymbolMapper } from '@builder.io/qwik/optimizer';
-import type { SymbolMapperFn } from '@builder.io/qwik/optimizer';
+/// <reference types="node" />
 
-/**
- * `link-prefetch-html`: Render link rel=prefetch within the html
- *
- * `link-prefetch`: Use JS to add link rel=prefetch, add worker-fetch if not supported
- *
- * `link-preload-html`: Render link rel=preload within the html
- *
- * `link-preload`: Use JS to add link rel=preload, add worker-fetch if not supported
- *
- * `link-modulepreload-html`: Render link rel=modulepreload within the html
- *
- * `link-modulepreload`: Use JS to add link rel=modulepreload, add worker-fetch if not supported
- *
- * `worker-fetch`: Add worker-fetch JS
- *
- * `none`: Do not add any prefetch links
- *
- * @deprecated Use the `PrefetchImplementation` object options instead.
- * @alpha
- */
-declare type DeprecatedPrefetchImplementation = 'link-prefetch-html' | 'link-prefetch' | 'link-preload-html' | 'link-preload' | 'link-modulepreload-html' | 'link-modulepreload' | 'worker-fetch' | 'none';
+import type { RenderOptions } from '@builder.io/qwik/server';
 
 /**
  * Use this function when SSG should be generated from another module, such as a Vite plugin.
@@ -30,115 +8,6 @@ declare type DeprecatedPrefetchImplementation = 'link-prefetch-html' | 'link-pre
  * @alpha
  */
 export declare function generate(opts: StaticGenerateOptions): Promise<StaticGenerateResult>;
-
-/**
- * @alpha
- */
-declare interface PrefetchImplementation {
-    /**
-     * `js-append`: Use JS runtime to create each `<link>` and append to the body.
-     *
-     * `html-append`: Render each `<link>` within html, appended at the end of the body.
-     */
-    linkInsert?: 'js-append' | 'html-append' | null;
-    /**
-     * Value of the `<link rel="...">` attribute when link is used.
-     * Defaults to `prefetch` if links are inserted.
-     */
-    linkRel?: 'prefetch' | 'preload' | 'modulepreload' | null;
-    /**
-     * `always`: Always include the worker fetch JS runtime.
-     *
-     * `no-link-support`: Only include the worker fetch JS runtime when the browser doesn't support `<link>` prefetch/preload/modulepreload.
-     */
-    workerFetchInsert?: 'always' | 'no-link-support' | null;
-    /**
-     * Dispatch a `qprefetch` event with detail data containing the bundles that should be prefetched.
-     * The event dispatch script will be inlined into the document's HTML so any listeners of this
-     * event should already be ready to handle the event.
-     *
-     * This implementation will inject a script similar to:
-     *
-     * ```
-     * <script type="module">
-     *   document.dispatchEvent(new CustomEvent("qprefetch", { detail:{ "bundles": [...] } }))
-     * </script>
-     * ```
-     *
-     * By default, the `prefetchEvent` implementation will be set to `always`.
-     */
-    prefetchEvent?: 'always' | null;
-}
-
-/**
- * @alpha
- */
-declare interface PrefetchResource {
-    url: string;
-    imports: PrefetchResource[];
-}
-
-/**
- * @alpha
- */
-declare interface PrefetchStrategy {
-    implementation?: PrefetchImplementation | DeprecatedPrefetchImplementation;
-    symbolsToPrefetch?: SymbolsToPrefetch;
-}
-
-/**
- * @alpha
- */
-declare interface QwikLoaderOptions {
-    events?: string[];
-    include?: 'always' | 'never' | 'auto';
-    position?: 'top' | 'bottom';
-}
-
-/**
- * @alpha
- */
-declare interface RenderOptions extends SerializeDocumentOptions {
-    /**
-     * Defaults to `true`
-     */
-    snapshot?: boolean;
-    /**
-     * Specifies the root of the JS files of the client build.
-     * Setting a base, will cause the render of the `q:base` attribute in the `q:container` element.
-     */
-    base?: string | ((options: RenderOptions) => string);
-    /**
-     * Language to use when rendering the document.
-     */
-    locale?: string | ((options: RenderOptions) => string);
-    /**
-     * Specifies if the Qwik Loader script is added to the document or not. Defaults to `{ include: true }`.
-     */
-    qwikLoader?: QwikLoaderOptions;
-    prefetchStrategy?: PrefetchStrategy | null;
-    /**
-     * When set, the app is serialized into a fragment. And the returned html is not a complete document.
-     * Defaults to `html`
-     */
-    containerTagName?: string;
-    containerAttributes?: Record<string, string>;
-    envData?: Record<string, any>;
-}
-
-declare interface ResolvedManifest {
-    mapper: SymbolMapper;
-    manifest: QwikManifest;
-}
-
-/**
- * @alpha
- */
-declare interface SerializeDocumentOptions {
-    manifest?: QwikManifest | ResolvedManifest;
-    symbolMapper?: SymbolMapperFn;
-    debug?: boolean;
-}
 
 /**
  * @alpha
@@ -153,6 +22,10 @@ export declare interface StaticGenerateOptions extends StaticGenerateRenderOptio
      * Path to the Qwik City Plan module exporting the default `@qwik-city-plan`.
      */
     qwikCityPlanModulePath: string;
+    /**
+     * Defaults to `/`
+     */
+    basePathname?: string;
 }
 
 /**
@@ -208,6 +81,11 @@ export declare interface StaticGenerateRenderOptions extends RenderOptions {
      * Defaults to `true`.
      */
     emitData?: boolean;
+    /**
+     * Set to `false` if the static build should not write custom or default `404.html` pages.
+     * Defaults to `true`.
+     */
+    emit404Pages?: boolean;
 }
 
 /**
@@ -219,14 +97,5 @@ export declare interface StaticGenerateResult {
     errors: number;
     staticPaths: string[];
 }
-
-/**
- * auto: Prefetch all possible QRLs used by the document. Default
- *
- * @alpha
- */
-declare type SymbolsToPrefetch = 'auto' | ((opts: {
-    manifest: QwikManifest;
-}) => PrefetchResource[]);
 
 export { }

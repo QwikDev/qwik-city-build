@@ -1,9 +1,31 @@
 /// <reference path="./modules.d.ts" />
 
 import { Component } from '@builder.io/qwik';
+import { Cookie } from '@builder.io/qwik-city/middleware/request-handler';
+import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler';
+import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
+import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
+import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
-import { ResourceReturn } from '@builder.io/qwik';
+import { QwikJSX } from '@builder.io/qwik';
+import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
+import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
+import { Signal } from '@builder.io/qwik';
+import { ValueOrPromise } from '@builder.io/qwik';
+
+declare class AbortMessage {
+}
+
+/**
+ * @alpha
+ */
+export declare const action$: <B>(first: (form: FormData, event: RequestEventLoader) => ValueOrPromise<B>) => ServerAction<B>;
+
+/**
+ * @alpha
+ */
+export declare const actionQrl: <B>(actionQrl: QRL<(form: FormData, event: RequestEventLoader) => ValueOrPromise<B>>) => ServerAction<B>;
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
 
@@ -42,14 +64,20 @@ declare interface ContentState {
     menu: ContentMenu | undefined;
 }
 
+export { Cookie }
+
 /**
  * @alpha
  */
-export declare interface Cookie {
+declare interface Cookie_2 {
     /**
      * Gets a `Request` cookie header value by name.
      */
-    get(name: string): CookieValue | null;
+    get(name: string): CookieValue_2 | null;
+    /**
+     * Gets all `Request` cookie headers.
+     */
+    getAll(): Record<string, CookieValue_2>;
     /**
      * Checks if the `Request` cookie header name exists.
      */
@@ -57,22 +85,27 @@ export declare interface Cookie {
     /**
      * Sets a `Response` cookie header using the `Set-Cookie` header.
      */
-    set(name: string, value: string | number | Record<string, any>, options?: CookieOptions): void;
+    set(name: string, value: string | number | Record<string, any>, options?: CookieOptions_2): void;
     /**
      * Deletes cookie value by name using the `Response` cookie header.
      */
-    delete(name: string): void;
+    delete(name: string, options?: Pick<CookieOptions_2, 'path' | 'domain'>): void;
     /**
      * Returns an array of all the set `Response` `Set-Cookie` header values.
      */
     headers(): string[];
 }
 
+export { CookieOptions }
+
+/**
+ * @alpha
+ */
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
  * @alpha
  */
-export declare interface CookieOptions {
+declare interface CookieOptions_2 {
     /**
      * Defines the host to which the cookie will be sent. If omitted, this attribute defaults
      * to the host of the current document URL, not including subdomains.
@@ -110,10 +143,12 @@ export declare interface CookieOptions {
     secure?: boolean;
 }
 
+export { CookieValue }
+
 /**
  * @alpha
  */
-export declare interface CookieValue {
+declare interface CookieValue_2 {
     value: string;
     json: <T = unknown>() => T;
     number: () => number;
@@ -122,15 +157,15 @@ export declare interface CookieValue {
 /**
  * @alpha
  */
-export declare type DocumentHead<T = unknown> = DocumentHeadValue | ((props: DocumentHeadProps<GetEndpointData<T>>) => DocumentHeadValue);
+export declare type DocumentHead = DocumentHeadValue | ((props: DocumentHeadProps) => DocumentHeadValue);
 
 /**
  * @alpha
  */
-export declare interface DocumentHeadProps<T = unknown> extends RouteLocation {
-    data: T;
-    head: ResolvedDocumentHead;
-    withLocale: <T>(fn: () => T) => T;
+export declare interface DocumentHeadProps extends RouteLocation {
+    readonly head: ResolvedDocumentHead;
+    readonly withLocale: <T>(fn: () => T) => T;
+    readonly getData: GetSyncData;
 }
 
 /**
@@ -195,6 +230,7 @@ export declare interface DocumentMeta {
     name?: string;
     property?: string;
     key?: string;
+    itemprop?: string;
 }
 
 /**
@@ -221,13 +257,34 @@ declare class ErrorResponse extends Error {
     constructor(status: number, message?: string);
 }
 
-declare type GetEndpointData<T> = T extends RequestHandler<infer U> ? U : T;
+/**
+ * @alpha
+ */
+export declare const Form: <T>({ action, ...rest }: FormProps<T>) => JSXNode<"form">;
+
+/**
+ * @alpha
+ */
+export declare interface FormProps<T> extends Omit<QwikJSX.IntrinsicElements['form'], 'action'> {
+    action: ServerActionUtils<T>;
+    method?: 'post';
+}
+
+/**
+ * @alpha
+ */
+declare interface GetData {
+    <T>(loader: ServerLoader<T>): Promise<T>;
+    <T>(loader: ServerAction<T>): Promise<T | undefined>;
+}
 
 /**
  * @alpha
  * @deprecated - The "Html" component has been renamed to "QwikCity".
  */
 export declare const Html: Component<QwikCityProps>;
+
+declare const isServerLoader: unique symbol;
 
 declare interface LayoutModule extends RouteModule {
     readonly default: any;
@@ -246,6 +303,16 @@ export declare interface LinkProps extends AnchorAttributes {
     prefetch?: boolean;
 }
 
+/**
+ * @alpha
+ */
+export declare const loader$: <PLATFORM, B>(first: (event: RequestEventLoader<PLATFORM>) => B) => ServerLoader<B>;
+
+/**
+ * @alpha
+ */
+export declare const loaderQrl: <PLATFORM, B>(loaderQrl: QRL<(event: RequestEventLoader<PLATFORM>) => B>) => ServerLoader<B>;
+
 declare type MenuData = [pathname: string, menuLoader: MenuModuleLoader];
 
 declare interface MenuModule {
@@ -256,7 +323,10 @@ declare type MenuModuleLoader = () => Promise<MenuModule>;
 
 declare type ModuleLoader = ContentModuleLoader | EndpointModuleLoader;
 
-declare interface PageModule extends RouteModule {
+/**
+ * @alpha
+ */
+export declare interface PageModule extends RouteModule {
     readonly default: any;
     readonly head?: ContentModuleHead;
     readonly headings?: ContentHeading[];
@@ -266,7 +336,26 @@ declare interface PageModule extends RouteModule {
 /**
  * @alpha
  */
+export declare type PathParams = Record<string, string>;
+
+/**
+ * @alpha
+ * @deprecated - The "QwikCity" component has been renamed to "QwikCityProvider".
+ */
 export declare const QwikCity: Component<QwikCityProps>;
+
+/**
+ * @alpha
+ */
+declare interface QwikCityMockProps {
+    url?: string;
+    params?: Record<string, string>;
+}
+
+/**
+ * @alpha
+ */
+export declare const QwikCityMockProvider: Component<QwikCityMockProps>;
 
 /**
  * @alpha
@@ -287,100 +376,92 @@ declare interface QwikCityProps {
      * The QwikCity component must have only two direct children: `<head>` and `<body>`, like the following example:
      *
      * ```tsx
-     * <QwikCity>
+     * <QwikCityProvider>
      *   <head>
      *     <meta charSet="utf-8" />
      *   </head>
      *   <body lang="en"></body>
-     * </QwikCity>
+     * </QwikCityProvider>
      * ```
      */
     children?: [JSXNode, JSXNode];
 }
 
-declare class RedirectResponse {
-    url: string;
-    status: number;
-    headers: Headers;
-    location: string;
-    constructor(url: string, status?: number, headers?: Headers);
+/**
+ * @alpha
+ */
+export declare const QwikCityProvider: Component<QwikCityProps>;
+
+declare class RedirectMessage extends AbortMessage {
 }
 
 /**
  * @alpha
  */
-export declare interface RequestContext {
-    formData(): Promise<FormData>;
-    headers: Headers;
-    json(): Promise<any>;
-    method: string;
-    text(): Promise<string>;
-    url: string;
-}
-
-/**
- * @alpha
- */
-export declare interface RequestEvent<PLATFORM = unknown> {
-    request: RequestContext;
-    response: ResponseContext;
-    url: URL;
-    /** URL Route params which have been parsed from the current url pathname. */
-    params: RouteParams;
-    /** Platform specific data and functions */
-    platform: PLATFORM;
-    cookie: Cookie;
-    next: () => Promise<void>;
-    abort: () => void;
-}
-
-/**
- * @alpha
- */
-export declare type RequestHandler<BODY = unknown, PLATFORM = unknown> = (ev: RequestEvent<PLATFORM>) => RequestHandlerResult<BODY>;
-
-declare type RequestHandlerBody<BODY> = BODY | string | number | boolean | undefined | null | void;
-
-declare type RequestHandlerBodyFunction<BODY> = () => RequestHandlerBody<BODY> | Promise<RequestHandlerBody<BODY>>;
-
-declare type RequestHandlerResult<BODY> = (RequestHandlerBody<BODY> | RequestHandlerBodyFunction<BODY>) | Promise<RequestHandlerBody<BODY> | RequestHandlerBodyFunction<BODY>>;
-
-/**
- * @alpha
- */
-export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
-
-/**
- * @alpha
- */
-export declare interface ResponseContext {
+declare interface RequestContext {
     /**
-     * HTTP response status code.
+     * HTTP request headers.
+     *
+     * https://developer.mozilla.org/en-US/docs/Glossary/Request_header
+     */
+    readonly headers: Headers;
+    /**
+     * HTTP request method.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+     */
+    readonly method: string;
+    /**
+     * HTTP request URL.
+     */
+    readonly url: string;
+    /**
+     * HTTP request form data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/FormData
+     */
+    formData(): Promise<FormData>;
+    /**
+     * HTTP request json data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/Request/json
+     */
+    json(): Promise<any>;
+    /**
+     * HTTP request text data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/Request/text
+     */
+    text(): Promise<string>;
+}
+
+export { RequestEvent }
+
+/**
+ * @alpha
+ */
+declare interface RequestEventCommon<PLATFORM = unknown> {
+    /**
+     * HTTP response status code. Sets the status code when called with an
+     * argument. Always returns the status code, so calling `status()` without
+     * an argument will can be used to return the current status code.
      *
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
      */
-    status: number;
+    readonly status: (statusCode?: number) => number;
     /**
      * Which locale the content is in.
      *
      * The locale value can be retrieved from selected methods using `getLocale()`:
      */
-    locale: string | undefined;
-    /**
-     * HTTP response headers.
-     *
-     * https://developer.mozilla.org/en-US/docs/Glossary/Response_header
-     */
-    readonly headers: Headers;
+    readonly locale: (local?: string) => string;
     /**
      * URL to redirect to. When called, the response will immediately
      * end with the correct redirect status and headers.
-     * Defaults to use the `307` response status code, but can be
-     * overridden by setting the `status` argument.
      *
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections
      */
-    readonly redirect: (url: string, status?: number) => RedirectResponse;
+    readonly redirect: (statusCode: number, url: string) => RedirectMessage;
     /**
      * When called, the response will immediately end with the given
      * status code. This could be useful to end a response with `404`,
@@ -388,8 +469,97 @@ export declare interface ResponseContext {
      * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
      * for which status code should be used.
      */
-    readonly error: (status: number) => ErrorResponse;
+    readonly error: (statusCode: number, message: string) => ErrorResponse;
+    /**
+     * Convenience method to send an text body response. The response will be automatically
+     * set the `Content-Type` header to`text/plain; charset=utf-8`.
+     *  An `text()` response can only be called once.
+     */
+    readonly text: (statusCode: number, text: string) => AbortMessage;
+    /**
+     * Convenience method to send an HTML body response. The response will be automatically
+     * set the `Content-Type` header to`text/html; charset=utf-8`.
+     *  An `html()` response can only be called once.
+     */
+    readonly html: (statusCode: number, html: string) => AbortMessage;
+    /**
+     * Convenience method to JSON stringify the data and send it in the response.
+     * The response will be automatically set the `Content-Type` header to
+     * `application/json; charset=utf-8`. A `json()` response can only be called once.
+     */
+    readonly json: (statusCode: number, data: any) => AbortMessage;
+    /**
+     * Send a body response. The `Content-Type` response header is not automatically set
+     * when using `send()` and must be set manually. A `send()` response can only be called once.
+     */
+    readonly send: (statusCode: number, data: any) => AbortMessage;
+    readonly exit: () => AbortMessage;
+    /**
+     * HTTP response headers.
+     *
+     * https://developer.mozilla.org/en-US/docs/Glossary/Response_header
+     */
+    readonly headers: Headers;
+    /**
+     * HTTP request and response cookie. Use the `get()` method to retrieve a request cookie value.
+     * Use the `set()` method to set a response cookie value.
+     */
+    readonly cookie: Cookie_2;
+    /**
+     * HTTP request method.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+     */
+    readonly method: string;
+    /**
+     * URL pathname. Does not include the protocol, domain, query string (search params) or hash.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname
+     */
+    readonly pathname: string;
+    /**
+     * URL path params which have been parsed from the current url pathname segments.
+     * Use `query` to instead retrieve the query string search params.
+     */
+    readonly params: Record<string, string>;
+    /**
+     * URL Query Strings (URL Search Params).
+     * Use `params` to instead retrieve the route params found in the url pathname.
+     */
+    readonly query: URLSearchParams;
+    /**
+     * HTTP request URL.
+     */
+    readonly url: URL;
+    /**
+     * HTTP request information.
+     */
+    readonly request: RequestContext;
+    /**
+     * Platform specific data and functions
+     */
+    readonly platform: PLATFORM;
+    /**
+     * Shared Map across all the request handlers. Every HTTP request will get a new instance of
+     * the shared map. The shared map is useful for sharing data between request handlers.
+     */
+    readonly sharedMap: Map<string, any>;
 }
+
+/**
+ * @alpha
+ */
+declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+    getData: GetData;
+    fail: <T>(status: number, returnData: T) => T;
+}
+
+export { RequestHandler }
+
+/**
+ * @alpha
+ */
+export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
 
 /**
  * @alpha
@@ -406,29 +576,29 @@ routeBundleNames: string[]
  * @alpha
  */
 export declare interface RouteLocation {
-    readonly params: RouteParams;
+    readonly params: Record<string, string>;
     readonly href: string;
     readonly pathname: string;
-    readonly query: Record<string, string>;
+    readonly query: URLSearchParams;
+    readonly isPending: boolean;
 }
 
 declare interface RouteModule<BODY = unknown> {
-    onDelete?: RequestHandler<BODY>;
-    onGet?: RequestHandler<BODY>;
-    onHead?: RequestHandler<BODY>;
-    onOptions?: RequestHandler<BODY>;
-    onPatch?: RequestHandler<BODY>;
-    onPost?: RequestHandler<BODY>;
-    onPut?: RequestHandler<BODY>;
-    onRequest?: RequestHandler<BODY>;
+    onDelete?: RequestHandler<BODY> | RequestHandler<BODY>[];
+    onGet?: RequestHandler<BODY> | RequestHandler<BODY>[];
+    onHead?: RequestHandler<BODY> | RequestHandler<BODY>[];
+    onOptions?: RequestHandler<BODY> | RequestHandler<BODY>[];
+    onPatch?: RequestHandler<BODY> | RequestHandler<BODY>[];
+    onPost?: RequestHandler<BODY> | RequestHandler<BODY>[];
+    onPut?: RequestHandler<BODY> | RequestHandler<BODY>[];
+    onRequest?: RequestHandler<BODY> | RequestHandler<BODY>[];
 }
 
-declare interface RouteNavigate {
-    path: string;
-}
+declare type RouteNavigate = QRL<(path?: string) => Promise<void>>;
 
 /**
  * @alpha
+ * @deprecated Please update to `PathParams` instead
  */
 export declare type RouteParams = Record<string, string>;
 
@@ -437,13 +607,39 @@ export declare type RouteParams = Record<string, string>;
  */
 export declare const RouterOutlet: Component<    {}>;
 
+declare interface ServerAction<RETURN> {
+    readonly [isServerLoader]?: true;
+    use(): ServerActionUtils<RETURN>;
+}
+
+declare type ServerActionExecute<RETURN> = QRL<(form: FormData | Record<string, string | string[] | Blob | Blob[]> | SubmitEvent) => Promise<RETURN>>;
+
+declare interface ServerActionUtils<RETURN> {
+    readonly id: string;
+    readonly actionPath: string;
+    readonly isPending: boolean;
+    readonly status?: number;
+    readonly value: RETURN | undefined;
+    readonly execute: ServerActionExecute<RETURN>;
+}
+
+declare interface ServerLoader<RETURN> {
+    readonly [isServerLoader]?: true;
+    use(): ServerLoaderUse<RETURN>;
+}
+
+declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
+
 /**
  * @alpha
  */
 export declare const ServiceWorkerRegister: () => JSXNode<"script">;
 
+/**
+ * @alpha
+ */
 declare interface StaticGenerate {
-    params?: RouteParams[];
+    params?: PathParams[];
 }
 
 /**
@@ -460,11 +656,6 @@ export declare const useContent: () => ContentState;
  * @alpha
  */
 export declare const useDocumentHead: () => Required<ResolvedDocumentHead>;
-
-/**
- * @alpha
- */
-export declare const useEndpoint: <T = unknown>() => ResourceReturn<GetEndpointData<T>>;
 
 /**
  * @alpha
