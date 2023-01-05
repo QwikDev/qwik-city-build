@@ -1,0 +1,122 @@
+{
+  "name": "@builder.io/qwik-city",
+  "version": "0.1.0-beta8",
+  "description": "The meta-framework for Qwik.",
+  "main": "./index.qwik.mjs",
+  "qwik": "./index.qwik.mjs",
+  "types": "./index.d.ts",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "import": "./index.qwik.mjs",
+      "require": "./index.qwik.cjs"
+    },
+    "./adaptors/cloudflare-pages/vite": {
+      "types": "./adaptors/cloudflare-pages/vite/index.d.ts",
+      "import": "./adaptors/cloudflare-pages/vite/index.mjs",
+      "require": "./adaptors/cloudflare-pages/vite/index.cjs"
+    },
+    "./adaptors/express/vite": {
+      "types": "./adaptors/express/vite/index.d.ts",
+      "import": "./adaptors/express/vite/index.mjs",
+      "require": "./adaptors/express/vite/index.cjs"
+    },
+    "./adaptors/netlify-edge/vite": {
+      "types": "./adaptors/netlify-edge/vite/index.d.ts",
+      "import": "./adaptors/netlify-edge/vite/index.mjs",
+      "require": "./adaptors/netlify-edge/vite/index.cjs"
+    },
+    "./adaptors/azure-swa/vite": {
+      "types": "./adaptors/azure-swa/vite/index.d.ts",
+      "import": "./adaptors/azure-swa/vite/index.mjs",
+      "require": "./adaptors/azure-swa/vite/index.cjs"
+    },
+    "./adaptors/static/vite": {
+      "types": "./adaptors/static/vite/index.d.ts",
+      "import": "./adaptors/static/vite/index.mjs",
+      "require": "./adaptors/static/vite/index.cjs"
+    },
+    "./adaptors/vercel-edge/vite": {
+      "types": "./adaptors/vercel-edge/vite/index.d.ts",
+      "import": "./adaptors/vercel-edge/vite/index.mjs",
+      "require": "./adaptors/vercel-edge/vite/index.cjs"
+    },
+    "./middleware/azure-swa": {
+      "types": "./middleware/azure-swa/index.d.ts",
+      "import": "./middleware/azure-swa/index.mjs"
+    },
+    "./middleware/cloudflare-pages": {
+      "types": "./middleware/cloudflare-pages/index.d.ts",
+      "import": "./middleware/cloudflare-pages/index.mjs"
+    },
+    "./middleware/netlify-edge": {
+      "types": "./middleware/netlify-edge/index.d.ts",
+      "import": "./middleware/netlify-edge/index.mjs"
+    },
+    "./middleware/node": {
+      "types": "./middleware/node/index.d.ts",
+      "import": "./middleware/node/index.mjs",
+      "require": "./middleware/node/index.cjs"
+    },
+    "./middleware/request-handler": {
+      "types": "./middleware/request-handler/index.d.ts",
+      "import": "./middleware/request-handler/index.mjs",
+      "require": "./middleware/request-handler/index.cjs"
+    },
+    "./middleware/vercel-edge": {
+      "types": "./middleware/vercel-edge/index.d.ts",
+      "import": "./middleware/vercel-edge/index.mjs"
+    },
+    "./static": {
+      "types": "./static/index.d.ts",
+      "import": "./static/index.mjs",
+      "require": "./static/index.cjs"
+    },
+    "./vite": {
+      "types": "./vite/index.d.ts",
+      "import": "./vite/index.mjs",
+      "require": "./vite/index.cjs"
+    },
+    "./service-worker": {
+      "types": "./service-worker.d.ts",
+      "import": "./service-worker.mjs",
+      "require": "./service-worker.cjs"
+    }
+  },
+  "dependencies": {
+    "@mdx-js/mdx": "2.2.1",
+    "@types/mdx": "2.0.3",
+    "source-map": "0.7.4",
+    "vfile": "5.3.6"
+  },
+  "peerDependencies": {
+    "@builder.io/qwik": ">=0.16.2"
+  },
+  "license": "MIT",
+  "homepage": "https://qwik.builder.io/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BuilderIO/qwik.git",
+    "directory": "packages/qwik-city"
+  },
+  "bugs": {
+    "url": "https://github.com/BuilderIO/qwik/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "adaptors",
+    "index.d.ts",
+    "index.qwik.mjs",
+    "index.qwik.cjs",
+    "service-worker.mjs",
+    "service-worker.cjs",
+    "service-worker.d.ts",
+    "modules.d.ts",
+    "middleware",
+    "static",
+    "vite"
+  ]
+}
