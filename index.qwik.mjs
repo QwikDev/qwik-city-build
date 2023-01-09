@@ -10,12 +10,12 @@ const RouteLocationContext = /* @__PURE__ */ createContext("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContext("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContext("qc-a");
 const RouterOutlet = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
-  const { contents } = useContext(ContentInternalContext);
-  if (contents && contents.length > 0) {
-    const contentsLen = contents.length;
+  const { value } = useContext(ContentInternalContext);
+  if (value && value.length > 0) {
+    const contentsLen = value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
-      cmp = jsx(contents[i].default, {
+      cmp = jsx(value[i].default, {
         children: cmp
       });
     return cmp;
@@ -337,9 +337,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
     headings: void 0,
     menu: void 0
   });
-  const contentInternal = useStore({
-    contents: void 0
-  });
+  const contentInternal = useSignal();
   const currentActionId = env.response.action;
   const currentAction = currentActionId ? env.response.loaders[currentActionId] : void 0;
   const actionState = useSignal(currentAction ? {
@@ -359,8 +357,10 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
   useContextProvider(RouteActionContext, actionState);
   useTaskQrl(inlinedQrl(async ({ track }) => {
     const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, routeLocation2] = useLexicalScope();
-    const path = track(() => navPath2.value);
-    const action = track(() => actionState2.value);
+    const [path, action] = track(() => [
+      navPath2.value,
+      actionState2.value
+    ]);
     const locale = getLocale("");
     const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
     let url2 = new URL(path, routeLocation2.href);
@@ -399,7 +399,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
       routeLocation2.query = url2.searchParams;
       content2.headings = pageModule.headings;
       content2.menu = menu;
-      contentInternal2.contents = noSerialize(contentModules);
+      contentInternal2.value = noSerialize(contentModules);
       documentHead2.links = resolvedHead.links;
       documentHead2.meta = resolvedHead.meta;
       documentHead2.styles = resolvedHead.styles;
@@ -447,9 +447,7 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(inlinedQrl((props) => 
     headings: void 0,
     menu: void 0
   });
-  const contentInternal = useStore({
-    contents: void 0
-  });
+  const contentInternal = useSignal();
   useContextProvider(ContentContext, content);
   useContextProvider(ContentInternalContext, contentInternal);
   useContextProvider(DocumentHeadContext, documentHead);
