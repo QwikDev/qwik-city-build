@@ -1,3 +1,4 @@
+import { ServerAdaptorOptions } from '../../shared/vite';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
 /**
@@ -8,7 +9,7 @@ export declare function netifyEdgeAdaptor(opts?: NetlifyEdgeAdaptorOptions): any
 /**
  * @alpha
  */
-export declare interface NetlifyEdgeAdaptorOptions {
+export declare interface NetlifyEdgeAdaptorOptions extends ServerAdaptorOptions {
     /**
      * Determines if the build should generate the edge functions declarations `manifest.json` file.
      *
@@ -17,10 +18,6 @@ export declare interface NetlifyEdgeAdaptorOptions {
      * Defaults to `true`.
      */
     functionRoutes?: boolean;
-    /**
-     * Determines if the adaptor should also run Static Site Generation (SSG).
-     */
-    staticGenerate?: Omit<StaticGenerateRenderOptions, 'outDir'> | true;
     /**
      * Manually add pathnames that should be treated as static paths and not SSR.
      * For example, when these pathnames are requested, their response should

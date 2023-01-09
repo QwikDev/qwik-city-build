@@ -294,6 +294,9 @@ async function createSystem(opts) {
       flags: "w"
     });
   };
+  const removeFile = (filePath) => {
+    return import_node_fs2.default.promises.unlink(filePath);
+  };
   const NS_PER_SEC = 1e9;
   const MS_PER_NS = 1e-6;
   const createTimer = () => {
@@ -342,6 +345,7 @@ async function createSystem(opts) {
     createLogger,
     getOptions: () => opts,
     ensureDir,
+    removeFile,
     createWriteStream,
     createTimer,
     access,
@@ -633,8 +637,8 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
             }
           },
           close() {
+            const data = requestEv.sharedMap.get("qData");
             if (writeDataEnabled) {
-              const data = requestEv.sharedMap.get("qData");
               if (data) {
                 if (typeof data.isStatic === "boolean") {
                   result.isStatic = data.isStatic;
@@ -644,12 +648,25 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
                 dataWriter.end();
               }
             }
-            if (requestEv.sharedMap.get("qData"))
-              return new Promise((resolve2) => {
-                if (htmlWriter) {
-                  htmlWriter.end(resolve2);
-                }
-              });
+            if (data) {
+              if (htmlWriter) {
+                return new Promise((resolve2) => {
+                  htmlWriter.end(() => {
+                    if (typeof opts.filter === "function") {
+                      const shouldRetain = opts.filter({
+                        pathname: staticRoute.pathname,
+                        params: staticRoute.params,
+                        isStatic: data.isStatic
+                      });
+                      if (shouldRetain === false) {
+                        sys.removeFile(htmlFilePath);
+                      }
+                    }
+                    resolve2();
+                  });
+                });
+              }
+            }
           }
         });
         return stream;
