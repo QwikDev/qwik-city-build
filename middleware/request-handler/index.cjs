@@ -32,6 +32,7 @@ var HEADERS = Symbol("headers");
 var _a;
 var HeadersPolyfill = class {
   constructor() {
+    // Normalized header {"name":"a, b"} storage.
     this[_a] = {};
   }
   [(_a = HEADERS, Symbol.iterator)]() {
@@ -52,18 +53,30 @@ var HeadersPolyfill = class {
       yield [name, this.get(name)];
     }
   }
+  /**
+   * Returns a `ByteString` sequence of all the values of a header with a given name.
+   */
   get(name) {
     return this[HEADERS][normalizeHeaderName(name)] || null;
   }
+  /**
+   * Sets a new value for an existing header inside a `Headers` object, or adds the header if it does not already exist.
+   */
   set(name, value) {
     const normalizedName = normalizeHeaderName(name);
     this[HEADERS][normalizedName] = typeof value !== "string" ? String(value) : value;
   }
+  /**
+   * Appends a new value onto an existing header inside a `Headers` object, or adds the header if it does not already exist.
+   */
   append(name, value) {
     const normalizedName = normalizeHeaderName(name);
     const resolvedValue = this.has(normalizedName) ? `${this.get(normalizedName)}, ${value}` : value;
     this.set(name, resolvedValue);
   }
+  /**
+   * Deletes a header from the `Headers` object.
+   */
   delete(name) {
     if (!this.has(name)) {
       return;
@@ -71,12 +84,22 @@ var HeadersPolyfill = class {
     const normalizedName = normalizeHeaderName(name);
     delete this[HEADERS][normalizedName];
   }
+  /**
+   * Returns the object of all the normalized headers.
+   */
   all() {
     return this[HEADERS];
   }
+  /**
+   * Returns a boolean stating whether a `Headers` object contains a certain header.
+   */
   has(name) {
     return this[HEADERS].hasOwnProperty(normalizeHeaderName(name));
   }
+  /**
+   * Traverses the `Headers` object,
+   * calling the given callback for each header.
+   */
   forEach(callback, thisArg) {
     for (const name in this[HEADERS]) {
       if (this[HEADERS].hasOwnProperty(name)) {
@@ -769,6 +792,7 @@ function getQwikCityEnvData(requestEv) {
     requestHeaders,
     locale: locale(),
     qwikcity: {
+      // mode: getRequestMode(requestEv),
       params: { ...params },
       response: {
         status: status(),
@@ -811,6 +835,7 @@ function renderQwikMiddleware(render, opts) {
         action: getRequestAction(requestEv),
         status: status !== 200 ? status : 200,
         href: getPathname(requestEv.url, true),
+        // todo
         isStatic: result.isStatic
       };
       if ((typeof result).html === "string") {
@@ -853,6 +878,7 @@ async function renderQData(requestEv) {
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,
       href: getPathname(requestEv.url, true)
+      // todo
     };
     const writer = requestEv.getWritableStream().getWriter();
     writer.write(encoder2.encode(serializeData(qData)));
@@ -953,13 +979,9 @@ function handleErrors(run) {
         console.error(e);
         const status = requestEv.status();
         const html = getErrorHtml(status, e);
-        if (requestEv.headersSent) {
-          const writableStream = requestEv.getWritableStream();
-          if (!writableStream.locked) {
-            return writableStream.close();
-          }
-        } else {
+        if (!requestEv.headersSent) {
           requestEv.html(status, html);
+        } else {
         }
       }
     ).then(() => requestEv)
