@@ -1,3 +1,4 @@
+import { ServerAdaptorOptions } from '../../shared/vite';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
 /**
@@ -8,7 +9,7 @@ export declare function cloudflarePagesAdaptor(opts?: CloudflarePagesAdaptorOpti
 /**
  * @alpha
  */
-export declare interface CloudflarePagesAdaptorOptions {
+export declare interface CloudflarePagesAdaptorOptions extends ServerAdaptorOptions {
     /**
      * Determines if the build should generate the function invocation routes `_routes.json` file.
      *
@@ -17,10 +18,6 @@ export declare interface CloudflarePagesAdaptorOptions {
      * Defaults to `true`.
      */
     functionRoutes?: boolean;
-    /**
-     * Determines if the adaptor should also run Static Site Generation (SSG).
-     */
-    staticGenerate?: Omit<StaticGenerateRenderOptions, 'outDir'> | true;
     /**
      * Manually add pathnames that should be treated as static paths and not SSR.
      * For example, when these pathnames are requested, their response should

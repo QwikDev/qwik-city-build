@@ -123,6 +123,7 @@ function viteAdaptor(opts) {
   let qwikCityPlanModulePath = null;
   let isSsrBuild = false;
   let format = "esm";
+  const outputEntries = [];
   const plugin = {
     name: `vite-plugin-qwik-city-${opts.name}`,
     enforce: "post",
@@ -166,9 +167,11 @@ function viteAdaptor(opts) {
     },
     generateBundle(_, bundles) {
       if (isSsrBuild) {
+        outputEntries.length = 0;
         for (const fileName in bundles) {
           const chunk = bundles[fileName];
           if (chunk.type === "chunk" && chunk.isEntry) {
+            outputEntries.push(fileName);
             if (chunk.name === "entry.ssr") {
               renderModulePath = join2(serverOutDir, fileName);
             } else if (chunk.name === "@qwik-city-plan") {
@@ -191,66 +194,91 @@ function viteAdaptor(opts) {
     closeBundle: {
       sequential: true,
       async handler() {
-        if (isSsrBuild && serverOutDir && (qwikCityPlugin == null ? void 0 : qwikCityPlugin.api) && (qwikVitePlugin == null ? void 0 : qwikVitePlugin.api)) {
+        var _a, _b;
+        if (isSsrBuild && opts.ssg !== null && serverOutDir && (qwikCityPlugin == null ? void 0 : qwikCityPlugin.api) && (qwikVitePlugin == null ? void 0 : qwikVitePlugin.api)) {
           const staticPaths = opts.staticPaths || [];
           const routes = qwikCityPlugin.api.getRoutes();
           const basePathname = qwikCityPlugin.api.getBasePathname();
           const clientOutDir = qwikVitePlugin.api.getClientOutDir();
-          let staticGenerateResult = null;
-          if (opts.staticGenerate && renderModulePath && qwikCityPlanModulePath) {
-            let origin = opts.origin;
-            if (!origin) {
-              origin = `https://yoursite.qwik.builder.io`;
+          if (renderModulePath && qwikCityPlanModulePath && clientOutDir) {
+            if (opts.staticGenerate) {
+              this.warn(`Option "staticGenerate" is deprecated. Please use "ssg" option instead.`);
+              opts.ssg = opts.ssg || {};
+              if (typeof opts.staticGenerate === "object") {
+                opts.ssg = {
+                  ...opts.staticGenerate,
+                  ...opts.ssg
+                };
+              }
             }
-            if (origin.length > 0 && !origin.startsWith("https://") && !origin.startsWith("http://")) {
-              origin = `https://${origin}`;
+            let ssgOrigin = opts.origin;
+            if (!ssgOrigin) {
+              ssgOrigin = `https://yoursite.qwik.builder.io`;
+            }
+            if (ssgOrigin.length > 0 && !ssgOrigin.startsWith("https://") && !ssgOrigin.startsWith("http://")) {
+              ssgOrigin = `https://${ssgOrigin}`;
+            }
+            try {
+              ssgOrigin = new URL(ssgOrigin).origin;
+            } catch (e) {
+              this.warn(
+                `Invalid "origin" option: "${ssgOrigin}". Using default origin: "https://yoursite.qwik.builder.io"`
+              );
+              ssgOrigin = `https://yoursite.qwik.builder.io`;
+            }
+            let pathFilter;
+            if (typeof ((_a = opts.ssg) == null ? void 0 : _a.filter) === "function") {
+              pathFilter = opts.ssg.filter;
+            } else if (((_b = opts.ssg) == null ? void 0 : _b.filter) === "all") {
+              pathFilter = () => true;
+            } else {
+              pathFilter = ({ isStatic }) => {
+                return !!isStatic;
+              };
             }
             const staticGenerate = await import("../../../static/index.mjs");
-            let generateOpts = {
+            const generateOpts = {
               maxWorkers: opts.maxWorkers,
               basePathname,
               outDir: clientOutDir,
-              origin,
+              ...opts.ssg,
+              origin: ssgOrigin,
+              filter: pathFilter,
               renderModulePath,
               qwikCityPlanModulePath
             };
-            if (opts.staticGenerate && typeof opts.staticGenerate === "object") {
-              generateOpts = {
-                ...generateOpts,
-                ...opts.staticGenerate
-              };
-            }
-            staticGenerateResult = await staticGenerate.generate(generateOpts);
+            const staticGenerateResult = await staticGenerate.generate(generateOpts);
             if (staticGenerateResult.errors > 0) {
               this.error(
                 `Error while runnning SSG from "${opts.name}" adaptor. At least one path failed to render.`
               );
             }
             staticPaths.push(...staticGenerateResult.staticPaths);
-          }
-          const { staticPathsCode, notFoundPathsCode } = await postBuild(
-            clientOutDir,
-            basePathname,
-            staticPaths,
-            format,
-            !!opts.cleanStaticGenerated
-          );
-          await Promise.all([
-            fs2.promises.writeFile(join2(serverOutDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
-            fs2.promises.writeFile(
-              join2(serverOutDir, RESOLVED_NOT_FOUND_PATHS_ID),
-              notFoundPathsCode
-            )
-          ]);
-          if (typeof opts.generate === "function") {
-            await opts.generate({
-              serverOutDir,
+            const { staticPathsCode, notFoundPathsCode } = await postBuild(
               clientOutDir,
               basePathname,
-              routes,
-              warn: (message) => this.warn(message),
-              error: (message) => this.error(message)
-            });
+              staticPaths,
+              format,
+              !!opts.cleanStaticGenerated
+            );
+            await Promise.all([
+              fs2.promises.writeFile(join2(serverOutDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
+              fs2.promises.writeFile(
+                join2(serverOutDir, RESOLVED_NOT_FOUND_PATHS_ID),
+                notFoundPathsCode
+              )
+            ]);
+            if (typeof opts.generate === "function") {
+              await opts.generate({
+                outputEntries,
+                serverOutDir,
+                clientOutDir,
+                basePathname,
+                routes,
+                warn: (message) => this.warn(message),
+                error: (message) => this.error(message)
+              });
+            }
           }
         }
       }
@@ -270,6 +298,7 @@ function expressAdaptor(opts = {}) {
     name: "express",
     origin: ((_a = process == null ? void 0 : process.env) == null ? void 0 : _a.URL) || "https://yoursitename.qwik.builder.io",
     staticGenerate: opts.staticGenerate,
+    ssg: opts.ssg,
     cleanStaticGenerated: true,
     config() {
       return {

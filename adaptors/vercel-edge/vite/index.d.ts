@@ -1,3 +1,4 @@
+import { ServerAdaptorOptions } from '../../shared/vite';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
 export { StaticGenerateRenderOptions }
@@ -10,7 +11,7 @@ export declare function vercelEdgeAdaptor(opts?: VercelEdgeAdaptorOptions): any;
 /**
  * @alpha
  */
-export declare interface VercelEdgeAdaptorOptions {
+export declare interface VercelEdgeAdaptorOptions extends ServerAdaptorOptions {
     /**
      * Determines if the build should auto-generate the `.vercel/output/config.json` config.
      *
@@ -31,10 +32,6 @@ export declare interface VercelEdgeAdaptorOptions {
      * Defaults to `undefined`.
      */
     vcConfigEnvVarsInUse?: string[];
-    /**
-     * Determines if the adaptor should also run Static Site Generation (SSG).
-     */
-    staticGenerate?: Omit<StaticGenerateRenderOptions, 'outDir'> | true;
     /**
      * Manually add pathnames that should be treated as static paths and not SSR.
      * For example, when these pathnames are requested, their response should
