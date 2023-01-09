@@ -23516,7 +23516,7 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
     )});`
   );
   c2.push(`function isStaticPath(method, url) {`);
-  c2.push(`  if (method.toUppercase() !== 'GET') return false;`);
+  c2.push(`  if (method.toUpperCase() !== 'GET') return false;`);
   c2.push(`  const p = url.pathname;`);
   c2.push(`  if (p.startsWith(${JSON.stringify(baseBuildPath)})) {`);
   c2.push(`    return true;`);
