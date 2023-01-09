@@ -804,7 +804,7 @@ function getQwikCityEnvData(requestEv) {
 }
 
 // packages/qwik-city/middleware/request-handler/render-middleware.ts
-function renderQwikMiddleware(render, opts) {
+function renderQwikMiddleware(render) {
   return async (requestEv) => {
     if (requestEv.headersSent) {
       return;
@@ -825,10 +825,13 @@ function renderQwikMiddleware(render, opts) {
     const stream = writable.getWriter();
     const status = requestEv.status();
     try {
+      const isStatic = getRequestMode(requestEv) === "static";
       const result = await render({
         stream,
         envData: getQwikCityEnvData(requestEv),
-        ...opts
+        containerAttributes: {
+          ["q:render"]: isStatic ? "static" : ""
+        }
       });
       const qData = {
         loaders: getRequestLoaders(requestEv),
