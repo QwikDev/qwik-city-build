@@ -263,16 +263,21 @@ const loadClientData = async (href, clearCache, action) => {
   const pagePathname = url.pathname;
   const pageSearch = url.search;
   const clientDataPath = getClientDataPath(pagePathname, pageSearch, action);
-  let qData = action ? void 0 : CLIENT_DATA_CACHE.get(clientDataPath);
+  let qData = void 0;
+  if (!action)
+    qData = CLIENT_DATA_CACHE.get(clientDataPath);
   dispatchPrefetchEvent({
     links: [
       pagePathname
     ]
   });
   if (!qData) {
-    const options = action ? {
+    const actionData = action?.data;
+    if (action)
+      action.data = void 0;
+    const options = actionData ? {
       method: "POST",
-      body: action.data
+      body: actionData
     } : void 0;
     qData = fetch(clientDataPath, options).then((rsp) => {
       if ((rsp.headers.get("content-type") || "").includes("json")) {
@@ -286,10 +291,10 @@ const loadClientData = async (href, clearCache, action) => {
           if (clearCache)
             CLIENT_DATA_CACHE.delete(clientDataPath);
           if (action) {
-            const actionData = clientData.loaders[action.id];
+            const actionData2 = clientData.loaders[action.id];
             action.resolve({
               status: rsp.status,
-              result: actionData
+              result: actionData2
             });
           }
           return clientData;
@@ -347,6 +352,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
       navPath2.value = "";
       navPath2.value = value;
     }
+    actionState.value = void 0;
     routeLocation2.isPending = true;
   }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
     navPath,
