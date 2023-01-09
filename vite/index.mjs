@@ -23,6 +23,10 @@ var __copyProps = (to, from, except, desc) => {
   return to;
 };
 var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
@@ -84,7 +88,17 @@ function ok() {
 var convert;
 var init_unist_util_is = __esm({
   "node_modules/.pnpm/unist-util-is@5.1.1/node_modules/unist-util-is/index.js"() {
-    convert = function(test) {
+    convert = /**
+     * Generate an assertion from a check.
+     * @param {Test} [test]
+     * When nullish, checks if `node` is a `Node`.
+     * When `string`, works like passing `function (node) {return node.type === test}`.
+     * When `function` checks if function passed the node is true.
+     * When `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
+     * When `array`, checks any one of the subtests pass.
+     * @returns {AssertAnything}
+     */
+    function(test) {
       if (test === void 0 || test === null) {
         return ok;
       }
@@ -129,7 +143,13 @@ var init_unist_util_visit_parents = __esm({
     CONTINUE = true;
     SKIP = "skip";
     EXIT = false;
-    visitParents = function(tree, test, visitor, reverse) {
+    visitParents = /**
+     * @param {Node} tree
+     * @param {Test} test
+     * @param {import('./complex-types.js').Visitor<Node>} visitor
+     * @param {boolean} [reverse=false]
+     */
+    function(tree, test, visitor, reverse) {
       if (typeof test === "function" && typeof visitor !== "function") {
         reverse = visitor;
         visitor = test;
@@ -183,7 +203,13 @@ var init_unist_util_visit = __esm({
   "node_modules/.pnpm/unist-util-visit@4.1.1/node_modules/unist-util-visit/index.js"() {
     init_unist_util_visit_parents();
     init_unist_util_visit_parents();
-    visit = function(tree, test, visitor, reverse) {
+    visit = /**
+     * @param {Node} tree
+     * @param {Test} test
+     * @param {import('./complex-types.js').Visitor} visitor
+     * @param {boolean} [reverse]
+     */
+    function(tree, test, visitor, reverse) {
       if (typeof test === "function" && typeof visitor !== "function") {
         reverse = visitor;
         visitor = test;
@@ -244,6 +270,7 @@ var require_Node = __commonJS({
       constructor(type) {
         Object.defineProperty(this, NODE_TYPE, { value: type });
       }
+      /** Create a copy of this node.  */
       clone() {
         const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
         if (this.range)
@@ -457,6 +484,10 @@ var require_directives = __commonJS({
         copy.docStart = this.docStart;
         return copy;
       }
+      /**
+       * During parsing, get a Directives instance for the current document and
+       * update the stream state according to the current version's spec.
+       */
       atDocument() {
         const res = new Directives(this.yaml, this.tags);
         switch (this.yaml.version) {
@@ -474,6 +505,10 @@ var require_directives = __commonJS({
         }
         return res;
       }
+      /**
+       * @param onError - May be called even if the action was successful
+       * @returns `true` on success
+       */
       add(line, onError) {
         if (this.atNextDocument) {
           this.yaml = { explicit: Directives.defaultYaml.explicit, version: "1.1" };
@@ -514,6 +549,12 @@ var require_directives = __commonJS({
             return false;
         }
       }
+      /**
+       * Resolves a tag, matching handles to those defined in %TAG directives.
+       *
+       * @returns Resolved tag, which may also be the non-specific tag `'!'` or a
+       *   `'!local'` tag, or `null` if unresolvable.
+       */
       tagName(source, onError) {
         if (source === "!")
           return "!";
@@ -542,6 +583,10 @@ var require_directives = __commonJS({
         onError(`Could not resolve tag: ${source}`);
         return null;
       }
+      /**
+       * Given a fully resolved tag, returns its printable string form,
+       * taking into account current tag prefixes and defaults.
+       */
       tagString(tag) {
         for (const [handle, prefix] of Object.entries(this.tags)) {
           if (tag.startsWith(prefix))
@@ -621,6 +666,11 @@ var require_anchors = __commonJS({
           prevAnchors.add(anchor);
           return anchor;
         },
+        /**
+         * With circular references, the source node is only resolved after all
+         * of its child nodes are. This is why anchors are set only after all of
+         * the nodes have been created.
+         */
         setAnchors: () => {
           for (const source of aliasObjects) {
             const ref = sourceObjects.get(source);
@@ -660,6 +710,10 @@ var require_Alias = __commonJS({
           }
         });
       }
+      /**
+       * Resolve the value of this alias within `doc`, finding the last
+       * instance of the `source` anchor before this node.
+       */
       resolve(doc) {
         let found = void 0;
         visit2.visit(doc, {
@@ -911,6 +965,11 @@ var require_Collection = __commonJS({
           writable: true
         });
       }
+      /**
+       * Create a copy of this collection.
+       *
+       * @param schema - If defined, overwrites the original's schema
+       */
       clone(schema) {
         const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
         if (schema)
@@ -920,6 +979,11 @@ var require_Collection = __commonJS({
           copy.range = this.range.slice();
         return copy;
       }
+      /**
+       * Adds a value to the collection. For `!!map` and `!!omap` the value must
+       * be a Pair instance or a `{ key, value }` object, which may not have a key
+       * that already exists in the map.
+       */
       addIn(path2, value2) {
         if (isEmptyPath(path2))
           this.add(value2);
@@ -934,6 +998,10 @@ var require_Collection = __commonJS({
             throw new Error(`Expected YAML collection at ${key}. Remaining path: ${rest}`);
         }
       }
+      /**
+       * Removes a value from the collection.
+       * @returns `true` if the item was found and removed.
+       */
       deleteIn(path2) {
         const [key, ...rest] = path2;
         if (rest.length === 0)
@@ -944,6 +1012,11 @@ var require_Collection = __commonJS({
         else
           throw new Error(`Expected YAML collection at ${key}. Remaining path: ${rest}`);
       }
+      /**
+       * Returns item at `key`, or `undefined` if not found. By default unwraps
+       * scalar values from their surrounding node; to disable set `keepScalar` to
+       * `true` (collections are always returned intact).
+       */
       getIn(path2, keepScalar) {
         const [key, ...rest] = path2;
         const node = this.get(key, true);
@@ -960,6 +1033,9 @@ var require_Collection = __commonJS({
           return n == null || allowScalar && Node.isScalar(n) && n.value == null && !n.commentBefore && !n.comment && !n.tag;
         });
       }
+      /**
+       * Checks if the collection includes a value with the key `key`.
+       */
       hasIn(path2) {
         const [key, ...rest] = path2;
         if (rest.length === 0)
@@ -967,6 +1043,10 @@ var require_Collection = __commonJS({
         const node = this.get(key, true);
         return Node.isCollection(node) ? node.hasIn(rest) : false;
       }
+      /**
+       * Sets a value in this collection. For `!!set`, `value` needs to be a
+       * boolean to add/remove the item from the set.
+       */
       setIn(path2, value2) {
         const [key, ...rest] = path2;
         if (rest.length === 0) {
@@ -1998,6 +2078,12 @@ var require_YAMLMap = __commonJS({
         super(Node.MAP, schema);
         this.items = [];
       }
+      /**
+       * Adds a value to the collection.
+       *
+       * @param overwrite - If not set `true`, using a key that is already in the
+       *   collection will throw. Otherwise, overwrites the previous value.
+       */
       add(pair, overwrite) {
         var _a3;
         let _pair;
@@ -2044,6 +2130,11 @@ var require_YAMLMap = __commonJS({
       set(key, value2) {
         this.add(new Pair.Pair(key, value2), true);
       }
+      /**
+       * @param ctx - Conversion context, originally set in Document#toJS()
+       * @param {Class} Type - If set, forces the returned collection type
+       * @returns Instance of Type, Map, or Object
+       */
       toJSON(_2, ctx, Type) {
         const map = Type ? new Type() : (ctx == null ? void 0 : ctx.mapAsMap) ? /* @__PURE__ */ new Map() : {};
         if (ctx == null ? void 0 : ctx.onCreate)
@@ -2141,6 +2232,14 @@ var require_YAMLSeq = __commonJS({
       add(value2) {
         this.items.push(value2);
       }
+      /**
+       * Removes a value from the collection.
+       *
+       * `key` must contain a representation of an integer for this to succeed.
+       * It may be wrapped in a `Scalar`.
+       *
+       * @returns `true` if the item was found and removed.
+       */
       delete(key) {
         const idx = asItemIndex(key);
         if (typeof idx !== "number")
@@ -2155,10 +2254,23 @@ var require_YAMLSeq = __commonJS({
         const it = this.items[idx];
         return !keepScalar && Node.isScalar(it) ? it.value : it;
       }
+      /**
+       * Checks if the collection includes a value with the key `key`.
+       *
+       * `key` must contain a representation of an integer for this to succeed.
+       * It may be wrapped in a `Scalar`.
+       */
       has(key) {
         const idx = asItemIndex(key);
         return typeof idx === "number" && idx < this.items.length;
       }
+      /**
+       * Sets a value in this collection. For `!!set`, `value` needs to be a
+       * boolean to add/remove the item from the set.
+       *
+       * If `key` does not contain a representation of an integer, this will throw.
+       * It may be wrapped in a `Scalar`.
+       */
       set(key, value2) {
         const idx = asItemIndex(key);
         if (typeof idx !== "number")
@@ -2522,6 +2634,14 @@ var require_binary = __commonJS({
       identify: (value2) => value2 instanceof Uint8Array,
       default: false,
       tag: "tag:yaml.org,2002:binary",
+      /**
+       * Returns a Buffer in node and an Uint8Array in browsers
+       *
+       * To use the resulting buffer as an image, you'll want to do something like:
+       *
+       *   const blob = new Blob([buffer], { type: 'image/jpeg' })
+       *   document.querySelector('#photo').src = URL.createObjectURL(blob)
+       */
       resolve(src, onError) {
         if (typeof Buffer === "function") {
           return Buffer.from(src, "base64");
@@ -2663,6 +2783,10 @@ var require_omap = __commonJS({
         this.set = YAMLMap.YAMLMap.prototype.set.bind(this);
         this.tag = YAMLOMap.tag;
       }
+      /**
+       * If `ctx` is given, the return type is actually `Map<unknown, unknown>`,
+       * but TypeScript won't allow widening the signature of a child method.
+       */
       toJSON(_2, ctx) {
         if (!ctx)
           return super.toJSON(_2);
@@ -2901,6 +3025,10 @@ var require_set = __commonJS({
         if (!prev)
           this.items.push(pair);
       }
+      /**
+       * If `keepPair` is `true`, returns the Pair matching `key`.
+       * Otherwise, returns the value of that Pair's key.
+       */
       get(key, keepPair) {
         const pair = YAMLMap.findPair(this.items, key);
         return !keepPair && Node.isPair(pair) ? Node.isScalar(pair.key) ? pair.key.value : pair.key : pair;
@@ -3021,6 +3149,9 @@ var require_timestamp = __commonJS({
       identify: (value2) => value2 instanceof Date,
       default: true,
       tag: "tag:yaml.org,2002:timestamp",
+      // If the time zone is omitted, the timestamp is assumed to be specified in UTC. The time part
+      // may be omitted altogether, resulting in a date format. In such a case, the time part is
+      // assumed to be 00:00:00Z (start of day, UTC).
       test: RegExp("^([0-9]{4})-([0-9]{1,2})-([0-9]{1,2})(?:(?:t|T|[ \\t]+)([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2}(\\.[0-9]+)?)(?:[ \\t]*(Z|[-+][012]?[0-9](?::[0-9]{2})?))?)?$"),
       resolve(str) {
         const match = str.match(timestamp.test);
@@ -3389,6 +3520,11 @@ var require_Document = __commonJS({
           this.contents = this.createNode(value2, _replacer, options2);
         }
       }
+      /**
+       * Create a deep copy of this Document and its contents.
+       *
+       * Custom Node values that inherit from `Object` still refer to their original instances.
+       */
       clone() {
         const copy = Object.create(Document.prototype, {
           [Node.NODE_TYPE]: { value: Node.DOC }
@@ -3406,18 +3542,30 @@ var require_Document = __commonJS({
           copy.range = this.range.slice();
         return copy;
       }
+      /** Adds a value to the document. */
       add(value2) {
         if (assertCollection(this.contents))
           this.contents.add(value2);
       }
+      /** Adds a value to the document. */
       addIn(path2, value2) {
         if (assertCollection(this.contents))
           this.contents.addIn(path2, value2);
       }
+      /**
+       * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
+       *
+       * If `node` already has an anchor, `name` is ignored.
+       * Otherwise, the `node.anchor` value will be set to `name`,
+       * or if an anchor with that name is already present in the document,
+       * `name` will be used as a prefix for a new unique anchor.
+       * If `name` is undefined, the generated anchor will use 'a' as a prefix.
+       */
       createAlias(node, name) {
         if (!node.anchor) {
           const prev = anchors.anchorNames(this);
-          node.anchor = !name || prev.has(name) ? anchors.findNewAnchor(name || "a", prev) : name;
+          node.anchor = // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+          !name || prev.has(name) ? anchors.findNewAnchor(name || "a", prev) : name;
         }
         return new Alias.Alias(node.anchor);
       }
@@ -3439,6 +3587,7 @@ var require_Document = __commonJS({
         const { aliasDuplicateObjects, anchorPrefix, flow, keepUndefined, onTagObj, tag } = options2 ?? {};
         const { onAnchor, setAnchors, sourceObjects } = anchors.createNodeAnchors(
           this,
+          // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
           anchorPrefix || "a"
         );
         const ctx = {
@@ -3456,14 +3605,26 @@ var require_Document = __commonJS({
         setAnchors();
         return node;
       }
+      /**
+       * Convert a key and a value into a `Pair` using the current schema,
+       * recursively wrapping all values as `Scalar` or `Collection` nodes.
+       */
       createPair(key, value2, options2 = {}) {
         const k = this.createNode(key, null, options2);
         const v = this.createNode(value2, null, options2);
         return new Pair.Pair(k, v);
       }
+      /**
+       * Removes a value from the document.
+       * @returns `true` if the item was found and removed.
+       */
       delete(key) {
         return assertCollection(this.contents) ? this.contents.delete(key) : false;
       }
+      /**
+       * Removes a value from the document.
+       * @returns `true` if the item was found and removed.
+       */
       deleteIn(path2) {
         if (Collection.isEmptyPath(path2)) {
           if (this.contents == null)
@@ -3473,22 +3634,42 @@ var require_Document = __commonJS({
         }
         return assertCollection(this.contents) ? this.contents.deleteIn(path2) : false;
       }
+      /**
+       * Returns item at `key`, or `undefined` if not found. By default unwraps
+       * scalar values from their surrounding node; to disable set `keepScalar` to
+       * `true` (collections are always returned intact).
+       */
       get(key, keepScalar) {
         return Node.isCollection(this.contents) ? this.contents.get(key, keepScalar) : void 0;
       }
+      /**
+       * Returns item at `path`, or `undefined` if not found. By default unwraps
+       * scalar values from their surrounding node; to disable set `keepScalar` to
+       * `true` (collections are always returned intact).
+       */
       getIn(path2, keepScalar) {
         if (Collection.isEmptyPath(path2))
           return !keepScalar && Node.isScalar(this.contents) ? this.contents.value : this.contents;
         return Node.isCollection(this.contents) ? this.contents.getIn(path2, keepScalar) : void 0;
       }
+      /**
+       * Checks if the document includes a value with the key `key`.
+       */
       has(key) {
         return Node.isCollection(this.contents) ? this.contents.has(key) : false;
       }
+      /**
+       * Checks if the document includes a value at `path`.
+       */
       hasIn(path2) {
         if (Collection.isEmptyPath(path2))
           return this.contents !== void 0;
         return Node.isCollection(this.contents) ? this.contents.hasIn(path2) : false;
       }
+      /**
+       * Sets a value in this document. For `!!set`, `value` needs to be a
+       * boolean to add/remove the item from the set.
+       */
       set(key, value2) {
         if (this.contents == null) {
           this.contents = Collection.collectionFromPath(this.schema, [key], value2);
@@ -3496,6 +3677,10 @@ var require_Document = __commonJS({
           this.contents.set(key, value2);
         }
       }
+      /**
+       * Sets a value in this document. For `!!set`, `value` needs to be a
+       * boolean to add/remove the item from the set.
+       */
       setIn(path2, value2) {
         if (Collection.isEmptyPath(path2))
           this.contents = value2;
@@ -3505,6 +3690,13 @@ var require_Document = __commonJS({
           this.contents.setIn(path2, value2);
         }
       }
+      /**
+       * Change the YAML version and schema used by the document.
+       * A `null` version disables support for directives, explicit tags, anchors, and aliases.
+       * It also requires the `schema` option to be given as a `Schema` instance value.
+       *
+       * Overrides all previously set schema options.
+       */
       setSchema(version, options2 = {}) {
         if (typeof version === "number")
           version = String(version);
@@ -3542,6 +3734,7 @@ var require_Document = __commonJS({
         else
           throw new Error(`With a null YAML version, the { schema: Schema } option is required`);
       }
+      // json & jsonArg are only used from toJSON()
       toJS({ json: json2, jsonArg, mapAsMap, maxAliasCount, onAnchor, reviver } = {}) {
         const ctx = {
           anchors: /* @__PURE__ */ new Map(),
@@ -3558,9 +3751,16 @@ var require_Document = __commonJS({
             onAnchor(res2, count);
         return typeof reviver === "function" ? applyReviver.applyReviver(reviver, { "": res }, "", res) : res;
       }
+      /**
+       * A JSON representation of the document `contents`.
+       *
+       * @param jsonArg Used by `JSON.stringify` to indicate the array index or
+       *   property name.
+       */
       toJSON(jsonArg, onAnchor) {
         return this.toJS({ json: true, jsonArg, mapAsMap: false, onAnchor });
       }
+      /** A YAML representation of the document. */
       toString(options2 = {}) {
         if (this.errors.length > 0)
           throw new Error("Document with errors cannot be stringified");
@@ -4091,6 +4291,7 @@ var require_resolve_flow_collection = __commonJS({
           if (!isMap && ctx.options.strict && utilContainsNewline.containsNewline(key))
             onError(
               key,
+              // checked by containsNewline()
               "MULTILINE_IMPLICIT_KEY",
               "Implicit keys of flow sequence pairs need to be on a single line"
             );
@@ -5006,6 +5207,11 @@ ${cb}` : comment;
         this.errors = [];
         this.warnings = [];
       }
+      /**
+       * Current stream status information.
+       *
+       * Mostly useful at the end of input for an empty stream.
+       */
       streamInfo() {
         return {
           comment: parsePrelude(this.prelude).comment,
@@ -5014,11 +5220,18 @@ ${cb}` : comment;
           warnings: this.warnings
         };
       }
+      /**
+       * Compose tokens into documents.
+       *
+       * @param forceDoc - If the stream contains no document, still emit a final document including any comments and directives that would be applied to a subsequent document.
+       * @param endOffset - Should be set if `forceDoc` is also set, to set the document range end and to indicate errors correctly.
+       */
       *compose(tokens, forceDoc = false, endOffset = -1) {
         for (const token of tokens)
           yield* this.next(token);
         yield* this.end(forceDoc, endOffset);
       }
+      /** Advance the composer by one CST token. */
       *next(token) {
         if (process.env.LOG_STREAM)
           console.dir(token, { depth: null });
@@ -5080,6 +5293,12 @@ ${end.comment}` : end.comment;
             this.errors.push(new errors.YAMLParseError(getErrorPos(token), "UNEXPECTED_TOKEN", `Unsupported token ${token.type}`));
         }
       }
+      /**
+       * Call at end of input to yield any remaining document.
+       *
+       * @param forceDoc - If the stream contains no document, still emit a final document including any comments and directives that would be applied to a subsequent document.
+       * @param endOffset - Should be set if `forceDoc` is also set, to set the document range end and to indicate errors correctly.
+       */
       *end(forceDoc = false, endOffset = -1) {
         if (this.doc) {
           this.decorate(this.doc, true);
@@ -5546,6 +5765,12 @@ var require_lexer = __commonJS({
         this.next = null;
         this.pos = 0;
       }
+      /**
+       * Generate YAML tokens from the `source` string. If `incomplete`,
+       * a part of the last line may be left as a buffer for the next call.
+       *
+       * @returns A generator of lexical tokens
+       */
       *lex(source, incomplete = false) {
         if (source) {
           this.buffer = this.buffer ? this.buffer + source : source;
@@ -6189,6 +6414,10 @@ var require_parser = __commonJS({
       }
     }
     var Parser2 = class {
+      /**
+       * @param onNewLine - If defined, called separately with the start position of
+       *   each new line (in `parse()`, including the start of input).
+       */
       constructor(onNewLine) {
         this.atNewLine = true;
         this.atScalar = false;
@@ -6201,6 +6430,14 @@ var require_parser = __commonJS({
         this.lexer = new lexer2.Lexer();
         this.onNewLine = onNewLine;
       }
+      /**
+       * Parse `source` as a YAML stream.
+       * If `incomplete`, a part of the last line may be left as a buffer for the next call.
+       *
+       * Errors are not thrown, but yielded as `{ type: 'error', message }` tokens.
+       *
+       * @returns A generator of tokens representing each directive, document, and other structure.
+       */
       *parse(source, incomplete = false) {
         if (this.onNewLine && this.offset === 0)
           this.onNewLine(0);
@@ -6209,6 +6446,9 @@ var require_parser = __commonJS({
         if (!incomplete)
           yield* this.end();
       }
+      /**
+       * Advance the parser by the `source` of one lexical token.
+       */
       *next(source) {
         this.source = source;
         if (process.env.LOG_TOKENS)
@@ -6257,6 +6497,7 @@ var require_parser = __commonJS({
           this.offset += source.length;
         }
       }
+      /** Call at end of input to push out any remaining constructions */
       *end() {
         while (this.stack.length > 0)
           yield* this.pop();
@@ -9404,7 +9645,11 @@ var init_unicode_punctuation_regex = __esm({
 
 // node_modules/.pnpm/micromark-util-character@1.1.0/node_modules/micromark-util-character/index.js
 function asciiControl(code2) {
-  return code2 !== null && (code2 < 32 || code2 === 127);
+  return (
+    // Special whitespace codes (which have negative values), C0 and Control
+    // character DEL
+    code2 !== null && (code2 < 32 || code2 === 127)
+  );
 }
 function markdownLineEndingOrSpace(code2) {
   return code2 !== null && (code2 < 0 || code2 === 32);
@@ -9629,7 +9874,10 @@ function handler(matter2) {
   }
 }
 function fence2(matter2, prop) {
-  return matter2.marker ? pick2(matter2.marker, prop).repeat(3) : pick2(matter2.fence, prop);
+  return matter2.marker ? pick2(matter2.marker, prop).repeat(3) : (
+    // @ts-expect-error: They’re mutually exclusive.
+    pick2(matter2.fence, prop)
+  );
 }
 function pick2(schema, prop) {
   return typeof schema === "string" ? schema : schema[prop];
@@ -9651,7 +9899,11 @@ function remarkFrontmatter(options2 = "yaml") {
   add("fromMarkdownExtensions", frontmatterFromMarkdown(options2));
   add("toMarkdownExtensions", frontmatterToMarkdown(options2));
   function add(field, value2) {
-    const list = data[field] ? data[field] : data[field] = [];
+    const list = (
+      // Other extensions
+      /* c8 ignore next 2 */
+      data[field] ? data[field] : data[field] = []
+    );
     list.push(value2);
   }
 }
@@ -9715,6 +9967,7 @@ function syntaxExtension(all2, extension) {
         left[code2] = [];
       const value2 = right[code2];
       constructs(
+        // @ts-expect-error Looks like a list.
         left[code2],
         Array.isArray(value2) ? value2 : value2 ? [value2] : []
       );
@@ -10334,17 +10587,22 @@ function resolveToPotentialGfmFootnoteCall(events, context) {
     end: Object.assign({}, string.end)
   };
   const replacement = [
+    // Take the `labelImageMarker` (now `data`, the `!`)
     events[index + 1],
     events[index + 2],
     ["enter", call, context],
+    // The `[`
     events[index + 3],
     events[index + 4],
+    // The `^`.
     ["enter", marker, context],
     ["exit", marker, context],
+    // Everything in between.
     ["enter", string, context],
     ["enter", chunk, context],
     ["exit", chunk, context],
     ["exit", string, context],
+    // The ending (`]`, properly parsed and labelled).
     events[events.length - 2],
     events[events.length - 1],
     ["exit", call, context]
@@ -10565,7 +10823,8 @@ function gfmStrikethrough(options2 = {}) {
       if (events[index][0] === "enter" && events[index][1].type === "strikethroughSequenceTemporary" && events[index][1]._close) {
         let open = index;
         while (open--) {
-          if (events[open][0] === "exit" && events[open][1].type === "strikethroughSequenceTemporary" && events[open][1]._open && events[index][1].end.offset - events[index][1].start.offset === events[open][1].end.offset - events[open][1].start.offset) {
+          if (events[open][0] === "exit" && events[open][1].type === "strikethroughSequenceTemporary" && events[open][1]._open && // If the sizes are the same:
+          events[index][1].end.offset - events[index][1].start.offset === events[open][1].end.offset - events[open][1].start.offset) {
             events[index][1].type = "strikethroughSequence";
             events[open][1].type = "strikethroughSequence";
             const strikethrough = {
@@ -10688,6 +10947,7 @@ function resolveTable(events, context) {
           type: "chunkText",
           start: content.start,
           end: content.end,
+          // @ts-expect-error It’s fine.
           contentType: "text"
         };
         events.splice(
@@ -11096,7 +11356,10 @@ function tokenizeTasklistCheck(effects, ok2, nok) {
   const self = this;
   return open;
   function open(code2) {
-    if (self.previous !== null || !self._gfmTasklistFirstContentOfListItem) {
+    if (// Exit if there’s stuff before.
+    self.previous !== null || // Exit if not in the first content that is the first child of a list
+    // item.
+    !self._gfmTasklistFirstContentOfListItem) {
       return nok(code2);
     }
     effects.enter("taskListCheck");
@@ -11142,7 +11405,10 @@ function spaceThenNonSpace(effects, ok2, nok) {
   return factorySpace(effects, after, "whitespace");
   function after(code2) {
     const tail = self.events[self.events.length - 1];
-    return (tail && tail[1].type === "whitespace" || markdownLineEnding(code2)) && code2 !== null ? ok2(code2) : nok(code2);
+    return (tail && tail[1].type === "whitespace" || // …or it was followed by a line ending, in which case, there has to be
+    // non-whitespace after that line ending, because otherwise we’d get an
+    // EOF as the content is closed with blank lines.
+    markdownLineEnding(code2)) && code2 !== null ? ok2(code2) : nok(code2);
   }
 }
 var tasklistCheck, gfmTaskListItem;
@@ -11257,7 +11523,13 @@ var init_lib = __esm({
     init_unist_util_visit_parents();
     init_unist_util_is();
     own8 = {}.hasOwnProperty;
-    findAndReplace = function(tree, find2, replace2, options2) {
+    findAndReplace = /**
+     * @param {Node} tree
+     * @param {Find|FindAndReplaceSchema|FindAndReplaceList} find
+     * @param {Replace|Options} [replace]
+     * @param {Options} [options]
+     */
+    function(tree, find2, replace2, options2) {
       let settings;
       let schema;
       if (typeof find2 === "string" || find2 instanceof RegExp) {
@@ -11284,6 +11556,7 @@ var init_lib = __esm({
           const parent = parents[index];
           if (ignored(
             parent,
+            // @ts-expect-error mdast vs. unist parent.
             grandparent ? grandparent.children.indexOf(parent) : void 0,
             grandparent
           )) {
@@ -11417,7 +11690,9 @@ function findUrl(_2, protocol2, domain3, path2, match) {
   return result;
 }
 function findEmail(_2, atext, label, match) {
-  if (!previous(match, true) || /[_-\d]$/.test(label)) {
+  if (// Not an expected previous character.
+  !previous(match, true) || // Label ends in not allowed character.
+  /[_-\d]$/.test(label)) {
     return false;
   }
   return {
@@ -11507,7 +11782,9 @@ var init_mdast_util_gfm_autolink_literal = __esm({
 // node_modules/.pnpm/micromark-util-decode-numeric-character-reference@1.0.0/node_modules/micromark-util-decode-numeric-character-reference/index.js
 function decodeNumericCharacterReference(value2, base) {
   const code2 = Number.parseInt(value2, base);
-  if (code2 < 9 || code2 === 11 || code2 > 13 && code2 < 32 || code2 > 126 && code2 < 160 || code2 > 55295 && code2 < 57344 || code2 > 64975 && code2 < 65008 || (code2 & 65535) === 65535 || (code2 & 65535) === 65534 || code2 > 1114111) {
+  if (// C0 except for HT, LF, FF, CR, space
+  code2 < 9 || code2 === 11 || code2 > 13 && code2 < 32 || code2 > 126 && code2 < 160 || code2 > 55295 && code2 < 57344 || code2 > 64975 && code2 < 65008 || (code2 & 65535) === 65535 || (code2 & 65535) === 65534 || // Out of range
+  code2 > 1114111) {
     return "\uFFFD";
   }
   return String.fromCharCode(code2);
@@ -11846,6 +12123,7 @@ function gfmFootnoteFromMarkdown() {
 function gfmFootnoteToMarkdown() {
   footnoteReference.peek = footnoteReferencePeek;
   return {
+    // This is on by default already.
     unsafe: [{ character: "[", inConstruct: ["phrasing", "label", "reference"] }],
     handlers: { footnoteDefinition, footnoteReference }
   };
@@ -12160,7 +12438,9 @@ function markdownTable(table, options2 = {}) {
       if (options2.delimiterStart !== false && !columnIndex) {
         line.push("|");
       }
-      if (options2.padding !== false && !(options2.alignDelimiters === false && cell === "") && (options2.delimiterStart !== false || columnIndex)) {
+      if (options2.padding !== false && // Don’t add the opening space if we’re not aligning and the cell is
+      // empty: there will be a closing space.
+      !(options2.alignDelimiters === false && cell === "") && (options2.delimiterStart !== false || columnIndex)) {
         line.push(" ");
       }
       if (options2.alignDelimiters !== false) {
@@ -12246,9 +12526,19 @@ function gfmTableToMarkdown(options2) {
     unsafe: [
       { character: "\r", inConstruct: "tableCell" },
       { character: "\n", inConstruct: "tableCell" },
+      // A pipe, when followed by a tab or space (padding), or a dash or colon
+      // (unpadded delimiter row), could result in a table.
       { atBreak: true, character: "|", after: "[	 :-]" },
+      // A pipe in a cell must be encoded.
       { character: "|", inConstruct: "tableCell" },
+      // A colon must be followed by a dash, in which case it could start a
+      // delimiter row.
       { atBreak: true, character: ":", after: "-" },
+      // A delimiter row can also start with a dash, when followed by more
+      // dashes, a colon, or a pipe.
+      // This is a stricter version than the built in check for lists, thematic
+      // breaks, and setex heading underlines though:
+      // <https://github.com/syntax-tree/mdast-util-to-markdown/blob/51a2038/lib/unsafe.js#L57>
       { atBreak: true, character: "-", after: "[:|-]" }
     ],
     handlers: {
@@ -12261,6 +12551,7 @@ function gfmTableToMarkdown(options2) {
   function handleTable(node, _2, context, safeOptions) {
     return serializeData2(
       handleTableAsData(node, context, safeOptions),
+      // @ts-expect-error: fixed in `markdown-table@3.0.1`.
       node.align
     );
   }
@@ -12551,7 +12842,11 @@ function remarkGfm(options2 = {}) {
   add("fromMarkdownExtensions", gfmFromMarkdown());
   add("toMarkdownExtensions", gfmToMarkdown(options2));
   function add(field, value2) {
-    const list = data[field] ? data[field] : data[field] = [];
+    const list = (
+      // Other extensions
+      /* c8 ignore next 2 */
+      data[field] ? data[field] : data[field] = []
+    );
     list.push(value2);
   }
 }
@@ -12655,7 +12950,11 @@ var require_extend = __commonJS({
 
 // node_modules/.pnpm/hast-util-has-property@2.0.0/node_modules/hast-util-has-property/index.js
 function hasProperty2(node, name) {
-  var value2 = name && node && typeof node === "object" && node.type === "element" && node.properties && own9.call(node.properties, name) && node.properties[name];
+  var value2 = name && node && typeof node === "object" && // @ts-ignore Looks like a node.
+  node.type === "element" && // @ts-ignore Looks like an element.
+  node.properties && // @ts-ignore Looks like an element.
+  own9.call(node.properties, name) && // @ts-ignore Looks like an element.
+  node.properties[name];
   return value2 !== null && value2 !== void 0 && value2 !== false;
 }
 var own9;
@@ -12697,13 +12996,25 @@ function castFactory2(check) {
 }
 function element(node) {
   return Boolean(
-    node && typeof node === "object" && node.type === "element" && typeof node.tagName === "string"
+    node && typeof node === "object" && // @ts-expect-error Looks like a node.
+    node.type === "element" && // @ts-expect-error Looks like an element.
+    typeof node.tagName === "string"
   );
 }
 var convertElement;
 var init_hast_util_is_element = __esm({
   "node_modules/.pnpm/hast-util-is-element@2.1.2/node_modules/hast-util-is-element/index.js"() {
-    convertElement = function(test) {
+    convertElement = /**
+     * Generate an assertion from a check.
+     * @param {Test} [test]
+     * When nullish, checks if `node` is a `Node`.
+     * When `string`, works like passing `function (node) {return node.type === test}`.
+     * When `function` checks if function passed the node is true.
+     * When `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
+     * When `array`, checks any one of the subtests pass.
+     * @returns {AssertAnything}
+     */
+    function(test) {
       if (test === void 0 || test === null) {
         return element;
       }
@@ -12789,6 +13100,8 @@ function rehypeAutolinkHeadings(options2 = {}) {
       type: "element",
       tagName: "a",
       properties: Object.assign({}, props2, {
+        // Fix hast types and make them required.
+        /* c8 ignore next */
         href: "#" + (node.properties || {}).id
       }),
       children
@@ -12848,10 +13161,27 @@ var regex = /[\0-\x1F!-,\.\/:-@\[-\^`\{-\xA9\xAB-\xB4\xB6-\xB9\xBB-\xBF\xD7\xF7\
 // node_modules/.pnpm/github-slugger@2.0.0/node_modules/github-slugger/index.js
 var own = Object.hasOwnProperty;
 var BananaSlug = class {
+  /**
+   * Create a new slug class.
+   */
   constructor() {
     this.occurrences;
     this.reset();
   }
+  /**
+   * Generate a unique slug.
+  *
+  * Tracks previously generated slugs: repeated calls with the same value
+  * will result in different slugs.
+  * Use the `slug` function to get same slugs.
+   *
+   * @param  {string} value
+   *   String of text to slugify
+   * @param  {boolean} [maintainCase=false]
+   *   Keep the current case, otherwise make all lowercase
+   * @return {string}
+   *   A unique slug string
+   */
   slug(value2, maintainCase) {
     const self = this;
     let result = slug(value2, maintainCase === true);
@@ -12863,6 +13193,11 @@ var BananaSlug = class {
     self.occurrences[result] = 0;
     return result;
   }
+  /**
+   * Reset - Forget all previous slugs
+   *
+   * @return void
+   */
   reset() {
     this.occurrences = /* @__PURE__ */ Object.create(null);
   }
@@ -13569,6 +13904,7 @@ function c(Prism2) {
       greedy: true
     },
     string: {
+      // https://en.cppreference.com/w/c/language/string_literal
       pattern: /"(?:\\(?:\r\n|[\s\S])|[^"\\\r\n])*"/,
       greedy: true
     },
@@ -13583,12 +13919,15 @@ function c(Prism2) {
   });
   Prism2.languages.insertBefore("c", "string", {
     char: {
+      // https://en.cppreference.com/w/c/language/character_constant
       pattern: /'(?:\\(?:\r\n|[\s\S])|[^'\\\r\n]){0,32}'/,
       greedy: true
     }
   });
   Prism2.languages.insertBefore("c", "string", {
     macro: {
+      // allow for multiline macro definitions
+      // spaces after the # character compile fine with gcc
       pattern: /(^[\t ]*)#\s*[a-z](?:[^\r\n\\/]|\/(?!\*)|\/\*(?:[^*]|\*(?!\/))*\*\/|\\(?:\r\n|[\s\S]))*/im,
       lookbehind: true,
       greedy: true,
@@ -13596,6 +13935,7 @@ function c(Prism2) {
       inside: {
         string: [
           {
+            // highlight the path of the include statement as a string
             pattern: /^(#\s*include\s*)<[^>]+>/,
             lookbehind: true
           },
@@ -13614,6 +13954,7 @@ function c(Prism2) {
             alias: "function"
           }
         ],
+        // highlight macro directives as keywords
         directive: {
           pattern: /^(#\s*)[a-z]+/,
           lookbehind: true,
@@ -13629,6 +13970,7 @@ function c(Prism2) {
     }
   });
   Prism2.languages.insertBefore("c", "function", {
+    // highlight predefined macros as constants
     constant: /\b(?:EOF|NULL|SEEK_CUR|SEEK_END|SEEK_SET|__DATE__|__FILE__|__LINE__|__TIMESTAMP__|__TIME__|__func__|stderr|stdin|stdout)\b/
   });
   delete Prism2.languages.c["boolean"];
@@ -13660,8 +14002,16 @@ function cpp(Prism2) {
           ),
           lookbehind: true
         },
+        // This is intended to capture the class name of method implementations like:
+        //   void foo::bar() const {}
+        // However! The `foo` in the above example could also be a namespace, so we only capture the class name if
+        // it starts with an uppercase letter. This approximation should give decent results.
         /\b[A-Z]\w*(?=\s*::\s*\w+\s*\()/,
+        // This will capture the class name before destructors like:
+        //   Foo::~Foo() {}
         /\b[A-Z_]\w*(?=\s*::\s*~\w+\s*\()/i,
+        // This also intends to capture the class name of method implementations but here the class has template
+        // parameters, so it can't be a namespace (until C++ adds generic namespaces).
         /\b\w+(?=\s*<(?:[^<>]|<(?:[^<>]|<[^<>]*>)*>)*>\s*::\s*\w+\s*\()/
       ],
       keyword,
@@ -13674,8 +14024,11 @@ function cpp(Prism2) {
     });
     Prism3.languages.insertBefore("cpp", "string", {
       module: {
+        // https://en.cppreference.com/w/cpp/language/modules
         pattern: RegExp(
-          /(\b(?:import|module)\s+)/.source + "(?:" + /"(?:\\(?:\r\n|[\s\S])|[^"\\\r\n])*"|<[^<>\r\n]*>/.source + "|" + /<mod-name>(?:\s*:\s*<mod-name>)?|:\s*<mod-name>/.source.replace(
+          /(\b(?:import|module)\s+)/.source + "(?:" + // header-name
+          /"(?:\\(?:\r\n|[\s\S])|[^"\\\r\n])*"|<[^<>\r\n]*>/.source + "|" + // module name or partition or both
+          /<mod-name>(?:\s*:\s*<mod-name>)?|:\s*<mod-name>/.source.replace(
             /<mod-name>/g,
             function() {
               return modName;
@@ -13716,6 +14069,8 @@ function cpp(Prism2) {
       }
     });
     Prism3.languages.insertBefore("cpp", "class-name", {
+      // the base clause is an optional list of parent classes
+      // https://en.cppreference.com/w/cpp/language/class
       "base-clause": {
         pattern: /(\b(?:class|struct)\s+\w+\s*:\s*)[^;{}"'\s]+(?:\s+[^;{}"'\s]+)*(?=\s*[;{])/,
         lookbehind: true,
@@ -13727,6 +14082,7 @@ function cpp(Prism2) {
       "inside",
       "double-colon",
       {
+        // All untokenized words that are not namespaces should be class names
         "class-name": /\b[a-z_]\w*\b(?!\s*::)/i
       },
       Prism3.languages.cpp["base-clause"]
@@ -13758,7 +14114,9 @@ function bash(Prism2) {
       pattern: /(^(["']?)\w+\2)[ \t]+\S.*/,
       lookbehind: true,
       alias: "punctuation",
+      // this looks reasonably well in all themes
       inside: null
+      // see below
     };
     var insideString = {
       bash: commandAfterHeredoc,
@@ -13767,10 +14125,12 @@ function bash(Prism2) {
         alias: "constant"
       },
       variable: [
+        // [0]: Arithmetic Environment
         {
           pattern: /\$?\(\([\s\S]+?\)\)/,
           greedy: true,
           inside: {
+            // If there is a $ sign at the beginning highlight $(( and )) as variable
             variable: [
               {
                 pattern: /(^\$\(\([\s\S]+)\)\)/,
@@ -13779,10 +14139,13 @@ function bash(Prism2) {
               /^\$\(\(/
             ],
             number: /\b0x[\dA-Fa-f]+\b|(?:\b\d+(?:\.\d*)?|\B\.\d+)(?:[Ee]-?\d+)?/,
+            // Operators according to https://www.gnu.org/software/bash/manual/bashref.html#Shell-Arithmetic
             operator: /--|\+\+|\*\*=?|<<=?|>>=?|&&|\|\||[=!+\-*/%<>^&|]=?|[?~:]/,
+            // If there is no $ sign at the beginning highlight (( and )) as punctuation
             punctuation: /\(\(?|\)\)?|,|;/
           }
         },
+        // [1]: Command Substitution
         {
           pattern: /\$\((?:\([^)]+\)|[^()])+\)|`[^`]+`/,
           greedy: true,
@@ -13790,6 +14153,7 @@ function bash(Prism2) {
             variable: /^\$\(|^`|\)$|`$/
           }
         },
+        // [2]: Brace expansion
         {
           pattern: /\$\{[^}]+\}/,
           greedy: true,
@@ -13805,6 +14169,7 @@ function bash(Prism2) {
         },
         /\$(?:\w+|[#?*!@$])/
       ],
+      // Escape sequences from echo and printf's manuals, and escaped quotes.
       entity: /\\(?:[abceEfnrtv\\"]|O?[0-7]{1,3}|U[0-9a-fA-F]{8}|u[0-9a-fA-F]{4}|x[0-9a-fA-F]{1,2})/
     };
     Prism3.languages.bash = {
@@ -13817,21 +14182,30 @@ function bash(Prism2) {
         lookbehind: true
       },
       "function-name": [
+        // a) function foo {
+        // b) foo() {
+        // c) function foo() {
+        // but not “foo {”
         {
+          // a) and c)
           pattern: /(\bfunction\s+)[\w-]+(?=(?:\s*\(?:\s*\))?\s*\{)/,
           lookbehind: true,
           alias: "function"
         },
         {
+          // b)
           pattern: /\b[\w-]+(?=\s*\(\s*\)\s*\{)/,
           alias: "function"
         }
       ],
+      // Highlight variable names as variables in for and select beginnings.
       "for-or-select": {
         pattern: /(\b(?:for|select)\s+)\w+(?=\s+in\s)/,
         alias: "variable",
         lookbehind: true
       },
+      // Highlight variable names as variables in the left-hand part
+      // of assignments (“=” and “+=”).
       "assign-left": {
         pattern: /(^|[\s;|&]|[<>]\()\w+(?:\.\w+)*(?=\+?=)/,
         inside: {
@@ -13844,18 +14218,22 @@ function bash(Prism2) {
         alias: "variable",
         lookbehind: true
       },
+      // Highlight parameter names as variables
       parameter: {
         pattern: /(^|\s)-{1,2}(?:\w+:[+-]?)?\w+(?:\.\w+)*(?=[=\s]|$)/,
         alias: "variable",
         lookbehind: true
       },
       string: [
+        // Support for Here-documents https://en.wikipedia.org/wiki/Here_document
         {
           pattern: /((?:^|[^<])<<-?\s*)(\w+)\s[\s\S]*?(?:\r?\n|\r)\2/,
           lookbehind: true,
           greedy: true,
           inside: insideString
         },
+        // Here-document with quotes around the tag
+        // → No expansion (so no “inside”).
         {
           pattern: /((?:^|[^<])<<-?\s*)(["'])(\w+)\2\s[\s\S]*?(?:\r?\n|\r)\3/,
           lookbehind: true,
@@ -13864,18 +14242,22 @@ function bash(Prism2) {
             bash: commandAfterHeredoc
           }
         },
+        // “Normal” string
         {
+          // https://www.gnu.org/software/bash/manual/html_node/Double-Quotes.html
           pattern: /(^|[^\\](?:\\\\)*)"(?:\\[\s\S]|\$\([^)]+\)|\$(?!\()|`[^`]+`|[^"\\`$])*"/,
           lookbehind: true,
           greedy: true,
           inside: insideString
         },
         {
+          // https://www.gnu.org/software/bash/manual/html_node/Single-Quotes.html
           pattern: /(^|[^$\\])'[^']*'/,
           lookbehind: true,
           greedy: true
         },
         {
+          // https://www.gnu.org/software/bash/manual/html_node/ANSI_002dC-Quoting.html
           pattern: /\$'(?:[^'\\]|\\[\s\S])*'/,
           greedy: true,
           inside: {
@@ -13896,9 +14278,11 @@ function bash(Prism2) {
         pattern: /(^|[\s;|&]|[<>]\()(?:case|do|done|elif|else|esac|fi|for|function|if|in|select|then|until|while)(?=$|[)\s;|&])/,
         lookbehind: true
       },
+      // https://www.gnu.org/software/bash/manual/html_node/Shell-Builtin-Commands.html
       builtin: {
         pattern: /(^|[\s;|&]|[<>]\()(?:\.|:|alias|bind|break|builtin|caller|cd|command|continue|declare|echo|enable|eval|exec|exit|export|getopts|hash|help|let|local|logout|mapfile|printf|pwd|read|readarray|readonly|return|set|shift|shopt|source|test|times|trap|type|typeset|ulimit|umask|unalias|unset)(?=$|[)\s;|&])/,
         lookbehind: true,
+        // Alias added to make those easier to distinguish from strings.
         alias: "class-name"
       },
       boolean: {
@@ -13910,6 +14294,7 @@ function bash(Prism2) {
         alias: "important"
       },
       operator: {
+        // Lots of redirections here, but not just that.
         pattern: /\d?<>|>\||\+=|=[=~]?|!=?|<<[<-]?|[&\d]?>>|\d[<>]&?|[<>][&=]?|&[>&]?|\|[&|]?/,
         inside: {
           "file-descriptor": {
@@ -13974,9 +14359,14 @@ function csharp(Prism2) {
       return pattern.replace(/<<self>>/g, "[^\\s\\S]");
     }
     var keywordKinds = {
+      // keywords which represent a return or variable type
       type: "bool byte char decimal double dynamic float int long object sbyte short string uint ulong ushort var void",
+      // keywords which are used to declare a type
       typeDeclaration: "class enum interface record struct",
+      // contextual keywords
+      // ("var" and "dynamic" are missing because they are used like types)
       contextual: "add alias and ascending async await by descending from(?=\\s*(?:\\w|$)) get global group into init(?=\\s*;) join let nameof not notnull on or orderby partial remove select set unmanaged value when where with(?=\\s*{)",
+      // all other keywords
       other: "abstract as base break case catch checked const continue default delegate do else event explicit extern finally fixed for foreach goto if implicit in internal is lock namespace new null operator out override params private protected public readonly ref return sealed sizeof stackalloc static switch this throw try typeof unchecked unsafe using virtual volatile while yield"
     };
     function keywordsToPattern(words) {
@@ -14040,6 +14430,8 @@ function csharp(Prism2) {
       ],
       "class-name": [
         {
+          // Using static
+          // using static System.Math;
           pattern: re(/(\busing\s+static\s+)<<0>>(?=\s*;)/.source, [
             identifier
           ]),
@@ -14047,6 +14439,8 @@ function csharp(Prism2) {
           inside: typeInside
         },
         {
+          // Using alias (type)
+          // using Project = PC.MyCompany.Project;
           pattern: re(/(\busing\s+<<0>>\s*=\s*)<<1>>(?=\s*;)/.source, [
             name,
             typeExpression
@@ -14055,10 +14449,15 @@ function csharp(Prism2) {
           inside: typeInside
         },
         {
+          // Using alias (alias)
+          // using Project = PC.MyCompany.Project;
           pattern: re(/(\busing\s+)<<0>>(?=\s*=)/.source, [name]),
           lookbehind: true
         },
         {
+          // Type declarations
+          // class Foo<A, B>
+          // interface Foo<out A, B>
           pattern: re(/(\b<<0>>\s+)<<1>>/.source, [
             typeDeclarationKeywords,
             genericName
@@ -14067,15 +14466,23 @@ function csharp(Prism2) {
           inside: typeInside
         },
         {
+          // Single catch exception declaration
+          // catch(Foo)
+          // (things like catch(Foo e) is covered by variable declaration)
           pattern: re(/(\bcatch\s*\(\s*)<<0>>/.source, [identifier]),
           lookbehind: true,
           inside: typeInside
         },
         {
+          // Name of the type parameter of generic constraints
+          // where Foo : class
           pattern: re(/(\bwhere\s+)<<0>>/.source, [name]),
           lookbehind: true
         },
         {
+          // Casts and checks via as and is.
+          // as Foo<A>, is Bar<B>
+          // (things like if(a is Foo b) is covered by variable declaration)
           pattern: re(/(\b(?:is(?:\s+not)?|as)\s+)<<0>>/.source, [
             typeExpressionWithoutTuple
           ]),
@@ -14083,6 +14490,8 @@ function csharp(Prism2) {
           inside: typeInside
         },
         {
+          // Variable, field and parameter declaration
+          // (Foo bar, Bar baz, Foo[,,] bay, Foo<Bar, FooBar<Bar>> bax)
           pattern: re(
             /\b<<0>>(?=\s+(?!<<1>>|with\s*\{)<<2>>(?:\s*[=,;:{)\]]|\s+(?:in|when)\b))/.source,
             [typeExpression, nonContextualKeywords, name]
@@ -14091,6 +14500,7 @@ function csharp(Prism2) {
         }
       ],
       keyword: keywords,
+      // https://docs.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/lexical-structure#literals
       number: /(?:\b0(?:x[\da-f_]*[\da-f]|b[01_]*[01])|(?:\B\.\d+(?:_+\d+)*|\b\d+(?:_+\d+)*(?:\.\d+(?:_+\d+)*)?)(?:e[-+]?\d+(?:_+\d+)*)?)(?:[dflmu]|lu|ul)?\b/i,
       operator: />>=?|<<=?|[-=]>|([-+&|])\1|~|\?\?=?|[-+*/%&|^!=<>]=?/,
       punctuation: /\?\.?|::|[{}[\];(),.:]/
@@ -14110,6 +14520,8 @@ function csharp(Prism2) {
     });
     Prism3.languages.insertBefore("csharp", "class-name", {
       namespace: {
+        // namespace Foo.Bar {}
+        // using Foo.Bar;
         pattern: re(
           /(\b(?:namespace|using)\s+)<<0>>(?:\s*\.\s*<<0>>)*(?=\s*[;{])/.source,
           [name]
@@ -14120,6 +14532,7 @@ function csharp(Prism2) {
         }
       },
       "type-expression": {
+        // default(Foo), typeof(Foo<Bar>), sizeof(int)
         pattern: re(
           /(\b(?:default|sizeof|typeof)\s*\(\s*(?!\s))(?:[^()\s]|\s(?!\s)|<<0>>)*(?=\s*\))/.source,
           [nestedRound]
@@ -14129,6 +14542,9 @@ function csharp(Prism2) {
         inside: typeInside
       },
       "return-type": {
+        // Foo<Bar> ForBar(); Foo IFoo.Bar() => 0
+        // int this[int index] => 0; T IReadOnlyList<T>.this[int index] => this[index];
+        // int Foo => 0; int Foo { get; set } = 0;
         pattern: re(
           /<<0>>(?=\s+(?:<<1>>\s*(?:=>|[({]|\.\s*this\s*\[)|this\s*\[))/.source,
           [typeExpression, identifier]
@@ -14137,12 +14553,20 @@ function csharp(Prism2) {
         alias: "class-name"
       },
       "constructor-invocation": {
+        // new List<Foo<Bar[]>> { }
         pattern: re(/(\bnew\s+)<<0>>(?=\s*[[({])/.source, [typeExpression]),
         lookbehind: true,
         inside: typeInside,
         alias: "class-name"
       },
+      /*'explicit-implementation': {
+      // int IFoo<Foo>.Bar => 0; void IFoo<Foo<Foo>>.Foo<T>();
+      pattern: replace(/\b<<0>>(?=\.<<1>>)/, className, methodOrPropertyDeclaration),
+      inside: classNameInside,
+      alias: 'class-name'
+      },*/
       "generic-method": {
+        // foo<Bar>()
         pattern: re(/<<0>>\s*<<1>>(?=\s*\()/.source, [name, generic]),
         inside: {
           function: re(/^<<0>>/.source, [name]),
@@ -14154,6 +14578,9 @@ function csharp(Prism2) {
         }
       },
       "type-list": {
+        // The list of types inherited or of generic constraints
+        // class Foo<F> : Bar, IList<FooBar>
+        // where F : Bar, IList<int>
         pattern: re(
           /\b((?:<<0>>\s+<<1>>|record\s+<<1>>\s*<<5>>|where\s+<<2>>)\s*:\s*)(?:<<3>>|<<4>>|<<1>>\s*<<5>>|<<6>>)(?:\s*,\s*(?:<<3>>|<<4>>|<<6>>))*(?=\s*(?:where|[{;]|=>|$))/.source,
           [
@@ -14191,6 +14618,7 @@ function csharp(Prism2) {
         lookbehind: true,
         alias: "property",
         inside: {
+          // highlight preprocessor directives as keywords
           directive: {
             pattern: /(#)\b(?:define|elif|else|endif|endregion|error|if|line|nullable|pragma|region|undef|warning)\b/,
             lookbehind: true,
@@ -14217,6 +14645,8 @@ function csharp(Prism2) {
     ]);
     Prism3.languages.insertBefore("csharp", "class-name", {
       attribute: {
+        // Attributes
+        // [Foo], [Foo(1), Bar(2, Prop = "foo")], [return: Foo(1), Bar(2)], [assembly: Foo(Bar)]
         pattern: re(
           /((?:^|[^\s\w>)?])\s*\[\s*)(?:<<0>>\s*:\s*)?<<1>>(?:\s*,\s*<<1>>)*(?=\s*\])/.source,
           [attrTarget, attr]
@@ -14334,6 +14764,7 @@ function markup(Prism2) {
       greedy: true
     },
     doctype: {
+      // https://www.w3.org/TR/xml/#NT-doctypedecl
       pattern: /<!DOCTYPE(?:[^>"'[\]]|"[^"]*"|'[^']*')+(?:\[(?:[^<"'\]]|"[^"]*"|'[^']*'|<(?!!--)|<!--(?:[^-]|-(?!->))*-->)*\]\s*)?>/i,
       greedy: true,
       inside: {
@@ -14342,6 +14773,7 @@ function markup(Prism2) {
           lookbehind: true,
           greedy: true,
           inside: null
+          // see below
         },
         string: {
           pattern: /"[^"]*"|'[^']*'/,
@@ -14408,6 +14840,17 @@ function markup(Prism2) {
     }
   });
   Object.defineProperty(Prism2.languages.markup.tag, "addInlined", {
+    /**
+     * Adds an inlined language to markup.
+     *
+     * An example of an inlined language is CSS with `<style>` tags.
+     *
+     * @param {string} tagName The name of the tag that contains the inlined language. This name will be treated as
+     * case insensitive.
+     * @param {string} lang The language key.
+     * @example
+     * addInlined('style', 'css');
+     */
     value: function addInlined(tagName, lang) {
       var includedCdataInside = {};
       includedCdataInside["language-" + lang] = {
@@ -14445,6 +14888,17 @@ function markup(Prism2) {
     }
   });
   Object.defineProperty(Prism2.languages.markup.tag, "addAttribute", {
+    /**
+     * Adds an pattern to highlight languages embedded in HTML attributes.
+     *
+     * An example of an inlined language is CSS with `style` attributes.
+     *
+     * @param {string} attrName The name of the tag that contains the inlined language. This name will be treated as
+     * case insensitive.
+     * @param {string} lang The language key.
+     * @example
+     * addAttribute('style', 'css');
+     */
     value: function(attrName, lang) {
       Prism2.languages.markup.tag.inside["special-attr"].push({
         pattern: RegExp(
@@ -14509,9 +14963,11 @@ function css(Prism2) {
             pattern: /(^|[^\w-])(?:and|not|only|or)(?![\w-])/,
             lookbehind: true
           }
+          // See rest below
         }
       },
       url: {
+        // https://drafts.csswg.org/css-values-3/#urls
         pattern: RegExp(
           "\\burl\\((?:" + string.source + "|" + /(?:[^\\\r\n()"']|\\[\s\S])*/.source + ")\\)",
           "i"
@@ -14564,10 +15020,14 @@ function diff(Prism2) {
   (function(Prism3) {
     Prism3.languages.diff = {
       coord: [
+        // Match all kinds of coord lines (prefixed by "+++", "---" or "***").
         /^(?:\*{3}|-{3}|\+{3}).*$/m,
+        // Match "@@ ... @@" coord lines in unified diff.
         /^@@.*@@$/m,
+        // Match coord lines in normal diff (starts with a number).
         /^\d.*$/m
       ]
+      // deleted, inserted, unchanged, diff
     };
     var PREFIXES = {
       "deleted-sign": "-",
@@ -14624,8 +15084,11 @@ function go(Prism2) {
     keyword: /\b(?:break|case|chan|const|continue|default|defer|else|fallthrough|for|func|go(?:to)?|if|import|interface|map|package|range|return|select|struct|switch|type|var)\b/,
     boolean: /\b(?:_|false|iota|nil|true)\b/,
     number: [
+      // binary and octal integers
       /\b0(?:b[01_]+|o[0-7_]+)i?\b/i,
+      // hexadecimal integers and floats
       /\b0x(?:[a-f\d_]+(?:\.[a-f\d_]*)?|\.[a-f\d_]+)(?:p[+-]?\d+(?:_\d+)*)?i?(?!\w)/i,
+      // decimal integers and floats
       /(?:\b\d[\d_]*(?:\.[\d_]*)?|\B\.\d[\d_]*)(?:e[+-]?[\d_]+)?i?(?!\w)/i
     ],
     operator: /[*\/%^!=]=?|\+[=+]?|-[=-]?|\|[=|]?|&(?:=|&|\^=?)?|>(?:>=?|=)?|<(?:<=?|=|-)?|:=|\.\.\./,
@@ -14645,6 +15108,11 @@ ini.displayName = "ini";
 ini.aliases = [];
 function ini(Prism2) {
   Prism2.languages.ini = {
+    /**
+     * The component mimics the behavior of the Win32 API parser.
+     *
+     * @see {@link https://github.com/PrismJS/prism/issues/2775#issuecomment-787477723}
+     */
     comment: {
       pattern: /(^[ \f\t\v]*)[#;][^\n\r]*/m,
       lookbehind: true
@@ -14713,6 +15181,8 @@ function java(Prism2) {
       "class-name": [
         className,
         {
+          // variables, parameters, and constructor references
+          // this to support class names (or generic parameters) which do not contain a lower case letter (also works for methods)
           pattern: RegExp(
             /(^|[^\w.])/.source + classNamePrefix + /[A-Z]\w*(?=\s+\w+\s*[;,=()]|\s*(?:\[[\s,]*\]\s*)?::\s*new\b)/.source
           ),
@@ -14720,6 +15190,8 @@ function java(Prism2) {
           inside: className.inside
         },
         {
+          // class names based on keyword
+          // this to support class names (or generic parameters) which do not contain a lower case letter (also works for methods)
           pattern: RegExp(
             /(\b(?:class|enum|extends|implements|instanceof|interface|new|record|throws)\s+)/.source + classNamePrefix + /[A-Z]\w*\b/.source
           ),
@@ -14744,6 +15216,7 @@ function java(Prism2) {
     });
     Prism3.languages.insertBefore("java", "string", {
       "triple-quoted-string": {
+        // http://openjdk.java.net/jeps/355#Description
         pattern: /"""[ \t]*[\r\n](?:(?:"|"")?(?:\\.|[^"\\]))*"""/,
         greedy: true,
         alias: "string"
@@ -14873,6 +15346,7 @@ function regex2(Prism2) {
       "char-set": charSet,
       backreference: [
         {
+          // a backreference which is not an octal escape
           pattern: /\\(?![123][0-7]{2})[1-9]/,
           alias: "keyword"
         },
@@ -14891,6 +15365,9 @@ function regex2(Prism2) {
       escape: escape2,
       group: [
         {
+          // https://docs.oracle.com/javase/10/docs/api/java/util/regex/Pattern.html
+          // https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference?view=netframework-4.7.2#grouping-constructs
+          // (), (?<name>), (?'name'), (?>), (?:), (?=), (?!), (?<=), (?<!), (?is-m), (?i-m:)
           pattern: /\((?:\?(?:<[^<>']+>|'[^<>']+'|[>:]|<?[=!]|[idmnsuxU]+(?:-[idmnsuxU]+)?:?))?/,
           alias: "punctuation",
           inside: {
@@ -14937,10 +15414,16 @@ function javascript(Prism2) {
         lookbehind: true
       }
     ],
+    // Allow for all non-ASCII characters (See http://stackoverflow.com/a/2008444)
     function: /#?(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*(?:\.\s*(?:apply|bind|call)\s*)?\()/,
     number: {
       pattern: RegExp(
-        /(^|[^\w$])/.source + "(?:" + (/NaN|Infinity/.source + "|" + /0[bB][01]+(?:_[01]+)*n?/.source + "|" + /0[oO][0-7]+(?:_[0-7]+)*n?/.source + "|" + /0[xX][\dA-Fa-f]+(?:_[\dA-Fa-f]+)*n?/.source + "|" + /\d+(?:_\d+)*n/.source + "|" + /(?:\d+(?:_\d+)*(?:\.(?:\d+(?:_\d+)*)?)?|\.\d+(?:_\d+)*)(?:[Ee][+-]?\d+(?:_\d+)*)?/.source) + ")" + /(?![\w$])/.source
+        /(^|[^\w$])/.source + "(?:" + (/NaN|Infinity/.source + "|" + // binary integer
+        /0[bB][01]+(?:_[01]+)*n?/.source + "|" + // octal integer
+        /0[oO][0-7]+(?:_[0-7]+)*n?/.source + "|" + // hexadecimal integer
+        /0[xX][\dA-Fa-f]+(?:_[\dA-Fa-f]+)*n?/.source + "|" + // decimal bigint
+        /\d+(?:_\d+)*n/.source + "|" + // decimal number (integer or float) but no bigint
+        /(?:\d+(?:_\d+)*(?:\.(?:\d+(?:_\d+)*)?)?|\.\d+(?:_\d+)*)(?:[Ee][+-]?\d+(?:_\d+)*)?/.source) + ")" + /(?![\w$])/.source
       ),
       lookbehind: true
     },
@@ -14950,7 +15433,15 @@ function javascript(Prism2) {
   Prism2.languages.insertBefore("javascript", "keyword", {
     regex: {
       pattern: RegExp(
-        /((?:^|[^$\w\xA0-\uFFFF."'\])\s]|\b(?:return|yield))\s*)/.source + /\//.source + "(?:" + /(?:\[(?:[^\]\\\r\n]|\\.)*\]|\\.|[^/\\\[\r\n])+\/[dgimyus]{0,7}/.source + "|" + /(?:\[(?:[^[\]\\\r\n]|\\.|\[(?:[^[\]\\\r\n]|\\.|\[(?:[^[\]\\\r\n]|\\.)*\])*\])*\]|\\.|[^/\\\[\r\n])+\/[dgimyus]{0,7}v[dgimyus]{0,7}/.source + ")" + /(?=(?:\s|\/\*(?:[^*]|\*(?!\/))*\*\/)*(?:$|[\r\n,.;:})\]]|\/\/))/.source
+        // lookbehind
+        // eslint-disable-next-line regexp/no-dupe-characters-character-class
+        /((?:^|[^$\w\xA0-\uFFFF."'\])\s]|\b(?:return|yield))\s*)/.source + // Regex pattern:
+        // There are 2 regex patterns here. The RegExp set notation proposal added support for nested character
+        // classes if the `v` flag is present. Unfortunately, nested CCs are both context-free and incompatible
+        // with the only syntax, so we have to define 2 different regex patterns.
+        /\//.source + "(?:" + /(?:\[(?:[^\]\\\r\n]|\\.)*\]|\\.|[^/\\\[\r\n])+\/[dgimyus]{0,7}/.source + "|" + // `v` flag syntax. This supports 3 levels of nested character classes.
+        /(?:\[(?:[^[\]\\\r\n]|\\.|\[(?:[^[\]\\\r\n]|\\.|\[(?:[^[\]\\\r\n]|\\.)*\])*\])*\]|\\.|[^/\\\[\r\n])+\/[dgimyus]{0,7}v[dgimyus]{0,7}/.source + ")" + // lookahead
+        /(?=(?:\s|\/\*(?:[^*]|\*(?!\/))*\*\/)*(?:$|[\r\n,.;:})\]]|\/\/))/.source
       ),
       lookbehind: true,
       greedy: true,
@@ -14965,6 +15456,7 @@ function javascript(Prism2) {
         "regex-flags": /^[a-z]+$/
       }
     },
+    // This must be declared before keyword because we use "function" inside the look-forward
     "function-variable": {
       pattern: /#?(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*(?=\s*[=:]\s*(?:async\s*)?(?:\bfunction\b|(?:\((?:[^()]|\([^()]*\))*\)|(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*)\s*=>))/,
       alias: "function"
@@ -15084,6 +15576,7 @@ function kotlin(Prism2) {
   (function(Prism3) {
     Prism3.languages.kotlin = Prism3.languages.extend("clike", {
       keyword: {
+        // The lookbehind prevents wrong highlighting of e.g. kotlin.properties.get
         pattern: /(^|[^.])\b(?:abstract|actual|annotation|as|break|by|catch|class|companion|const|constructor|continue|crossinline|data|do|dynamic|else|enum|expect|external|final|finally|for|fun|get|if|import|in|infix|init|inline|inner|interface|internal|is|lateinit|noinline|null|object|open|operator|out|override|package|private|protected|public|reified|return|sealed|set|super|suspend|tailrec|this|throw|to|try|typealias|val|var|vararg|when|where|while)\b/,
         lookbehind: true
       },
@@ -15113,6 +15606,7 @@ function kotlin(Prism2) {
       }
     };
     Prism3.languages.insertBefore("kotlin", "string", {
+      // https://kotlinlang.org/spec/expressions.html#string-interpolation-expressions
       "string-literal": [
         {
           pattern: /"""(?:[^$]|\$(?:(?!\{)|\{[^{}]*\}))*?"""/,
@@ -15139,6 +15633,7 @@ function kotlin(Prism2) {
         }
       ],
       char: {
+        // https://kotlinlang.org/spec/expressions.html#character-literals
         pattern: /'(?:[^'\\\r\n]|\\(?:.|u[a-fA-F0-9]{0,4}))'/,
         greedy: true
       }
@@ -15180,9 +15675,11 @@ function less(Prism2) {
         punctuation: /[:()]/
       }
     },
+    // selectors and mixins are considered the same
     selector: {
       pattern: /(?:@\{[\w-]+\}|[^{};\s@])(?:@\{[\w-]+\}|\((?:[^(){}]|\([^(){}]*\))*\)|[^(){};@\s]|\s+(?!\s))*?(?=\s*\{)/,
       inside: {
+        // mixin parameters
         variable: /@+[\w-]+/
       }
     },
@@ -15191,12 +15688,14 @@ function less(Prism2) {
   });
   Prism2.languages.insertBefore("less", "property", {
     variable: [
+      // Variable declaration (the colon must be consumed!)
       {
         pattern: /@[\w-]+\s*:/,
         inside: {
           punctuation: /:/
         }
       },
+      // Variable usage
       /@@?[\w-]+/
     ],
     "mixin-usage": {
@@ -15213,6 +15712,7 @@ lua.aliases = [];
 function lua(Prism2) {
   Prism2.languages.lua = {
     comment: /^#!.+|--(?:\[(=*)\[[\s\S]*?\]\1\]|.*)/m,
+    // \z may be used to skip the following space
     string: {
       pattern: /(["'])(?:(?!\1)[^\\\r\n]|\\z(?:\r\n|\s)|\\(?:\r\n|[^z]))*\1|\[(=*)\[[\s\S]*?\]\2\]/,
       greedy: true
@@ -15223,6 +15723,7 @@ function lua(Prism2) {
     operator: [
       /[-+*%^&|#]|\/\/?|<[<=]?|>[>=]?|[=~]=?/,
       {
+        // Match ".." but don't break "..."
         pattern: /(^|[^.])\.\.(?!\.)/,
         lookbehind: true
       }
@@ -15256,6 +15757,7 @@ function makefile(Prism2) {
       }
     },
     variable: /\$+(?:(?!\$)[^(){}:#=\s]+|\([@*%<^+?][DF]\)|(?=[({]))/,
+    // Directives
     keyword: /-include\b|\b(?:define|else|endef|endif|export|ifn?def|ifn?eq|include|override|private|sinclude|undefine|unexport|vpath)\b/,
     function: {
       pattern: /(\()(?:abspath|addsuffix|and|basename|call|dir|error|eval|file|filter(?:-out)?|findstring|firstword|flavor|foreach|guile|if|info|join|lastword|load|notdir|or|origin|patsubst|realpath|shell|sort|strip|subst|suffix|value|warning|wildcard|word(?:list|s)?)(?=[ \t])/,
@@ -15396,6 +15898,7 @@ function markdown(Prism2) {
         }
       },
       blockquote: {
+        // > ...
         pattern: /^>(?:[\t ]*>)*/m,
         alias: "punctuation"
       },
@@ -15440,11 +15943,15 @@ function markdown(Prism2) {
       },
       code: [
         {
+          // Prefixed by 4 spaces or 1 tab and preceded by an empty line
           pattern: /((?:^|\n)[ \t]*\n|(?:^|\r\n?)[ \t]*\r\n?)(?: {4}|\t).+(?:(?:\n|\r\n?)(?: {4}|\t).+)*/,
           lookbehind: true,
           alias: "keyword"
         },
         {
+          // ```optional language
+          // code block
+          // ```
           pattern: /^```[\s\S]*?^```$/m,
           greedy: true,
           inside: {
@@ -15462,6 +15969,10 @@ function markdown(Prism2) {
       ],
       title: [
         {
+          // title 1
+          // =======
+          // title 2
+          // -------
           pattern: /\S.*(?:\n|\r\n?)(?:==+|--+)(?=[ \t]*$)/m,
           alias: "important",
           inside: {
@@ -15469,6 +15980,8 @@ function markdown(Prism2) {
           }
         },
         {
+          // # title 1
+          // ###### title 6
           pattern: /(^\s*)#.+/m,
           lookbehind: true,
           alias: "important",
@@ -15478,16 +15991,28 @@ function markdown(Prism2) {
         }
       ],
       hr: {
+        // ***
+        // ---
+        // * * *
+        // -----------
         pattern: /(^\s*)([*-])(?:[\t ]*\2){2,}(?=\s*$)/m,
         lookbehind: true,
         alias: "punctuation"
       },
       list: {
+        // * item
+        // + item
+        // - item
+        // 1. item
         pattern: /(^\s*)(?:[*+-]|\d+\.)(?=[\t ].)/m,
         lookbehind: true,
         alias: "punctuation"
       },
       "url-reference": {
+        // [id]: http://example.com "Optional title"
+        // [id]: http://example.com 'Optional title'
+        // [id]: http://example.com (Optional title)
+        // [id]: <http://example.com> "Optional title"
         pattern: /!?\[[^\]]+\]:[\t ]+(?:\S+|<(?:\\.|[^>\\])+>)(?:[\t ]+(?:"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|\((?:\\.|[^)\\])*\)))?/,
         inside: {
           variable: {
@@ -15500,6 +16025,9 @@ function markdown(Prism2) {
         alias: "url"
       },
       bold: {
+        // **strong**
+        // __strong__
+        // allow one nested instance of italic text using the same delimiter
         pattern: createInline(
           /\b__(?:(?!_)<inner>|_(?:(?!_)<inner>)+_)+__\b|\*\*(?:(?!\*)<inner>|\*(?:(?!\*)<inner>)+\*)+\*\*/.source
         ),
@@ -15510,11 +16038,15 @@ function markdown(Prism2) {
             pattern: /(^..)[\s\S]+(?=..$)/,
             lookbehind: true,
             inside: {}
+            // see below
           },
           punctuation: /\*\*|__/
         }
       },
       italic: {
+        // *em*
+        // _em_
+        // allow one nested instance of bold text using the same delimiter
         pattern: createInline(
           /\b_(?:(?!_)<inner>|__(?:(?!_)<inner>)+__)+_\b|\*(?:(?!\*)<inner>|\*\*(?:(?!\*)<inner>)+\*\*)+\*/.source
         ),
@@ -15525,11 +16057,15 @@ function markdown(Prism2) {
             pattern: /(^.)[\s\S]+(?=.$)/,
             lookbehind: true,
             inside: {}
+            // see below
           },
           punctuation: /[*_]/
         }
       },
       strike: {
+        // ~~strike through~~
+        // ~strike~
+        // eslint-disable-next-line regexp/strict
         pattern: createInline(/(~~?)(?:(?!~)<inner>)+\2/.source),
         lookbehind: true,
         greedy: true,
@@ -15538,17 +16074,23 @@ function markdown(Prism2) {
             pattern: /(^~~?)[\s\S]+(?=\1$)/,
             lookbehind: true,
             inside: {}
+            // see below
           },
           punctuation: /~~?/
         }
       },
       "code-snippet": {
+        // `code`
+        // ``code``
         pattern: /(^|[^\\`])(?:``[^`\r\n]+(?:`[^`\r\n]+)*``(?!`)|`[^`\r\n]+`(?!`))/,
         lookbehind: true,
         greedy: true,
         alias: ["code", "keyword"]
       },
       url: {
+        // [example](http://example.com "Optional title")
+        // [example][id]
+        // [example] [id]
         pattern: createInline(
           /!?\[(?:(?!\])<inner>)+\](?:\([^\s)]+(?:[\t ]+"(?:\\.|[^"\\])*")?\)|[ \t]?\[(?:(?!\])<inner>)+\])/.source
         ),
@@ -15560,6 +16102,7 @@ function markdown(Prism2) {
             pattern: /(^\[)[^\]]+(?=\])/,
             lookbehind: true,
             inside: {}
+            // see below
           },
           variable: {
             pattern: /(^\][ \t]?\[)[^\]]+(?=\]$)/,
@@ -15714,6 +16257,7 @@ function perl(Prism2) {
     Prism3.languages.perl = {
       comment: [
         {
+          // POD
           pattern: /(^\s*)=\w[\s\S]*?=cut.*/m,
           lookbehind: true,
           greedy: true
@@ -15724,21 +16268,32 @@ function perl(Prism2) {
           greedy: true
         }
       ],
+      // TODO Could be nice to handle Heredoc too.
       string: [
         {
           pattern: RegExp(
             /\b(?:q|qq|qw|qx)(?![a-zA-Z0-9])\s*/.source + "(?:" + [
+              // q/.../
               /([^a-zA-Z0-9\s{(\[<])(?:(?!\1)[^\\]|\\[\s\S])*\1/.source,
+              // q a...a
+              // eslint-disable-next-line regexp/strict
               /([a-zA-Z0-9])(?:(?!\2)[^\\]|\\[\s\S])*\2/.source,
+              // q(...)
+              // q{...}
+              // q[...]
+              // q<...>
               brackets
             ].join("|") + ")"
           ),
           greedy: true
         },
+        // "...", `...`
         {
           pattern: /("|`)(?:(?!\1)[^\\]|\\[\s\S])*\1/,
           greedy: true
         },
+        // '...'
+        // FIXME Multi-line single-quoted strings are not supported as they would break variables containing '
         {
           pattern: /'(?:[^'\\\r\n]|\\.)*'/,
           greedy: true
@@ -15748,42 +16303,73 @@ function perl(Prism2) {
         {
           pattern: RegExp(
             /\b(?:m|qr)(?![a-zA-Z0-9])\s*/.source + "(?:" + [
+              // m/.../
               /([^a-zA-Z0-9\s{(\[<])(?:(?!\1)[^\\]|\\[\s\S])*\1/.source,
+              // m a...a
+              // eslint-disable-next-line regexp/strict
               /([a-zA-Z0-9])(?:(?!\2)[^\\]|\\[\s\S])*\2/.source,
+              // m(...)
+              // m{...}
+              // m[...]
+              // m<...>
               brackets
             ].join("|") + ")" + /[msixpodualngc]*/.source
           ),
           greedy: true
         },
+        // The lookbehinds prevent -s from breaking
         {
           pattern: RegExp(
             /(^|[^-])\b(?:s|tr|y)(?![a-zA-Z0-9])\s*/.source + "(?:" + [
+              // s/.../.../
+              // eslint-disable-next-line regexp/strict
               /([^a-zA-Z0-9\s{(\[<])(?:(?!\2)[^\\]|\\[\s\S])*\2(?:(?!\2)[^\\]|\\[\s\S])*\2/.source,
+              // s a...a...a
+              // eslint-disable-next-line regexp/strict
               /([a-zA-Z0-9])(?:(?!\3)[^\\]|\\[\s\S])*\3(?:(?!\3)[^\\]|\\[\s\S])*\3/.source,
+              // s(...)(...)
+              // s{...}{...}
+              // s[...][...]
+              // s<...><...>
+              // s(...)[...]
               brackets + /\s*/.source + brackets
             ].join("|") + ")" + /[msixpodualngcer]*/.source
           ),
           lookbehind: true,
           greedy: true
         },
+        // /.../
+        // The look-ahead tries to prevent two divisions on
+        // the same line from being highlighted as regex.
+        // This does not support multi-line regex.
         {
           pattern: /\/(?:[^\/\\\r\n]|\\.)*\/[msixpodualngc]*(?=\s*(?:$|[\r\n,.;})&|\-+*~<>!?^]|(?:and|cmp|eq|ge|gt|le|lt|ne|not|or|x|xor)\b))/,
           greedy: true
         }
       ],
+      // FIXME Not sure about the handling of ::, ', and #
       variable: [
+        // ${^POSTMATCH}
         /[&*$@%]\{\^[A-Z]+\}/,
+        // $^V
         /[&*$@%]\^[A-Z_]/,
+        // ${...}
         /[&*$@%]#?(?=\{)/,
+        // $foo
         /[&*$@%]#?(?:(?:::)*'?(?!\d)[\w$]+(?![\w$]))+(?:::)*/,
+        // $1
         /[&*$@%]\d+/,
+        // $_, @_, %!
+        // The negative lookahead prevents from breaking the %= operator
         /(?!%=)[$@%][!"#$%&'()*+,\-.\/:;<=>?@[\\\]^_`{|}~]/
       ],
       filehandle: {
+        // <>, <FOO>, _
         pattern: /<(?![<=])\S*?>|\b_\b/,
         alias: "symbol"
       },
       "v-string": {
+        // v1.2, 1.2.3
         pattern: /v\d+(?:\.\d+)*|\d+(?:\.\d+){2,}/,
         alias: "string"
       },
@@ -15810,6 +16396,17 @@ function markupTemplating(Prism2) {
     }
     Object.defineProperties(Prism3.languages["markup-templating"] = {}, {
       buildPlaceholders: {
+        /**
+         * Tokenize all inline templating expressions matching `placeholderPattern`.
+         *
+         * If `replaceFilter` is provided, only matches of `placeholderPattern` for which `replaceFilter` returns
+         * `true` will be replaced.
+         *
+         * @param {object} env The environment of the `before-tokenize` hook.
+         * @param {string} language The language id.
+         * @param {RegExp} placeholderPattern The matches of this pattern will be replaced by placeholders.
+         * @param {(match: string) => boolean} [replaceFilter]
+         */
         value: function(env, language, placeholderPattern, replaceFilter) {
           if (env.language !== language) {
             return;
@@ -15831,6 +16428,12 @@ function markupTemplating(Prism2) {
         }
       },
       tokenizePlaceholders: {
+        /**
+         * Replace placeholders with proper tokens after tokenizing.
+         *
+         * @param {object} env The environment of the `after-tokenize` hook.
+         * @param {string} language The language id.
+         */
         value: function(env, language) {
           if (env.language !== language || !env.tokenStack) {
             return;
@@ -15975,11 +16578,17 @@ function php(Prism2) {
           greedy: true
         },
         {
+          // yield from
           pattern: /(\byield\s+)from\b/i,
           lookbehind: true
         },
+        // `class` is always a keyword unlike other keywords
         /\bclass\b/i,
         {
+          // https://www.php.net/manual/en/reserved.keywords.php
+          //
+          // keywords cannot be preceded by "->"
+          // the complex lookbehind means `(?<!(?:->|::)\s*)`
           pattern: /((?:^|[^\s>:]|(?:^|[^-])>|(?:^|[^:]):)\s*)\b(?:abstract|and|array|as|break|callable|case|catch|clone|const|continue|declare|default|die|do|echo|else|elseif|empty|enddeclare|endfor|endforeach|endif|endswitch|endwhile|enum|eval|exit|extends|final|finally|fn|for|foreach|function|global|goto|if|implements|include|include_once|instanceof|insteadof|interface|isset|list|match|namespace|never|new|or|parent|print|private|protected|public|readonly|require|require_once|return|self|static|switch|throw|trait|try|unset|use|var|while|xor|yield|__halt_compiler)\b/i,
           lookbehind: true
         }
@@ -16165,6 +16774,7 @@ function php(Prism2) {
           "attribute-content": {
             pattern: /^(#\[)[\s\S]+(?=\]$)/,
             lookbehind: true,
+            // inside can appear subset of php
             inside: {
               comment,
               string,
@@ -16230,6 +16840,7 @@ function python(Prism2) {
       greedy: true,
       inside: {
         interpolation: {
+          // "{" <expression> <optional "!s", "!r", or "!a"> <optional ":" format specifier> "}"
           pattern: /((?:^|[^{])(?:\{\{)*)\{(?!\{)(?:[^{}]|\{(?!\{)(?:[^{}]|\{(?!\{)(?:[^{}])+\})+\})+\}/,
           lookbehind: true,
           inside: {
@@ -16294,6 +16905,8 @@ function r(Prism2) {
       greedy: true
     },
     "percent-operator": {
+      // Includes user-defined operators
+      // and %%, %*%, %/%, %in%, %o%, %x%
       pattern: /%[^%\s]*%/,
       alias: "operator"
     },
@@ -16535,8 +17148,10 @@ function rust(Prism2) {
         alias: "attr-name",
         inside: {
           string: null
+          // see below
         }
       },
+      // Closure params should not be confused with bitwise OR |
       "closure-params": {
         pattern: /([=(,:]\s*|\bmove\s*)\|[^|]*\||\|[^|]*\|(?=\s*(?:\{|->))/,
         lookbehind: true,
@@ -16547,6 +17162,7 @@ function rust(Prism2) {
             alias: "punctuation"
           },
           rest: null
+          // see below
         }
       },
       "lifetime-annotation": {
@@ -16585,9 +17201,15 @@ function rust(Prism2) {
         }
       ],
       keyword: [
+        // https://github.com/rust-lang/reference/blob/master/src/keywords.md
         /\b(?:Self|abstract|as|async|await|become|box|break|const|continue|crate|do|dyn|else|enum|extern|final|fn|for|if|impl|in|let|loop|macro|match|mod|move|mut|override|priv|pub|ref|return|self|static|struct|super|trait|try|type|typeof|union|unsafe|unsized|use|virtual|where|while|yield)\b/,
+        // primitives and str
+        // https://doc.rust-lang.org/stable/rust-by-example/primitives.html
         /\b(?:bool|char|f(?:32|64)|[ui](?:8|16|32|64|128|size)|str)\b/
       ],
+      // functions can technically start with an upper-case letter, but this will introduce a lot of false positives
+      // and Rust's naming conventions recommend snake_case anyway.
+      // https://doc.rust-lang.org/1.0.0/style/style/naming/README.html
       function: /\b[a-z_]\w*(?=\s*(?:::\s*<|\())/,
       macro: {
         pattern: /\b\w+!/,
@@ -16601,6 +17223,7 @@ function rust(Prism2) {
           punctuation: /::/
         }
       },
+      // Hex, oct, bin, dec numbers with visual separators and type suffix
       number: /\b(?:0x[\dA-Fa-f](?:_?[\dA-Fa-f])*|0o[0-7](?:_?[0-7])*|0b[01](?:_?[01])*|(?:(?:\d(?:_?\d)*)?\.)?\d(?:_?\d)*(?:[Ee][+-]?\d+)?)(?:_?(?:f32|f64|[iu](?:8|16|32|64|size)?))?\b/,
       boolean: /\b(?:false|true)\b/,
       punctuation: /->|\.\.=|\.{1,3}|::|[{}[\];(),:]/,
@@ -16618,6 +17241,7 @@ function sass(Prism2) {
   Prism2.register(css);
   (function(Prism3) {
     Prism3.languages.sass = Prism3.languages.extend("css", {
+      // Sass comments don't need to be closed, only indented
       comment: {
         pattern: /^([ \t]*)\/[\/*].*(?:(?:\r?\n|\r)\1[ \t].+)*/m,
         lookbehind: true,
@@ -16625,7 +17249,9 @@ function sass(Prism2) {
       }
     });
     Prism3.languages.insertBefore("sass", "atrule", {
+      // We want to consume the whole line
       "atrule-line": {
+        // Includes support for = and + shortcuts
         pattern: /^(?:[ \t]*)[@+=].+/m,
         greedy: true,
         inside: {
@@ -16643,6 +17269,7 @@ function sass(Prism2) {
       }
     ];
     Prism3.languages.insertBefore("sass", "property", {
+      // We want to consume the whole line
       "variable-line": {
         pattern: /^[ \t]*\$.+/m,
         greedy: true,
@@ -16652,6 +17279,7 @@ function sass(Prism2) {
           operator
         }
       },
+      // We want to consume the whole line
       "property-line": {
         pattern: /^[ \t]*(?:[^:\s]+ *:.*|:[^:\s].*)/m,
         greedy: true,
@@ -16696,10 +17324,20 @@ function scss(Prism2) {
       pattern: /@[\w-](?:\([^()]+\)|[^()\s]|\s+(?!\s))*?(?=\s+[{;])/,
       inside: {
         rule: /@[\w-]+/
+        // See rest below
       }
     },
+    // url, compassified
     url: /(?:[-a-z]+-)?url(?=\()/i,
+    // CSS selector regex is not appropriate for Sass
+    // since there can be lot more things (var, @ directive, nesting..)
+    // a selector must start at the end of a property or after a brace (end of other rules or nesting)
+    // it can contain some characters that aren't used for defining rules or end of selector, & (parent selector), or interpolated variable
+    // the end of a selector is found when there is no rules in it ( {} or {\s}) or if there is a property (because an interpolated var
+    // can "pass" as a selector- e.g: proper#{$erty})
+    // this one was hard to do, so please be careful if you edit this one :)
     selector: {
+      // Initial look-ahead is used to prevent matching of blank selectors
       pattern: /(?=\S)[^@;{}()]?(?:[^@;{}()\s]|\s+(?!\s)|#\{\$[-\w]+\})+(?=\s*\{(?:\}|\s|[^}][^:{}]*[:{][^}]))/,
       inside: {
         parent: {
@@ -16727,6 +17365,7 @@ function scss(Prism2) {
     ]
   });
   Prism2.languages.insertBefore("scss", "important", {
+    // var and interpolated vars
     variable: /\$[-\w]+|#\{\$[-\w]+\}/
   });
   Prism2.languages.insertBefore("scss", "function", {
@@ -16785,6 +17424,7 @@ function sql(Prism2) {
       }
     },
     function: /\b(?:AVG|COUNT|FIRST|FORMAT|LAST|LCASE|LEN|MAX|MID|MIN|MOD|NOW|ROUND|SUM|UCASE)(?=\s*\()/i,
+    // Should we highlight user defined functions too?
     keyword: /\b(?:ACTION|ADD|AFTER|ALGORITHM|ALL|ALTER|ANALYZE|ANY|APPLY|AS|ASC|AUTHORIZATION|AUTO_INCREMENT|BACKUP|BDB|BEGIN|BERKELEYDB|BIGINT|BINARY|BIT|BLOB|BOOL|BOOLEAN|BREAK|BROWSE|BTREE|BULK|BY|CALL|CASCADED?|CASE|CHAIN|CHAR(?:ACTER|SET)?|CHECK(?:POINT)?|CLOSE|CLUSTERED|COALESCE|COLLATE|COLUMNS?|COMMENT|COMMIT(?:TED)?|COMPUTE|CONNECT|CONSISTENT|CONSTRAINT|CONTAINS(?:TABLE)?|CONTINUE|CONVERT|CREATE|CROSS|CURRENT(?:_DATE|_TIME|_TIMESTAMP|_USER)?|CURSOR|CYCLE|DATA(?:BASES?)?|DATE(?:TIME)?|DAY|DBCC|DEALLOCATE|DEC|DECIMAL|DECLARE|DEFAULT|DEFINER|DELAYED|DELETE|DELIMITERS?|DENY|DESC|DESCRIBE|DETERMINISTIC|DISABLE|DISCARD|DISK|DISTINCT|DISTINCTROW|DISTRIBUTED|DO|DOUBLE|DROP|DUMMY|DUMP(?:FILE)?|DUPLICATE|ELSE(?:IF)?|ENABLE|ENCLOSED|END|ENGINE|ENUM|ERRLVL|ERRORS|ESCAPED?|EXCEPT|EXEC(?:UTE)?|EXISTS|EXIT|EXPLAIN|EXTENDED|FETCH|FIELDS|FILE|FILLFACTOR|FIRST|FIXED|FLOAT|FOLLOWING|FOR(?: EACH ROW)?|FORCE|FOREIGN|FREETEXT(?:TABLE)?|FROM|FULL|FUNCTION|GEOMETRY(?:COLLECTION)?|GLOBAL|GOTO|GRANT|GROUP|HANDLER|HASH|HAVING|HOLDLOCK|HOUR|IDENTITY(?:COL|_INSERT)?|IF|IGNORE|IMPORT|INDEX|INFILE|INNER|INNODB|INOUT|INSERT|INT|INTEGER|INTERSECT|INTERVAL|INTO|INVOKER|ISOLATION|ITERATE|JOIN|KEYS?|KILL|LANGUAGE|LAST|LEAVE|LEFT|LEVEL|LIMIT|LINENO|LINES|LINESTRING|LOAD|LOCAL|LOCK|LONG(?:BLOB|TEXT)|LOOP|MATCH(?:ED)?|MEDIUM(?:BLOB|INT|TEXT)|MERGE|MIDDLEINT|MINUTE|MODE|MODIFIES|MODIFY|MONTH|MULTI(?:LINESTRING|POINT|POLYGON)|NATIONAL|NATURAL|NCHAR|NEXT|NO|NONCLUSTERED|NULLIF|NUMERIC|OFF?|OFFSETS?|ON|OPEN(?:DATASOURCE|QUERY|ROWSET)?|OPTIMIZE|OPTION(?:ALLY)?|ORDER|OUT(?:ER|FILE)?|OVER|PARTIAL|PARTITION|PERCENT|PIVOT|PLAN|POINT|POLYGON|PRECEDING|PRECISION|PREPARE|PREV|PRIMARY|PRINT|PRIVILEGES|PROC(?:EDURE)?|PUBLIC|PURGE|QUICK|RAISERROR|READS?|REAL|RECONFIGURE|REFERENCES|RELEASE|RENAME|REPEAT(?:ABLE)?|REPLACE|REPLICATION|REQUIRE|RESIGNAL|RESTORE|RESTRICT|RETURN(?:ING|S)?|REVOKE|RIGHT|ROLLBACK|ROUTINE|ROW(?:COUNT|GUIDCOL|S)?|RTREE|RULE|SAVE(?:POINT)?|SCHEMA|SECOND|SELECT|SERIAL(?:IZABLE)?|SESSION(?:_USER)?|SET(?:USER)?|SHARE|SHOW|SHUTDOWN|SIMPLE|SMALLINT|SNAPSHOT|SOME|SONAME|SQL|START(?:ING)?|STATISTICS|STATUS|STRIPED|SYSTEM_USER|TABLES?|TABLESPACE|TEMP(?:ORARY|TABLE)?|TERMINATED|TEXT(?:SIZE)?|THEN|TIME(?:STAMP)?|TINY(?:BLOB|INT|TEXT)|TOP?|TRAN(?:SACTIONS?)?|TRIGGER|TRUNCATE|TSEQUAL|TYPES?|UNBOUNDED|UNCOMMITTED|UNDEFINED|UNION|UNIQUE|UNLOCK|UNPIVOT|UNSIGNED|UPDATE(?:TEXT)?|USAGE|USE|USER|USING|VALUES?|VAR(?:BINARY|CHAR|CHARACTER|YING)|VIEW|WAITFOR|WARNINGS|WHEN|WHERE|WHILE|WITH(?: ROLLUP|IN)?|WORK|WRITE(?:TEXT)?|YEAR)\b/i,
     boolean: /\b(?:FALSE|NULL|TRUE)\b/i,
     number: /\b0x[\da-f]+\b|\b\d+(?:\.\d*)?|\B\.\d+\b/i,
@@ -16799,14 +17439,18 @@ swift.aliases = [];
 function swift(Prism2) {
   Prism2.languages.swift = {
     comment: {
+      // Nested comments are supported up to 2 levels
       pattern: /(^|[^\\:])(?:\/\/.*|\/\*(?:[^/*]|\/(?!\*)|\*(?!\/)|\/\*(?:[^*]|\*(?!\/))*\*\/)*\*\/)/,
       lookbehind: true,
       greedy: true
     },
     "string-literal": [
+      // https://docs.swift.org/swift-book/LanguageGuide/StringsAndCharacters.html
       {
         pattern: RegExp(
-          /(^|[^"#])/.source + "(?:" + /"(?:\\(?:\((?:[^()]|\([^()]*\))*\)|\r\n|[^(])|[^\\\r\n"])*"/.source + "|" + /"""(?:\\(?:\((?:[^()]|\([^()]*\))*\)|[^(])|[^\\"]|"(?!""))*"""/.source + ")" + /(?!["#])/.source
+          /(^|[^"#])/.source + "(?:" + // single-line string
+          /"(?:\\(?:\((?:[^()]|\([^()]*\))*\)|\r\n|[^(])|[^\\\r\n"])*"/.source + "|" + // multi-line string
+          /"""(?:\\(?:\((?:[^()]|\([^()]*\))*\)|[^(])|[^\\"]|"(?!""))*"""/.source + ")" + /(?!["#])/.source
         ),
         lookbehind: true,
         greedy: true,
@@ -16815,6 +17459,7 @@ function swift(Prism2) {
             pattern: /(\\\()(?:[^()]|\([^()]*\))*(?=\))/,
             lookbehind: true,
             inside: null
+            // see below
           },
           "interpolation-punctuation": {
             pattern: /^\)|\\\($/,
@@ -16826,7 +17471,9 @@ function swift(Prism2) {
       },
       {
         pattern: RegExp(
-          /(^|[^"#])(#+)/.source + "(?:" + /"(?:\\(?:#+\((?:[^()]|\([^()]*\))*\)|\r\n|[^#])|[^\\\r\n])*?"/.source + "|" + /"""(?:\\(?:#+\((?:[^()]|\([^()]*\))*\)|[^#])|[^\\])*?"""/.source + ")\\2"
+          /(^|[^"#])(#+)/.source + "(?:" + // single-line string
+          /"(?:\\(?:#+\((?:[^()]|\([^()]*\))*\)|\r\n|[^#])|[^\\\r\n])*?"/.source + "|" + // multi-line string
+          /"""(?:\\(?:#+\((?:[^()]|\([^()]*\))*\)|[^#])|[^\\])*?"""/.source + ")\\2"
         ),
         lookbehind: true,
         greedy: true,
@@ -16835,6 +17482,7 @@ function swift(Prism2) {
             pattern: /(\\#+\()(?:[^()]|\([^()]*\))*(?=\))/,
             lookbehind: true,
             inside: null
+            // see below
           },
           "interpolation-punctuation": {
             pattern: /^\)|\\#+\($/,
@@ -16845,8 +17493,12 @@ function swift(Prism2) {
       }
     ],
     directive: {
+      // directives with conditions
       pattern: RegExp(
-        /#/.source + "(?:" + (/(?:elseif|if)\b/.source + "(?:[ 	]*" + /(?:![ \t]*)?(?:\b\w+\b(?:[ \t]*\((?:[^()]|\([^()]*\))*\))?|\((?:[^()]|\([^()]*\))*\))(?:[ \t]*(?:&&|\|\|))?/.source + ")+") + "|" + /(?:else|endif)\b/.source + ")"
+        /#/.source + "(?:" + (/(?:elseif|if)\b/.source + "(?:[ 	]*" + // This regex is a little complex. It's equivalent to this:
+        //   (?:![ \t]*)?(?:\b\w+\b(?:[ \t]*<round>)?|<round>)(?:[ \t]*(?:&&|\|\|))?
+        // where <round> is a general parentheses expression.
+        /(?:![ \t]*)?(?:\b\w+\b(?:[ \t]*\((?:[^()]|\([^()]*\))*\))?|\((?:[^()]|\([^()]*\))*\))(?:[ \t]*(?:&&|\|\|))?/.source + ")+") + "|" + /(?:else|endif)\b/.source + ")"
       ),
       alias: "property",
       inside: {
@@ -16875,6 +17527,7 @@ function swift(Prism2) {
       alias: "function"
     },
     label: {
+      // https://docs.swift.org/swift-book/LanguageGuide/ControlFlow.html#ID141
       pattern: /\b(break|continue)\s+\w+|\b[a-zA-Z_]\w*(?=\s*:\s*(?:for|repeat|while)\b)/,
       lookbehind: true,
       alias: "important"
@@ -16891,9 +17544,13 @@ function swift(Prism2) {
       alias: "keyword"
     },
     number: /\b(?:[\d_]+(?:\.[\de_]+)?|0x[a-f0-9_]+(?:\.[a-f0-9p_]+)?|0b[01_]+|0o[0-7_]+)\b/i,
+    // A class name must start with an upper-case letter and be either 1 letter long or contain a lower-case letter.
     "class-name": /\b[A-Z](?:[A-Z_\d]*[a-z]\w*)?\b/,
     function: /\b[a-z_]\w*(?=\s*\()/i,
     constant: /\b(?:[A-Z_]{2,}|k[A-Z][A-Za-z_]+)\b/,
+    // Operators are generic in Swift. Developers can even create new operators (e.g. +++).
+    // https://docs.swift.org/swift-book/ReferenceManual/zzSummaryOfTheGrammar.html#ID481
+    // This regex only supports ASCII operators.
     operator: /[-+*/%=!<>&|^~?]+|\.[.\-+*/%=!<>&|^~?]+/,
     punctuation: /[{}[\]();,.:\\]/
   };
@@ -16914,12 +17571,15 @@ function typescript(Prism2) {
         lookbehind: true,
         greedy: true,
         inside: null
+        // see below
       },
       builtin: /\b(?:Array|Function|Promise|any|boolean|console|never|number|string|symbol|unknown)\b/
     });
     Prism3.languages.typescript.keyword.push(
       /\b(?:abstract|declare|is|keyof|readonly|require)\b/,
+      // keywords that have to be followed by an identifier
       /\b(?:asserts|infer|interface|module|namespace|type)\b(?=\s*(?:[{_$a-zA-Z\xA0-\uFFFF]|$))/,
+      // This is for `import type *, {}`
       /\btype\b(?=\s*(?:[\{*]|$))/
     );
     delete Prism3.languages.typescript["parameter"];
@@ -16939,12 +17599,14 @@ function typescript(Prism2) {
         }
       },
       "generic-function": {
+        // e.g. foo<T extends "bar" | "baz">( ...
         pattern: /#?(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*\s*<(?:[^<>]|<(?:[^<>]|<[^<>]*>)*>)*>(?=\s*\()/,
         greedy: true,
         inside: {
           function: /^#?(?!\s)[_$a-zA-Z\xA0-\uFFFF](?:(?!\s)[$\w\xA0-\uFFFF])*/,
           generic: {
             pattern: /<[\s\S]+/,
+            // everything after the first <
             alias: "class-name",
             inside: typeInside
           }
@@ -17009,6 +17671,12 @@ function vbnet(Prism2) {
 
 // node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/schema.js
 var Schema = class {
+  /**
+   * @constructor
+   * @param {Properties} property
+   * @param {Normal} normal
+   * @param {string} [space]
+   */
   constructor(property, normal, space) {
     this.property = property;
     this.normal = normal;
@@ -17040,6 +17708,11 @@ function normalize2(value2) {
 
 // node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/info.js
 var Info = class {
+  /**
+   * @constructor
+   * @param {string} property
+   * @param {string} attribute
+   */
   constructor(property, attribute) {
     this.property = property;
     this.attribute = attribute;
@@ -17082,6 +17755,13 @@ function increment() {
 // node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/defined-info.js
 var checks = Object.keys(types_exports);
 var DefinedInfo = class extends Info {
+  /**
+   * @constructor
+   * @param {string} property
+   * @param {string} attribute
+   * @param {number|null} [mask]
+   * @param {string} [space]
+   */
   constructor(property, attribute, mask, space) {
     let index = -1;
     super(property, attribute);
@@ -17241,6 +17921,7 @@ var html = create({
   transform: caseInsensitiveTransform,
   mustUseProperty: ["checked", "multiple", "muted", "selected"],
   properties: {
+    // Standard Properties.
     abbr: null,
     accept: commaSeparated,
     acceptCharset: spaceSeparated,
@@ -17457,59 +18138,115 @@ var html = create({
     value: booleanish,
     width: number,
     wrap: null,
+    // Legacy.
+    // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
     align: null,
+    // Several. Use CSS `text-align` instead,
     aLink: null,
+    // `<body>`. Use CSS `a:active {color}` instead
     archive: spaceSeparated,
+    // `<object>`. List of URIs to archives
     axis: null,
+    // `<td>` and `<th>`. Use `scope` on `<th>`
     background: null,
+    // `<body>`. Use CSS `background-image` instead
     bgColor: null,
+    // `<body>` and table elements. Use CSS `background-color` instead
     border: number,
+    // `<table>`. Use CSS `border-width` instead,
     borderColor: null,
+    // `<table>`. Use CSS `border-color` instead,
     bottomMargin: number,
+    // `<body>`
     cellPadding: null,
+    // `<table>`
     cellSpacing: null,
+    // `<table>`
     char: null,
+    // Several table elements. When `align=char`, sets the character to align on
     charOff: null,
+    // Several table elements. When `char`, offsets the alignment
     classId: null,
+    // `<object>`
     clear: null,
+    // `<br>`. Use CSS `clear` instead
     code: null,
+    // `<object>`
     codeBase: null,
+    // `<object>`
     codeType: null,
+    // `<object>`
     color: null,
+    // `<font>` and `<hr>`. Use CSS instead
     compact: boolean,
+    // Lists. Use CSS to reduce space between items instead
     declare: boolean,
+    // `<object>`
     event: null,
+    // `<script>`
     face: null,
+    // `<font>`. Use CSS instead
     frame: null,
+    // `<table>`
     frameBorder: null,
+    // `<iframe>`. Use CSS `border` instead
     hSpace: number,
+    // `<img>` and `<object>`
     leftMargin: number,
+    // `<body>`
     link: null,
+    // `<body>`. Use CSS `a:link {color: *}` instead
     longDesc: null,
+    // `<frame>`, `<iframe>`, and `<img>`. Use an `<a>`
     lowSrc: null,
+    // `<img>`. Use a `<picture>`
     marginHeight: number,
+    // `<body>`
     marginWidth: number,
+    // `<body>`
     noResize: boolean,
+    // `<frame>`
     noHref: boolean,
+    // `<area>`. Use no href instead of an explicit `nohref`
     noShade: boolean,
+    // `<hr>`. Use background-color and height instead of borders
     noWrap: boolean,
+    // `<td>` and `<th>`
     object: null,
+    // `<applet>`
     profile: null,
+    // `<head>`
     prompt: null,
+    // `<isindex>`
     rev: null,
+    // `<link>`
     rightMargin: number,
+    // `<body>`
     rules: null,
+    // `<table>`
     scheme: null,
+    // `<meta>`
     scrolling: booleanish,
+    // `<frame>`. Use overflow in the child context
     standby: null,
+    // `<object>`
     summary: null,
+    // `<table>`
     text: null,
+    // `<body>`. Use CSS `color` instead
     topMargin: number,
+    // `<body>`
     valueType: null,
+    // `<param>`
     version: null,
+    // `<html>`. Use a doctype.
     vAlign: null,
+    // Several. Use CSS `vertical-align` instead
     vLink: null,
+    // `<body>`. Use CSS `a:visited {color}` instead
     vSpace: number,
+    // `<img>` and `<object>`
+    // Non-standard Properties.
     allowTransparency: null,
     autoCorrect: null,
     autoSave: null,
@@ -17696,6 +18433,7 @@ var svg = create({
     wordSpacing: "word-spacing",
     writingMode: "writing-mode",
     xHeight: "x-height",
+    // These were camelcased in Tiny. Now lowercased in SVG 2
     playbackOrder: "playbackorder",
     timelineBegin: "timelinebegin"
   },
@@ -17816,8 +18554,11 @@ var svg = create({
     kernelMatrix: commaOrSpaceSeparated,
     kernelUnitLength: null,
     keyPoints: null,
+    // SEMI_COLON_SEPARATED
     keySplines: null,
+    // SEMI_COLON_SEPARATED
     keyTimes: null,
+    // SEMI_COLON_SEPARATED
     kerning: null,
     lang: null,
     lengthAdjust: null,
@@ -18121,41 +18862,48 @@ var svg2 = merge([xml, xlink, xmlns, aria, svg], "svg");
 
 // node_modules/.pnpm/hast-util-parse-selector@3.1.0/node_modules/hast-util-parse-selector/index.js
 var search = /[#.]/g;
-var parseSelector = function(selector, defaultTagName = "div") {
-  var value2 = selector || "";
-  var props = {};
-  var start = 0;
-  var subvalue;
-  var previous2;
-  var match;
-  while (start < value2.length) {
-    search.lastIndex = start;
-    match = search.exec(value2);
-    subvalue = value2.slice(start, match ? match.index : value2.length);
-    if (subvalue) {
-      if (!previous2) {
-        defaultTagName = subvalue;
-      } else if (previous2 === "#") {
-        props.id = subvalue;
-      } else if (Array.isArray(props.className)) {
-        props.className.push(subvalue);
-      } else {
-        props.className = [subvalue];
+var parseSelector = (
+  /**
+   * @param {string} [selector]
+   * @param {string} [defaultTagName='div']
+   * @returns {Element}
+   */
+  function(selector, defaultTagName = "div") {
+    var value2 = selector || "";
+    var props = {};
+    var start = 0;
+    var subvalue;
+    var previous2;
+    var match;
+    while (start < value2.length) {
+      search.lastIndex = start;
+      match = search.exec(value2);
+      subvalue = value2.slice(start, match ? match.index : value2.length);
+      if (subvalue) {
+        if (!previous2) {
+          defaultTagName = subvalue;
+        } else if (previous2 === "#") {
+          props.id = subvalue;
+        } else if (Array.isArray(props.className)) {
+          props.className.push(subvalue);
+        } else {
+          props.className = [subvalue];
+        }
+        start += subvalue.length;
       }
-      start += subvalue.length;
+      if (match) {
+        previous2 = match[0];
+        start++;
+      }
     }
-    if (match) {
-      previous2 = match[0];
-      start++;
-    }
+    return {
+      type: "element",
+      tagName: defaultTagName,
+      properties: props,
+      children: []
+    };
   }
-  return {
-    type: "element",
-    tagName: defaultTagName,
-    properties: props,
-    children: []
-  };
-};
+);
 
 // node_modules/.pnpm/space-separated-tokens@2.0.1/node_modules/space-separated-tokens/index.js
 function parse(value2) {
@@ -18191,38 +18939,48 @@ var buttonTypes = /* @__PURE__ */ new Set(["menu", "submit", "reset", "button"])
 var own4 = {}.hasOwnProperty;
 function core(schema, defaultTagName, caseSensitive) {
   const adjust = caseSensitive && createAdjustMap(caseSensitive);
-  const h2 = function(selector, properties, ...children) {
-    let index = -1;
-    let node;
-    if (selector === void 0 || selector === null) {
-      node = { type: "root", children: [] };
-      children.unshift(properties);
-    } else {
-      node = parseSelector(selector, defaultTagName);
-      node.tagName = node.tagName.toLowerCase();
-      if (adjust && own4.call(adjust, node.tagName)) {
-        node.tagName = adjust[node.tagName];
-      }
-      if (isProperties(properties, node.tagName)) {
-        let key;
-        for (key in properties) {
-          if (own4.call(properties, key)) {
-            addProperty(schema, node.properties, key, properties[key]);
-          }
-        }
-      } else {
+  const h2 = (
+    /**
+     * Hyperscript compatible DSL for creating virtual hast trees.
+     *
+     * @param {string|null} [selector]
+     * @param {HProperties|HChild} [properties]
+     * @param {Array<HChild>} children
+     * @returns {HResult}
+     */
+    function(selector, properties, ...children) {
+      let index = -1;
+      let node;
+      if (selector === void 0 || selector === null) {
+        node = { type: "root", children: [] };
         children.unshift(properties);
+      } else {
+        node = parseSelector(selector, defaultTagName);
+        node.tagName = node.tagName.toLowerCase();
+        if (adjust && own4.call(adjust, node.tagName)) {
+          node.tagName = adjust[node.tagName];
+        }
+        if (isProperties(properties, node.tagName)) {
+          let key;
+          for (key in properties) {
+            if (own4.call(properties, key)) {
+              addProperty(schema, node.properties, key, properties[key]);
+            }
+          }
+        } else {
+          children.unshift(properties);
+        }
       }
+      while (++index < children.length) {
+        addChild(node.children, children[index]);
+      }
+      if (node.type === "element" && node.tagName === "template") {
+        node.content = { type: "root", children: node.children };
+        node.children = [];
+      }
+      return node;
     }
-    while (++index < children.length) {
-      addChild(node.children, children[index]);
-    }
-    if (node.type === "element" && node.tagName === "template") {
-      node.content = { type: "root", children: node.children };
-      node.children = [];
-    }
-    return node;
-  };
+  );
   return h2;
 }
 function isProperties(value2, name) {
@@ -18501,12 +19259,19 @@ init_decode_named_character_reference();
 var fromCharCode = String.fromCharCode;
 var messages = [
   "",
+  /* 1: Non terminated (named) */
   "Named character references must be terminated by a semicolon",
+  /* 2: Non terminated (numeric) */
   "Numeric character references must be terminated by a semicolon",
+  /* 3: Empty (named) */
   "Named character references cannot be empty",
+  /* 4: Empty (numeric) */
   "Numeric character references cannot be empty",
+  /* 5: Unknown (named) */
   "Named character references must be known",
+  /* 6: Disallowed (numeric) */
   "Numeric character references cannot be disallowed",
+  /* 7: Prohibited (numeric) */
   "Numeric character references cannot be outside the permissible Unicode range"
 ];
 function parseEntities(value2, options2 = {}) {
@@ -18627,7 +19392,10 @@ function parseEntities(value2, options2 = {}) {
         );
         if (prohibited(referenceCode)) {
           warning(7, diff2);
-          reference = fromCharCode(65533);
+          reference = fromCharCode(
+            65533
+            /* `�` */
+          );
         } else if (referenceCode in characterReferenceInvalid) {
           warning(6, diff2);
           reference = characterReferenceInvalid[referenceCode];
@@ -18727,16 +19495,57 @@ function disallowed(code2) {
 var uniqueId = 0;
 var plainTextGrammar = {};
 var _ = {
+  /**
+   * A namespace for utility methods.
+   *
+   * All function in this namespace that are not explicitly marked as _public_ are for __internal use only__ and may
+   * change or disappear at any time.
+   *
+   * @namespace
+   * @memberof Prism
+   */
   util: {
+    /**
+     * Returns the name of the type of the given value.
+     *
+     * @param {any} o
+     * @returns {string}
+     * @example
+     * type(null)      === 'Null'
+     * type(undefined) === 'Undefined'
+     * type(123)       === 'Number'
+     * type('foo')     === 'String'
+     * type(true)      === 'Boolean'
+     * type([1, 2])    === 'Array'
+     * type({})        === 'Object'
+     * type(String)    === 'Function'
+     * type(/abc+/)    === 'RegExp'
+     */
     type: function(o) {
       return Object.prototype.toString.call(o).slice(8, -1);
     },
+    /**
+     * Returns a unique number for the given object. Later calls will still return the same number.
+     *
+     * @param {Object} obj
+     * @returns {number}
+     */
     objId: function(obj) {
       if (!obj["__id"]) {
         Object.defineProperty(obj, "__id", { value: ++uniqueId });
       }
       return obj["__id"];
     },
+    /**
+     * Creates a deep clone of the given object.
+     *
+     * The main intended use of this function is to clone language definitions.
+     *
+     * @param {T} o
+     * @param {Record<number, any>} [visited]
+     * @returns {T}
+     * @template T
+     */
     clone: function deepClone(o, visited) {
       visited = visited || {};
       var clone;
@@ -18771,11 +19580,49 @@ var _ = {
       }
     }
   },
+  /**
+   * This namespace contains all currently loaded languages and the some helper functions to create and modify languages.
+   *
+   * @namespace
+   * @memberof Prism
+   * @public
+   */
   languages: {
+    /**
+     * The grammar for plain, unformatted text.
+     */
     plain: plainTextGrammar,
     plaintext: plainTextGrammar,
     text: plainTextGrammar,
     txt: plainTextGrammar,
+    /**
+     * Creates a deep copy of the language with the given id and appends the given tokens.
+     *
+     * If a token in `redef` also appears in the copied language, then the existing token in the copied language
+     * will be overwritten at its original position.
+     *
+     * ## Best practices
+     *
+     * Since the position of overwriting tokens (token in `redef` that overwrite tokens in the copied language)
+     * doesn't matter, they can technically be in any order. However, this can be confusing to others that trying to
+     * understand the language definition because, normally, the order of tokens matters in Prism grammars.
+     *
+     * Therefore, it is encouraged to order overwriting tokens according to the positions of the overwritten tokens.
+     * Furthermore, all non-overwriting tokens should be placed after the overwriting ones.
+     *
+     * @param {string} id The id of the language to extend. This has to be a key in `Prism.languages`.
+     * @param {Grammar} redef The new tokens to append.
+     * @returns {Grammar} The new language created.
+     * @public
+     * @example
+     * Prism.languages['css-with-colors'] = Prism.languages.extend('css', {
+     *     // Prism.languages.css already has a 'comment' token, so this token will overwrite CSS' 'comment' token
+     *     // at its original position
+     *     'comment': { ... },
+     *     // CSS doesn't have a 'color' token, so this token will be appended
+     *     'color': /\b(?:red|green|blue)\b/
+     * });
+     */
     extend: function(id, redef) {
       var lang = _.util.clone(_.languages[id]);
       for (var key in redef) {
@@ -18783,6 +19630,81 @@ var _ = {
       }
       return lang;
     },
+    /**
+     * Inserts tokens _before_ another token in a language definition or any other grammar.
+     *
+     * ## Usage
+     *
+     * This helper method makes it easy to modify existing languages. For example, the CSS language definition
+     * not only defines CSS highlighting for CSS documents, but also needs to define highlighting for CSS embedded
+     * in HTML through `<style>` elements. To do this, it needs to modify `Prism.languages.markup` and add the
+     * appropriate tokens. However, `Prism.languages.markup` is a regular JavaScript object literal, so if you do
+     * this:
+     *
+     * ```js
+     * Prism.languages.markup.style = {
+     *     // token
+     * };
+     * ```
+     *
+     * then the `style` token will be added (and processed) at the end. `insertBefore` allows you to insert tokens
+     * before existing tokens. For the CSS example above, you would use it like this:
+     *
+     * ```js
+     * Prism.languages.insertBefore('markup', 'cdata', {
+     *     'style': {
+     *         // token
+     *     }
+     * });
+     * ```
+     *
+     * ## Special cases
+     *
+     * If the grammars of `inside` and `insert` have tokens with the same name, the tokens in `inside`'s grammar
+     * will be ignored.
+     *
+     * This behavior can be used to insert tokens after `before`:
+     *
+     * ```js
+     * Prism.languages.insertBefore('markup', 'comment', {
+     *     'comment': Prism.languages.markup.comment,
+     *     // tokens after 'comment'
+     * });
+     * ```
+     *
+     * ## Limitations
+     *
+     * The main problem `insertBefore` has to solve is iteration order. Since ES2015, the iteration order for object
+     * properties is guaranteed to be the insertion order (except for integer keys) but some browsers behave
+     * differently when keys are deleted and re-inserted. So `insertBefore` can't be implemented by temporarily
+     * deleting properties which is necessary to insert at arbitrary positions.
+     *
+     * To solve this problem, `insertBefore` doesn't actually insert the given tokens into the target object.
+     * Instead, it will create a new object and replace all references to the target object with the new one. This
+     * can be done without temporarily deleting properties, so the iteration order is well-defined.
+     *
+     * However, only references that can be reached from `Prism.languages` or `insert` will be replaced. I.e. if
+     * you hold the target object in a variable, then the value of the variable will not change.
+     *
+     * ```js
+     * var oldMarkup = Prism.languages.markup;
+     * var newMarkup = Prism.languages.insertBefore('markup', 'comment', { ... });
+     *
+     * assert(oldMarkup !== Prism.languages.markup);
+     * assert(newMarkup === Prism.languages.markup);
+     * ```
+     *
+     * @param {string} inside The property of `root` (e.g. a language id in `Prism.languages`) that contains the
+     * object to be modified.
+     * @param {string} before The key to insert before.
+     * @param {Grammar} insert An object containing the key-value pairs to be inserted.
+     * @param {Object<string, any>} [root] The object containing `inside`, i.e. the object that contains the
+     * object to be modified.
+     *
+     * Defaults to `Prism.languages`.
+     * @returns {Grammar} The new grammar object.
+     * @public
+     */
     insertBefore: function(inside, before, insert, root) {
       root = root || _.languages;
       var grammar = root[inside];
@@ -18810,6 +19732,7 @@ var _ = {
       });
       return ret;
     },
+    // Traverse a language definition with Depth First Search
     DFS: function DFS(o, callback, type, visited) {
       visited = visited || {};
       var objId = _.util.objId;
@@ -18830,6 +19753,26 @@ var _ = {
     }
   },
   plugins: {},
+  /**
+   * Low-level function, only use if you know what you’re doing. It accepts a string of text as input
+   * and the language definitions to use, and returns a string with the HTML produced.
+   *
+   * The following hooks will be run:
+   * 1. `before-tokenize`
+   * 2. `after-tokenize`
+   * 3. `wrap`: On each {@link Token}.
+   *
+   * @param {string} text A string with the code to be highlighted.
+   * @param {Grammar} grammar An object containing the tokens to use.
+   *
+   * Usually a language definition like `Prism.languages.markup`.
+   * @param {string} language The name of the language definition passed to `grammar`.
+   * @returns {string} The highlighted HTML.
+   * @memberof Prism
+   * @public
+   * @example
+   * Prism.highlight('var foo = true;', Prism.languages.javascript, 'javascript');
+   */
   highlight: function(text2, grammar, language) {
     var env = {
       code: text2,
@@ -18844,6 +19787,30 @@ var _ = {
     _.hooks.run("after-tokenize", env);
     return Token.stringify(_.util.encode(env.tokens), env.language);
   },
+  /**
+   * This is the heart of Prism, and the most low-level function you can use. It accepts a string of text as input
+   * and the language definitions to use, and returns an array with the tokenized code.
+   *
+   * When the language definition includes nested tokens, the function is called recursively on each of these tokens.
+   *
+   * This method could be useful in other contexts as well, as a very crude parser.
+   *
+   * @param {string} text A string with the code to be highlighted.
+   * @param {Grammar} grammar An object containing the tokens to use.
+   *
+   * Usually a language definition like `Prism.languages.markup`.
+   * @returns {TokenStream} An array of strings and tokens, a token stream.
+   * @memberof Prism
+   * @public
+   * @example
+   * let code = `var foo = 0;`;
+   * let tokens = Prism.tokenize(code, Prism.languages.javascript);
+   * tokens.forEach(token => {
+   *     if (token instanceof Prism.Token && token.type === 'number') {
+   *         console.log(`Found numeric literal: ${token.content}`);
+   *     }
+   * });
+   */
   tokenize: function(text2, grammar) {
     var rest = grammar.rest;
     if (rest) {
@@ -18857,13 +19824,39 @@ var _ = {
     matchGrammar(text2, tokenList, grammar, tokenList.head, 0);
     return toArray(tokenList);
   },
+  /**
+   * @namespace
+   * @memberof Prism
+   * @public
+   */
   hooks: {
     all: {},
+    /**
+     * Adds the given callback to the list of callbacks for the given hook.
+     *
+     * The callback will be invoked when the hook it is registered for is run.
+     * Hooks are usually directly run by a highlight function but you can also run hooks yourself.
+     *
+     * One callback function can be registered to multiple hooks and the same hook multiple times.
+     *
+     * @param {string} name The name of the hook.
+     * @param {HookCallback} callback The callback function which is given environment variables.
+     * @public
+     */
     add: function(name, callback) {
       var hooks = _.hooks.all;
       hooks[name] = hooks[name] || [];
       hooks[name].push(callback);
     },
+    /**
+     * Runs a hook invoking all registered callbacks with the given environment variables.
+     *
+     * Callbacks will be invoked synchronously and in the order in which they were registered.
+     *
+     * @param {string} name The name of the hook.
+     * @param {Object<string, any>} env The environment variables of the hook passed to all callbacks registered.
+     * @public
+     */
     run: function(name, env) {
       var callbacks = _.hooks.all[name];
       if (!callbacks || !callbacks.length) {
@@ -19072,6 +20065,7 @@ function highlight(value2, language) {
   }
   return {
     type: "root",
+    // @ts-expect-error: we hacked Prism to accept and return the things we want.
     children: Prism.highlight.call(refractor, value2, grammar, name)
   };
 }
@@ -19255,6 +20249,7 @@ function jsx(Prism2) {
       "special-attr",
       {
         script: {
+          // Allow for two levels of nesting
           pattern: re(/=<BRACES>/.source),
           alias: "language-javascript",
           inside: {
@@ -20615,6 +21610,8 @@ var block = {
   def: /^ {0,3}\[(label)\]: *(?:\n *)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n *)?| *\n *)(title))? *(?:\n+|$)/,
   table: noopTest,
   lheading: /^((?:.|\n(?!\n))+?)\n {0,3}(=+|-+) *(?:\n+|$)/,
+  // regex template, placeholders will be replaced according to different paragraph
+  // interruption rules of commonmark and the original markdown spec:
   _paragraph: /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/,
   text: /^[^\n]+/
 };
@@ -20632,6 +21629,7 @@ block.blockquote = edit(block.blockquote).replace("paragraph", block.paragraph).
 block.normal = merge2({}, block);
 block.gfm = merge2({}, block.normal, {
   table: "^ *([^\\n ].*\\|.*)\\n {0,3}(?:\\| *)?(:?-+:? *(?:\\| *:?-+:? *)*)(?:\\| *)?(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)"
+  // Cells
 });
 block.gfm.table = edit(block.gfm.table).replace("hr", block.hr).replace("heading", " {0,3}#{1,6} ").replace("blockquote", " {0,3}>").replace("code", " {4}[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", block._tag).getRegex();
 block.gfm.paragraph = edit(block._paragraph).replace("hr", block.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("table", block.gfm.table).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", block._tag).getRegex();
@@ -20642,6 +21640,7 @@ block.pedantic = merge2({}, block.normal, {
   def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,
   heading: /^(#{1,6})(.*)(?:\n+|$)/,
   fences: noopTest,
+  // fences not supported
   lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/,
   paragraph: edit(block.normal._paragraph).replace("hr", block.hr).replace("heading", " *#{1,6} *[^\n]").replace("lheading", block.lheading).replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").getRegex()
 });
@@ -20650,14 +21649,18 @@ var inline = {
   autolink: /^<(scheme:[^\s\x00-\x1f<>]*|email)>/,
   url: noopTest,
   tag: "^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>",
+  // CDATA section
   link: /^!?\[(label)\]\(\s*(href)(?:\s+(title))?\s*\)/,
   reflink: /^!?\[(label)\]\[(ref)\]/,
   nolink: /^!?\[(ref)\](?:\[\])?/,
   reflinkSearch: "reflink|nolink(?!\\()",
   emStrong: {
     lDelim: /^(?:\*+(?:([punct_])|[^\s*]))|^_+(?:([punct*])|([^\s_]))/,
+    //        (1) and (2) can only be a Right Delimiter. (3) and (4) can only be Left.  (5) and (6) can be either Left or Right.
+    //          () Skip orphan inside strong                                      () Consume to delim     (1) #***                (2) a***#, a***                             (3) #***a, ***a                 (4) ***#              (5) #***#                 (6) a***a
     rDelimAst: /^(?:[^_*\\]|\\.)*?\_\_(?:[^_*\\]|\\.)*?\*(?:[^_*\\]|\\.)*?(?=\_\_)|(?:[^*\\]|\\.)+(?=[^*])|[punct_](\*+)(?=[\s]|$)|(?:[^punct*_\s\\]|\\.)(\*+)(?=[punct_\s]|$)|[punct_\s](\*+)(?=[^punct*_\s])|[\s](\*+)(?=[punct_])|[punct_](\*+)(?=[punct_])|(?:[^punct*_\s\\]|\\.)(\*+)(?=[^punct*_\s])/,
     rDelimUnd: /^(?:[^_*\\]|\\.)*?\*\*(?:[^_*\\]|\\.)*?\_(?:[^_*\\]|\\.)*?(?=\*\*)|(?:[^_\\]|\\.)+(?=[^_])|[punct*](\_+)(?=[\s]|$)|(?:[^punct*_\s\\]|\\.)(\_+)(?=[punct*\s]|$)|[punct*\s](\_+)(?=[^punct*_\s])|[\s](\_+)(?=[punct*])|[punct*](\_+)(?=[punct*])/
+    // ^- Not allowed for _
   },
   code: /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/,
   br: /^( {2,}|\\)\n(?!\s*$)/,
@@ -20763,20 +21766,32 @@ var Lexer = class {
     }
     this.tokenizer.rules = rules;
   }
+  /**
+   * Expose Rules
+   */
   static get rules() {
     return {
       block,
       inline
     };
   }
+  /**
+   * Static Lex Method
+   */
   static lex(src, options2) {
     const lexer2 = new Lexer(options2);
     return lexer2.lex(src);
   }
+  /**
+   * Static Lex Inline Method
+   */
   static lexInline(src, options2) {
     const lexer2 = new Lexer(options2);
     return lexer2.inlineTokens(src);
   }
+  /**
+   * Preprocessing
+   */
   lex(src) {
     src = src.replace(/\r\n|\r/g, "\n");
     this.blockTokens(src, this.tokens);
@@ -20786,6 +21801,9 @@ var Lexer = class {
     }
     return this.tokens;
   }
+  /**
+   * Lexing
+   */
   blockTokens(src, tokens = []) {
     if (this.options.pedantic) {
       src = src.replace(/\t/g, "    ").replace(/^ +$/gm, "");
@@ -20941,6 +21959,9 @@ var Lexer = class {
     this.inlineQueue.push({ src, tokens });
     return tokens;
   }
+  /**
+   * Lexing/Compiling
+   */
   inlineTokens(src, tokens = []) {
     let token, lastToken, cutSrc;
     let maskedSrc = src;
@@ -21102,6 +22123,9 @@ var Renderer = class {
     }
     return '<pre><code class="' + this.options.langPrefix + escape(lang) + '">' + (escaped ? code2 : escape(code2, true)) + "</code></pre>\n";
   }
+  /**
+   * @param {string} quote
+   */
   blockquote(quote) {
     return `<blockquote>
 ${quote}</blockquote>
@@ -21110,6 +22134,12 @@ ${quote}</blockquote>
   html(html3) {
     return html3;
   }
+  /**
+   * @param {string} text
+   * @param {string} level
+   * @param {string} raw
+   * @param {any} slugger
+   */
   heading(text2, level, raw, slugger) {
     if (this.options.headerIds) {
       const id = this.options.headerPrefix + slugger.slug(raw);
@@ -21126,6 +22156,9 @@ ${quote}</blockquote>
     const type = ordered ? "ol" : "ul", startatt = ordered && start !== 1 ? ' start="' + start + '"' : "";
     return "<" + type + startatt + ">\n" + body + "</" + type + ">\n";
   }
+  /**
+   * @param {string} text
+   */
   listitem(text2) {
     return `<li>${text2}</li>
 `;
@@ -21133,15 +22166,25 @@ ${quote}</blockquote>
   checkbox(checked) {
     return "<input " + (checked ? 'checked="" ' : "") + 'disabled="" type="checkbox"' + (this.options.xhtml ? " /" : "") + "> ";
   }
+  /**
+   * @param {string} text
+   */
   paragraph(text2) {
     return `<p>${text2}</p>
 `;
   }
+  /**
+   * @param {string} header
+   * @param {string} body
+   */
   table(header, body) {
     if (body)
       body = `<tbody>${body}</tbody>`;
     return "<table>\n<thead>\n" + header + "</thead>\n" + body + "</table>\n";
   }
+  /**
+   * @param {string} content
+   */
   tablerow(content) {
     return `<tr>
 ${content}</tr>
@@ -21153,21 +22196,39 @@ ${content}</tr>
     return tag + content + `</${type}>
 `;
   }
+  /**
+   * span level renderer
+   * @param {string} text
+   */
   strong(text2) {
     return `<strong>${text2}</strong>`;
   }
+  /**
+   * @param {string} text
+   */
   em(text2) {
     return `<em>${text2}</em>`;
   }
+  /**
+   * @param {string} text
+   */
   codespan(text2) {
     return `<code>${text2}</code>`;
   }
   br() {
     return this.options.xhtml ? "<br/>" : "<br>";
   }
+  /**
+   * @param {string} text
+   */
   del(text2) {
     return `<del>${text2}</del>`;
   }
+  /**
+   * @param {string} href
+   * @param {string} title
+   * @param {string} text
+   */
   link(href, title, text2) {
     href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
     if (href === null) {
@@ -21180,6 +22241,11 @@ ${content}</tr>
     out += ">" + text2 + "</a>";
     return out;
   }
+  /**
+   * @param {string} href
+   * @param {string} title
+   * @param {string} text
+   */
   image(href, title, text2) {
     href = cleanUrl(this.options.sanitize, this.options.baseUrl, href);
     if (href === null) {
@@ -21197,6 +22263,7 @@ ${content}</tr>
   }
 };
 var TextRenderer = class {
+  // no need for block level renderers
   strong(text2) {
     return text2;
   }
@@ -21229,9 +22296,17 @@ var Slugger = class {
   constructor() {
     this.seen = {};
   }
+  /**
+   * @param {string} value
+   */
   serialize(value2) {
     return value2.toLowerCase().trim().replace(/<[!\/a-z].*?>/ig, "").replace(/[\u2000-\u206F\u2E00-\u2E7F\\'!"#$%&()*+,./:;<=>?@[\]^`{|}~]/g, "").replace(/\s/g, "-");
   }
+  /**
+   * Finds the next safe (unique) slug to use
+   * @param {string} originalSlug
+   * @param {boolean} isDryRun
+   */
   getNextSafeSlug(originalSlug, isDryRun) {
     let slug2 = originalSlug;
     let occurenceAccumulator = 0;
@@ -21248,6 +22323,12 @@ var Slugger = class {
     }
     return slug2;
   }
+  /**
+   * Convert string to unique id
+   * @param {object} [options]
+   * @param {boolean} [options.dryrun] Generates the next unique slug without
+   * updating the internal accumulator.
+   */
   slug(value2, options2 = {}) {
     const slug2 = this.serialize(value2);
     return this.getNextSafeSlug(slug2, options2.dryrun);
@@ -21262,14 +22343,23 @@ var Parser = class {
     this.textRenderer = new TextRenderer();
     this.slugger = new Slugger();
   }
+  /**
+   * Static Parse Method
+   */
   static parse(tokens, options2) {
     const parser2 = new Parser(options2);
     return parser2.parse(tokens);
   }
+  /**
+   * Static Parse Inline Method
+   */
   static parseInline(tokens, options2) {
     const parser2 = new Parser(options2);
     return parser2.parseInline(tokens);
   }
+  /**
+   * Parse Loop
+   */
   parse(tokens, top = true) {
     let out = "", i, j, k, l2, l3, row, cell, header, body, token, ordered, start, loose, itemBody, item, checked, task, checkbox, ret;
     const l = tokens.length;
@@ -21405,6 +22495,9 @@ var Parser = class {
     }
     return out;
   }
+  /**
+   * Parse Inline Tokens
+   */
   parseInline(tokens, renderer) {
     renderer = renderer || this.renderer;
     let out = "", i, token, ret;
@@ -22241,6 +23334,7 @@ var HEADERS = Symbol("headers");
 var _a2;
 var HeadersPolyfill = class {
   constructor() {
+    // Normalized header {"name":"a, b"} storage.
     this[_a2] = {};
   }
   [(_a2 = HEADERS, Symbol.iterator)]() {
@@ -22261,18 +23355,30 @@ var HeadersPolyfill = class {
       yield [name, this.get(name)];
     }
   }
+  /**
+   * Returns a `ByteString` sequence of all the values of a header with a given name.
+   */
   get(name) {
     return this[HEADERS][normalizeHeaderName(name)] || null;
   }
+  /**
+   * Sets a new value for an existing header inside a `Headers` object, or adds the header if it does not already exist.
+   */
   set(name, value2) {
     const normalizedName = normalizeHeaderName(name);
     this[HEADERS][normalizedName] = typeof value2 !== "string" ? String(value2) : value2;
   }
+  /**
+   * Appends a new value onto an existing header inside a `Headers` object, or adds the header if it does not already exist.
+   */
   append(name, value2) {
     const normalizedName = normalizeHeaderName(name);
     const resolvedValue = this.has(normalizedName) ? `${this.get(normalizedName)}, ${value2}` : value2;
     this.set(name, resolvedValue);
   }
+  /**
+   * Deletes a header from the `Headers` object.
+   */
   delete(name) {
     if (!this.has(name)) {
       return;
@@ -22280,12 +23386,22 @@ var HeadersPolyfill = class {
     const normalizedName = normalizeHeaderName(name);
     delete this[HEADERS][normalizedName];
   }
+  /**
+   * Returns the object of all the normalized headers.
+   */
   all() {
     return this[HEADERS];
   }
+  /**
+   * Returns a boolean stating whether a `Headers` object contains a certain header.
+   */
   has(name) {
     return this[HEADERS].hasOwnProperty(normalizeHeaderName(name));
   }
+  /**
+   * Traverses the `Headers` object,
+   * calling the given callback for each header.
+   */
   forEach(callback, thisArg) {
     for (const name in this[HEADERS]) {
       if (this[HEADERS].hasOwnProperty(name)) {
@@ -22753,6 +23869,7 @@ function getQwikCityEnvData(requestEv) {
     requestHeaders,
     locale: locale(),
     qwikcity: {
+      // mode: getRequestMode(requestEv),
       params: { ...params },
       response: {
         status: status(),
@@ -22959,6 +24076,7 @@ async function renderQData(requestEv) {
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,
       href: getPathname(requestEv.url, true)
+      // todo
     };
     const writer = requestEv.getWritableStream().getWriter();
     writer.write(encoder2.encode(serializeData(qData)));
