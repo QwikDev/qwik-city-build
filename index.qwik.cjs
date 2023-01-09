@@ -30,12 +30,12 @@ const RouteLocationContext = /* @__PURE__ */ qwik.createContext("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ qwik.createContext("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContext("qc-a");
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() => {
-  const { contents } = qwik.useContext(ContentInternalContext);
-  if (contents && contents.length > 0) {
-    const contentsLen = contents.length;
+  const { value } = qwik.useContext(ContentInternalContext);
+  if (value && value.length > 0) {
+    const contentsLen = value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
-      cmp = qwik.jsx(contents[i].default, {
+      cmp = qwik.jsx(value[i].default, {
         children: cmp
       });
     return cmp;
@@ -357,9 +357,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
     headings: void 0,
     menu: void 0
   });
-  const contentInternal = qwik.useStore({
-    contents: void 0
-  });
+  const contentInternal = qwik.useSignal();
   const currentActionId = env.response.action;
   const currentAction = currentActionId ? env.response.loaders[currentActionId] : void 0;
   const actionState = qwik.useSignal(currentAction ? {
@@ -379,8 +377,10 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
   qwik.useContextProvider(RouteActionContext, actionState);
   qwik.useTaskQrl(qwik.inlinedQrl(async ({ track }) => {
     const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, routeLocation2] = qwik.useLexicalScope();
-    const path = track(() => navPath2.value);
-    const action = track(() => actionState2.value);
+    const [path, action] = track(() => [
+      navPath2.value,
+      actionState2.value
+    ]);
     const locale = qwik.getLocale("");
     const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
     let url2 = new URL(path, routeLocation2.href);
@@ -419,7 +419,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
       routeLocation2.query = url2.searchParams;
       content2.headings = pageModule.headings;
       content2.menu = menu;
-      contentInternal2.contents = qwik.noSerialize(contentModules);
+      contentInternal2.value = qwik.noSerialize(contentModules);
       documentHead2.links = resolvedHead.links;
       documentHead2.meta = resolvedHead.meta;
       documentHead2.styles = resolvedHead.styles;
@@ -467,9 +467,7 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((
     headings: void 0,
     menu: void 0
   });
-  const contentInternal = qwik.useStore({
-    contents: void 0
-  });
+  const contentInternal = qwik.useSignal();
   qwik.useContextProvider(ContentContext, content);
   qwik.useContextProvider(ContentInternalContext, contentInternal);
   qwik.useContextProvider(DocumentHeadContext, documentHead);
