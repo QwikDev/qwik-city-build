@@ -650,6 +650,10 @@ function runQwikCity(serverRequestEv, params, requestHandlers, isPage, trailingS
 async function runNext(requestEv, isPage, trailingSlash, basePathname, resolve) {
   try {
     const { pathname, url } = requestEv;
+    const forbidden = requestEv.method === "POST" && requestEv.headers.get("origin") !== url.origin && isFormContentType(requestEv.request.headers);
+    if (forbidden) {
+      throw requestEv.error(403, `Cross-site ${requestEv.method} form submissions are forbidden`);
+    }
     if (isPage && !isQDataJson(pathname) && pathname !== basePathname && !pathname.endsWith(".html")) {
       if (trailingSlash) {
         if (!pathname.endsWith("/")) {
@@ -699,6 +703,14 @@ var isQDataJson = (pathname) => {
 };
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
+function isFormContentType(headers) {
+  return isContentType(headers, "application/x-www-form-urlencoded", "multipart/form-data");
+}
+function isContentType(headers, ...types) {
+  var _a3;
+  const type = ((_a3 = headers.get("content-type")) == null ? void 0 : _a3.split(";", 1)[0].trim()) ?? "";
+  return types.includes(type);
+}
 
 // packages/qwik-city/runtime/src/routing.ts
 var loadRoute = async (routes, menus, cacheModules, pathname) => {
@@ -804,7 +816,7 @@ function getQwikCityEnvData(requestEv) {
 }
 
 // packages/qwik-city/middleware/request-handler/render-middleware.ts
-function renderQwikMiddleware(render) {
+function renderQwikMiddleware(render, opts) {
   return async (requestEv) => {
     if (requestEv.headersSent) {
       return;
@@ -825,13 +837,10 @@ function renderQwikMiddleware(render) {
     const stream = writable.getWriter();
     const status = requestEv.status();
     try {
-      const isStatic = getRequestMode(requestEv) === "static";
       const result = await render({
         stream,
         envData: getQwikCityEnvData(requestEv),
-        containerAttributes: {
-          ["q:render"]: isStatic ? "static" : ""
-        }
+        ...opts
       });
       const qData = {
         loaders: getRequestLoaders(requestEv),
