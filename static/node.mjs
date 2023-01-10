@@ -74,6 +74,8 @@ async function createNodeMainProcess(opts) {
   const ssgWorkers = [];
   const sitemapBuffer = [];
   let sitemapPromise = null;
+  opts = { ...opts };
+  delete opts.filter;
   let outDir = opts.outDir;
   if (typeof outDir !== "string") {
     throw new Error(`Missing "outDir" option`);
@@ -443,6 +445,15 @@ async function mainThread(sys) {
               generatorResult.staticPaths.push(result.pathname);
             }
           }
+          if (typeof opts.filter === "function" && result.filePath != null) {
+            const keepStaticFile = opts.filter({
+              ...staticRoute,
+              isStatic: result.isStatic
+            });
+            if (keepStaticFile === false) {
+              sys.removeFile(result.filePath);
+            }
+          }
           flushQueue();
         } catch (e) {
           isCompleted = true;
@@ -571,7 +582,8 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     url: url.href,
     ok: false,
     error: null,
-    isStatic: true
+    isStatic: true,
+    filePath: null
   };
   const htmlFilePath = sys.getPageFilePath(staticRoute.pathname);
   const dataFilePath = sys.getDataFilePath(staticRoute.pathname);
@@ -614,19 +626,8 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
             if (data) {
               if (htmlWriter) {
                 return new Promise((resolve2) => {
-                  htmlWriter.end(() => {
-                    if (typeof opts.filter === "function") {
-                      const shouldRetain = opts.filter({
-                        pathname: staticRoute.pathname,
-                        params: staticRoute.params,
-                        isStatic: data.isStatic
-                      });
-                      if (shouldRetain === false) {
-                        sys.removeFile(htmlFilePath);
-                      }
-                    }
-                    resolve2();
-                  });
+                  result.filePath = htmlFilePath;
+                  htmlWriter.end(resolve2);
                 });
               }
             }
