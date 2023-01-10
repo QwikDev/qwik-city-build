@@ -72,6 +72,10 @@ declare interface PluginOptions {
      */
     routesDir?: string;
     /**
+     * Directory of the `server plugins`. Defaults to `src/server-plugins`.
+     */
+    serverPluginsDir?: string;
+    /**
      * The base pathname is used to create absolute URL paths up to
      * the `hostname`, and must always start and end with a
      * `/`.  Defaults to `/`.
