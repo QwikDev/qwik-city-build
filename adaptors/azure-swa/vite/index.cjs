@@ -33,7 +33,7 @@ __export(vite_exports, {
   azureSwaAdaptor: () => azureSwaAdaptor
 });
 module.exports = __toCommonJS(vite_exports);
-var import_vite = require("../../shared/vite/index.mjs");
+var import_vite = require("../../shared/vite/index.cjs");
 var import_node_path = require("path");
 var import_node_fs = __toESM(require("fs"), 1);
 function azureSwaAdaptor(opts = {}) {

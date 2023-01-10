@@ -230,6 +230,8 @@ export declare interface RequestContext {
 
 declare const RequestEvAction: unique symbol;
 
+declare const RequestEvBasePathname: unique symbol;
+
 /**
  * @alpha
  */
@@ -360,6 +362,8 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
     [RequestEvMode]: ServerRequestMode;
     [RequestEvStatus]: number;
     [RequestEvAction]: string | undefined;
+    [RequestEvTrailingSlash]: boolean;
+    [RequestEvBasePathname]: string;
 }
 
 /**
@@ -377,6 +381,8 @@ declare const RequestEvLocale: unique symbol;
 declare const RequestEvMode: unique symbol;
 
 declare const RequestEvStatus: unique symbol;
+
+declare const RequestEvTrailingSlash: unique symbol;
 
 /**
  * @alpha

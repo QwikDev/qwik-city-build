@@ -6888,14 +6888,14 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs6 = this.flowScalar(this.type);
+              const fs7 = this.flowScalar(this.type);
               if (atNextItem || it.value) {
-                map.items.push({ start, key: fs6, sep: [] });
+                map.items.push({ start, key: fs7, sep: [] });
                 this.onKeyLine = true;
               } else if (it.sep) {
-                this.stack.push(fs6);
+                this.stack.push(fs7);
               } else {
-                Object.assign(it, { key: fs6, sep: [] });
+                Object.assign(it, { key: fs7, sep: [] });
                 this.onKeyLine = true;
               }
               return;
@@ -7014,13 +7014,13 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs6 = this.flowScalar(this.type);
+              const fs7 = this.flowScalar(this.type);
               if (!it || it.value)
-                fc.items.push({ start: [], key: fs6, sep: [] });
+                fc.items.push({ start: [], key: fs7, sep: [] });
               else if (it.sep)
-                this.stack.push(fs6);
+                this.stack.push(fs7);
               else
-                Object.assign(it, { key: fs6, sep: [] });
+                Object.assign(it, { key: fs7, sep: [] });
               return;
             }
             case "flow-map-end":
@@ -20453,7 +20453,7 @@ async function createMdxTransformer(ctx) {
 }
 
 // packages/qwik-city/buildtime/vite/plugin.ts
-var import_node_path9 = require("path");
+var import_node_path10 = require("path");
 
 // packages/qwik-city/buildtime/runtime-generation/generate-entries.ts
 function createEntries(ctx, c2) {
@@ -20598,19 +20598,42 @@ function getClientRouteBundleNames(qwikPlugin, r2) {
   return bundlesNames;
 }
 
+// packages/qwik-city/buildtime/runtime-generation/generate-server-plugins.ts
+function createServerPlugins(ctx, _qwikPlugin, c2, esmImports) {
+  const isSsr = ctx.target === "ssr";
+  c2.push(`
+/** Qwik City Server Plugins (${ctx.layouts.length}) */`);
+  c2.push(`
+/** Qwik City ServerPlugins (${ctx.serverPlugins.length}) */`);
+  c2.push(`export const serverPlugins = [`);
+  if (isSsr) {
+    for (const file of ctx.serverPlugins) {
+      const importPath = JSON.stringify(getImportPath(file.filePath));
+      esmImports.push(`import * as ${file.id} from ${importPath};`);
+    }
+    for (const file of ctx.serverPlugins) {
+      c2.push(`  ${file.id},`);
+    }
+  }
+  c2.push(`];`);
+}
+
 // packages/qwik-city/buildtime/runtime-generation/generate-qwik-city-plan.ts
 function generateQwikCityPlan(ctx, qwikPlugin) {
   const esmImports = [];
   const c2 = [];
   c2.push(`
 /** Qwik City Plan */`);
+  createServerPlugins(ctx, qwikPlugin, c2, esmImports);
   createRoutes(ctx, qwikPlugin, c2, esmImports);
   createMenus(ctx, c2, esmImports);
   createEntries(ctx, c2);
   c2.push(`export const trailingSlash = ${JSON.stringify(!!ctx.opts.trailingSlash)};`);
   c2.push(`export const basePathname = ${JSON.stringify(ctx.opts.basePathname)};`);
   c2.push(`export const cacheModules = ${JSON.stringify(!ctx.isDevServer)};`);
-  c2.push(`export default { routes, menus, trailingSlash, basePathname, cacheModules };`);
+  c2.push(
+    `export default { routes, serverPlugins, menus, trailingSlash, basePathname, cacheModules };`
+  );
   return esmImports.join("\n") + c2.join("\n");
 }
 
@@ -20621,6 +20644,7 @@ function createBuildContext(rootDir, userOpts, target) {
     rootDir: normalizePath(rootDir),
     opts: normalizeOptions(rootDir, userOpts),
     routes: [],
+    serverPlugins: [],
     layouts: [],
     entries: [],
     serviceWorkers: [],
@@ -20654,6 +20678,12 @@ function normalizeOptions(rootDir, userOpts) {
     opts.routesDir = (0, import_node_path3.resolve)(rootDir, opts.routesDir);
   }
   opts.routesDir = normalizePath(opts.routesDir);
+  if (typeof opts.serverPluginsDir !== "string") {
+    opts.serverPluginsDir = (0, import_node_path3.resolve)(rootDir, "src", "server-plugins");
+  } else if (!(0, import_node_path3.isAbsolute)(opts.serverPluginsDir)) {
+    opts.serverPluginsDir = (0, import_node_path3.resolve)(rootDir, opts.serverPluginsDir);
+  }
+  opts.serverPluginsDir = normalizePath(opts.serverPluginsDir);
   if (typeof opts.baseUrl === "string") {
     opts.basePathname = opts.baseUrl;
   }
@@ -23180,6 +23210,29 @@ function resolveServiceWorkerEntry(opts, sourceFile) {
   return buildEntry;
 }
 
+// packages/qwik-city/buildtime/routing/walk-server-plugins.ts
+var import_node_fs4 = __toESM(require("fs"), 1);
+var import_node_path7 = require("path");
+async function walkServerPlugins(opts) {
+  const dirPath = opts.serverPluginsDir;
+  const dirItemNames = await import_node_fs4.default.promises.readdir(dirPath);
+  const sourceFiles = [];
+  await Promise.all(
+    dirItemNames.map(async (itemName) => {
+      const itemPath = normalizePath((0, import_node_path7.join)(dirPath, itemName));
+      const ext = getExtension(itemName);
+      if (isModuleExt(ext)) {
+        sourceFiles.push({
+          id: createFileId(opts.serverPluginsDir, itemPath),
+          filePath: itemPath,
+          ext
+        });
+      }
+    })
+  );
+  return sourceFiles;
+}
+
 // packages/qwik-city/buildtime/build.ts
 async function build(ctx) {
   try {
@@ -23199,7 +23252,10 @@ async function build(ctx) {
 async function updateBuildContext(ctx) {
   if (!ctx.activeBuild) {
     ctx.activeBuild = new Promise((resolve4, reject) => {
-      walkRoutes(ctx.opts.routesDir).then((sourceFiles) => {
+      walkServerPlugins(ctx.opts).then((serverPlugins) => {
+        ctx.serverPlugins = serverPlugins;
+        return walkRoutes(ctx.opts.routesDir);
+      }).then((sourceFiles) => {
         const resolved = resolveSourceFiles(ctx.opts, sourceFiles);
         ctx.layouts = resolved.layouts;
         ctx.routes = resolved.routes;
@@ -23235,8 +23291,8 @@ ${foundRoutes.map((r2) => `  - ${r2.filePath}`).join("\n")}`
 }
 
 // packages/qwik-city/buildtime/vite/dev-server.ts
-var import_node_fs4 = __toESM(require("fs"), 1);
-var import_node_path7 = require("path");
+var import_node_fs5 = __toESM(require("fs"), 1);
+var import_node_path8 = require("path");
 
 // packages/qwik-city/middleware/request-handler/cookie.ts
 var SAMESITE = {
@@ -23507,11 +23563,66 @@ var RedirectMessage = class extends AbortMessage {
 // packages/qwik-city/runtime/src/constants.ts
 var QACTION_KEY = "qaction";
 
+// packages/qwik-city/middleware/request-handler/response-page.ts
+function getQwikCityEnvData(requestEv) {
+  const { url, params, request, status, locale } = requestEv;
+  const requestHeaders = {};
+  request.headers.forEach((value2, key) => requestHeaders[key] = value2);
+  return {
+    url: new URL(url.pathname + url.search, url).href,
+    requestHeaders,
+    locale: locale(),
+    qwikcity: {
+      // mode: getRequestMode(requestEv),
+      params: { ...params },
+      response: {
+        status: status(),
+        loaders: getRequestLoaders(requestEv),
+        action: getRequestAction(requestEv)
+      }
+    }
+  };
+}
+
 // packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
-var resolveRequestHandlers = (routeModules, method) => {
-  const requestHandlers = [];
+var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
   const serverLoaders = [];
   const serverActions = [];
+  const requestHandlers = [];
+  const isPageRoute = !!(route && isLastModulePageRoute(route[1]));
+  if (serverPlugins) {
+    _resolveRequestHandlers(
+      serverLoaders,
+      serverActions,
+      requestHandlers,
+      serverPlugins,
+      isPageRoute,
+      method
+    );
+  }
+  if (route) {
+    requestHandlers.push(fixTrailingSlash);
+    if (isPageRoute) {
+      requestHandlers.push(renderQData);
+    }
+    _resolveRequestHandlers(
+      serverLoaders,
+      serverActions,
+      requestHandlers,
+      route[1],
+      isPageRoute,
+      method
+    );
+    if (isPageRoute) {
+      if (serverLoaders.length + actionsMiddleware.length > 0) {
+        requestHandlers.push(actionsMiddleware(serverLoaders, serverActions));
+      }
+      requestHandlers.push(renderHandler);
+    }
+  }
+  return requestHandlers;
+};
+var _resolveRequestHandlers = (serverLoaders, serverActions, requestHandlers, routeModules, collectActions, method) => {
   for (const routeModule of routeModules) {
     if (typeof routeModule.onRequest === "function") {
       requestHandlers.push(routeModule.onRequest);
@@ -23554,19 +23665,17 @@ var resolveRequestHandlers = (routeModules, method) => {
     } else if (Array.isArray(methodReqHandler)) {
       requestHandlers.push(...methodReqHandler);
     }
-    const loaders = Object.values(routeModule).filter(
-      (e) => e.__brand === "server_loader"
-    );
-    const actions = Object.values(routeModule).filter(
-      (e) => e.__brand === "server_action"
-    );
-    serverLoaders.push(...loaders);
-    serverActions.push(...actions);
+    if (collectActions) {
+      const loaders = Object.values(routeModule).filter(
+        (e) => e.__brand === "server_loader"
+      );
+      const actions = Object.values(routeModule).filter(
+        (e) => e.__brand === "server_action"
+      );
+      serverLoaders.push(...loaders);
+      serverActions.push(...actions);
+    }
   }
-  if (serverLoaders.length + actionsMiddleware.length > 0) {
-    requestHandlers.push(actionsMiddleware(serverLoaders, serverActions));
-  }
-  return requestHandlers;
 };
 function actionsMiddleware(serverLoaders, serverActions) {
   return async (requestEv) => {
@@ -23610,11 +23719,97 @@ function actionsMiddleware(serverLoaders, serverActions) {
     }
   };
 }
+function fixTrailingSlash({ pathname, url, redirect }) {
+  const trailingSlash = true;
+  const basePathname = "/";
+  if (!isQDataJson(pathname) && pathname !== basePathname && !pathname.endsWith(".html")) {
+    if (trailingSlash) {
+      if (!pathname.endsWith("/")) {
+        throw redirect(302 /* Found */, pathname + "/" + url.search);
+      }
+    } else {
+      if (pathname.endsWith("/")) {
+        throw redirect(302 /* Found */, pathname.slice(0, pathname.length - 1) + url.search);
+      }
+    }
+  }
+}
 function isLastModulePageRoute(routeModules) {
   const lastRouteModule = routeModules[routeModules.length - 1];
   return lastRouteModule && typeof lastRouteModule.default === "function";
 }
+function getPathname(url, trailingSlash) {
+  if (url.pathname.endsWith(QDATA_JSON)) {
+    return url.pathname.slice(0, -QDATA_JSON.length + (trailingSlash ? 1 : 0)) + url.search;
+  }
+  return url.pathname;
+}
 var encoder = /* @__PURE__ */ new TextEncoder();
+async function renderQData(requestEv) {
+  const isPageDataReq = isQDataJson(requestEv.pathname);
+  if (isPageDataReq) {
+    try {
+      await requestEv.next();
+    } catch (err) {
+      if (!(err instanceof RedirectMessage)) {
+        throw err;
+      }
+    }
+    if (requestEv.headersSent || requestEv.exited) {
+      return;
+    }
+    const status = requestEv.status();
+    const location = requestEv.headers.get("Location");
+    const isRedirect = status >= 301 && status <= 308 && location;
+    if (isRedirect) {
+      requestEv.headers.set("Location", makeQDataPath(location));
+      requestEv.getWritableStream().close();
+      return;
+    }
+    const requestHeaders = {};
+    requestEv.request.headers.forEach((value2, key) => requestHeaders[key] = value2);
+    requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
+    const qData = {
+      loaders: getRequestLoaders(requestEv),
+      action: getRequestAction(requestEv),
+      status: status !== 200 ? status : 200,
+      href: getPathname(requestEv.url, true)
+      // todo
+    };
+    const writer = requestEv.getWritableStream().getWriter();
+    writer.write(encoder.encode(serializeData(qData)));
+    requestEv.sharedMap.set("qData", qData);
+    writer.close();
+  }
+}
+function serializeData(data) {
+  return JSON.stringify(data, (_2, value2) => {
+    if (value2 instanceof FormData) {
+      return {
+        __brand: "formdata",
+        value: formDataToArray(value2)
+      };
+    }
+    return value2;
+  });
+}
+function formDataToArray(formData) {
+  const array = [];
+  formData.forEach((value2, key) => {
+    if (typeof value2 === "string") {
+      array.push([key, value2]);
+    } else {
+      array.push([key, value2.name]);
+    }
+  });
+  return array;
+}
+function makeQDataPath(href) {
+  const append = QDATA_JSON;
+  const url = new URL(href, "http://localhost");
+  const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
+  return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
+}
 
 // packages/qwik-city/middleware/request-handler/cache-control.ts
 function createCacheControl(cacheControl) {
@@ -23652,7 +23847,9 @@ var RequestEvLocale = Symbol("RequestEvLocale");
 var RequestEvMode = Symbol("RequestEvMode");
 var RequestEvStatus = Symbol("RequestEvStatus");
 var RequestEvAction = Symbol("RequestEvAction");
-function createRequestEvent(serverRequestEv, params, requestHandlers, resolved) {
+var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
+var RequestEvBasePathname = Symbol("RequestEvBasePathname");
+function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
   const { request, platform } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
   const headers = createHeaders();
@@ -23691,6 +23888,8 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, resolved) 
     [RequestEvMode]: serverRequestEv.mode,
     [RequestEvStatus]: 200,
     [RequestEvAction]: void 0,
+    [RequestEvTrailingSlash]: trailingSlash,
+    [RequestEvBasePathname]: basePathname,
     cookie,
     headers,
     method: request.method,
@@ -23803,36 +24002,28 @@ function getRequestMode(requestEv) {
 var ABORT_INDEX = 999999999;
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
-function runQwikCity(serverRequestEv, params, requestHandlers, isPage, trailingSlash = true, basePathname = "/") {
+function runQwikCity(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/") {
   if (requestHandlers.length === 0) {
     throw new ErrorResponse(404 /* NotFound */, `Not Found`);
   }
   let resolve4;
   const responsePromise = new Promise((r2) => resolve4 = r2);
-  const requestEv = createRequestEvent(serverRequestEv, params, requestHandlers, resolve4);
+  const requestEv = createRequestEvent(
+    serverRequestEv,
+    params,
+    requestHandlers,
+    trailingSlash,
+    basePathname,
+    resolve4
+  );
   return {
     response: responsePromise,
     requestEv,
-    completion: runNext(requestEv, isPage, trailingSlash, basePathname, resolve4)
+    completion: runNext(requestEv, resolve4)
   };
 }
-async function runNext(requestEv, isPage, trailingSlash, basePathname, resolve4) {
+async function runNext(requestEv, resolve4) {
   try {
-    const { pathname, url } = requestEv;
-    if (isPage && !isQDataJson(pathname) && pathname !== basePathname && !pathname.endsWith(".html")) {
-      if (trailingSlash) {
-        if (!pathname.endsWith("/")) {
-          throw requestEv.redirect(302 /* Found */, pathname + "/" + url.search);
-        }
-      } else {
-        if (pathname.endsWith("/")) {
-          throw requestEv.redirect(
-            302 /* Found */,
-            pathname.slice(0, pathname.length - 1) + url.search
-          );
-        }
-      }
-    }
     await requestEv.next();
   } catch (e) {
     if (e instanceof RedirectMessage) {
@@ -23868,27 +24059,6 @@ var isQDataJson = (pathname) => {
 };
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
-
-// packages/qwik-city/middleware/request-handler/response-page.ts
-function getQwikCityEnvData(requestEv) {
-  const { url, params, request, status, locale } = requestEv;
-  const requestHeaders = {};
-  request.headers.forEach((value2, key) => requestHeaders[key] = value2);
-  return {
-    url: new URL(url.pathname + url.search, url).href,
-    requestHeaders,
-    locale: locale(),
-    qwikcity: {
-      // mode: getRequestMode(requestEv),
-      params: { ...params },
-      response: {
-        status: status(),
-        loaders: getRequestLoaders(requestEv),
-        action: getRequestAction(requestEv)
-      }
-    }
-  };
-}
 
 // packages/qwik-city/runtime/src/routing.ts
 var getPathParams = (paramNames, match) => {
@@ -24056,80 +24226,6 @@ function generateCodeFrame(source, start = 0, end) {
   return res.join("\n");
 }
 
-// packages/qwik-city/middleware/request-handler/render-middleware.ts
-async function renderQData(requestEv) {
-  const isPageDataReq = isQDataJson(requestEv.pathname);
-  if (isPageDataReq) {
-    try {
-      await requestEv.next();
-    } catch (err) {
-      if (!(err instanceof RedirectMessage)) {
-        throw err;
-      }
-    }
-    if (requestEv.headersSent || requestEv.exited) {
-      return;
-    }
-    const status = requestEv.status();
-    const location = requestEv.headers.get("Location");
-    const isRedirect = status >= 301 && status <= 308 && location;
-    if (isRedirect) {
-      requestEv.headers.set("Location", makeQDataPath(location));
-      requestEv.getWritableStream().close();
-      return;
-    }
-    const requestHeaders = {};
-    requestEv.request.headers.forEach((value2, key) => requestHeaders[key] = value2);
-    requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
-    const qData = {
-      loaders: getRequestLoaders(requestEv),
-      action: getRequestAction(requestEv),
-      status: status !== 200 ? status : 200,
-      href: getPathname(requestEv.url, true)
-      // todo
-    };
-    const writer = requestEv.getWritableStream().getWriter();
-    writer.write(encoder2.encode(serializeData(qData)));
-    requestEv.sharedMap.set("qData", qData);
-    writer.close();
-  }
-}
-function serializeData(data) {
-  return JSON.stringify(data, (_2, value2) => {
-    if (value2 instanceof FormData) {
-      return {
-        __brand: "formdata",
-        value: formDataToArray(value2)
-      };
-    }
-    return value2;
-  });
-}
-function formDataToArray(formData) {
-  const array = [];
-  formData.forEach((value2, key) => {
-    if (typeof value2 === "string") {
-      array.push([key, value2]);
-    } else {
-      array.push([key, value2.name]);
-    }
-  });
-  return array;
-}
-function makeQDataPath(href) {
-  const append = QDATA_JSON;
-  const url = new URL(href, "http://localhost");
-  const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
-  return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
-}
-function getPathname(url, trailingSlash) {
-  if (url.pathname.endsWith(QDATA_JSON)) {
-    return url.pathname.slice(0, -QDATA_JSON.length + (trailingSlash ? 1 : 0)) + url.search;
-  }
-  return url.pathname;
-}
-var encoder2 = /* @__PURE__ */ new TextEncoder();
-
 // packages/qwik-city/buildtime/vite/dev-server.ts
 function ssrDevMiddleware(ctx, server) {
   const matchRouteRequest = (pathname) => {
@@ -24171,14 +24267,21 @@ function ssrDevMiddleware(ctx, server) {
           console.warn(d.message);
         }
       }
-      const matchPathname = getRouteMatchPathname(url.pathname, ctx.opts.trailingSlash);
-      const routeResult = matchRouteRequest(matchPathname);
-      if (routeResult) {
-        const serverRequestEv = await fromNodeHttp(url, req, res, "dev");
-        const { route, params } = routeResult;
-        const routeModulePaths = /* @__PURE__ */ new WeakMap();
+      const routeModulePaths = /* @__PURE__ */ new WeakMap();
+      try {
+        const serverPlugins = [];
+        for (const file of ctx.serverPlugins) {
+          const layoutModule = await server.ssrLoadModule(file.filePath);
+          serverPlugins.push(layoutModule);
+          routeModulePaths.set(layoutModule, file.filePath);
+        }
+        const matchPathname = getRouteMatchPathname(url.pathname, ctx.opts.trailingSlash);
+        const routeResult = matchRouteRequest(matchPathname);
         const routeModules = [];
-        try {
+        let params = {};
+        if (routeResult) {
+          const route = routeResult.route;
+          params = routeResult.params;
           for (const layout of route.layouts) {
             const layoutModule = await server.ssrLoadModule(layout.filePath);
             routeModules.push(layoutModule);
@@ -24187,52 +24290,52 @@ function ssrDevMiddleware(ctx, server) {
           const endpointModule = await server.ssrLoadModule(route.filePath);
           routeModules.push(endpointModule);
           routeModulePaths.set(endpointModule, route.filePath);
-          const requestHandlers = resolveRequestHandlers(
-            routeModules,
-            serverRequestEv.request.method
-          );
-          const isPage = isLastModulePageRoute(routeModules);
-          if (isPage) {
-            requestHandlers.unshift(renderQData);
-            requestHandlers.push((requestEv) => {
-              const isPageDataReq = requestEv.pathname.endsWith(QDATA_JSON);
-              if (!isPageDataReq) {
-                const envData = getQwikCityEnvData(requestEv);
-                res._qwikEnvData = {
-                  ...res._qwikEnvData,
-                  ...envData
-                };
-                return next();
-              }
-            });
+        }
+        const renderFn = (requestEv) => {
+          const isPageDataReq = requestEv.pathname.endsWith(QDATA_JSON);
+          if (!isPageDataReq) {
+            const envData = getQwikCityEnvData(requestEv);
+            res._qwikEnvData = {
+              ...res._qwikEnvData,
+              ...envData
+            };
+            return next();
           }
+        };
+        const requestHandlers = resolveRequestHandlers(
+          serverPlugins,
+          [{}, routeModules, void 0, void 0],
+          req.method ?? "GET",
+          renderFn
+        );
+        if (requestHandlers.length > 0) {
+          const serverRequestEv = await fromNodeHttp(url, req, res, "dev");
           const { completion } = runQwikCity(
             serverRequestEv,
             params,
             requestHandlers,
-            isPage,
             ctx.opts.trailingSlash,
             ctx.opts.basePathname
           );
           await completion;
-        } catch (e) {
-          server.ssrFixStacktrace(e);
-          formatError(e);
-          if (e instanceof Error && e.id === "DEV_SERIALIZE") {
-            next(formatDevSerializeError(e, routeModulePaths));
-          } else {
-            next(e);
+          return;
+        } else {
+          for (const sw of ctx.serviceWorkers) {
+            const match = sw.pattern.exec(req.originalUrl);
+            if (match) {
+              res.setHeader("Content-Type", "text/javascript");
+              res.end(DEV_SERVICE_WORKER);
+              return;
+            }
           }
         }
-        return;
-      } else {
-        for (const sw of ctx.serviceWorkers) {
-          const match = sw.pattern.exec(req.originalUrl);
-          if (match) {
-            res.setHeader("Content-Type", "text/javascript");
-            res.end(DEV_SERVICE_WORKER);
-            return;
-          }
+      } catch (e) {
+        server.ssrFixStacktrace(e);
+        formatError(e);
+        if (e instanceof Error && e.id === "DEV_SERIALIZE") {
+          next(formatDevSerializeError(e, routeModulePaths));
+        } else {
+          next(e);
         }
       }
       const ext = getExtension(req.originalUrl);
@@ -24268,7 +24371,7 @@ function dev404Middleware() {
 function staticDistMiddleware({ config }) {
   const distDirs = new Set(
     ["dist", config.build.outDir, config.publicDir].map(
-      (d) => normalizePath((0, import_node_path7.resolve)(config.root, d))
+      (d) => normalizePath((0, import_node_path8.resolve)(config.root, d))
     )
   );
   return async (req, res, next) => {
@@ -24286,14 +24389,14 @@ function staticDistMiddleware({ config }) {
     }
     for (const distDir of distDirs) {
       try {
-        const filePath = (0, import_node_path7.join)(distDir, relPath);
-        const s2 = await import_node_fs4.default.promises.stat(filePath);
+        const filePath = (0, import_node_path8.join)(distDir, relPath);
+        const s2 = await import_node_fs5.default.promises.stat(filePath);
         if (s2.isFile()) {
           res.writeHead(200, {
             "Content-Type": contentType,
             "X-Source-Path": filePath
           });
-          import_node_fs4.default.createReadStream(filePath).pipe(res);
+          import_node_fs5.default.createReadStream(filePath).pipe(res);
           return;
         }
       } catch (e) {
@@ -24314,7 +24417,7 @@ function formatDevSerializeError(err, routeModulePaths) {
     const filePath = routeModulePaths.get(endpointModule);
     if (filePath) {
       try {
-        const code2 = import_node_fs4.default.readFileSync(filePath, "utf-8");
+        const code2 = import_node_fs5.default.readFileSync(filePath, "utf-8");
         err.plugin = "vite-plugin-qwik-city";
         err.id = normalizePath(filePath);
         err.loc = {
@@ -24401,7 +24504,7 @@ function formatError(e) {
         if (loc.file) {
           err.id = normalizePath(err.loc.file);
           try {
-            const code2 = import_node_fs4.default.readFileSync(err.loc.file, "utf-8");
+            const code2 = import_node_fs5.default.readFileSync(err.loc.file, "utf-8");
             err.frame = generateCodeFrame(code2, err.loc);
           } catch {
           }
@@ -24427,7 +24530,7 @@ async function patchGlobalFetch() {
 }
 
 // packages/qwik-city/buildtime/vite/plugin.ts
-var import_node_fs6 = __toESM(require("fs"), 1);
+var import_node_fs7 = __toESM(require("fs"), 1);
 
 // sw-reg:@qwik-city-sw-register-build
 var qwik_city_sw_register_build_default = '((s,a,i,r)=>{i=(e,t)=>{t=document.querySelector("[q\\\\:base]"),t&&a.active&&a.active.postMessage({type:"qprefetch",base:t.getAttribute("q:base"),...e})},document.addEventListener("qprefetch",e=>{const t=e.detail;a?i(t):t.bundles&&s.push(...t.bundles)}),navigator.serviceWorker.register("__url").then(e=>{r=()=>{a=e,i({bundles:s})},e.installing?e.installing.addEventListener("statechange",t=>{t.target.state=="activated"&&r()}):e.active&&r()}).catch(e=>console.error(e))})([])';
@@ -24548,8 +24651,8 @@ navigator.serviceWorker.getRegistrations().then((regs) => {
 `;
 
 // packages/qwik-city/adaptors/shared/vite/post-build.ts
-var import_node_fs5 = __toESM(require("fs"), 1);
-var import_node_path8 = require("path");
+var import_node_fs6 = __toESM(require("fs"), 1);
+var import_node_path9 = require("path");
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ingorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
   const staticPaths = new Set(userStaticPaths);
@@ -24558,19 +24661,19 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
     if (ingorePathnames.has(pathname)) {
       return;
     }
-    const fsPath = (0, import_node_path8.join)(fsDir, fsName);
+    const fsPath = (0, import_node_path9.join)(fsDir, fsName);
     if (fsName === "index.html" || fsName === "q-data.json") {
       if (!staticPaths.has(pathname) && cleanStatic) {
-        await import_node_fs5.default.promises.unlink(fsPath);
+        await import_node_fs6.default.promises.unlink(fsPath);
       }
       return;
     }
     if (fsName === "404.html") {
-      const notFoundHtml = await import_node_fs5.default.promises.readFile(fsPath, "utf-8");
+      const notFoundHtml = await import_node_fs6.default.promises.readFile(fsPath, "utf-8");
       notFounds.push([pathname, notFoundHtml]);
       return;
     }
-    const stat = await import_node_fs5.default.promises.stat(fsPath);
+    const stat = await import_node_fs6.default.promises.stat(fsPath);
     if (stat.isDirectory()) {
       await loadDir(fsPath, pathname + fsName + "/");
     } else if (stat.isFile()) {
@@ -24578,10 +24681,10 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
     }
   };
   const loadDir = async (fsDir, pathname) => {
-    const itemNames = await import_node_fs5.default.promises.readdir(fsDir);
+    const itemNames = await import_node_fs6.default.promises.readdir(fsDir);
     await Promise.all(itemNames.map((i) => loadItem(fsDir, i, pathname)));
   };
-  if (import_node_fs5.default.existsSync(clientOutDir)) {
+  if (import_node_fs6.default.existsSync(clientOutDir)) {
     await loadDir(clientOutDir, basePathname);
   }
   const notFoundPathsCode = createNotFoundPathsModule(basePathname, notFounds, format);
@@ -24710,7 +24813,7 @@ function qwikCity(userOpts) {
     },
     async configResolved(config) {
       var _a3, _b, _c;
-      rootDir = (0, import_node_path9.resolve)(config.root);
+      rootDir = (0, import_node_path10.resolve)(config.root);
       const target = ((_a3 = config.build) == null ? void 0 : _a3.ssr) || config.mode === "ssr" ? "ssr" : "client";
       ctx = createBuildContext(rootDir, userOpts, target);
       ctx.isDevServer = config.command === "serve";
@@ -24740,7 +24843,7 @@ function qwikCity(userOpts) {
     },
     resolveId(id) {
       if (id === QWIK_CITY_PLAN_ID || id === QWIK_CITY_ENTRIES_ID || id === QWIK_CITY_SW_REGISTER) {
-        return (0, import_node_path9.join)(rootDir, id);
+        return (0, import_node_path10.join)(rootDir, id);
       }
       if (id === STATIC_PATHS_ID) {
         return {
@@ -24783,7 +24886,7 @@ function qwikCity(userOpts) {
     },
     async transform(code2, id) {
       if (ctx) {
-        const fileName = (0, import_node_path9.basename)(id);
+        const fileName = (0, import_node_path10.basename)(id);
         if (isMenuFileName(fileName)) {
           const menuCode = await transformMenu(ctx.opts, id, code2);
           return menuCode;
@@ -24843,13 +24946,13 @@ function qwikCity(userOpts) {
           if (manifest && clientOutDir) {
             for (const swEntry of ctx.serviceWorkers) {
               try {
-                const swClientDistPath = (0, import_node_path9.join)(clientOutDir, swEntry.chunkFileName);
-                const swCode = await import_node_fs6.default.promises.readFile(swClientDistPath, "utf-8");
+                const swClientDistPath = (0, import_node_path10.join)(clientOutDir, swEntry.chunkFileName);
+                const swCode = await import_node_fs7.default.promises.readFile(swClientDistPath, "utf-8");
                 try {
                   const swCodeUpdate = prependManifestToServiceWorker(ctx, manifest, swCode);
                   if (swCodeUpdate) {
-                    await import_node_fs6.default.promises.mkdir(clientOutDir, { recursive: true });
-                    await import_node_fs6.default.promises.writeFile(swClientDistPath, swCodeUpdate);
+                    await import_node_fs7.default.promises.mkdir(clientOutDir, { recursive: true });
+                    await import_node_fs7.default.promises.writeFile(swClientDistPath, swCodeUpdate);
                   }
                 } catch (e2) {
                   console.error(e2);
@@ -24866,12 +24969,12 @@ function qwikCity(userOpts) {
             false
           );
           if (outDir) {
-            await import_node_fs6.default.promises.mkdir(outDir, { recursive: true });
-            const serverPackageJsonPath = (0, import_node_path9.join)(outDir, "package.json");
+            await import_node_fs7.default.promises.mkdir(outDir, { recursive: true });
+            const serverPackageJsonPath = (0, import_node_path10.join)(outDir, "package.json");
             let packageJson = {};
-            const packageJsonExists = import_node_fs6.default.existsSync(serverPackageJsonPath);
+            const packageJsonExists = import_node_fs7.default.existsSync(serverPackageJsonPath);
             if (packageJsonExists) {
-              const content = await ((_a3 = await import_node_fs6.default.promises.readFile(serverPackageJsonPath)) == null ? void 0 : _a3.toString());
+              const content = await ((_a3 = await import_node_fs7.default.promises.readFile(serverPackageJsonPath)) == null ? void 0 : _a3.toString());
               const contentAsJson = JSON.parse(content);
               packageJson = {
                 ...contentAsJson
@@ -24880,9 +24983,9 @@ function qwikCity(userOpts) {
             packageJson = { ...packageJson, type: "module" };
             const serverPackageJsonCode = JSON.stringify(packageJson, null, 2);
             await Promise.all([
-              import_node_fs6.default.promises.writeFile((0, import_node_path9.join)(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
-              import_node_fs6.default.promises.writeFile((0, import_node_path9.join)(outDir, RESOLVED_NOT_FOUND_PATHS_ID), notFoundPathsCode),
-              import_node_fs6.default.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode)
+              import_node_fs7.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
+              import_node_fs7.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_NOT_FOUND_PATHS_ID), notFoundPathsCode),
+              import_node_fs7.default.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode)
             ]);
           }
         }

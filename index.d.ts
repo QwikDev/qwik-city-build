@@ -362,6 +362,7 @@ export declare const QwikCityMockProvider: Component<QwikCityMockProps>;
  */
 export declare interface QwikCityPlan {
     routes: RouteData[];
+    serverPlugins?: RouteModule[];
     basePathname?: string;
     menus?: MenuData[];
     trailingSlash?: boolean;

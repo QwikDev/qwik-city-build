@@ -5,7 +5,7 @@ import { basename, dirname, join as join2, resolve } from "path";
 // packages/qwik-city/adaptors/shared/vite/post-build.ts
 import fs from "fs";
 import { join } from "path";
-import { getErrorHtml } from "../../../middleware/shared/index.mjs";
+import { getErrorHtml } from "../../../middleware/request-handler/index.mjs";
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ingorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
   const staticPaths = new Set(userStaticPaths);

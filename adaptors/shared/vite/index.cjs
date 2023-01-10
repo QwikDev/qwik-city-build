@@ -44,7 +44,7 @@ var import_node_path2 = require("path");
 // packages/qwik-city/adaptors/shared/vite/post-build.ts
 var import_node_fs = __toESM(require("fs"), 1);
 var import_node_path = require("path");
-var import_request_handler = require("../../../middleware/shared/index.cjs");
+var import_request_handler = require("../../../middleware/request-handler/index.cjs");
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ingorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
   const staticPaths = new Set(userStaticPaths);
