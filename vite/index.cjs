@@ -13578,6 +13578,9 @@ var MARKDOWN_EXTS = {
 function isIndexModule(extlessName) {
   return /^index(|!|@.+)$/.test(extlessName);
 }
+function isPluginModule(extlessName) {
+  return /^plugin(|@.+)$/.test(extlessName);
+}
 function isLayoutModule(extlessName) {
   return /^layout(|!|-.+)$/.test(extlessName);
 }
@@ -20679,7 +20682,7 @@ function normalizeOptions(rootDir, userOpts) {
   }
   opts.routesDir = normalizePath(opts.routesDir);
   if (typeof opts.serverPluginsDir !== "string") {
-    opts.serverPluginsDir = (0, import_node_path3.resolve)(rootDir, "src", "server-plugins");
+    opts.serverPluginsDir = (0, import_node_path3.resolve)(rootDir, "src", "routes");
   } else if (!(0, import_node_path3.isAbsolute)(opts.serverPluginsDir)) {
     opts.serverPluginsDir = (0, import_node_path3.resolve)(rootDir, opts.serverPluginsDir);
   }
@@ -23221,7 +23224,8 @@ async function walkServerPlugins(opts) {
     dirItemNames.map(async (itemName) => {
       const itemPath = normalizePath((0, import_node_path7.join)(dirPath, itemName));
       const ext = getExtension(itemName);
-      if (isModuleExt(ext)) {
+      const extlessName = removeExtension(itemName);
+      if (isModuleExt(ext) && isPluginModule(extlessName)) {
         sourceFiles.push({
           id: createFileId(opts.serverPluginsDir, itemPath),
           filePath: itemPath,
@@ -23601,8 +23605,8 @@ var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
     );
   }
   if (route) {
-    requestHandlers.push(fixTrailingSlash);
     if (isPageRoute) {
+      requestHandlers.push(fixTrailingSlash);
       requestHandlers.push(renderQData);
     }
     _resolveRequestHandlers(
@@ -23872,13 +23876,24 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
       throw new Error("Response already sent");
     }
   };
-  const send = (statusCode, body) => {
+  const send = (statusOrResponse, body) => {
     check();
-    requestEv[RequestEvStatus] = statusCode;
-    const writableStream2 = requestEv.getWritableStream();
-    const writer = writableStream2.getWriter();
-    writer.write(typeof body === "string" ? encoder.encode(body) : body);
-    writer.close();
+    if (typeof statusOrResponse === "number") {
+      requestEv[RequestEvStatus] = statusOrResponse;
+      const writableStream2 = requestEv.getWritableStream();
+      const writer = writableStream2.getWriter();
+      writer.write(typeof body === "string" ? encoder.encode(body) : body);
+      writer.close();
+    } else {
+      requestEv[RequestEvStatus] = statusOrResponse.status;
+      statusOrResponse.headers.forEach((value2, key) => {
+        headers.append(key, value2);
+      });
+      const writableStream2 = requestEv.getWritableStream();
+      if (statusOrResponse.body) {
+        statusOrResponse.body.pipeTo(writableStream2);
+      }
+    }
     return new AbortMessage();
   };
   const loaders = {};

@@ -347,8 +347,8 @@ var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
     );
   }
   if (route) {
-    requestHandlers.push(fixTrailingSlash);
     if (isPageRoute) {
+      requestHandlers.push(fixTrailingSlash);
       requestHandlers.push(renderQData);
     }
     _resolveRequestHandlers(
@@ -666,13 +666,24 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
       throw new Error("Response already sent");
     }
   };
-  const send = (statusCode, body) => {
+  const send = (statusOrResponse, body) => {
     check();
-    requestEv[RequestEvStatus] = statusCode;
-    const writableStream2 = requestEv.getWritableStream();
-    const writer = writableStream2.getWriter();
-    writer.write(typeof body === "string" ? encoder.encode(body) : body);
-    writer.close();
+    if (typeof statusOrResponse === "number") {
+      requestEv[RequestEvStatus] = statusOrResponse;
+      const writableStream2 = requestEv.getWritableStream();
+      const writer = writableStream2.getWriter();
+      writer.write(typeof body === "string" ? encoder.encode(body) : body);
+      writer.close();
+    } else {
+      requestEv[RequestEvStatus] = statusOrResponse.status;
+      statusOrResponse.headers.forEach((value, key) => {
+        headers.append(key, value);
+      });
+      const writableStream2 = requestEv.getWritableStream();
+      if (statusOrResponse.body) {
+        statusOrResponse.body.pipeTo(writableStream2);
+      }
+    }
     return new AbortMessage();
   };
   const loaders = {};

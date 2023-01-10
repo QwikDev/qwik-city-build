@@ -302,7 +302,7 @@ declare interface RequestEventCommon<PLATFORM = unknown> {
      * Send a body response. The `Content-Type` response header is not automatically set
      * when using `send()` and must be set manually. A `send()` response can only be called once.
      */
-    readonly send: (statusCode: number, data: any) => AbortMessage;
+    readonly send: SendMethod;
     readonly exit: () => AbortMessage;
     /**
      * HTTP response headers.
@@ -393,6 +393,14 @@ export declare type RequestHandler<PLATFORM = unknown> = (ev: RequestEvent<PLATF
  * @alpha
  */
 export declare function requestHandler<T = unknown>(serverRequestEv: ServerRequestEvent<T>, opts: ServerRenderOptions): Promise<QwikCityRun<T> | null>;
+
+/**
+ * @alpha
+ */
+declare interface SendMethod {
+    (statusCode: number, data: any): AbortMessage;
+    (response: Response): AbortMessage;
+}
 
 declare interface ServerAction<RETURN> {
     readonly [isServerLoader]?: true;
