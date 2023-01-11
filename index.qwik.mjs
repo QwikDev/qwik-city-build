@@ -500,7 +500,7 @@ const Link = /* @__PURE__ */ componentQrl(inlinedQrl((props) => {
     onFocus$: inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
     onQVisible$: inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4"),
     children: /* @__PURE__ */ jsx$1(Slot, {}, "AD_0")
-  });
+  }, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
 const prefetchLinkResources = (elm, isOnVisible) => {
   if (elm && elm.href && elm.hasAttribute("data-prefetch")) {
