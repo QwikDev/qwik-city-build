@@ -339,7 +339,7 @@ function isSerializable(val) {
 }
 
 // packages/qwik-city/middleware/request-handler/response-page.ts
-function getQwikCityServerProps(requestEv) {
+function getQwikCityServerData(requestEv) {
   const { url, params, request, status, locale } = requestEv;
   const requestHeaders = {};
   request.headers.forEach((value, key) => requestHeaders[key] = value);
@@ -544,7 +544,7 @@ function renderQwikMiddleware(render, opts) {
       const isStatic = getRequestMode(requestEv) === "static";
       const result = await render({
         stream,
-        serverProps: getQwikCityServerProps(requestEv),
+        serverData: getQwikCityServerData(requestEv),
         containerAttributes: {
           ["q:render"]: isStatic ? "static" : ""
         }

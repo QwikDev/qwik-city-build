@@ -23568,7 +23568,7 @@ var RedirectMessage = class extends AbortMessage {
 var QACTION_KEY = "qaction";
 
 // packages/qwik-city/middleware/request-handler/response-page.ts
-function getQwikCityServerProps(requestEv) {
+function getQwikCityServerData(requestEv) {
   const { url, params, request, status, locale } = requestEv;
   const requestHeaders = {};
   request.headers.forEach((value2, key) => requestHeaders[key] = value2);
@@ -24309,7 +24309,7 @@ function ssrDevMiddleware(ctx, server) {
         const renderFn = (requestEv) => {
           const isPageDataReq = requestEv.pathname.endsWith(QDATA_JSON);
           if (!isPageDataReq) {
-            const envData = getQwikCityServerProps(requestEv);
+            const envData = getQwikCityServerData(requestEv);
             res._qwikEnvData = {
               ...res._qwikEnvData,
               ...envData
