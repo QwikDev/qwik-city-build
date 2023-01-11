@@ -24309,10 +24309,10 @@ function ssrDevMiddleware(ctx, server) {
         const renderFn = (requestEv) => {
           const isPageDataReq = requestEv.pathname.endsWith(QDATA_JSON);
           if (!isPageDataReq) {
-            const envData = getQwikCityServerData(requestEv);
+            const serverData = getQwikCityServerData(requestEv);
             res._qwikEnvData = {
               ...res._qwikEnvData,
-              ...envData
+              ...serverData
             };
             return next();
           }
