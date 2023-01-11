@@ -524,7 +524,7 @@ const Link = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((props) => {
     onFocus$: qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
     onQVisible$: qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4"),
     children: /* @__PURE__ */ jsxRuntime.jsx(qwik.Slot, {}, "AD_0")
-  });
+  }, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
 const prefetchLinkResources = (elm, isOnVisible) => {
   if (elm && elm.href && elm.hasAttribute("data-prefetch")) {
