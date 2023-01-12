@@ -10,6 +10,7 @@ import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
 import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
+import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
@@ -20,12 +21,12 @@ declare class AbortMessage {
 /**
  * @alpha
  */
-export declare const action$: <B>(first: (form: FormData, event: RequestEventLoader) => ValueOrPromise<B>) => ServerAction<B>;
+export declare const action$: <B>(first: (form: FormData, event: RequestEventLoader_2) => ValueOrPromise<B>) => ServerAction<B>;
 
 /**
  * @alpha
  */
-export declare const actionQrl: <B>(actionQrl: QRL<(form: FormData, event: RequestEventLoader) => ValueOrPromise<B>>) => ServerAction<B>;
+export declare const actionQrl: <B>(actionQrl: QRL<(form: FormData, event: RequestEventLoader_2) => ValueOrPromise<B>>) => ServerAction<B>;
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
 
@@ -266,7 +267,7 @@ export declare const Form: <T>({ action, ...rest }: FormProps<T>) => JSXNode<"fo
  * @alpha
  */
 export declare interface FormProps<T> extends Omit<QwikJSX.IntrinsicElements['form'], 'action'> {
-    action: ServerActionUtils<T>;
+    action: ServerActionUse<T>;
     method?: 'post';
 }
 
@@ -306,12 +307,12 @@ export declare interface LinkProps extends AnchorAttributes {
 /**
  * @alpha
  */
-export declare const loader$: <PLATFORM, B>(first: (event: RequestEventLoader<PLATFORM>) => B) => ServerLoader<B>;
+export declare const loader$: <PLATFORM, B>(first: (event: RequestEventLoader_2<PLATFORM>) => B) => ServerLoader<B>;
 
 /**
  * @alpha
  */
-export declare const loaderQrl: <PLATFORM, B>(loaderQrl: QRL<(event: RequestEventLoader<PLATFORM>) => B>) => ServerLoader<B>;
+export declare const loaderQrl: <PLATFORM, B>(loaderQrl: QRL<(event: RequestEventLoader_2<PLATFORM>) => B>) => ServerLoader<B>;
 
 declare type MenuData = [pathname: string, menuLoader: MenuModuleLoader];
 
@@ -507,10 +508,12 @@ declare interface RequestEventCommon<PLATFORM = unknown> {
     readonly sharedMap: Map<string, any>;
 }
 
+export { RequestEventLoader }
+
 /**
  * @alpha
  */
-declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
     getData: GetData;
     fail: <T>(status: number, returnData: T) => T;
 }
@@ -576,14 +579,20 @@ declare interface SendMethod {
     (response: Response): AbortMessage;
 }
 
-declare interface ServerAction<RETURN> {
+/**
+ * @alpha
+ */
+export declare interface ServerAction<RETURN> {
     readonly [isServerLoader]?: true;
-    use(): ServerActionUtils<RETURN>;
+    use(): ServerActionUse<RETURN>;
 }
 
 declare type ServerActionExecute<RETURN> = QRL<(form: FormData | Record<string, string | string[] | Blob | Blob[]> | SubmitEvent) => Promise<RETURN>>;
 
-declare interface ServerActionUtils<RETURN> {
+/**
+ * @alpha
+ */
+export declare interface ServerActionUse<RETURN> {
     readonly id: string;
     readonly actionPath: string;
     readonly isPending: boolean;
@@ -592,12 +601,18 @@ declare interface ServerActionUtils<RETURN> {
     readonly execute: ServerActionExecute<RETURN>;
 }
 
-declare interface ServerLoader<RETURN> {
+/**
+ * @alpha
+ */
+export declare interface ServerLoader<RETURN> {
     readonly [isServerLoader]?: true;
     use(): ServerLoaderUse<RETURN>;
 }
 
-declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
+/**
+ * @alpha
+ */
+export declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
 
 /**
  * @alpha
