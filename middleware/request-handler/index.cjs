@@ -585,9 +585,15 @@ async function renderQData(requestEv) {
     const location = requestEv.headers.get("Location");
     const isRedirect = status >= 301 && status <= 308 && location;
     if (isRedirect) {
-      requestEv.headers.set("Location", makeQDataPath(location));
-      requestEv.getWritableStream().close();
-      return;
+      const adaptedLocation = makeQDataPath(location);
+      if (adaptedLocation) {
+        requestEv.headers.set("Location", adaptedLocation);
+        requestEv.getWritableStream().close();
+        return;
+      } else {
+        requestEv.status(200);
+        requestEv.headers.delete("Location");
+      }
     }
     const requestHeaders = {};
     requestEv.request.headers.forEach((value, key) => requestHeaders[key] = value);
@@ -596,8 +602,9 @@ async function renderQData(requestEv) {
       loaders: getRequestLoaders(requestEv),
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,
-      href: getPathname(requestEv.url, true)
+      href: getPathname(requestEv.url, true),
       // todo
+      redirect: location ?? void 0
     };
     const writer = requestEv.getWritableStream().getWriter();
     writer.write(encoder.encode(serializeData(qData)));
@@ -628,10 +635,14 @@ function formDataToArray(formData) {
   return array;
 }
 function makeQDataPath(href) {
-  const append = QDATA_JSON;
-  const url = new URL(href, "http://localhost");
-  const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
-  return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
+  if (href.startsWith("/")) {
+    const append = QDATA_JSON;
+    const url = new URL(href, "http://localhost");
+    const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
+    return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
+  } else {
+    return void 0;
+  }
 }
 
 // packages/qwik-city/middleware/request-handler/cache-control.ts
@@ -704,13 +715,20 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
       writer.write(typeof body === "string" ? encoder.encode(body) : body);
       writer.close();
     } else {
-      requestEv[RequestEvStatus] = statusOrResponse.status;
+      const status = statusOrResponse.status;
+      requestEv[RequestEvStatus] = status;
       statusOrResponse.headers.forEach((value, key) => {
         headers.append(key, value);
       });
-      const writableStream2 = requestEv.getWritableStream();
       if (statusOrResponse.body) {
+        const writableStream2 = requestEv.getWritableStream();
         statusOrResponse.body.pipeTo(writableStream2);
+      } else {
+        if (status >= 300 && status < 400) {
+          return new RedirectMessage();
+        } else {
+          requestEv.getWritableStream().getWriter().close();
+        }
       }
     }
     return new AbortMessage();

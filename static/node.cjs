@@ -39,15 +39,28 @@ var import_node_fs2 = __toESM(require("fs"), 1);
 var import_node_path3 = require("path");
 
 // packages/qwik-city/middleware/node/node-fetch.ts
-async function patchGlobalFetch() {
+var import_web = require("stream/web");
+var import_undici = require("undici");
+var import_crypto = __toESM(require("crypto"), 1);
+function patchGlobalThis() {
   if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
     if (!globalThis.fetch) {
-      const { fetch, Headers, Request, Response, FormData } = await import("undici");
-      globalThis.fetch = fetch;
-      globalThis.Headers = Headers;
-      globalThis.Request = Request;
-      globalThis.Response = Response;
-      globalThis.FormData = FormData;
+      globalThis.fetch = import_undici.fetch;
+      globalThis.Headers = import_undici.Headers;
+      globalThis.Request = import_undici.Request;
+      globalThis.Response = import_undici.Response;
+      globalThis.FormData = import_undici.FormData;
+    }
+    if (typeof globalThis.TextEncoderStream === "undefined") {
+      globalThis.TextEncoderStream = import_web.TextEncoderStream;
+      globalThis.TextDecoderStream = import_web.TextDecoderStream;
+    }
+    if (typeof globalThis.WritableStream === "undefined") {
+      globalThis.WritableStream = import_web.WritableStream;
+      globalThis.ReadableStream = import_web.ReadableStream;
+    }
+    if (typeof globalThis.crypto === "undefined") {
+      globalThis.crypto = import_crypto.default.webcrypto;
     }
   }
 }
@@ -290,7 +303,7 @@ async function createNodeWorkerProcess(onMessage) {
 
 // packages/qwik-city/static/node/node-system.ts
 async function createSystem(opts) {
-  patchGlobalFetch();
+  patchGlobalThis();
   const createWriteStream = (filePath) => {
     return import_node_fs2.default.createWriteStream(filePath, {
       flags: "w"
@@ -586,7 +599,7 @@ function validateOptions(opts) {
 // packages/qwik-city/static/worker-thread.ts
 var import_request_handler2 = require("../middleware/request-handler/index.cjs");
 var import_node_url2 = require("url");
-var import_web = require("stream/web");
+var import_web2 = require("stream/web");
 async function workerThread(sys) {
   const ssgOpts = sys.getOptions();
   const pendingPromises = /* @__PURE__ */ new Set();
@@ -642,7 +655,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
           return noopWriter;
         }
         const htmlWriter = writeHtmlEnabled ? sys.createWriteStream(htmlFilePath) : null;
-        const stream = new import_web.WritableStream({
+        const stream = new import_web2.WritableStream({
           write(chunk) {
             if (htmlWriter) {
               htmlWriter.write(Buffer.from(chunk.buffer));
@@ -710,7 +723,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     callback(result);
   }
 }
-var noopWriter = /* @__PURE__ */ new import_web.WritableStream({
+var noopWriter = /* @__PURE__ */ new import_web2.WritableStream({
   write() {
   },
   close() {
@@ -740,7 +753,6 @@ var SsgRequestContext = class {
 };
 
 // packages/qwik-city/static/node/index.ts
-var import_web2 = require("stream/web");
 async function generate(opts) {
   if (import_node_worker_threads3.isMainThread) {
     const sys = await createSystem(opts);
@@ -751,14 +763,7 @@ async function generate(opts) {
 }
 if (!import_node_worker_threads3.isMainThread && import_node_worker_threads3.workerData) {
   (async () => {
-    if (typeof globalThis.TextEncoderStream === "undefined") {
-      globalThis.TextEncoderStream = import_web2.TextEncoderStream;
-      globalThis.TextDecoderStream = import_web2.TextDecoderStream;
-    }
-    if (typeof globalThis.WritableStream === "undefined") {
-      globalThis.WritableStream = import_web2.WritableStream;
-      globalThis.ReadableStream = import_web2.ReadableStream;
-    }
+    patchGlobalThis();
     const sys = await createSystem(import_node_worker_threads3.workerData);
     await workerThread(sys);
   })();

@@ -294,7 +294,9 @@ const loadClientData = async (href, clearCache, action) => {
           const clientData = parseData(text);
           if (clearCache)
             CLIENT_DATA_CACHE.delete(clientDataPath);
-          if (action) {
+          if (clientData.redirect)
+            location.href = clientData.redirect;
+          else if (action) {
             const actionData2 = clientData.loaders[action.id];
             action.resolve({
               status: rsp.status,
