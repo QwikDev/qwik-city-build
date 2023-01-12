@@ -320,7 +320,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
 /**
  * @alpha
  */
-declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+export declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
     getData: GetData;
     fail: <T>(status: number, returnData: T) => T;
 }
@@ -353,14 +353,20 @@ declare interface SendMethod {
     (response: Response): AbortMessage;
 }
 
+/**
+ * @alpha
+ */
 declare interface ServerAction<RETURN> {
     readonly [isServerLoader]?: true;
-    use(): ServerActionUtils<RETURN>;
+    use(): ServerActionUse<RETURN>;
 }
 
 declare type ServerActionExecute<RETURN> = QRL<(form: FormData | Record<string, string | string[] | Blob | Blob[]> | SubmitEvent) => Promise<RETURN>>;
 
-declare interface ServerActionUtils<RETURN> {
+/**
+ * @alpha
+ */
+declare interface ServerActionUse<RETURN> {
     readonly id: string;
     readonly actionPath: string;
     readonly isPending: boolean;
@@ -369,11 +375,17 @@ declare interface ServerActionUtils<RETURN> {
     readonly execute: ServerActionExecute<RETURN>;
 }
 
+/**
+ * @alpha
+ */
 declare interface ServerLoader<RETURN> {
     readonly [isServerLoader]?: true;
     use(): ServerLoaderUse<RETURN>;
 }
 
+/**
+ * @alpha
+ */
 declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
 
 /**
