@@ -107,24 +107,22 @@ var import_undici = require("undici");
 var import_crypto = __toESM(require("crypto"), 1);
 function patchGlobalThis() {
   if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
-    if (!globalThis.fetch) {
-      globalThis.fetch = import_undici.fetch;
-      globalThis.Headers = import_undici.Headers;
-      globalThis.Request = import_undici.Request;
-      globalThis.Response = import_undici.Response;
-      globalThis.FormData = import_undici.FormData;
-    }
-    if (typeof globalThis.TextEncoderStream === "undefined") {
-      globalThis.TextEncoderStream = import_web.TextEncoderStream;
-      globalThis.TextDecoderStream = import_web.TextDecoderStream;
-    }
-    if (typeof globalThis.WritableStream === "undefined") {
-      globalThis.WritableStream = import_web.WritableStream;
-      globalThis.ReadableStream = import_web.ReadableStream;
-    }
-    if (typeof globalThis.crypto === "undefined") {
-      globalThis.crypto = import_crypto.default.webcrypto;
-    }
+    globalThis.fetch = import_undici.fetch;
+    globalThis.Headers = import_undici.Headers;
+    globalThis.Request = import_undici.Request;
+    globalThis.Response = import_undici.Response;
+    globalThis.FormData = import_undici.FormData;
+  }
+  if (typeof globalThis.TextEncoderStream === "undefined") {
+    globalThis.TextEncoderStream = import_web.TextEncoderStream;
+    globalThis.TextDecoderStream = import_web.TextDecoderStream;
+  }
+  if (typeof globalThis.WritableStream === "undefined") {
+    globalThis.WritableStream = import_web.WritableStream;
+    globalThis.ReadableStream = import_web.ReadableStream;
+  }
+  if (typeof globalThis.crypto === "undefined") {
+    globalThis.crypto = import_crypto.default.webcrypto;
   }
 }
 

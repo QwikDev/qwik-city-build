@@ -24549,24 +24549,22 @@ import { fetch, Headers as Headers2, Request as Request2, Response, FormData as 
 import crypto from "crypto";
 function patchGlobalThis() {
   if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
-    if (!globalThis.fetch) {
-      globalThis.fetch = fetch;
-      globalThis.Headers = Headers2;
-      globalThis.Request = Request2;
-      globalThis.Response = Response;
-      globalThis.FormData = FormData2;
-    }
-    if (typeof globalThis.TextEncoderStream === "undefined") {
-      globalThis.TextEncoderStream = TextEncoderStream2;
-      globalThis.TextDecoderStream = TextDecoderStream;
-    }
-    if (typeof globalThis.WritableStream === "undefined") {
-      globalThis.WritableStream = WritableStream2;
-      globalThis.ReadableStream = ReadableStream;
-    }
-    if (typeof globalThis.crypto === "undefined") {
-      globalThis.crypto = crypto.webcrypto;
-    }
+    globalThis.fetch = fetch;
+    globalThis.Headers = Headers2;
+    globalThis.Request = Request2;
+    globalThis.Response = Response;
+    globalThis.FormData = FormData2;
+  }
+  if (typeof globalThis.TextEncoderStream === "undefined") {
+    globalThis.TextEncoderStream = TextEncoderStream2;
+    globalThis.TextDecoderStream = TextDecoderStream;
+  }
+  if (typeof globalThis.WritableStream === "undefined") {
+    globalThis.WritableStream = WritableStream2;
+    globalThis.ReadableStream = ReadableStream;
+  }
+  if (typeof globalThis.crypto === "undefined") {
+    globalThis.crypto = crypto.webcrypto;
   }
 }
 

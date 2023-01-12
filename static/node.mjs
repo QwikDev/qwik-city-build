@@ -13,24 +13,22 @@ import { fetch, Headers, Request, Response, FormData } from "undici";
 import crypto from "crypto";
 function patchGlobalThis() {
   if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
-    if (!globalThis.fetch) {
-      globalThis.fetch = fetch;
-      globalThis.Headers = Headers;
-      globalThis.Request = Request;
-      globalThis.Response = Response;
-      globalThis.FormData = FormData;
-    }
-    if (typeof globalThis.TextEncoderStream === "undefined") {
-      globalThis.TextEncoderStream = TextEncoderStream;
-      globalThis.TextDecoderStream = TextDecoderStream;
-    }
-    if (typeof globalThis.WritableStream === "undefined") {
-      globalThis.WritableStream = WritableStream;
-      globalThis.ReadableStream = ReadableStream;
-    }
-    if (typeof globalThis.crypto === "undefined") {
-      globalThis.crypto = crypto.webcrypto;
-    }
+    globalThis.fetch = fetch;
+    globalThis.Headers = Headers;
+    globalThis.Request = Request;
+    globalThis.Response = Response;
+    globalThis.FormData = FormData;
+  }
+  if (typeof globalThis.TextEncoderStream === "undefined") {
+    globalThis.TextEncoderStream = TextEncoderStream;
+    globalThis.TextDecoderStream = TextDecoderStream;
+  }
+  if (typeof globalThis.WritableStream === "undefined") {
+    globalThis.WritableStream = WritableStream;
+    globalThis.ReadableStream = ReadableStream;
+  }
+  if (typeof globalThis.crypto === "undefined") {
+    globalThis.crypto = crypto.webcrypto;
   }
 }
 
