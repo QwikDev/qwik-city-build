@@ -20,107 +20,11 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/middleware/request-handler/index.ts
 var request_handler_exports = {};
 __export(request_handler_exports, {
-  createHeaders: () => createHeaders,
   getErrorHtml: () => getErrorHtml,
   mergeHeadersCookies: () => mergeHeadersCookies,
   requestHandler: () => requestHandler
 });
 module.exports = __toCommonJS(request_handler_exports);
-
-// packages/qwik-city/middleware/request-handler/headers.ts
-var HEADERS = Symbol("headers");
-var _a;
-var HeadersPolyfill = class {
-  constructor() {
-    // Normalized header {"name":"a, b"} storage.
-    this[_a] = {};
-  }
-  [(_a = HEADERS, Symbol.iterator)]() {
-    return this.entries();
-  }
-  *keys() {
-    for (const name of Object.keys(this[HEADERS])) {
-      yield name;
-    }
-  }
-  *values() {
-    for (const value of Object.values(this[HEADERS])) {
-      yield value;
-    }
-  }
-  *entries() {
-    for (const name of Object.keys(this[HEADERS])) {
-      yield [name, this.get(name)];
-    }
-  }
-  /**
-   * Returns a `ByteString` sequence of all the values of a header with a given name.
-   */
-  get(name) {
-    return this[HEADERS][normalizeHeaderName(name)] || null;
-  }
-  /**
-   * Sets a new value for an existing header inside a `Headers` object, or adds the header if it does not already exist.
-   */
-  set(name, value) {
-    const normalizedName = normalizeHeaderName(name);
-    this[HEADERS][normalizedName] = typeof value !== "string" ? String(value) : value;
-  }
-  /**
-   * Appends a new value onto an existing header inside a `Headers` object, or adds the header if it does not already exist.
-   */
-  append(name, value) {
-    const normalizedName = normalizeHeaderName(name);
-    const resolvedValue = this.has(normalizedName) ? `${this.get(normalizedName)}, ${value}` : value;
-    this.set(name, resolvedValue);
-  }
-  /**
-   * Deletes a header from the `Headers` object.
-   */
-  delete(name) {
-    if (!this.has(name)) {
-      return;
-    }
-    const normalizedName = normalizeHeaderName(name);
-    delete this[HEADERS][normalizedName];
-  }
-  /**
-   * Returns the object of all the normalized headers.
-   */
-  all() {
-    return this[HEADERS];
-  }
-  /**
-   * Returns a boolean stating whether a `Headers` object contains a certain header.
-   */
-  has(name) {
-    return this[HEADERS].hasOwnProperty(normalizeHeaderName(name));
-  }
-  /**
-   * Traverses the `Headers` object,
-   * calling the given callback for each header.
-   */
-  forEach(callback, thisArg) {
-    for (const name in this[HEADERS]) {
-      if (this[HEADERS].hasOwnProperty(name)) {
-        callback.call(thisArg, this[HEADERS][name], name, this);
-      }
-    }
-  }
-};
-var HEADERS_INVALID_CHARACTERS = /[^a-z0-9\-#$%&'*+.^_`|~]/i;
-function normalizeHeaderName(name) {
-  if (typeof name !== "string") {
-    name = String(name);
-  }
-  if (HEADERS_INVALID_CHARACTERS.test(name) || name.trim() === "") {
-    throw new TypeError("Invalid character in header field name");
-  }
-  return name.toLowerCase();
-}
-function createHeaders() {
-  return new (typeof Headers === "function" ? Headers : HeadersPolyfill)();
-}
 
 // packages/qwik-city/middleware/request-handler/error-handler.ts
 var ErrorResponse = class extends Error {
@@ -244,10 +148,10 @@ var parseCookieString = (cookieString) => {
 };
 var REQ_COOKIE = Symbol("request-cookies");
 var RES_COOKIE = Symbol("response-cookies");
-var _a2;
+var _a;
 var Cookie = class {
   constructor(cookieString) {
-    this[_a2] = {};
+    this[_a] = {};
     this[REQ_COOKIE] = parseCookieString(cookieString);
   }
   get(cookieName) {
@@ -285,7 +189,7 @@ var Cookie = class {
     return Object.values(this[RES_COOKIE]);
   }
 };
-REQ_COOKIE, _a2 = RES_COOKIE;
+REQ_COOKIE, _a = RES_COOKIE;
 var mergeHeadersCookies = (headers, cookies) => {
   const cookieHeaders = cookies.headers();
   if (cookieHeaders.length > 0) {
@@ -686,7 +590,7 @@ var RequestEvBasePathname = Symbol("RequestEvBasePathname");
 function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
   const { request, platform } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
-  const headers = createHeaders();
+  const headers = new Headers();
   const url = new URL(request.url);
   let routeModuleIndex = -1;
   let writableStream = null;
@@ -1054,7 +958,6 @@ function handleErrors(run) {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  createHeaders,
   getErrorHtml,
   mergeHeadersCookies,
   requestHandler

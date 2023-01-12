@@ -137,15 +137,6 @@ export declare interface CookieValue {
     number: () => number;
 }
 
-/**
- * Adopted from https://github.com/mswjs/headers-polyfill
- * MIT License | Artem Zakharchenko
- */
-/**
- * @alpha
- */
-export declare function createHeaders(): Headers;
-
 declare class ErrorResponse extends Error {
     status: number;
     constructor(status: number, message?: string);
@@ -186,46 +177,6 @@ declare interface QwikCityRun<T> {
 }
 
 declare class RedirectMessage extends AbortMessage {
-}
-
-/**
- * @alpha
- */
-export declare interface RequestContext {
-    /**
-     * HTTP request headers.
-     *
-     * https://developer.mozilla.org/en-US/docs/Glossary/Request_header
-     */
-    readonly headers: Headers;
-    /**
-     * HTTP request method.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
-     */
-    readonly method: string;
-    /**
-     * HTTP request URL.
-     */
-    readonly url: string;
-    /**
-     * HTTP request form data.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/FormData
-     */
-    formData(): Promise<FormData>;
-    /**
-     * HTTP request json data.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/Request/json
-     */
-    json(): Promise<any>;
-    /**
-     * HTTP request text data.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/Request/text
-     */
-    text(): Promise<string>;
 }
 
 declare const RequestEvAction: unique symbol;
@@ -344,7 +295,7 @@ declare interface RequestEventCommon<PLATFORM = unknown> {
     /**
      * HTTP request information.
      */
-    readonly request: RequestContext;
+    readonly request: Request;
     /**
      * Platform specific data and functions
      */
@@ -442,7 +393,7 @@ export declare interface ServerRequestEvent<T = any> {
     url: URL;
     locale: string | undefined;
     platform: any;
-    request: RequestContext;
+    request: Request;
     getWritableStream: ServerResponseHandler<T>;
 }
 
