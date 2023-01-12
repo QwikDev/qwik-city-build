@@ -3,16 +3,32 @@ import fs2 from "fs";
 import { dirname as dirname2, join } from "path";
 
 // packages/qwik-city/middleware/node/node-fetch.ts
-async function patchGlobalFetch() {
+import {
+  TextEncoderStream,
+  TextDecoderStream,
+  WritableStream,
+  ReadableStream
+} from "stream/web";
+import { fetch, Headers, Request, Response, FormData } from "undici";
+import crypto from "crypto";
+function patchGlobalThis() {
   if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
-    if (!globalThis.fetch) {
-      const { fetch, Headers, Request, Response, FormData } = await import("undici");
-      globalThis.fetch = fetch;
-      globalThis.Headers = Headers;
-      globalThis.Request = Request;
-      globalThis.Response = Response;
-      globalThis.FormData = FormData;
-    }
+    globalThis.fetch = fetch;
+    globalThis.Headers = Headers;
+    globalThis.Request = Request;
+    globalThis.Response = Response;
+    globalThis.FormData = FormData;
+  }
+  if (typeof globalThis.TextEncoderStream === "undefined") {
+    globalThis.TextEncoderStream = TextEncoderStream;
+    globalThis.TextDecoderStream = TextDecoderStream;
+  }
+  if (typeof globalThis.WritableStream === "undefined") {
+    globalThis.WritableStream = WritableStream;
+    globalThis.ReadableStream = ReadableStream;
+  }
+  if (typeof globalThis.crypto === "undefined") {
+    globalThis.crypto = crypto.webcrypto;
   }
 }
 
@@ -253,7 +269,7 @@ async function createNodeWorkerProcess(onMessage) {
 
 // packages/qwik-city/static/node/node-system.ts
 async function createSystem(opts) {
-  patchGlobalFetch();
+  patchGlobalThis();
   const createWriteStream = (filePath) => {
     return fs2.createWriteStream(filePath, {
       flags: "w"
@@ -549,7 +565,7 @@ function validateOptions(opts) {
 // packages/qwik-city/static/worker-thread.ts
 import { createHeaders, requestHandler } from "../middleware/request-handler/index.mjs";
 import { pathToFileURL as pathToFileURL2 } from "url";
-import { WritableStream } from "stream/web";
+import { WritableStream as WritableStream2 } from "stream/web";
 async function workerThread(sys) {
   const ssgOpts = sys.getOptions();
   const pendingPromises = /* @__PURE__ */ new Set();
@@ -605,7 +621,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
           return noopWriter;
         }
         const htmlWriter = writeHtmlEnabled ? sys.createWriteStream(htmlFilePath) : null;
-        const stream = new WritableStream({
+        const stream = new WritableStream2({
           write(chunk) {
             if (htmlWriter) {
               htmlWriter.write(Buffer.from(chunk.buffer));
@@ -673,7 +689,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     callback(result);
   }
 }
-var noopWriter = /* @__PURE__ */ new WritableStream({
+var noopWriter = /* @__PURE__ */ new WritableStream2({
   write() {
   },
   close() {
@@ -703,12 +719,6 @@ var SsgRequestContext = class {
 };
 
 // packages/qwik-city/static/node/index.ts
-import {
-  TextEncoderStream,
-  TextDecoderStream,
-  WritableStream as WritableStream2,
-  ReadableStream
-} from "stream/web";
 async function generate(opts) {
   if (isMainThread) {
     const sys = await createSystem(opts);
@@ -719,14 +729,7 @@ async function generate(opts) {
 }
 if (!isMainThread && workerData) {
   (async () => {
-    if (typeof globalThis.TextEncoderStream === "undefined") {
-      globalThis.TextEncoderStream = TextEncoderStream;
-      globalThis.TextDecoderStream = TextDecoderStream;
-    }
-    if (typeof globalThis.WritableStream === "undefined") {
-      globalThis.WritableStream = WritableStream2;
-      globalThis.ReadableStream = ReadableStream;
-    }
+    patchGlobalThis();
     const sys = await createSystem(workerData);
     await workerThread(sys);
   })();

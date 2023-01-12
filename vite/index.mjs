@@ -23756,9 +23756,15 @@ async function renderQData(requestEv) {
     const location = requestEv.headers.get("Location");
     const isRedirect = status >= 301 && status <= 308 && location;
     if (isRedirect) {
-      requestEv.headers.set("Location", makeQDataPath(location));
-      requestEv.getWritableStream().close();
-      return;
+      const adaptedLocation = makeQDataPath(location);
+      if (adaptedLocation) {
+        requestEv.headers.set("Location", adaptedLocation);
+        requestEv.getWritableStream().close();
+        return;
+      } else {
+        requestEv.status(200);
+        requestEv.headers.delete("Location");
+      }
     }
     const requestHeaders = {};
     requestEv.request.headers.forEach((value2, key) => requestHeaders[key] = value2);
@@ -23767,8 +23773,9 @@ async function renderQData(requestEv) {
       loaders: getRequestLoaders(requestEv),
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,
-      href: getPathname(requestEv.url, true)
+      href: getPathname(requestEv.url, true),
       // todo
+      redirect: location ?? void 0
     };
     const writer = requestEv.getWritableStream().getWriter();
     writer.write(encoder.encode(serializeData(qData)));
@@ -23799,10 +23806,14 @@ function formDataToArray(formData) {
   return array;
 }
 function makeQDataPath(href) {
-  const append = QDATA_JSON;
-  const url = new URL(href, "http://localhost");
-  const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
-  return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
+  if (href.startsWith("/")) {
+    const append = QDATA_JSON;
+    const url = new URL(href, "http://localhost");
+    const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
+    return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
+  } else {
+    return void 0;
+  }
 }
 
 // packages/qwik-city/middleware/request-handler/cache-control.ts
@@ -23875,13 +23886,20 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
       writer.write(typeof body === "string" ? encoder.encode(body) : body);
       writer.close();
     } else {
-      requestEv[RequestEvStatus] = statusOrResponse.status;
+      const status = statusOrResponse.status;
+      requestEv[RequestEvStatus] = status;
       statusOrResponse.headers.forEach((value2, key) => {
         headers.append(key, value2);
       });
-      const writableStream2 = requestEv.getWritableStream();
       if (statusOrResponse.body) {
+        const writableStream2 = requestEv.getWritableStream();
         statusOrResponse.body.pipeTo(writableStream2);
+      } else {
+        if (status >= 300 && status < 400) {
+          return new RedirectMessage();
+        } else {
+          requestEv.getWritableStream().getWriter().close();
+        }
       }
     }
     return new AbortMessage();
@@ -24521,16 +24539,32 @@ function formatError(e) {
 }
 
 // packages/qwik-city/middleware/node/node-fetch.ts
-async function patchGlobalFetch() {
+import {
+  TextEncoderStream as TextEncoderStream2,
+  TextDecoderStream,
+  WritableStream as WritableStream2,
+  ReadableStream
+} from "stream/web";
+import { fetch, Headers as Headers2, Request as Request2, Response, FormData as FormData2 } from "undici";
+import crypto from "crypto";
+function patchGlobalThis() {
   if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
-    if (!globalThis.fetch) {
-      const { fetch, Headers: Headers2, Request: Request2, Response, FormData: FormData2 } = await import("undici");
-      globalThis.fetch = fetch;
-      globalThis.Headers = Headers2;
-      globalThis.Request = Request2;
-      globalThis.Response = Response;
-      globalThis.FormData = FormData2;
-    }
+    globalThis.fetch = fetch;
+    globalThis.Headers = Headers2;
+    globalThis.Request = Request2;
+    globalThis.Response = Response;
+    globalThis.FormData = FormData2;
+  }
+  if (typeof globalThis.TextEncoderStream === "undefined") {
+    globalThis.TextEncoderStream = TextEncoderStream2;
+    globalThis.TextDecoderStream = TextDecoderStream;
+  }
+  if (typeof globalThis.WritableStream === "undefined") {
+    globalThis.WritableStream = WritableStream2;
+    globalThis.ReadableStream = ReadableStream;
+  }
+  if (typeof globalThis.crypto === "undefined") {
+    globalThis.crypto = crypto.webcrypto;
   }
 }
 
@@ -24773,12 +24807,6 @@ var NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
 var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
 
 // packages/qwik-city/buildtime/vite/plugin.ts
-import {
-  TextEncoderStream as TextEncoderStream2,
-  TextDecoderStream,
-  WritableStream as WritableStream2,
-  ReadableStream
-} from "stream/web";
 function qwikCity(userOpts) {
   let ctx = null;
   let mdxTransform = null;
@@ -24786,14 +24814,7 @@ function qwikCity(userOpts) {
   let qwikPlugin;
   let ssrFormat = "esm";
   let outDir = null;
-  if (typeof globalThis.TextEncoderStream === "undefined") {
-    globalThis.TextEncoderStream = TextEncoderStream2;
-    globalThis.TextDecoderStream = TextDecoderStream;
-  }
-  if (typeof globalThis.WritableStream === "undefined") {
-    globalThis.WritableStream = WritableStream2;
-    globalThis.ReadableStream = ReadableStream;
-  }
+  patchGlobalThis();
   const api = {
     getBasePathname: () => (ctx == null ? void 0 : ctx.opts.basePathname) ?? "/",
     getRoutes: () => {
@@ -24808,7 +24829,6 @@ function qwikCity(userOpts) {
     enforce: "pre",
     api,
     async config() {
-      await patchGlobalFetch();
       const updatedViteConfig = {
         appType: "custom",
         base: userOpts == null ? void 0 : userOpts.basePathname,

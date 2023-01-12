@@ -102,24 +102,17 @@ async function fromNodeHttp(url, req, res, mode) {
 }
 
 // packages/qwik-city/middleware/node/node-fetch.ts
-async function patchGlobalFetch() {
-  if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
-    if (!globalThis.fetch) {
-      const { fetch, Headers: Headers2, Request: Request2, Response, FormData } = await import("undici");
-      globalThis.fetch = fetch;
-      globalThis.Headers = Headers2;
-      globalThis.Request = Request2;
-      globalThis.Response = Response;
-      globalThis.FormData = FormData;
-    }
-  }
-}
-
-// packages/qwik-city/middleware/node/index.ts
 var import_web = require("stream/web");
-var import_meta = {};
-function createQwikCity(opts) {
-  var _a;
+var import_undici = require("undici");
+var import_crypto = __toESM(require("crypto"), 1);
+function patchGlobalThis() {
+  if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
+    globalThis.fetch = import_undici.fetch;
+    globalThis.Headers = import_undici.Headers;
+    globalThis.Request = import_undici.Request;
+    globalThis.Response = import_undici.Response;
+    globalThis.FormData = import_undici.FormData;
+  }
   if (typeof globalThis.TextEncoderStream === "undefined") {
     globalThis.TextEncoderStream = import_web.TextEncoderStream;
     globalThis.TextDecoderStream = import_web.TextDecoderStream;
@@ -128,10 +121,19 @@ function createQwikCity(opts) {
     globalThis.WritableStream = import_web.WritableStream;
     globalThis.ReadableStream = import_web.ReadableStream;
   }
+  if (typeof globalThis.crypto === "undefined") {
+    globalThis.crypto = import_crypto.default.webcrypto;
+  }
+}
+
+// packages/qwik-city/middleware/node/index.ts
+var import_meta = {};
+function createQwikCity(opts) {
+  var _a;
+  patchGlobalThis();
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? (0, import_node_path.join)((0, import_node_url.fileURLToPath)(import_meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {
-      await patchGlobalFetch();
       const serverRequestEv = await fromNodeHttp(getUrl(req), req, res, "server");
       const handled = await (0, import_request_handler.requestHandler)(serverRequestEv, opts);
       if (handled) {

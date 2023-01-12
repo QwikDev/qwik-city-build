@@ -67,28 +67,22 @@ async function fromNodeHttp(url, req, res, mode) {
 }
 
 // packages/qwik-city/middleware/node/node-fetch.ts
-async function patchGlobalFetch() {
-  if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
-    if (!globalThis.fetch) {
-      const { fetch, Headers: Headers2, Request: Request2, Response, FormData } = await import("undici");
-      globalThis.fetch = fetch;
-      globalThis.Headers = Headers2;
-      globalThis.Request = Request2;
-      globalThis.Response = Response;
-      globalThis.FormData = FormData;
-    }
-  }
-}
-
-// packages/qwik-city/middleware/node/index.ts
 import {
   TextEncoderStream,
   TextDecoderStream,
   WritableStream as WritableStream2,
   ReadableStream
 } from "stream/web";
-function createQwikCity(opts) {
-  var _a;
+import { fetch, Headers as Headers2, Request as Request2, Response, FormData } from "undici";
+import crypto from "crypto";
+function patchGlobalThis() {
+  if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
+    globalThis.fetch = fetch;
+    globalThis.Headers = Headers2;
+    globalThis.Request = Request2;
+    globalThis.Response = Response;
+    globalThis.FormData = FormData;
+  }
   if (typeof globalThis.TextEncoderStream === "undefined") {
     globalThis.TextEncoderStream = TextEncoderStream;
     globalThis.TextDecoderStream = TextDecoderStream;
@@ -97,10 +91,18 @@ function createQwikCity(opts) {
     globalThis.WritableStream = WritableStream2;
     globalThis.ReadableStream = ReadableStream;
   }
+  if (typeof globalThis.crypto === "undefined") {
+    globalThis.crypto = crypto.webcrypto;
+  }
+}
+
+// packages/qwik-city/middleware/node/index.ts
+function createQwikCity(opts) {
+  var _a;
+  patchGlobalThis();
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? join(fileURLToPath(import.meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {
-      await patchGlobalFetch();
       const serverRequestEv = await fromNodeHttp(getUrl(req), req, res, "server");
       const handled = await requestHandler(serverRequestEv, opts);
       if (handled) {
