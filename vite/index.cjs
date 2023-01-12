@@ -423,11 +423,11 @@ var require_visit = __commonJS({
       return visitor;
     }
     function callVisitor(key, node, visitor, path2) {
-      var _a3, _b, _c, _d, _e;
+      var _a2, _b, _c, _d, _e;
       if (typeof visitor === "function")
         return visitor(key, node, path2);
       if (Node.isMap(node))
-        return (_a3 = visitor.Map) == null ? void 0 : _a3.call(visitor, key, node, path2);
+        return (_a2 = visitor.Map) == null ? void 0 : _a2.call(visitor, key, node, path2);
       if (Node.isSeq(node))
         return (_b = visitor.Seq) == null ? void 0 : _b.call(visitor, key, node, path2);
       if (Node.isPair(node))
@@ -867,18 +867,18 @@ var require_createNode = __commonJS({
         return tagObj;
       }
       return tags.find((t) => {
-        var _a3;
-        return ((_a3 = t.identify) == null ? void 0 : _a3.call(t, value2)) && !t.format;
+        var _a2;
+        return ((_a2 = t.identify) == null ? void 0 : _a2.call(t, value2)) && !t.format;
       });
     }
     function createNode(value2, tagName, ctx) {
-      var _a3, _b;
+      var _a2, _b;
       if (Node.isDocument(value2))
         value2 = value2.contents;
       if (Node.isNode(value2))
         return value2;
       if (Node.isPair(value2)) {
-        const map = (_b = (_a3 = ctx.schema[Node.MAP]).createNode) == null ? void 0 : _b.call(_a3, ctx.schema, null, ctx);
+        const map = (_b = (_a2 = ctx.schema[Node.MAP]).createNode) == null ? void 0 : _b.call(_a2, ctx.schema, null, ctx);
         map.items.push(value2);
         return map;
       }
@@ -1440,8 +1440,8 @@ ${indent2}${body}`;
 ${indent2}`);
       if (actualString) {
         const test = (tag) => {
-          var _a3;
-          return tag.default && tag.tag !== "tag:yaml.org,2002:str" && ((_a3 = tag.test) == null ? void 0 : _a3.test(str));
+          var _a2;
+          return tag.default && tag.tag !== "tag:yaml.org,2002:str" && ((_a2 = tag.test) == null ? void 0 : _a2.test(str));
         };
         const { compat, tags } = ctx.doc.schema;
         if (tags.some(test) || (compat == null ? void 0 : compat.some(test)))
@@ -1536,7 +1536,7 @@ var require_stringify = __commonJS({
       };
     }
     function getTagObject(tags, item) {
-      var _a3;
+      var _a2;
       if (item.tag) {
         const match = tags.filter((t) => t.tag === item.tag);
         if (match.length > 0)
@@ -1547,8 +1547,8 @@ var require_stringify = __commonJS({
       if (Node.isScalar(item)) {
         obj = item.value;
         const match = tags.filter((t) => {
-          var _a4;
-          return (_a4 = t.identify) == null ? void 0 : _a4.call(t, obj);
+          var _a3;
+          return (_a3 = t.identify) == null ? void 0 : _a3.call(t, obj);
         });
         tagObj = match.find((t) => t.format === item.format) ?? match.find((t) => !t.format);
       } else {
@@ -1556,7 +1556,7 @@ var require_stringify = __commonJS({
         tagObj = tags.find((t) => t.nodeClass && obj instanceof t.nodeClass);
       }
       if (!tagObj) {
-        const name = ((_a3 = obj == null ? void 0 : obj.constructor) == null ? void 0 : _a3.name) ?? typeof obj;
+        const name = ((_a2 = obj == null ? void 0 : obj.constructor) == null ? void 0 : _a2.name) ?? typeof obj;
         throw new Error(`Tag not resolved for ${name} value`);
       }
       return tagObj;
@@ -1576,13 +1576,13 @@ var require_stringify = __commonJS({
       return props.join(" ");
     }
     function stringify2(item, ctx, onComment, onChompKeep) {
-      var _a3;
+      var _a2;
       if (Node.isPair(item))
         return item.toString(ctx, onComment, onChompKeep);
       if (Node.isAlias(item)) {
         if (ctx.doc.directives)
           return item.toString(ctx);
-        if ((_a3 = ctx.resolvedAliases) == null ? void 0 : _a3.has(item)) {
+        if ((_a2 = ctx.resolvedAliases) == null ? void 0 : _a2.has(item)) {
           throw new TypeError(`Cannot stringify circular structure without alias nodes`);
         } else {
           if (ctx.resolvedAliases)
@@ -2087,7 +2087,7 @@ var require_YAMLMap = __commonJS({
        *   collection will throw. Otherwise, overwrites the previous value.
        */
       add(pair, overwrite) {
-        var _a3;
+        var _a2;
         let _pair;
         if (Node.isPair(pair))
           _pair = pair;
@@ -2096,7 +2096,7 @@ var require_YAMLMap = __commonJS({
         } else
           _pair = new Pair.Pair(pair.key, pair.value);
         const prev = findPair(this.items, _pair.key);
-        const sortEntries = (_a3 = this.schema) == null ? void 0 : _a3.sortMapEntries;
+        const sortEntries = (_a2 = this.schema) == null ? void 0 : _a2.sortMapEntries;
         if (prev) {
           if (!overwrite)
             throw new Error(`Key ${_pair.key} already set`);
@@ -3345,7 +3345,7 @@ var require_stringifyDocument = __commonJS({
     var stringify2 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyDocument(doc, options2) {
-      var _a3;
+      var _a2;
       const lines = [];
       let hasDirectives = options2.directives === true;
       if (options2.directives !== false && doc.directives) {
@@ -3390,7 +3390,7 @@ var require_stringifyDocument = __commonJS({
       } else {
         lines.push(stringify2.stringify(doc.contents, ctx));
       }
-      if ((_a3 = doc.directives) == null ? void 0 : _a3.docEnd) {
+      if ((_a2 = doc.directives) == null ? void 0 : _a2.docEnd) {
         if (doc.comment) {
           const cs = commentString(doc.comment);
           if (cs.includes("\n")) {
@@ -4059,7 +4059,7 @@ var require_resolve_block_map = __commonJS({
     var utilMapIncludes = require_util_map_includes();
     var startColMsg = "All mapping items must start at the same column";
     function resolveBlockMap({ composeNode, composeEmptyNode }, ctx, bm, onError) {
-      var _a3;
+      var _a2;
       const map = new YAMLMap.YAMLMap(ctx.schema);
       if (ctx.atRoot)
         ctx.atRoot = false;
@@ -4095,7 +4095,7 @@ var require_resolve_block_map = __commonJS({
           if (keyProps.hasNewlineAfterProp || utilContainsNewline.containsNewline(key)) {
             onError(key ?? start[start.length - 1], "MULTILINE_IMPLICIT_KEY", "Implicit keys need to be on a single line");
           }
-        } else if (((_a3 = keyProps.found) == null ? void 0 : _a3.indent) !== bm.indent) {
+        } else if (((_a2 = keyProps.found) == null ? void 0 : _a2.indent) !== bm.indent) {
           onError(offset, "BAD_INDENT", startColMsg);
         }
         const keyStart = keyProps.end;
@@ -4902,7 +4902,7 @@ var require_compose_scalar = __commonJS({
       return scalar;
     }
     function findScalarTagByName(schema, value2, tagName, tagToken, onError) {
-      var _a3;
+      var _a2;
       if (tagName === "!")
         return schema[Node.SCALAR];
       const matchWithTest = [];
@@ -4915,7 +4915,7 @@ var require_compose_scalar = __commonJS({
         }
       }
       for (const tag of matchWithTest)
-        if ((_a3 = tag.test) == null ? void 0 : _a3.test(value2))
+        if ((_a2 = tag.test) == null ? void 0 : _a2.test(value2))
           return tag;
       const kt = schema.knownTags[tagName];
       if (kt && !kt.collection) {
@@ -4927,13 +4927,13 @@ var require_compose_scalar = __commonJS({
     }
     function findScalarTagByTest({ directives, schema }, value2, token, onError) {
       const tag = schema.tags.find((tag2) => {
-        var _a3;
-        return tag2.default && ((_a3 = tag2.test) == null ? void 0 : _a3.test(value2));
+        var _a2;
+        return tag2.default && ((_a2 = tag2.test) == null ? void 0 : _a2.test(value2));
       }) || schema[Node.SCALAR];
       if (schema.compat) {
         const compat = schema.compat.find((tag2) => {
-          var _a3;
-          return tag2.default && ((_a3 = tag2.test) == null ? void 0 : _a3.test(value2));
+          var _a2;
+          return tag2.default && ((_a2 = tag2.test) == null ? void 0 : _a2.test(value2));
         }) ?? schema[Node.SCALAR];
         if (tag.tag !== compat.tag) {
           const ts = directives.tagString(tag.tag);
@@ -5134,7 +5134,7 @@ var require_composer = __commonJS({
       return [offset, offset + (typeof source === "string" ? source.length : 1)];
     }
     function parsePrelude(prelude) {
-      var _a3;
+      var _a2;
       let comment = "";
       let atComment = false;
       let afterEmptyLine = false;
@@ -5147,7 +5147,7 @@ var require_composer = __commonJS({
             afterEmptyLine = false;
             break;
           case "%":
-            if (((_a3 = prelude[i + 1]) == null ? void 0 : _a3[0]) !== "#")
+            if (((_a2 = prelude[i + 1]) == null ? void 0 : _a2[0]) !== "#")
               i += 1;
             atComment = false;
             break;
@@ -6377,7 +6377,7 @@ var require_parser = __commonJS({
       }
     }
     function getFirstKeyStartProps(prev) {
-      var _a3;
+      var _a2;
       if (prev.length === 0)
         return [];
       let i = prev.length;
@@ -6392,7 +6392,7 @@ var require_parser = __commonJS({
               break loop;
           }
         }
-      while (((_a3 = prev[++i]) == null ? void 0 : _a3.type) === "space") {
+      while (((_a2 = prev[++i]) == null ? void 0 : _a2.type) === "space") {
       }
       return prev.splice(i, prev.length);
     }
@@ -6734,7 +6734,7 @@ var require_parser = __commonJS({
         }
       }
       *blockMap(map) {
-        var _a3;
+        var _a2;
         const it = map.items[map.items.length - 1];
         switch (this.type) {
           case "newline":
@@ -6761,7 +6761,7 @@ var require_parser = __commonJS({
             } else {
               if (this.atIndentedComment(it.start, map.indent)) {
                 const prev = map.items[map.items.length - 2];
-                const end = (_a3 = prev == null ? void 0 : prev.value) == null ? void 0 : _a3.end;
+                const end = (_a2 = prev == null ? void 0 : prev.value) == null ? void 0 : _a2.end;
                 if (Array.isArray(end)) {
                   Array.prototype.push.apply(end, it.start);
                   end.push(this.sourceToken);
@@ -6916,7 +6916,7 @@ var require_parser = __commonJS({
         yield* this.step();
       }
       *blockSequence(seq) {
-        var _a3;
+        var _a2;
         const it = seq.items[seq.items.length - 1];
         switch (this.type) {
           case "newline":
@@ -6937,7 +6937,7 @@ var require_parser = __commonJS({
             else {
               if (this.atIndentedComment(it.start, seq.indent)) {
                 const prev = seq.items[seq.items.length - 2];
-                const end = (_a3 = prev == null ? void 0 : prev.value) == null ? void 0 : _a3.end;
+                const end = (_a2 = prev == null ? void 0 : prev.value) == null ? void 0 : _a2.end;
                 if (Array.isArray(end)) {
                   Array.prototype.push.apply(end, it.start);
                   end.push(this.sourceToken);
@@ -23399,101 +23399,6 @@ var Cookie = class {
 };
 REQ_COOKIE, _a = RES_COOKIE;
 
-// packages/qwik-city/middleware/request-handler/headers.ts
-var HEADERS = Symbol("headers");
-var _a2;
-var HeadersPolyfill = class {
-  constructor() {
-    // Normalized header {"name":"a, b"} storage.
-    this[_a2] = {};
-  }
-  [(_a2 = HEADERS, Symbol.iterator)]() {
-    return this.entries();
-  }
-  *keys() {
-    for (const name of Object.keys(this[HEADERS])) {
-      yield name;
-    }
-  }
-  *values() {
-    for (const value2 of Object.values(this[HEADERS])) {
-      yield value2;
-    }
-  }
-  *entries() {
-    for (const name of Object.keys(this[HEADERS])) {
-      yield [name, this.get(name)];
-    }
-  }
-  /**
-   * Returns a `ByteString` sequence of all the values of a header with a given name.
-   */
-  get(name) {
-    return this[HEADERS][normalizeHeaderName(name)] || null;
-  }
-  /**
-   * Sets a new value for an existing header inside a `Headers` object, or adds the header if it does not already exist.
-   */
-  set(name, value2) {
-    const normalizedName = normalizeHeaderName(name);
-    this[HEADERS][normalizedName] = typeof value2 !== "string" ? String(value2) : value2;
-  }
-  /**
-   * Appends a new value onto an existing header inside a `Headers` object, or adds the header if it does not already exist.
-   */
-  append(name, value2) {
-    const normalizedName = normalizeHeaderName(name);
-    const resolvedValue = this.has(normalizedName) ? `${this.get(normalizedName)}, ${value2}` : value2;
-    this.set(name, resolvedValue);
-  }
-  /**
-   * Deletes a header from the `Headers` object.
-   */
-  delete(name) {
-    if (!this.has(name)) {
-      return;
-    }
-    const normalizedName = normalizeHeaderName(name);
-    delete this[HEADERS][normalizedName];
-  }
-  /**
-   * Returns the object of all the normalized headers.
-   */
-  all() {
-    return this[HEADERS];
-  }
-  /**
-   * Returns a boolean stating whether a `Headers` object contains a certain header.
-   */
-  has(name) {
-    return this[HEADERS].hasOwnProperty(normalizeHeaderName(name));
-  }
-  /**
-   * Traverses the `Headers` object,
-   * calling the given callback for each header.
-   */
-  forEach(callback, thisArg) {
-    for (const name in this[HEADERS]) {
-      if (this[HEADERS].hasOwnProperty(name)) {
-        callback.call(thisArg, this[HEADERS][name], name, this);
-      }
-    }
-  }
-};
-var HEADERS_INVALID_CHARACTERS = /[^a-z0-9\-#$%&'*+.^_`|~]/i;
-function normalizeHeaderName(name) {
-  if (typeof name !== "string") {
-    name = String(name);
-  }
-  if (HEADERS_INVALID_CHARACTERS.test(name) || name.trim() === "") {
-    throw new TypeError("Invalid character in header field name");
-  }
-  return name.toLowerCase();
-}
-function createHeaders() {
-  return new (typeof Headers === "function" ? Headers : HeadersPolyfill)();
-}
-
 // packages/qwik-city/middleware/request-handler/error-handler.ts
 var ErrorResponse = class extends Error {
   constructor(status, message) {
@@ -23867,7 +23772,7 @@ var RequestEvBasePathname = Symbol("RequestEvBasePathname");
 function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
   const { request, platform } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
-  const headers = createHeaders();
+  const headers = new Headers();
   const url = new URL(request.url);
   let routeModuleIndex = -1;
   let writableStream = null;
@@ -24127,15 +24032,16 @@ async function fromNodeHttp(url, req, res, mode) {
     }
   };
   const body = req.method === "HEAD" || req.method === "GET" ? void 0 : getRequestBody();
+  const options2 = {
+    method: req.method,
+    headers: requestHeaders,
+    body,
+    duplex: "half"
+  };
   const serverRequestEv = {
     mode,
     url,
-    request: new Request(url.href, {
-      method: req.method,
-      headers: requestHeaders,
-      body,
-      duplex: "half"
-    }),
+    request: new Request(url.href, options2),
     getWritableStream: (status, headers, cookies) => {
       res.statusCode = status;
       headers.forEach((value2, key) => res.setHeader(key, value2));
@@ -24851,9 +24757,9 @@ function qwikCity(userOpts) {
       return updatedViteConfig;
     },
     async configResolved(config) {
-      var _a3, _b, _c;
+      var _a2, _b, _c;
       rootDir = (0, import_node_path10.resolve)(config.root);
-      const target = ((_a3 = config.build) == null ? void 0 : _a3.ssr) || config.mode === "ssr" ? "ssr" : "client";
+      const target = ((_a2 = config.build) == null ? void 0 : _a2.ssr) || config.mode === "ssr" ? "ssr" : "client";
       ctx = createBuildContext(rootDir, userOpts, target);
       ctx.isDevServer = config.command === "serve";
       ctx.isDevServerClientOnly = ctx.isDevServer && config.mode !== "ssr";
@@ -24978,7 +24884,7 @@ function qwikCity(userOpts) {
     closeBundle: {
       sequential: true,
       async handler() {
-        var _a3;
+        var _a2;
         if ((ctx == null ? void 0 : ctx.target) === "ssr") {
           const manifest = globalThis.QWIK_MANIFEST || qwikPlugin.api.getManifest();
           const clientOutDir = globalThis.QWIK_CLIENT_OUT_DIR || qwikPlugin.api.getClientOutDir();
@@ -25013,7 +24919,7 @@ function qwikCity(userOpts) {
             let packageJson = {};
             const packageJsonExists = import_node_fs7.default.existsSync(serverPackageJsonPath);
             if (packageJsonExists) {
-              const content = await ((_a3 = await import_node_fs7.default.promises.readFile(serverPackageJsonPath)) == null ? void 0 : _a3.toString());
+              const content = await ((_a2 = await import_node_fs7.default.promises.readFile(serverPackageJsonPath)) == null ? void 0 : _a2.toString());
               const contentAsJson = JSON.parse(content);
               packageJson = {
                 ...contentAsJson

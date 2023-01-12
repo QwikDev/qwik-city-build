@@ -396,46 +396,6 @@ export declare const QwikCityProvider: Component<QwikCityProps>;
 declare class RedirectMessage extends AbortMessage {
 }
 
-/**
- * @alpha
- */
-declare interface RequestContext {
-    /**
-     * HTTP request headers.
-     *
-     * https://developer.mozilla.org/en-US/docs/Glossary/Request_header
-     */
-    readonly headers: Headers;
-    /**
-     * HTTP request method.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
-     */
-    readonly method: string;
-    /**
-     * HTTP request URL.
-     */
-    readonly url: string;
-    /**
-     * HTTP request form data.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/FormData
-     */
-    formData(): Promise<FormData>;
-    /**
-     * HTTP request json data.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/Request/json
-     */
-    json(): Promise<any>;
-    /**
-     * HTTP request text data.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/Request/text
-     */
-    text(): Promise<string>;
-}
-
 export { RequestEvent }
 
 /**
@@ -535,7 +495,7 @@ declare interface RequestEventCommon<PLATFORM = unknown> {
     /**
      * HTTP request information.
      */
-    readonly request: RequestContext;
+    readonly request: Request;
     /**
      * Platform specific data and functions
      */

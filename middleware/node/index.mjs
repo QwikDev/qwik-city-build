@@ -31,15 +31,16 @@ async function fromNodeHttp(url, req, res, mode) {
     }
   };
   const body = req.method === "HEAD" || req.method === "GET" ? void 0 : getRequestBody();
+  const options = {
+    method: req.method,
+    headers: requestHeaders,
+    body,
+    duplex: "half"
+  };
   const serverRequestEv = {
     mode,
     url,
-    request: new Request(url.href, {
-      method: req.method,
-      headers: requestHeaders,
-      body,
-      duplex: "half"
-    }),
+    request: new Request(url.href, options),
     getWritableStream: (status, headers, cookies) => {
       res.statusCode = status;
       headers.forEach((value, key) => res.setHeader(key, value));

@@ -9,13 +9,13 @@ import {
   WritableStream,
   ReadableStream
 } from "stream/web";
-import { fetch, Headers, Request, Response, FormData } from "undici";
+import { fetch, Headers, Request as Request2, Response, FormData } from "undici";
 import crypto from "crypto";
 function patchGlobalThis() {
   if (typeof global !== "undefined" && typeof globalThis.fetch !== "function" && typeof process !== "undefined" && process.versions.node) {
     globalThis.fetch = fetch;
     globalThis.Headers = Headers;
-    globalThis.Request = Request;
+    globalThis.Request = Request2;
     globalThis.Response = Response;
     globalThis.FormData = FormData;
   }
@@ -563,7 +563,7 @@ function validateOptions(opts) {
 }
 
 // packages/qwik-city/static/worker-thread.ts
-import { createHeaders, requestHandler } from "../middleware/request-handler/index.mjs";
+import { requestHandler } from "../middleware/request-handler/index.mjs";
 import { pathToFileURL as pathToFileURL2 } from "url";
 import { WritableStream as WritableStream2 } from "stream/web";
 async function workerThread(sys) {
@@ -609,7 +609,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     await sys.ensureDir(htmlFilePath);
   }
   try {
-    const request = new SsgRequestContext(url);
+    const request = new Request(url);
     const requestCtx = {
       mode: "static",
       locale: void 0,
@@ -695,28 +695,6 @@ var noopWriter = /* @__PURE__ */ new WritableStream2({
   close() {
   }
 });
-var SsgRequestContext = class {
-  constructor(url) {
-    this.url = url.href;
-    const headers = createHeaders();
-    headers.set("Host", url.host);
-    headers.set("Accept", "text/html,application/json");
-    headers.set("User-Agent", "Qwik City SSG");
-    this.headers = headers;
-  }
-  get method() {
-    return "GET";
-  }
-  async json() {
-    return {};
-  }
-  async text() {
-    return "";
-  }
-  async formData() {
-    return new URLSearchParams();
-  }
-};
 
 // packages/qwik-city/static/node/index.ts
 async function generate(opts) {
