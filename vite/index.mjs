@@ -24318,6 +24318,7 @@ function ssrDevMiddleware(ctx, server) {
           const isPageDataReq = requestEv.pathname.endsWith(QDATA_JSON);
           if (!isPageDataReq) {
             const serverData = getQwikCityServerData(requestEv);
+            res.statusCode = requestEv.status();
             requestEv.headers.forEach((value2, key) => {
               res.setHeader(key, value2);
             });
