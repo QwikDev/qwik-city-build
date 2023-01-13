@@ -26,6 +26,11 @@ function createQwikCity(opts) {
         locale: void 0,
         url: new URL(req.url),
         platform: context,
+        env: {
+          get(key) {
+            return process.env[key];
+          }
+        },
         request: new Request(req.url, options),
         getWritableStream: (status, headers, _cookies) => {
           res.status = status;

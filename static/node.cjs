@@ -647,6 +647,11 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
       locale: void 0,
       url,
       request,
+      env: {
+        get(key) {
+          return process.env[key];
+        }
+      },
       getWritableStream: (status, headers, _, _r, requestEv) => {
         result.ok = status >= 200 && status <= 299 && (headers.get("Content-Type") || "").includes("text/html");
         if (!result.ok) {

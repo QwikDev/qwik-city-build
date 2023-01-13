@@ -10,6 +10,7 @@ import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
 import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
+import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import { Signal } from '@builder.io/qwik';
@@ -253,6 +254,10 @@ export declare type EndpointHandler<BODY = unknown> = RequestHandler<BODY>;
 
 declare type EndpointModuleLoader = () => Promise<RouteModule>;
 
+declare interface EnvGetter {
+    get(key: string): string | undefined;
+}
+
 declare class ErrorResponse extends Error {
     status: number;
     constructor(status: number, message?: string);
@@ -399,10 +404,12 @@ declare class RedirectMessage extends AbortMessage {
 
 export { RequestEvent }
 
+export { RequestEventCommon }
+
 /**
  * @alpha
  */
-declare interface RequestEventCommon<PLATFORM = unknown> {
+declare interface RequestEventCommon_2<PLATFORM = unknown> {
     /**
      * HTTP response status code. Sets the status code when called with an
      * argument. Always returns the status code, so calling `status()` without
@@ -502,6 +509,10 @@ declare interface RequestEventCommon<PLATFORM = unknown> {
      */
     readonly platform: PLATFORM;
     /**
+     * Platform provided environment variables.
+     */
+    readonly env: EnvGetter;
+    /**
      * Shared Map across all the request handlers. Every HTTP request will get a new instance of
      * the shared map. The shared map is useful for sharing data between request handlers.
      */
@@ -513,7 +524,7 @@ export { RequestEventLoader }
 /**
  * @alpha
  */
-declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventCommon_2<PLATFORM> {
     getData: GetData;
     fail: <T>(status: number, returnData: T) => T;
 }

@@ -137,6 +137,10 @@ export declare interface CookieValue {
     number: () => number;
 }
 
+declare interface EnvGetter {
+    get(key: string): string | undefined;
+}
+
 declare class ErrorResponse extends Error {
     status: number;
     constructor(status: number, message?: string);
@@ -201,7 +205,7 @@ export declare interface RequestEvent<PLATFORM = unknown> extends RequestEventCo
 /**
  * @alpha
  */
-declare interface RequestEventCommon<PLATFORM = unknown> {
+export declare interface RequestEventCommon<PLATFORM = unknown> {
     /**
      * HTTP response status code. Sets the status code when called with an
      * argument. Always returns the status code, so calling `status()` without
@@ -300,6 +304,10 @@ declare interface RequestEventCommon<PLATFORM = unknown> {
      * Platform specific data and functions
      */
     readonly platform: PLATFORM;
+    /**
+     * Platform provided environment variables.
+     */
+    readonly env: EnvGetter;
     /**
      * Shared Map across all the request handlers. Every HTTP request will get a new instance of
      * the shared map. The shared map is useful for sharing data between request handlers.
@@ -406,6 +414,7 @@ export declare interface ServerRequestEvent<T = any> {
     locale: string | undefined;
     platform: any;
     request: Request;
+    env: EnvGetter;
     getWritableStream: ServerResponseHandler<T>;
 }
 

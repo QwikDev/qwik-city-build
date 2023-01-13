@@ -560,7 +560,7 @@ var RequestEvAction = Symbol("RequestEvAction");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvBasePathname = Symbol("RequestEvBasePathname");
 function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
-  const { request, platform } = serverRequestEv;
+  const { request, platform, env } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
   const headers = new Headers();
   const url = new URL(request.url);
@@ -620,6 +620,7 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
     [RequestEvBasePathname]: basePathname,
     cookie,
     headers,
+    env,
     method: request.method,
     params,
     pathname: url.pathname,
