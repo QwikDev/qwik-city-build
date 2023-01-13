@@ -714,7 +714,6 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
       return writableStream;
     }
   };
-  Object.freeze(requestEv);
   return requestEv;
 }
 function getRequestLoaders(requestEv) {
