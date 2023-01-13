@@ -23760,7 +23760,7 @@ var RequestEvAction = Symbol("RequestEvAction");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvBasePathname = Symbol("RequestEvBasePathname");
 function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
-  const { request, platform } = serverRequestEv;
+  const { request, platform, env } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
   const headers = new Headers();
   const url = new URL(request.url);
@@ -23820,6 +23820,7 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
     [RequestEvBasePathname]: basePathname,
     cookie,
     headers,
+    env,
     method: request.method,
     params,
     pathname: url.pathname,
@@ -23913,6 +23914,7 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
       return writableStream;
     }
   };
+  Object.freeze(requestEv);
   return requestEv;
 }
 function getRequestLoaders(requestEv) {
@@ -24032,6 +24034,11 @@ async function fromNodeHttp(url, req, res, mode) {
     mode,
     url,
     request: new Request(url.href, options2),
+    env: {
+      get(key) {
+        return process.env[key];
+      }
+    },
     getWritableStream: (status, headers, cookies) => {
       res.statusCode = status;
       headers.forEach((value2, key) => res.setHeader(key, value2));

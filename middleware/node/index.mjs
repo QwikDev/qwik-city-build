@@ -41,6 +41,11 @@ async function fromNodeHttp(url, req, res, mode) {
     mode,
     url,
     request: new Request(url.href, options),
+    env: {
+      get(key) {
+        return process.env[key];
+      }
+    },
     getWritableStream: (status, headers, cookies) => {
       res.statusCode = status;
       headers.forEach((value, key) => res.setHeader(key, value));
