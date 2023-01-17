@@ -343,27 +343,10 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
     pathname: url.pathname,
     query: url.searchParams,
     params: env.params,
-    isPending: false
+    isNavigating: false
   });
   const loaderState = qwik.useStore(env.response.loaders);
   const navPath = qwik.useSignal(toPath(url));
-  const goto = qwik.inlinedQrl(async (path) => {
-    const [navPath2, routeLocation2] = qwik.useLexicalScope();
-    const value = navPath2.value;
-    if (path) {
-      if (value === path)
-        return;
-      navPath2.value = path;
-    } else {
-      navPath2.value = "";
-      navPath2.value = value;
-    }
-    actionState.value = void 0;
-    routeLocation2.isPending = true;
-  }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
-    navPath,
-    routeLocation
-  ]);
   const documentHead = qwik.useStore(createDocumentHead);
   const content = qwik.useStore({
     headings: void 0,
@@ -380,6 +363,24 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
       status: env.response.status
     }
   } : void 0);
+  const goto = qwik.inlinedQrl(async (path) => {
+    const [actionState2, navPath2, routeLocation2] = qwik.useLexicalScope();
+    const value = navPath2.value;
+    if (path) {
+      if (value === path)
+        return;
+      navPath2.value = path;
+    } else {
+      navPath2.value = "";
+      navPath2.value = value;
+    }
+    actionState2.value = void 0;
+    routeLocation2.isNavigating = true;
+  }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
+    actionState,
+    navPath,
+    routeLocation
+  ]);
   qwik.useContextProvider(ContentContext, content);
   qwik.useContextProvider(ContentInternalContext, contentInternal);
   qwik.useContextProvider(DocumentHeadContext, documentHead);
@@ -387,65 +388,72 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
   qwik.useContextProvider(RouteNavigateContext, goto);
   qwik.useContextProvider(RouteStateContext, loaderState);
   qwik.useContextProvider(RouteActionContext, actionState);
-  qwik.useTaskQrl(qwik.inlinedQrl(async ({ track }) => {
+  qwik.useTaskQrl(qwik.inlinedQrl(({ track }) => {
     const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, routeLocation2] = qwik.useLexicalScope();
-    const [path, action] = track(() => [
-      navPath2.value,
-      actionState2.value
-    ]);
-    const locale = qwik.getLocale("");
-    const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
-    let url2 = new URL(path, routeLocation2.href);
-    let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
-    let clientPageData;
-    if (build.isServer)
-      clientPageData = env2.response;
-    else {
-      const pageData = clientPageData = await loadClientData(url2.href, true, action);
-      const newHref = pageData?.href;
-      if (newHref) {
-        const newURL = new URL(newHref, url2.href);
-        if (newURL.pathname !== url2.pathname) {
-          url2 = newURL;
-          loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
+    async function run() {
+      const [path, action] = track(() => [
+        navPath2.value,
+        actionState2.value
+      ]);
+      const locale = qwik.getLocale("");
+      const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
+      let url2 = new URL(path, routeLocation2.href);
+      let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
+      let clientPageData;
+      if (build.isServer)
+        clientPageData = env2.response;
+      else {
+        const pageData = clientPageData = await loadClientData(url2.href, true, action);
+        const newHref = pageData?.href;
+        if (newHref) {
+          const newURL = new URL(newHref, url2.href);
+          if (newURL.pathname !== url2.pathname) {
+            url2 = newURL;
+            loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
+          }
+        }
+      }
+      if (url2.pathname.endsWith("/")) {
+        if (!trailingSlash)
+          url2.pathname = url2.pathname.slice(0, -1);
+      } else if (trailingSlash)
+        url2.pathname += "/";
+      const pathname = url2.pathname;
+      const loadedRoute = await loadRoutePromise;
+      if (loadedRoute) {
+        const [params, mods, menu] = loadedRoute;
+        const contentModules = mods;
+        const pageModule = contentModules[contentModules.length - 1];
+        const resolvedHead = await resolveHead(clientPageData, routeLocation2, contentModules, locale);
+        routeLocation2.href = url2.href;
+        routeLocation2.pathname = pathname;
+        routeLocation2.params = {
+          ...params
+        };
+        routeLocation2.query = url2.searchParams;
+        content2.headings = pageModule.headings;
+        content2.menu = menu;
+        contentInternal2.value = qwik.noSerialize(contentModules);
+        documentHead2.links = resolvedHead.links;
+        documentHead2.meta = resolvedHead.meta;
+        documentHead2.styles = resolvedHead.styles;
+        documentHead2.title = resolvedHead.title;
+        documentHead2.frontmatter = resolvedHead.frontmatter;
+        if (build.isBrowser) {
+          const loaders = clientPageData?.loaders;
+          if (loaders)
+            Object.assign(loaderState2, loaders);
+          CLIENT_DATA_CACHE.clear();
+          clientNavigate(window, pathname, navPath2);
+          routeLocation2.isNavigating = false;
         }
       }
     }
-    if (url2.pathname.endsWith("/")) {
-      if (!trailingSlash)
-        url2.pathname = url2.pathname.slice(0, -1);
-    } else if (trailingSlash)
-      url2.pathname += "/";
-    const pathname = url2.pathname;
-    const loadedRoute = await loadRoutePromise;
-    if (loadedRoute) {
-      const [params, mods, menu] = loadedRoute;
-      const contentModules = mods;
-      const pageModule = contentModules[contentModules.length - 1];
-      const resolvedHead = await resolveHead(clientPageData, routeLocation2, contentModules, locale);
-      routeLocation2.href = url2.href;
-      routeLocation2.pathname = pathname;
-      routeLocation2.params = {
-        ...params
-      };
-      routeLocation2.query = url2.searchParams;
-      content2.headings = pageModule.headings;
-      content2.menu = menu;
-      contentInternal2.value = qwik.noSerialize(contentModules);
-      documentHead2.links = resolvedHead.links;
-      documentHead2.meta = resolvedHead.meta;
-      documentHead2.styles = resolvedHead.styles;
-      documentHead2.title = resolvedHead.title;
-      documentHead2.frontmatter = resolvedHead.frontmatter;
-      if (build.isBrowser) {
-        const loaders = clientPageData?.loaders;
-        if (loaders)
-          Object.assign(loaderState2, loaders);
-        CLIENT_DATA_CACHE.clear();
-        clientNavigate(window, pathname, navPath2);
-        routeLocation2.isPending = false;
-      }
-    }
+    const promise = run();
+    if (build.isServer)
+      return promise;
+    else
+      return;
   }, "QwikCityProvider_component_useTask_02wMImzEAbk", [
     actionState,
     content,
@@ -468,7 +476,7 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((
     pathname: url.pathname,
     query: url.searchParams,
     params: props.params ?? {},
-    isPending: false
+    isNavigating: false
   });
   const loaderState = qwik.useSignal({});
   const goto = qwik.inlinedQrl(async (path) => {
@@ -550,7 +558,7 @@ class ServerActionImpl {
     const currentAction = useAction();
     const initialState = {
       status: void 0,
-      isPending: false
+      isRunning: false
     };
     const state = qwik.useStore(() => {
       return qwik.untrack(() => {
@@ -565,11 +573,11 @@ class ServerActionImpl {
         }
         initialState.id = id;
         initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
-        initialState.isPending = false;
+        initialState.isRunning = false;
         return initialState;
       });
     });
-    initialState.execute = qwik.inlinedQrl((input) => {
+    initialState.run = qwik.inlinedQrl((input) => {
       const [currentAction2, loc2, state2] = qwik.useLexicalScope();
       let data;
       if (input instanceof SubmitEvent)
@@ -579,15 +587,15 @@ class ServerActionImpl {
       else
         data = formDataFromObject(input);
       return new Promise((resolve) => {
-        state2.isPending = true;
-        loc2.isPending = true;
+        state2.isRunning = true;
+        loc2.isNavigating = true;
         currentAction2.value = {
           data,
           id: state2.id,
           resolve: qwik.noSerialize(resolve)
         };
       }).then((value) => {
-        state2.isPending = false;
+        state2.isRunning = false;
         state2.status = value.status;
         state2.value = value.result;
       });
@@ -641,7 +649,7 @@ const Form = ({ action, ...rest }) => {
   return qwik.jsx("form", {
     action: action.actionPath,
     "preventdefault:submit": true,
-    onSubmit$: action.execute,
+    onSubmit$: action.run,
     ...rest,
     method: "post"
   });

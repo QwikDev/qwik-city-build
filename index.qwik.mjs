@@ -1,4 +1,4 @@
-import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, useStore, useSignal, useLexicalScope, useContextProvider, useTaskQrl, getLocale, Slot, useOnDocument, implicit$FirstArg, untrack, useRender, SSRHint, _wrapSignal } from "@builder.io/qwik";
+import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, useStore, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, untrack, useRender, SSRHint, _wrapSignal } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import swRegister from "@qwik-city-sw-register";
@@ -319,27 +319,10 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
     pathname: url.pathname,
     query: url.searchParams,
     params: env.params,
-    isPending: false
+    isNavigating: false
   });
   const loaderState = useStore(env.response.loaders);
   const navPath = useSignal(toPath(url));
-  const goto = inlinedQrl(async (path) => {
-    const [navPath2, routeLocation2] = useLexicalScope();
-    const value = navPath2.value;
-    if (path) {
-      if (value === path)
-        return;
-      navPath2.value = path;
-    } else {
-      navPath2.value = "";
-      navPath2.value = value;
-    }
-    actionState.value = void 0;
-    routeLocation2.isPending = true;
-  }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
-    navPath,
-    routeLocation
-  ]);
   const documentHead = useStore(createDocumentHead);
   const content = useStore({
     headings: void 0,
@@ -356,6 +339,24 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
       status: env.response.status
     }
   } : void 0);
+  const goto = inlinedQrl(async (path) => {
+    const [actionState2, navPath2, routeLocation2] = useLexicalScope();
+    const value = navPath2.value;
+    if (path) {
+      if (value === path)
+        return;
+      navPath2.value = path;
+    } else {
+      navPath2.value = "";
+      navPath2.value = value;
+    }
+    actionState2.value = void 0;
+    routeLocation2.isNavigating = true;
+  }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
+    actionState,
+    navPath,
+    routeLocation
+  ]);
   useContextProvider(ContentContext, content);
   useContextProvider(ContentInternalContext, contentInternal);
   useContextProvider(DocumentHeadContext, documentHead);
@@ -363,65 +364,72 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
   useContextProvider(RouteNavigateContext, goto);
   useContextProvider(RouteStateContext, loaderState);
   useContextProvider(RouteActionContext, actionState);
-  useTaskQrl(inlinedQrl(async ({ track }) => {
+  useTaskQrl(inlinedQrl(({ track }) => {
     const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, routeLocation2] = useLexicalScope();
-    const [path, action] = track(() => [
-      navPath2.value,
-      actionState2.value
-    ]);
-    const locale = getLocale("");
-    const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
-    let url2 = new URL(path, routeLocation2.href);
-    let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
-    let clientPageData;
-    if (isServer)
-      clientPageData = env2.response;
-    else {
-      const pageData = clientPageData = await loadClientData(url2.href, true, action);
-      const newHref = pageData?.href;
-      if (newHref) {
-        const newURL = new URL(newHref, url2.href);
-        if (newURL.pathname !== url2.pathname) {
-          url2 = newURL;
-          loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
+    async function run() {
+      const [path, action] = track(() => [
+        navPath2.value,
+        actionState2.value
+      ]);
+      const locale = getLocale("");
+      const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
+      let url2 = new URL(path, routeLocation2.href);
+      let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
+      let clientPageData;
+      if (isServer)
+        clientPageData = env2.response;
+      else {
+        const pageData = clientPageData = await loadClientData(url2.href, true, action);
+        const newHref = pageData?.href;
+        if (newHref) {
+          const newURL = new URL(newHref, url2.href);
+          if (newURL.pathname !== url2.pathname) {
+            url2 = newURL;
+            loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
+          }
+        }
+      }
+      if (url2.pathname.endsWith("/")) {
+        if (!trailingSlash)
+          url2.pathname = url2.pathname.slice(0, -1);
+      } else if (trailingSlash)
+        url2.pathname += "/";
+      const pathname = url2.pathname;
+      const loadedRoute = await loadRoutePromise;
+      if (loadedRoute) {
+        const [params, mods, menu] = loadedRoute;
+        const contentModules = mods;
+        const pageModule = contentModules[contentModules.length - 1];
+        const resolvedHead = await resolveHead(clientPageData, routeLocation2, contentModules, locale);
+        routeLocation2.href = url2.href;
+        routeLocation2.pathname = pathname;
+        routeLocation2.params = {
+          ...params
+        };
+        routeLocation2.query = url2.searchParams;
+        content2.headings = pageModule.headings;
+        content2.menu = menu;
+        contentInternal2.value = noSerialize(contentModules);
+        documentHead2.links = resolvedHead.links;
+        documentHead2.meta = resolvedHead.meta;
+        documentHead2.styles = resolvedHead.styles;
+        documentHead2.title = resolvedHead.title;
+        documentHead2.frontmatter = resolvedHead.frontmatter;
+        if (isBrowser) {
+          const loaders = clientPageData?.loaders;
+          if (loaders)
+            Object.assign(loaderState2, loaders);
+          CLIENT_DATA_CACHE.clear();
+          clientNavigate(window, pathname, navPath2);
+          routeLocation2.isNavigating = false;
         }
       }
     }
-    if (url2.pathname.endsWith("/")) {
-      if (!trailingSlash)
-        url2.pathname = url2.pathname.slice(0, -1);
-    } else if (trailingSlash)
-      url2.pathname += "/";
-    const pathname = url2.pathname;
-    const loadedRoute = await loadRoutePromise;
-    if (loadedRoute) {
-      const [params, mods, menu] = loadedRoute;
-      const contentModules = mods;
-      const pageModule = contentModules[contentModules.length - 1];
-      const resolvedHead = await resolveHead(clientPageData, routeLocation2, contentModules, locale);
-      routeLocation2.href = url2.href;
-      routeLocation2.pathname = pathname;
-      routeLocation2.params = {
-        ...params
-      };
-      routeLocation2.query = url2.searchParams;
-      content2.headings = pageModule.headings;
-      content2.menu = menu;
-      contentInternal2.value = noSerialize(contentModules);
-      documentHead2.links = resolvedHead.links;
-      documentHead2.meta = resolvedHead.meta;
-      documentHead2.styles = resolvedHead.styles;
-      documentHead2.title = resolvedHead.title;
-      documentHead2.frontmatter = resolvedHead.frontmatter;
-      if (isBrowser) {
-        const loaders = clientPageData?.loaders;
-        if (loaders)
-          Object.assign(loaderState2, loaders);
-        CLIENT_DATA_CACHE.clear();
-        clientNavigate(window, pathname, navPath2);
-        routeLocation2.isPending = false;
-      }
-    }
+    const promise = run();
+    if (isServer)
+      return promise;
+    else
+      return;
   }, "QwikCityProvider_component_useTask_02wMImzEAbk", [
     actionState,
     content,
@@ -444,7 +452,7 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(inlinedQrl((props) => 
     pathname: url.pathname,
     query: url.searchParams,
     params: props.params ?? {},
-    isPending: false
+    isNavigating: false
   });
   const loaderState = useSignal({});
   const goto = inlinedQrl(async (path) => {
@@ -526,7 +534,7 @@ class ServerActionImpl {
     const currentAction = useAction();
     const initialState = {
       status: void 0,
-      isPending: false
+      isRunning: false
     };
     const state = useStore(() => {
       return untrack(() => {
@@ -541,11 +549,11 @@ class ServerActionImpl {
         }
         initialState.id = id;
         initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
-        initialState.isPending = false;
+        initialState.isRunning = false;
         return initialState;
       });
     });
-    initialState.execute = inlinedQrl((input) => {
+    initialState.run = inlinedQrl((input) => {
       const [currentAction2, loc2, state2] = useLexicalScope();
       let data;
       if (input instanceof SubmitEvent)
@@ -555,15 +563,15 @@ class ServerActionImpl {
       else
         data = formDataFromObject(input);
       return new Promise((resolve) => {
-        state2.isPending = true;
-        loc2.isPending = true;
+        state2.isRunning = true;
+        loc2.isNavigating = true;
         currentAction2.value = {
           data,
           id: state2.id,
           resolve: noSerialize(resolve)
         };
       }).then((value) => {
-        state2.isPending = false;
+        state2.isRunning = false;
         state2.status = value.status;
         state2.value = value.result;
       });
@@ -617,7 +625,7 @@ const Form = ({ action, ...rest }) => {
   return jsx("form", {
     action: action.actionPath,
     "preventdefault:submit": true,
-    onSubmit$: action.execute,
+    onSubmit$: action.run,
     ...rest,
     method: "post"
   });
