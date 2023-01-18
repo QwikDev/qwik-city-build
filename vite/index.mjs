@@ -23519,6 +23519,9 @@ var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
       requestHandlers.push(renderHandler);
     }
   }
+  if (requestHandlers.length > 0) {
+    requestHandlers.unshift(securityMiddleware);
+  }
   return requestHandlers;
 };
 var _resolveRequestHandlers = (serverLoaders, serverActions, requestHandlers, routeModules, collectActions, method) => {
@@ -23644,6 +23647,12 @@ function getPathname(url, trailingSlash) {
   return url.pathname;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
+function securityMiddleware({ method, url, request, error }) {
+  const forbidden = method === "POST" && request.headers.get("origin") !== url.origin && isFormContentType(request.headers);
+  if (forbidden) {
+    throw error(403, `Cross-site ${request.method} form submissions are forbidden`);
+  }
+}
 async function renderQData(requestEv) {
   const isPageDataReq = isQDataJson(requestEv.pathname);
   if (isPageDataReq) {
@@ -23719,6 +23728,14 @@ function makeQDataPath(href) {
   } else {
     return void 0;
   }
+}
+function isContentType(headers, ...types) {
+  var _a2;
+  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(";", 1)[0].trim()) ?? "";
+  return types.includes(type);
+}
+function isFormContentType(headers) {
+  return isContentType(headers, "application/x-www-form-urlencoded", "multipart/form-data");
 }
 
 // packages/qwik-city/middleware/request-handler/cache-control.ts
