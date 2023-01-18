@@ -431,6 +431,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
           ...params
         };
         routeLocation2.query = url2.searchParams;
+        navPath2.untrackedValue = pathname;
         content2.headings = pageModule.headings;
         content2.menu = menu;
         contentInternal2.value = qwik.noSerialize(contentModules);
