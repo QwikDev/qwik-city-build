@@ -377,10 +377,10 @@ declare type ServerActionExecute<RETURN> = QRL<(form: FormData | Record<string, 
 declare interface ServerActionUse<RETURN> {
     readonly id: string;
     readonly actionPath: string;
-    readonly isPending: boolean;
+    readonly isRunning: boolean;
     readonly status?: number;
     readonly value: RETURN | undefined;
-    readonly execute: ServerActionExecute<RETURN>;
+    readonly run: ServerActionExecute<RETURN>;
 }
 
 /**
