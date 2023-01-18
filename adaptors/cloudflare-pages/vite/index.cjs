@@ -70,11 +70,7 @@ function cloudflarePagesAdaptor(opts = {}) {
         const routesJson = {
           version: 1,
           include: [basePathname + "*"],
-          exclude: [
-            basePathname + "build/*",
-            basePathname + "assets/*",
-            basePathname + "*/q-data.json"
-          ]
+          exclude: [basePathname + "build/*", basePathname + "assets/*"]
         };
         await import_node_fs.default.promises.writeFile(routesJsonPath, JSON.stringify(routesJson, void 0, 2));
       }
