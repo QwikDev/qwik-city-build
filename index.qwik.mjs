@@ -93,7 +93,7 @@ const getPathParams = (paramNames, match) => {
     }
   return params;
 };
-const resolveHead = async (endpoint, routeLocation, contentModules, locale) => {
+const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   const head = createDocumentHead();
   const getData = (loader) => endpoint?.loaders[loader.__qrl.getHash()];
   const headProps = {
@@ -400,7 +400,6 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
         const [params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
-        const resolvedHead = await resolveHead(clientPageData, routeLocation2, contentModules, locale);
         routeLocation2.href = url2.href;
         routeLocation2.pathname = pathname;
         routeLocation2.params = {
@@ -408,6 +407,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
         };
         routeLocation2.query = url2.searchParams;
         navPath2.untrackedValue = pathname;
+        const resolvedHead = resolveHead(clientPageData, routeLocation2, contentModules, locale);
         content2.headings = pageModule.headings;
         content2.menu = menu;
         contentInternal2.value = noSerialize(contentModules);
@@ -557,9 +557,12 @@ class ServerActionImpl {
     initialState.run = inlinedQrl((input) => {
       const [currentAction2, loc2, state2] = useLexicalScope();
       let data;
-      if (input instanceof SubmitEvent)
-        data = new FormData(input.target);
-      else if (input instanceof FormData)
+      if (input instanceof SubmitEvent) {
+        const form = input.target;
+        data = new FormData(form);
+        if (form.getAttribute("data-spa-reset") === "true")
+          form.reset();
+      } else if (input instanceof FormData)
         data = input;
       else
         data = formDataFromObject(input);
@@ -622,13 +625,17 @@ function formDataFromObject(obj) {
   }
   return formData;
 }
-const Form = ({ action, ...rest }) => {
+const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return jsx("form", {
-    action: action.actionPath,
-    "preventdefault:submit": true,
-    onSubmit$: action.run,
     ...rest,
-    method: "post"
+    action: action.actionPath,
+    "preventdefault:submit": !reloadDocument,
+    onSubmit$: [
+      !reloadDocument ? action.run : void 0,
+      onSubmit$
+    ],
+    method: "post",
+    ["data-spa-reset"]: spaReset ? "true" : void 0
   });
 };
 export {

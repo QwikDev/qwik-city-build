@@ -6,6 +6,7 @@ import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler'
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
+import { PropFunction } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -266,7 +267,7 @@ declare class ErrorResponse extends Error {
 /**
  * @alpha
  */
-export declare const Form: <T>({ action, ...rest }: FormProps<T>) => JSXNode<"form">;
+export declare const Form: <T>({ action, spaReset, reloadDocument, onSubmit$, ...rest }: FormProps<T>) => JSXNode<"form">;
 
 /**
  * @alpha
@@ -274,6 +275,9 @@ export declare const Form: <T>({ action, ...rest }: FormProps<T>) => JSXNode<"fo
 export declare interface FormProps<T> extends Omit<QwikJSX.IntrinsicElements['form'], 'action'> {
     action: ServerActionUse<T>;
     method?: 'post';
+    onSubmit$?: PropFunction<(event: Event) => void>;
+    reloadDocument?: boolean;
+    spaReset?: boolean;
 }
 
 /**

@@ -349,15 +349,18 @@ var _resolveRequestHandlers = (serverLoaders, serverActions, requestHandlers, ro
     }
     if (collectActions) {
       const loaders = Object.values(routeModule).filter(
-        (e) => e.__brand === "server_loader"
+        (e) => checkBrand(e, "server_loader")
       );
       const actions = Object.values(routeModule).filter(
-        (e) => e.__brand === "server_action"
+        (e) => checkBrand(e, "server_action")
       );
       serverLoaders.push(...loaders);
       serverActions.push(...actions);
     }
   }
+};
+var checkBrand = (obj, brand) => {
+  return obj && typeof obj === "object" && obj.__brand === brand;
 };
 function actionsMiddleware(serverLoaders, serverActions) {
   return async (requestEv) => {
