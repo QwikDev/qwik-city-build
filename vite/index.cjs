@@ -24705,7 +24705,7 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
   c2.push(`  if (p.startsWith(${JSON.stringify(assetsPath)})) {`);
   c2.push(`    return true;`);
   c2.push(`  }`);
-  c2.push(`  if (url.searchParams.get('qwikcity.static') === "false") {`);
+  c2.push(`  if (url.search !== "") {`);
   c2.push(`    return false;`);
   c2.push(`  }`);
   c2.push(`  if (staticPaths.has(p)) {`);
