@@ -24070,7 +24070,7 @@ async function fromNodeHttp(url, req, res, mode) {
           res.write(chunk);
         },
         close() {
-          return new Promise((resolve4) => res.end(resolve4));
+          res.end();
         }
       });
       return stream;
