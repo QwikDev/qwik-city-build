@@ -34,13 +34,13 @@ __export(node_exports, {
   qwikCity: () => qwikCity
 });
 module.exports = __toCommonJS(node_exports);
-var import_request_handler = require("../request-handler/index.cjs");
 var import_qwik_city_not_found_paths = require("@qwik-city-not-found-paths");
 var import_qwik_city_plan = __toESM(require("@qwik-city-plan"), 1);
 var import_qwik_city_static_paths = require("@qwik-city-static-paths");
 var import_node_fs = require("fs");
 var import_node_path = require("path");
 var import_node_url = require("url");
+var import_request_handler = require("../request-handler/index.cjs");
 
 // packages/qwik-city/middleware/node/http.ts
 function getUrl(req) {
@@ -66,21 +66,15 @@ async function fromNodeHttp(url, req, res, mode) {
     }
   };
   const body = req.method === "HEAD" || req.method === "GET" ? void 0 : getRequestBody();
-  const options = {
-    method: req.method,
-    headers: requestHeaders,
-    body,
-    duplex: "half"
-  };
   const serverRequestEv = {
     mode,
     url,
-    request: new Request(url.href, options),
-    env: {
-      get(key) {
-        return process.env[key];
-      }
-    },
+    request: new Request(url.href, {
+      method: req.method,
+      headers: requestHeaders,
+      body,
+      duplex: "half"
+    }),
     getWritableStream: (status, headers, cookies) => {
       res.statusCode = status;
       headers.forEach((value, key) => res.setHeader(key, value));
@@ -93,7 +87,7 @@ async function fromNodeHttp(url, req, res, mode) {
           res.write(chunk);
         },
         close() {
-          res.end();
+          return new Promise((resolve) => res.end(resolve));
         }
       });
       return stream;
@@ -106,58 +100,6 @@ async function fromNodeHttp(url, req, res, mode) {
   };
   return serverRequestEv;
 }
-
-// packages/qwik-city/middleware/node/mime-types.ts
-var MIME_TYPES = {
-  "3gp": "video/3gpp",
-  "3gpp": "video/3gpp",
-  asf: "video/x-ms-asf",
-  asx: "video/x-ms-asf",
-  avi: "video/x-msvideo",
-  avif: "image/avif",
-  bmp: "image/x-ms-bmp",
-  css: "text/css",
-  flv: "video/x-flv",
-  gif: "image/gif",
-  htm: "text/html",
-  html: "text/html",
-  ico: "image/x-icon",
-  jng: "image/x-jng",
-  jpeg: "image/jpeg",
-  jpg: "image/jpeg",
-  js: "application/javascript",
-  json: "application/json",
-  kar: "audio/midi",
-  m4a: "audio/x-m4a",
-  m4v: "video/x-m4v",
-  mid: "audio/midi",
-  midi: "audio/midi",
-  mng: "video/x-mng",
-  mov: "video/quicktime",
-  mp3: "audio/mpeg",
-  mp4: "video/mp4",
-  mpeg: "video/mpeg",
-  mpg: "video/mpeg",
-  ogg: "audio/ogg",
-  pdf: "application/pdf",
-  png: "image/png",
-  rar: "application/x-rar-compressed",
-  shtml: "text/html",
-  svg: "image/svg+xml",
-  svgz: "image/svg+xml",
-  tif: "image/tiff",
-  tiff: "image/tiff",
-  ts: "video/mp2t",
-  txt: "text/plain",
-  wbmp: "image/vnd.wap.wbmp",
-  webm: "video/webm",
-  webp: "image/webp",
-  wmv: "video/x-ms-wmv",
-  woff: "font/woff",
-  woff2: "font/woff2",
-  xml: "text/xml",
-  zip: "application/zip"
-};
 
 // packages/qwik-city/middleware/node/node-fetch.ts
 var import_web = require("stream/web");
@@ -227,11 +169,6 @@ function createQwikCity(opts) {
       if ((0, import_qwik_city_static_paths.isStaticPath)(req.method || "GET", url)) {
         const target = (0, import_node_path.join)(staticFolder, url.pathname);
         const stream = (0, import_node_fs.createReadStream)(target);
-        const ext = (0, import_node_path.extname)(url.pathname).replace(/^\./, "");
-        const contentType = MIME_TYPES[ext];
-        if (contentType) {
-          res.setHeader("Content-Type", contentType);
-        }
         if ((_a2 = opts.static) == null ? void 0 : _a2.cacheControl) {
           res.setHeader("Cache-Control", opts.static.cacheControl);
         }

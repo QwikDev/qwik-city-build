@@ -1,6 +1,21 @@
 // packages/qwik-city/middleware/azure-swa/index.ts
 import qwikCityPlan from "@qwik-city-plan";
-import { requestHandler } from "../request-handler/index.mjs";
+import { createHeaders, requestHandler } from "../request-handler/index.mjs";
+function createQwikRequest(req) {
+  const url = req.headers["x-ms-original-url"];
+  const headers = createHeaders();
+  for (const header in req.headers) {
+    headers.set(header, req.headers[header]);
+  }
+  return {
+    method: req.method || "GET",
+    url,
+    headers,
+    formData: () => Promise.resolve(new URLSearchParams(req.params)),
+    json: req.body,
+    text: req.rawBody
+  };
+}
 function createQwikCity(opts) {
   async function onAzureSwaRequest(context, req) {
     const res = context.res = {
@@ -9,29 +24,13 @@ function createQwikCity(opts) {
     };
     const decoder = new TextDecoder();
     try {
-      const getRequestBody = async function* () {
-        for await (const chunk of req) {
-          yield chunk;
-        }
-      };
-      const body = req.method === "HEAD" || req.method === "GET" ? void 0 : getRequestBody();
-      const options = {
-        method: req.method,
-        headers: req.headers,
-        body,
-        duplex: "half"
-      };
+      const qwikRequest = createQwikRequest(req);
       const serverRequestEv = {
         mode: "server",
         locale: void 0,
-        url: new URL(req.url),
+        url: new URL(qwikRequest.url),
         platform: context,
-        env: {
-          get(key) {
-            return process.env[key];
-          }
-        },
-        request: new Request(req.url, options),
+        request: qwikRequest,
         getWritableStream: (status, headers, _cookies) => {
           res.status = status;
           headers.forEach((value, key) => res.headers[key] = value);

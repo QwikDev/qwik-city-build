@@ -641,17 +641,12 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     await sys.ensureDir(htmlFilePath);
   }
   try {
-    const request = new Request(url);
+    const request = new SsgRequestContext(url);
     const requestCtx = {
       mode: "static",
       locale: void 0,
       url,
       request,
-      env: {
-        get(key) {
-          return process.env[key];
-        }
-      },
       getWritableStream: (status, headers, _, _r, requestEv) => {
         result.ok = status >= 200 && status <= 299 && (headers.get("Content-Type") || "").includes("text/html");
         if (!result.ok) {
@@ -732,6 +727,28 @@ var noopWriter = /* @__PURE__ */ new import_web2.WritableStream({
   close() {
   }
 });
+var SsgRequestContext = class {
+  constructor(url) {
+    this.url = url.href;
+    const headers = (0, import_request_handler2.createHeaders)();
+    headers.set("Host", url.host);
+    headers.set("Accept", "text/html,application/json");
+    headers.set("User-Agent", "Qwik City SSG");
+    this.headers = headers;
+  }
+  get method() {
+    return "GET";
+  }
+  async json() {
+    return {};
+  }
+  async text() {
+    return "";
+  }
+  async formData() {
+    return new URLSearchParams();
+  }
+};
 
 // packages/qwik-city/static/node/index.ts
 async function generate(opts) {

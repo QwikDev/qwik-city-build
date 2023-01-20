@@ -16,7 +16,6 @@ function createQwikCity(opts) {
         mode: "server",
         locale: void 0,
         url,
-        env: Deno.env,
         request,
         getWritableStream: (status, headers, cookies, resolve) => {
           const { readable, writable } = new TransformStream();

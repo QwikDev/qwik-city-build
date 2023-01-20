@@ -22,11 +22,6 @@
       "import": "./adaptors/cloudflare-pages/vite/index.mjs",
       "require": "./adaptors/cloudflare-pages/vite/index.cjs"
     },
-    "./adaptors/cloud-run/vite": {
-      "types": "./adaptors/cloud-run/vite/index.d.ts",
-      "import": "./adaptors/cloud-run/vite/index.mjs",
-      "require": "./adaptors/cloud-run/vite/index.cjs"
-    },
     "./adaptors/express/vite": {
       "types": "./adaptors/express/vite/index.d.ts",
       "import": "./adaptors/express/vite/index.mjs",

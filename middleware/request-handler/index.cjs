@@ -20,11 +20,107 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/middleware/request-handler/index.ts
 var request_handler_exports = {};
 __export(request_handler_exports, {
+  createHeaders: () => createHeaders,
   getErrorHtml: () => getErrorHtml,
   mergeHeadersCookies: () => mergeHeadersCookies,
   requestHandler: () => requestHandler
 });
 module.exports = __toCommonJS(request_handler_exports);
+
+// packages/qwik-city/middleware/request-handler/headers.ts
+var HEADERS = Symbol("headers");
+var _a;
+var HeadersPolyfill = class {
+  constructor() {
+    // Normalized header {"name":"a, b"} storage.
+    this[_a] = {};
+  }
+  [(_a = HEADERS, Symbol.iterator)]() {
+    return this.entries();
+  }
+  *keys() {
+    for (const name of Object.keys(this[HEADERS])) {
+      yield name;
+    }
+  }
+  *values() {
+    for (const value of Object.values(this[HEADERS])) {
+      yield value;
+    }
+  }
+  *entries() {
+    for (const name of Object.keys(this[HEADERS])) {
+      yield [name, this.get(name)];
+    }
+  }
+  /**
+   * Returns a `ByteString` sequence of all the values of a header with a given name.
+   */
+  get(name) {
+    return this[HEADERS][normalizeHeaderName(name)] || null;
+  }
+  /**
+   * Sets a new value for an existing header inside a `Headers` object, or adds the header if it does not already exist.
+   */
+  set(name, value) {
+    const normalizedName = normalizeHeaderName(name);
+    this[HEADERS][normalizedName] = typeof value !== "string" ? String(value) : value;
+  }
+  /**
+   * Appends a new value onto an existing header inside a `Headers` object, or adds the header if it does not already exist.
+   */
+  append(name, value) {
+    const normalizedName = normalizeHeaderName(name);
+    const resolvedValue = this.has(normalizedName) ? `${this.get(normalizedName)}, ${value}` : value;
+    this.set(name, resolvedValue);
+  }
+  /**
+   * Deletes a header from the `Headers` object.
+   */
+  delete(name) {
+    if (!this.has(name)) {
+      return;
+    }
+    const normalizedName = normalizeHeaderName(name);
+    delete this[HEADERS][normalizedName];
+  }
+  /**
+   * Returns the object of all the normalized headers.
+   */
+  all() {
+    return this[HEADERS];
+  }
+  /**
+   * Returns a boolean stating whether a `Headers` object contains a certain header.
+   */
+  has(name) {
+    return this[HEADERS].hasOwnProperty(normalizeHeaderName(name));
+  }
+  /**
+   * Traverses the `Headers` object,
+   * calling the given callback for each header.
+   */
+  forEach(callback, thisArg) {
+    for (const name in this[HEADERS]) {
+      if (this[HEADERS].hasOwnProperty(name)) {
+        callback.call(thisArg, this[HEADERS][name], name, this);
+      }
+    }
+  }
+};
+var HEADERS_INVALID_CHARACTERS = /[^a-z0-9\-#$%&'*+.^_`|~]/i;
+function normalizeHeaderName(name) {
+  if (typeof name !== "string") {
+    name = String(name);
+  }
+  if (HEADERS_INVALID_CHARACTERS.test(name) || name.trim() === "") {
+    throw new TypeError("Invalid character in header field name");
+  }
+  return name.toLowerCase();
+}
+function createHeaders() {
+  return new (typeof Headers === "function" ? Headers : HeadersPolyfill)();
+}
 
 // packages/qwik-city/middleware/request-handler/error-handler.ts
 var ErrorResponse = class extends Error {
@@ -148,10 +244,10 @@ var parseCookieString = (cookieString) => {
 };
 var REQ_COOKIE = Symbol("request-cookies");
 var RES_COOKIE = Symbol("response-cookies");
-var _a;
+var _a2;
 var Cookie = class {
   constructor(cookieString) {
-    this[_a] = {};
+    this[_a2] = {};
     this[REQ_COOKIE] = parseCookieString(cookieString);
   }
   get(cookieName) {
@@ -189,7 +285,7 @@ var Cookie = class {
     return Object.values(this[RES_COOKIE]);
   }
 };
-REQ_COOKIE, _a = RES_COOKIE;
+REQ_COOKIE, _a2 = RES_COOKIE;
 var mergeHeadersCookies = (headers, cookies) => {
   const cookieHeaders = cookies.headers();
   if (cookieHeaders.length > 0) {
@@ -299,9 +395,6 @@ var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
       requestHandlers.push(renderHandler);
     }
   }
-  if (requestHandlers.length > 0) {
-    requestHandlers.unshift(securityMiddleware);
-  }
   return requestHandlers;
 };
 var _resolveRequestHandlers = (serverLoaders, serverActions, requestHandlers, routeModules, collectActions, method) => {
@@ -349,18 +442,15 @@ var _resolveRequestHandlers = (serverLoaders, serverActions, requestHandlers, ro
     }
     if (collectActions) {
       const loaders = Object.values(routeModule).filter(
-        (e) => checkBrand(e, "server_loader")
+        (e) => e.__brand === "server_loader"
       );
       const actions = Object.values(routeModule).filter(
-        (e) => checkBrand(e, "server_action")
+        (e) => e.__brand === "server_action"
       );
       serverLoaders.push(...loaders);
       serverActions.push(...actions);
     }
   }
-};
-var checkBrand = (obj, brand) => {
-  return obj && typeof obj === "object" && obj.__brand === brand;
 };
 function actionsMiddleware(serverLoaders, serverActions) {
   return async (requestEv) => {
@@ -430,12 +520,6 @@ function getPathname(url, trailingSlash) {
   return url.pathname;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
-function securityMiddleware({ method, url, request, error }) {
-  const forbidden = method === "POST" && request.headers.get("origin") !== url.origin && isFormContentType(request.headers);
-  if (forbidden) {
-    throw error(403, `Cross-site ${request.method} form submissions are forbidden`);
-  }
-}
 function renderQwikMiddleware(render, opts) {
   return async (requestEv) => {
     if (requestEv.headersSent) {
@@ -560,14 +644,6 @@ function makeQDataPath(href) {
     return void 0;
   }
 }
-function isContentType(headers, ...types) {
-  var _a2;
-  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(";", 1)[0].trim()) ?? "";
-  return types.includes(type);
-}
-function isFormContentType(headers) {
-  return isContentType(headers, "application/x-www-form-urlencoded", "multipart/form-data");
-}
 
 // packages/qwik-city/middleware/request-handler/cache-control.ts
 function createCacheControl(cacheControl) {
@@ -608,9 +684,9 @@ var RequestEvAction = Symbol("RequestEvAction");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvBasePathname = Symbol("RequestEvBasePathname");
 function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
-  const { request, platform, env } = serverRequestEv;
+  const { request, platform } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
-  const headers = new Headers();
+  const headers = createHeaders();
   const url = new URL(request.url);
   let routeModuleIndex = -1;
   let writableStream = null;
@@ -668,7 +744,6 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
     [RequestEvBasePathname]: basePathname,
     cookie,
     headers,
-    env,
     method: request.method,
     params,
     pathname: url.pathname,
@@ -979,6 +1054,7 @@ function handleErrors(run) {
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
+  createHeaders,
   getErrorHtml,
   mergeHeadersCookies,
   requestHandler

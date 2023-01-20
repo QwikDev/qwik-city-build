@@ -117,7 +117,7 @@ const getPathParams = (paramNames, match) => {
     }
   return params;
 };
-const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
+const resolveHead = async (endpoint, routeLocation, contentModules, locale) => {
   const head = createDocumentHead();
   const getData = (loader) => endpoint?.loaders[loader.__qrl.getHash()];
   const headProps = {
@@ -343,10 +343,27 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
     pathname: url.pathname,
     query: url.searchParams,
     params: env.params,
-    isNavigating: false
+    isPending: false
   });
   const loaderState = qwik.useStore(env.response.loaders);
   const navPath = qwik.useSignal(toPath(url));
+  const goto = qwik.inlinedQrl(async (path) => {
+    const [navPath2, routeLocation2] = qwik.useLexicalScope();
+    const value = navPath2.value;
+    if (path) {
+      if (value === path)
+        return;
+      navPath2.value = path;
+    } else {
+      navPath2.value = "";
+      navPath2.value = value;
+    }
+    actionState.value = void 0;
+    routeLocation2.isPending = true;
+  }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
+    navPath,
+    routeLocation
+  ]);
   const documentHead = qwik.useStore(createDocumentHead);
   const content = qwik.useStore({
     headings: void 0,
@@ -363,24 +380,6 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
       status: env.response.status
     }
   } : void 0);
-  const goto = qwik.inlinedQrl(async (path) => {
-    const [actionState2, navPath2, routeLocation2] = qwik.useLexicalScope();
-    const value = navPath2.value;
-    if (path) {
-      if (value === path)
-        return;
-      navPath2.value = path;
-    } else {
-      navPath2.value = "";
-      navPath2.value = value;
-    }
-    actionState2.value = void 0;
-    routeLocation2.isNavigating = true;
-  }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
-    actionState,
-    navPath,
-    routeLocation
-  ]);
   qwik.useContextProvider(ContentContext, content);
   qwik.useContextProvider(ContentInternalContext, contentInternal);
   qwik.useContextProvider(DocumentHeadContext, documentHead);
@@ -388,73 +387,65 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
   qwik.useContextProvider(RouteNavigateContext, goto);
   qwik.useContextProvider(RouteStateContext, loaderState);
   qwik.useContextProvider(RouteActionContext, actionState);
-  qwik.useTaskQrl(qwik.inlinedQrl(({ track }) => {
+  qwik.useTaskQrl(qwik.inlinedQrl(async ({ track }) => {
     const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, routeLocation2] = qwik.useLexicalScope();
-    async function run() {
-      const [path, action] = track(() => [
-        navPath2.value,
-        actionState2.value
-      ]);
-      const locale = qwik.getLocale("");
-      const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
-      let url2 = new URL(path, routeLocation2.href);
-      let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
-      let clientPageData;
-      if (build.isServer)
-        clientPageData = env2.response;
-      else {
-        const pageData = clientPageData = await loadClientData(url2.href, true, action);
-        const newHref = pageData?.href;
-        if (newHref) {
-          const newURL = new URL(newHref, url2.href);
-          if (newURL.pathname !== url2.pathname) {
-            url2 = newURL;
-            loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
-          }
-        }
-      }
-      if (url2.pathname.endsWith("/")) {
-        if (!trailingSlash)
-          url2.pathname = url2.pathname.slice(0, -1);
-      } else if (trailingSlash)
-        url2.pathname += "/";
-      const pathname = url2.pathname;
-      const loadedRoute = await loadRoutePromise;
-      if (loadedRoute) {
-        const [params, mods, menu] = loadedRoute;
-        const contentModules = mods;
-        const pageModule = contentModules[contentModules.length - 1];
-        routeLocation2.href = url2.href;
-        routeLocation2.pathname = pathname;
-        routeLocation2.params = {
-          ...params
-        };
-        routeLocation2.query = url2.searchParams;
-        navPath2.untrackedValue = pathname;
-        const resolvedHead = resolveHead(clientPageData, routeLocation2, contentModules, locale);
-        content2.headings = pageModule.headings;
-        content2.menu = menu;
-        contentInternal2.value = qwik.noSerialize(contentModules);
-        documentHead2.links = resolvedHead.links;
-        documentHead2.meta = resolvedHead.meta;
-        documentHead2.styles = resolvedHead.styles;
-        documentHead2.title = resolvedHead.title;
-        documentHead2.frontmatter = resolvedHead.frontmatter;
-        if (build.isBrowser) {
-          const loaders = clientPageData?.loaders;
-          if (loaders)
-            Object.assign(loaderState2, loaders);
-          CLIENT_DATA_CACHE.clear();
-          clientNavigate(window, pathname, navPath2);
-          routeLocation2.isNavigating = false;
+    const [path, action] = track(() => [
+      navPath2.value,
+      actionState2.value
+    ]);
+    const locale = qwik.getLocale("");
+    const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
+    let url2 = new URL(path, routeLocation2.href);
+    let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
+    let clientPageData;
+    if (build.isServer)
+      clientPageData = env2.response;
+    else {
+      const pageData = clientPageData = await loadClientData(url2.href, true, action);
+      const newHref = pageData?.href;
+      if (newHref) {
+        const newURL = new URL(newHref, url2.href);
+        if (newURL.pathname !== url2.pathname) {
+          url2 = newURL;
+          loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
         }
       }
     }
-    const promise = run();
-    if (build.isServer)
-      return promise;
-    else
-      return;
+    if (url2.pathname.endsWith("/")) {
+      if (!trailingSlash)
+        url2.pathname = url2.pathname.slice(0, -1);
+    } else if (trailingSlash)
+      url2.pathname += "/";
+    const pathname = url2.pathname;
+    const loadedRoute = await loadRoutePromise;
+    if (loadedRoute) {
+      const [params, mods, menu] = loadedRoute;
+      const contentModules = mods;
+      const pageModule = contentModules[contentModules.length - 1];
+      const resolvedHead = await resolveHead(clientPageData, routeLocation2, contentModules, locale);
+      routeLocation2.href = url2.href;
+      routeLocation2.pathname = pathname;
+      routeLocation2.params = {
+        ...params
+      };
+      routeLocation2.query = url2.searchParams;
+      content2.headings = pageModule.headings;
+      content2.menu = menu;
+      contentInternal2.value = qwik.noSerialize(contentModules);
+      documentHead2.links = resolvedHead.links;
+      documentHead2.meta = resolvedHead.meta;
+      documentHead2.styles = resolvedHead.styles;
+      documentHead2.title = resolvedHead.title;
+      documentHead2.frontmatter = resolvedHead.frontmatter;
+      if (build.isBrowser) {
+        const loaders = clientPageData?.loaders;
+        if (loaders)
+          Object.assign(loaderState2, loaders);
+        CLIENT_DATA_CACHE.clear();
+        clientNavigate(window, pathname, navPath2);
+        routeLocation2.isPending = false;
+      }
+    }
   }, "QwikCityProvider_component_useTask_02wMImzEAbk", [
     actionState,
     content,
@@ -477,7 +468,7 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((
     pathname: url.pathname,
     query: url.searchParams,
     params: props.params ?? {},
-    isNavigating: false
+    isPending: false
   });
   const loaderState = qwik.useSignal({});
   const goto = qwik.inlinedQrl(async (path) => {
@@ -559,7 +550,7 @@ class ServerActionImpl {
     const currentAction = useAction();
     const initialState = {
       status: void 0,
-      isRunning: false
+      isPending: false
     };
     const state = qwik.useStore(() => {
       return qwik.untrack(() => {
@@ -574,32 +565,29 @@ class ServerActionImpl {
         }
         initialState.id = id;
         initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
-        initialState.isRunning = false;
+        initialState.isPending = false;
         return initialState;
       });
     });
-    initialState.run = qwik.inlinedQrl((input) => {
+    initialState.execute = qwik.inlinedQrl((input) => {
       const [currentAction2, loc2, state2] = qwik.useLexicalScope();
       let data;
-      if (input instanceof SubmitEvent) {
-        const form = input.target;
-        data = new FormData(form);
-        if (form.getAttribute("data-spa-reset") === "true")
-          form.reset();
-      } else if (input instanceof FormData)
+      if (input instanceof SubmitEvent)
+        data = new FormData(input.target);
+      else if (input instanceof FormData)
         data = input;
       else
         data = formDataFromObject(input);
       return new Promise((resolve) => {
-        state2.isRunning = true;
-        loc2.isNavigating = true;
+        state2.isPending = true;
+        loc2.isPending = true;
         currentAction2.value = {
           data,
           id: state2.id,
           resolve: qwik.noSerialize(resolve)
         };
       }).then((value) => {
-        state2.isRunning = false;
+        state2.isPending = false;
         state2.status = value.status;
         state2.value = value.result;
       });
@@ -649,17 +637,13 @@ function formDataFromObject(obj) {
   }
   return formData;
 }
-const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
+const Form = ({ action, ...rest }) => {
   return qwik.jsx("form", {
-    ...rest,
     action: action.actionPath,
-    "preventdefault:submit": !reloadDocument,
-    onSubmit$: [
-      !reloadDocument ? action.run : void 0,
-      onSubmit$
-    ],
-    method: "post",
-    ["data-spa-reset"]: spaReset ? "true" : void 0
+    "preventdefault:submit": true,
+    onSubmit$: action.execute,
+    ...rest,
+    method: "post"
   });
 };
 exports.Content = Content;

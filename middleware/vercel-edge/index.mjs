@@ -21,11 +21,6 @@ function createQwikCity(opts) {
         locale: void 0,
         url,
         request,
-        env: {
-          get(key) {
-            return process.env[key];
-          }
-        },
         getWritableStream: (status, headers, cookies, resolve) => {
           const { readable, writable } = new TransformStream();
           const response = new Response(readable, {

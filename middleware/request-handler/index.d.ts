@@ -137,9 +137,14 @@ export declare interface CookieValue {
     number: () => number;
 }
 
-declare interface EnvGetter {
-    get(key: string): string | undefined;
-}
+/**
+ * Adopted from https://github.com/mswjs/headers-polyfill
+ * MIT License | Artem Zakharchenko
+ */
+/**
+ * @alpha
+ */
+export declare function createHeaders(): Headers;
 
 declare class ErrorResponse extends Error {
     status: number;
@@ -183,6 +188,46 @@ declare interface QwikCityRun<T> {
 declare class RedirectMessage extends AbortMessage {
 }
 
+/**
+ * @alpha
+ */
+export declare interface RequestContext {
+    /**
+     * HTTP request headers.
+     *
+     * https://developer.mozilla.org/en-US/docs/Glossary/Request_header
+     */
+    readonly headers: Headers;
+    /**
+     * HTTP request method.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+     */
+    readonly method: string;
+    /**
+     * HTTP request URL.
+     */
+    readonly url: string;
+    /**
+     * HTTP request form data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/FormData
+     */
+    formData(): Promise<FormData>;
+    /**
+     * HTTP request json data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/Request/json
+     */
+    json(): Promise<any>;
+    /**
+     * HTTP request text data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/Request/text
+     */
+    text(): Promise<string>;
+}
+
 declare const RequestEvAction: unique symbol;
 
 declare const RequestEvBasePathname: unique symbol;
@@ -205,7 +250,7 @@ export declare interface RequestEvent<PLATFORM = unknown> extends RequestEventCo
 /**
  * @alpha
  */
-export declare interface RequestEventCommon<PLATFORM = unknown> {
+declare interface RequestEventCommon<PLATFORM = unknown> {
     /**
      * HTTP response status code. Sets the status code when called with an
      * argument. Always returns the status code, so calling `status()` without
@@ -299,15 +344,11 @@ export declare interface RequestEventCommon<PLATFORM = unknown> {
     /**
      * HTTP request information.
      */
-    readonly request: Request;
+    readonly request: RequestContext;
     /**
      * Platform specific data and functions
      */
     readonly platform: PLATFORM;
-    /**
-     * Platform provided environment variables.
-     */
-    readonly env: EnvGetter;
     /**
      * Shared Map across all the request handlers. Every HTTP request will get a new instance of
      * the shared map. The shared map is useful for sharing data between request handlers.
@@ -328,7 +369,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
 /**
  * @alpha
  */
-export declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
     getData: GetData;
     fail: <T>(status: number, returnData: T) => T;
 }
@@ -361,39 +402,27 @@ declare interface SendMethod {
     (response: Response): AbortMessage;
 }
 
-/**
- * @alpha
- */
 declare interface ServerAction<RETURN> {
     readonly [isServerLoader]?: true;
-    use(): ServerActionUse<RETURN>;
+    use(): ServerActionUtils<RETURN>;
 }
 
 declare type ServerActionExecute<RETURN> = QRL<(form: FormData | Record<string, string | string[] | Blob | Blob[]> | SubmitEvent) => Promise<RETURN>>;
 
-/**
- * @alpha
- */
-declare interface ServerActionUse<RETURN> {
+declare interface ServerActionUtils<RETURN> {
     readonly id: string;
     readonly actionPath: string;
-    readonly isRunning: boolean;
+    readonly isPending: boolean;
     readonly status?: number;
     readonly value: RETURN | undefined;
-    readonly run: ServerActionExecute<RETURN>;
+    readonly execute: ServerActionExecute<RETURN>;
 }
 
-/**
- * @alpha
- */
 declare interface ServerLoader<RETURN> {
     readonly [isServerLoader]?: true;
     use(): ServerLoaderUse<RETURN>;
 }
 
-/**
- * @alpha
- */
 declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
 
 /**
@@ -413,8 +442,7 @@ export declare interface ServerRequestEvent<T = any> {
     url: URL;
     locale: string | undefined;
     platform: any;
-    request: Request;
-    env: EnvGetter;
+    request: RequestContext;
     getWritableStream: ServerResponseHandler<T>;
 }
 

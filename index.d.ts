@@ -6,13 +6,10 @@ import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler'
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
-import { PropFunction } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
 import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
-import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-handler';
-import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
@@ -23,12 +20,12 @@ declare class AbortMessage {
 /**
  * @alpha
  */
-export declare const action$: <B>(first: (form: FormData, event: RequestEventLoader_2) => ValueOrPromise<B>) => ServerAction<B>;
+export declare const action$: <B>(first: (form: FormData, event: RequestEventLoader) => ValueOrPromise<B>) => ServerAction<B>;
 
 /**
  * @alpha
  */
-export declare const actionQrl: <B>(actionQrl: QRL<(form: FormData, event: RequestEventLoader_2) => ValueOrPromise<B>>) => ServerAction<B>;
+export declare const actionQrl: <B>(actionQrl: QRL<(form: FormData, event: RequestEventLoader) => ValueOrPromise<B>>) => ServerAction<B>;
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
 
@@ -255,10 +252,6 @@ export declare type EndpointHandler<BODY = unknown> = RequestHandler<BODY>;
 
 declare type EndpointModuleLoader = () => Promise<RouteModule>;
 
-declare interface EnvGetter {
-    get(key: string): string | undefined;
-}
-
 declare class ErrorResponse extends Error {
     status: number;
     constructor(status: number, message?: string);
@@ -267,17 +260,14 @@ declare class ErrorResponse extends Error {
 /**
  * @alpha
  */
-export declare const Form: <T>({ action, spaReset, reloadDocument, onSubmit$, ...rest }: FormProps<T>) => JSXNode<"form">;
+export declare const Form: <T>({ action, ...rest }: FormProps<T>) => JSXNode<"form">;
 
 /**
  * @alpha
  */
 export declare interface FormProps<T> extends Omit<QwikJSX.IntrinsicElements['form'], 'action'> {
-    action: ServerActionUse<T>;
+    action: ServerActionUtils<T>;
     method?: 'post';
-    onSubmit$?: PropFunction<(event: Event) => void>;
-    reloadDocument?: boolean;
-    spaReset?: boolean;
 }
 
 /**
@@ -316,12 +306,12 @@ export declare interface LinkProps extends AnchorAttributes {
 /**
  * @alpha
  */
-export declare const loader$: <PLATFORM, B>(first: (event: RequestEventLoader_2<PLATFORM>) => B) => ServerLoader<B>;
+export declare const loader$: <PLATFORM, B>(first: (event: RequestEventLoader<PLATFORM>) => B) => ServerLoader<B>;
 
 /**
  * @alpha
  */
-export declare const loaderQrl: <PLATFORM, B>(loaderQrl: QRL<(event: RequestEventLoader_2<PLATFORM>) => B>) => ServerLoader<B>;
+export declare const loaderQrl: <PLATFORM, B>(loaderQrl: QRL<(event: RequestEventLoader<PLATFORM>) => B>) => ServerLoader<B>;
 
 declare type MenuData = [pathname: string, menuLoader: MenuModuleLoader];
 
@@ -406,14 +396,52 @@ export declare const QwikCityProvider: Component<QwikCityProps>;
 declare class RedirectMessage extends AbortMessage {
 }
 
-export { RequestEvent }
+/**
+ * @alpha
+ */
+declare interface RequestContext {
+    /**
+     * HTTP request headers.
+     *
+     * https://developer.mozilla.org/en-US/docs/Glossary/Request_header
+     */
+    readonly headers: Headers;
+    /**
+     * HTTP request method.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+     */
+    readonly method: string;
+    /**
+     * HTTP request URL.
+     */
+    readonly url: string;
+    /**
+     * HTTP request form data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/FormData
+     */
+    formData(): Promise<FormData>;
+    /**
+     * HTTP request json data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/Request/json
+     */
+    json(): Promise<any>;
+    /**
+     * HTTP request text data.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/API/Request/text
+     */
+    text(): Promise<string>;
+}
 
-export { RequestEventCommon }
+export { RequestEvent }
 
 /**
  * @alpha
  */
-declare interface RequestEventCommon_2<PLATFORM = unknown> {
+declare interface RequestEventCommon<PLATFORM = unknown> {
     /**
      * HTTP response status code. Sets the status code when called with an
      * argument. Always returns the status code, so calling `status()` without
@@ -507,15 +535,11 @@ declare interface RequestEventCommon_2<PLATFORM = unknown> {
     /**
      * HTTP request information.
      */
-    readonly request: Request;
+    readonly request: RequestContext;
     /**
      * Platform specific data and functions
      */
     readonly platform: PLATFORM;
-    /**
-     * Platform provided environment variables.
-     */
-    readonly env: EnvGetter;
     /**
      * Shared Map across all the request handlers. Every HTTP request will get a new instance of
      * the shared map. The shared map is useful for sharing data between request handlers.
@@ -523,12 +547,10 @@ declare interface RequestEventCommon_2<PLATFORM = unknown> {
     readonly sharedMap: Map<string, any>;
 }
 
-export { RequestEventLoader }
-
 /**
  * @alpha
  */
-declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventCommon_2<PLATFORM> {
+declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
     getData: GetData;
     fail: <T>(status: number, returnData: T) => T;
 }
@@ -559,7 +581,7 @@ export declare interface RouteLocation {
     readonly href: string;
     readonly pathname: string;
     readonly query: URLSearchParams;
-    readonly isNavigating: boolean;
+    readonly isPending: boolean;
 }
 
 declare interface RouteModule<BODY = unknown> {
@@ -594,40 +616,28 @@ declare interface SendMethod {
     (response: Response): AbortMessage;
 }
 
-/**
- * @alpha
- */
-export declare interface ServerAction<RETURN> {
+declare interface ServerAction<RETURN> {
     readonly [isServerLoader]?: true;
-    use(): ServerActionUse<RETURN>;
+    use(): ServerActionUtils<RETURN>;
 }
 
 declare type ServerActionExecute<RETURN> = QRL<(form: FormData | Record<string, string | string[] | Blob | Blob[]> | SubmitEvent) => Promise<RETURN>>;
 
-/**
- * @alpha
- */
-export declare interface ServerActionUse<RETURN> {
+declare interface ServerActionUtils<RETURN> {
     readonly id: string;
     readonly actionPath: string;
-    readonly isRunning: boolean;
+    readonly isPending: boolean;
     readonly status?: number;
     readonly value: RETURN | undefined;
-    readonly run: ServerActionExecute<RETURN>;
+    readonly execute: ServerActionExecute<RETURN>;
 }
 
-/**
- * @alpha
- */
-export declare interface ServerLoader<RETURN> {
+declare interface ServerLoader<RETURN> {
     readonly [isServerLoader]?: true;
     use(): ServerLoaderUse<RETURN>;
 }
 
-/**
- * @alpha
- */
-export declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
+declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
 
 /**
  * @alpha
