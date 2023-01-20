@@ -24268,7 +24268,11 @@ function ssrDevMiddleware(ctx, server) {
               ...res._qwikEnvData,
               ...serverData
             };
-            return next();
+            const qwikRenderPromise = new Promise((resolve4) => {
+              res._qwikRenderResolve = resolve4;
+            });
+            next();
+            return qwikRenderPromise;
           }
         };
         const requestHandlers = resolveRequestHandlers(
@@ -24286,8 +24290,10 @@ function ssrDevMiddleware(ctx, server) {
             ctx.opts.trailingSlash,
             ctx.opts.basePathname
           );
-          await completion;
-          return;
+          const requestEv = await completion;
+          if (requestEv.headersSent || res.headersSent) {
+            return;
+          }
         } else {
           for (const sw of ctx.serviceWorkers) {
             const match = sw.pattern.exec(req.originalUrl);
@@ -24316,7 +24322,7 @@ function ssrDevMiddleware(ctx, server) {
         const html3 = getErrorHtml(404, new Error("not found"));
         res.statusCode = 404;
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        res.write(html3);
+        res.end(html3);
         return;
       }
       next();
