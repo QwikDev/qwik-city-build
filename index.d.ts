@@ -6,7 +6,6 @@ import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler'
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
-import { PropFunction } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -272,12 +271,20 @@ export declare const Form: <T>({ action, spaReset, reloadDocument, onSubmit$, ..
 /**
  * @alpha
  */
-export declare interface FormProps<T> extends Omit<QwikJSX.IntrinsicElements['form'], 'action'> {
+export declare interface FormProps<T> extends Omit<QwikJSX.IntrinsicElements['form'], 'action' | 'method'> {
     action: ServerActionUse<T>;
-    method?: 'post';
-    onSubmit$?: PropFunction<(event: Event) => void>;
     reloadDocument?: boolean;
     spaReset?: boolean;
+    onSubmit$?: (event: Event, form: HTMLFormElement) => ValueOrPromise<void>;
+    onSubmitCompleted$?: (event: CustomEvent<FormSubmitCompletedDetail<T>>, form: HTMLFormElement) => ValueOrPromise<void>;
+}
+
+/**
+ * @alpha
+ */
+declare interface FormSubmitCompletedDetail<T> {
+    status: number;
+    value: T;
 }
 
 /**

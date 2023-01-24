@@ -557,11 +557,10 @@ class ServerActionImpl {
     initialState.run = inlinedQrl((input) => {
       const [currentAction2, loc2, state2] = useLexicalScope();
       let data;
+      let form;
       if (input instanceof SubmitEvent) {
-        const form = input.target;
+        form = input.target;
         data = new FormData(form);
-        if (form.getAttribute("data-spa-reset") === "true")
-          form.reset();
       } else if (input instanceof FormData)
         data = input;
       else
@@ -578,6 +577,19 @@ class ServerActionImpl {
         state2.isRunning = false;
         state2.status = value.status;
         state2.value = value.result;
+        if (form) {
+          if (form.getAttribute("data-spa-reset") === "true")
+            form.reset();
+          form.dispatchEvent(new CustomEvent("submitcompleted", {
+            bubbles: false,
+            cancelable: false,
+            composed: false,
+            detail: {
+              status: value.status,
+              value: value.result
+            }
+          }));
+        }
       });
     }, "ServerActionImpl_13yflRrKOuk", [
       currentAction,
