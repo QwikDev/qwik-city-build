@@ -20753,7 +20753,7 @@ async function walkRouteDir(sourceFiles, dirPath, dirName) {
 // packages/qwik-city/buildtime/routing/resolve-source-file.ts
 import { dirname as dirname3 } from "path";
 
-// node_modules/.pnpm/marked@4.2.5/node_modules/marked/lib/marked.esm.js
+// node_modules/.pnpm/marked@4.2.12/node_modules/marked/lib/marked.esm.js
 function getDefaults() {
   return {
     async: false,
@@ -23744,6 +23744,38 @@ function isFormContentType(headers) {
 // packages/qwik-city/middleware/request-handler/cache-control.ts
 function createCacheControl(cacheControl) {
   const controls = [];
+  if (cacheControl === "day") {
+    cacheControl = 60 * 60 * 24;
+  } else if (cacheControl === "week") {
+    cacheControl = 60 * 60 * 24 * 7;
+  } else if (cacheControl === "month") {
+    cacheControl = 60 * 60 * 24 * 30;
+  } else if (cacheControl === "year") {
+    cacheControl = 60 * 60 * 24 * 365;
+  } else if (cacheControl === "private") {
+    cacheControl = {
+      private: true,
+      noCache: true
+    };
+  } else if (cacheControl === "immutable") {
+    cacheControl = {
+      public: true,
+      immutable: true,
+      maxAge: 60 * 60 * 24 * 365,
+      staleWhileRevalidate: 60 * 60 * 24 * 365
+    };
+  } else if (cacheControl === "no-cache") {
+    cacheControl = {
+      noCache: true
+    };
+  }
+  if (typeof cacheControl === "number") {
+    cacheControl = {
+      maxAge: cacheControl,
+      sMaxAge: cacheControl,
+      staleWhileRevalidate: cacheControl
+    };
+  }
   if (cacheControl.immutable) {
     controls.push("immutable");
   }
