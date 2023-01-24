@@ -20549,6 +20549,9 @@ function createRoutes(ctx, qwikPlugin, c2, esmImports) {
     } else if (includeEndpoints && isModuleExt(route.ext)) {
       const importPath = getImportPath(route.filePath);
       esmImports.push(`import * as ${route.id} from ${JSON.stringify(importPath)};`);
+      for (const layout of route.layouts) {
+        loaders.push(layout.id);
+      }
       loaders.push(`()=>${route.id}`);
     }
     if (loaders.length > 0) {
@@ -23697,6 +23700,7 @@ async function renderQData(requestEv) {
     requestEv.request.headers.forEach((value2, key) => requestHeaders[key] = value2);
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
     const qData = {
+      __brand: "qdata",
       loaders: getRequestLoaders(requestEv),
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,

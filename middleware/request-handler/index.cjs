@@ -466,6 +466,7 @@ function renderQwikMiddleware(render, opts) {
         }
       });
       const qData = {
+        __brand: "qdata",
         loaders: getRequestLoaders(requestEv),
         action: getRequestAction(requestEv),
         status: status !== 200 ? status : 200,
@@ -515,6 +516,7 @@ async function renderQData(requestEv) {
     requestEv.request.headers.forEach((value, key) => requestHeaders[key] = value);
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
     const qData = {
+      __brand: "qdata",
       loaders: getRequestLoaders(requestEv),
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,

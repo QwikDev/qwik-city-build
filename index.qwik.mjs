@@ -260,14 +260,16 @@ const loadClientData = async (href, clearCache, action) => {
       body: actionData
     } : void 0;
     qData = fetch(clientDataPath, options).then((rsp) => {
-      if ((rsp.headers.get("content-type") || "").includes("json")) {
-        const redirectedURL = new URL(rsp.url);
-        if (redirectedURL.origin !== location.origin || !isQDataJson(redirectedURL.pathname)) {
-          location.href = redirectedURL.href;
-          return;
-        }
+      const redirectedURL = new URL(rsp.url);
+      if (redirectedURL.origin !== location.origin || !isQDataJson(redirectedURL.pathname)) {
+        location.href = redirectedURL.href;
+        return;
+      }
+      if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
           const clientData = parseData(text);
+          if (clientData.__brand !== "qdata")
+            return;
           if (clearCache)
             CLIENT_DATA_CACHE.delete(clientDataPath);
           if (clientData.redirect)
@@ -281,7 +283,7 @@ const loadClientData = async (href, clearCache, action) => {
           }
           return clientData;
         });
-      } else
+      else
         CLIENT_DATA_CACHE.delete(clientDataPath);
     });
     if (!action)
@@ -380,6 +382,8 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
         clientPageData = env2.response;
       else {
         const pageData = clientPageData = await loadClientData(url2.href, true, action);
+        if (!pageData)
+          return;
         const newHref = pageData?.href;
         if (newHref) {
           const newURL = new URL(newHref, url2.href);
