@@ -554,9 +554,9 @@ const ServiceWorkerRegister = () => qwik.jsx("script", {
   dangerouslySetInnerHTML: swRegister
 });
 class ServerActionImpl {
-  constructor(__qrl, __opts) {
+  constructor(__qrl, __schema) {
     this.__qrl = __qrl;
-    this.__opts = __opts;
+    this.__schema = __schema;
     this.__brand = "server_action";
   }
   use() {

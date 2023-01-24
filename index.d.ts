@@ -30,9 +30,7 @@ declare interface Action {
     <O, B extends ActionOptions<any>>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader_2) => ValueOrPromise<O>, options: B): ServerAction<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
 }
 
-declare interface ActionOptions<T> {
-    readonly validator: z.ZodObject<any, any, any, T>;
-}
+declare type ActionOptions<T> = z.ZodObject<any, any, any, T>;
 
 /**
  * @alpha

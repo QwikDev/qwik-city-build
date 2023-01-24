@@ -364,7 +364,6 @@ var checkBrand = (obj, brand) => {
 };
 function actionsMiddleware(serverLoaders, serverActions) {
   return async (requestEv) => {
-    var _a2, _b;
     if (requestEv.headersSent) {
       requestEv.exit();
       return;
@@ -380,8 +379,8 @@ function actionsMiddleware(serverLoaders, serverActions) {
           const isForm = isFormContentType(requestEv.request.headers);
           let data = isForm ? formToObj(await requestEv.request.formData()) : await requestEv.request.json();
           let failed = false;
-          if ((_a2 = action.__opts) == null ? void 0 : _a2.validator) {
-            const result = await ((_b = action.__opts) == null ? void 0 : _b.validator.safeParseAsync(data));
+          if (action.__schema) {
+            const result = await action.__schema.safeParseAsync(data);
             if (!result.success) {
               failed = true;
               loaders[selectedAction] = {
