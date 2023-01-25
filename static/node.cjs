@@ -418,7 +418,7 @@ function routeToRegExp(rule) {
   } else {
     transformedRule = `${rule}(/)?`;
   }
-  transformedRule = `^${transformedRule.replace("*", ".*")}$`;
+  transformedRule = `^${transformedRule.replace(/\*/g, ".*")}$`;
   return new RegExp(transformedRule);
 }
 
