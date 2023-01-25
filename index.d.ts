@@ -15,7 +15,7 @@ import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-han
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
-import type { z } from 'zod';
+import { z } from 'zod';
 
 declare class AbortMessage {
 }
@@ -26,16 +26,16 @@ declare class AbortMessage {
 export declare const action$: Action;
 
 declare interface Action {
-    <O>(actionQrl: (form: Record<string, any>, event: RequestEventLoader_2) => ValueOrPromise<O>): ServerAction<O>;
-    <O, B extends ActionOptions<any>>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader_2) => ValueOrPromise<O>, options: B): ServerAction<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
+    <O>(actionQrl: (form: DefaultActionType, event: RequestEventLoader_2) => ValueOrPromise<O>): ServerAction<O>;
+    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader_2) => ValueOrPromise<O>, options: B): ServerAction<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
 }
 
-declare type ActionOptions<T> = z.ZodObject<any, any, any, T>;
+declare type ActionOptions = z.ZodRawShape;
 
 /**
  * @alpha
  */
-export declare const actionQrl: <B, A>(actionQrl: QRL<(form: Record<string, any>, event: RequestEventLoader_2) => ValueOrPromise<B>>, options?: ActionOptions<any>) => ServerAction<B, A>;
+export declare const actionQrl: <B, A>(actionQrl: QRL<(form: DefaultActionType, event: RequestEventLoader_2) => ValueOrPromise<B>>, options?: ZodReturn) => ServerAction<B, A>;
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
 
@@ -164,6 +164,10 @@ declare interface CookieValue_2 {
     number: () => number;
 }
 
+declare type DefaultActionType = {
+    [x: string]: JSONValue;
+};
+
 /**
  * @alpha
  */
@@ -288,15 +292,24 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
     reloadDocument?: boolean;
     spaReset?: boolean;
     onSubmit$?: (event: Event, form: HTMLFormElement) => ValueOrPromise<void>;
-    onSubmitCompleted$?: (event: CustomEvent<FormSubmitCompletedDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
+    onSubmitSuccess$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
+    onSubmitFail$?: (event: CustomEvent<FormSubmitFailDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
 }
 
 /**
  * @alpha
  */
-declare interface FormSubmitCompletedDetail<T> {
+declare interface FormSubmitFailDetail<T> {
     status: number;
-    value: T;
+    fail: GetFailReturn<T>;
+}
+
+/**
+ * @alpha
+ */
+declare interface FormSubmitSuccessDetail<T> {
+    status: number;
+    value: GetValueReturn<T>;
 }
 
 /**
@@ -311,7 +324,7 @@ declare type GetFailReturn<T> = T extends FailReturn<infer I> ? I & {
     [key: string]: undefined;
 } : never;
 
-declare type GetValidatorType<B> = B extends ActionOptions<infer I> ? I : never;
+declare type GetValidatorType<B extends ZodReturn<any>> = B extends ZodReturn<infer TYPE> ? z.infer<z.ZodObject<TYPE>> : never;
 
 declare type GetValueReturn<T> = T extends FailReturn<{}> ? never : T;
 
@@ -322,6 +335,10 @@ declare type GetValueReturn<T> = T extends FailReturn<{}> ? never : T;
 export declare const Html: Component<QwikCityProps>;
 
 declare const isServerLoader: unique symbol;
+
+declare type JSONValue = string | number | boolean | {
+    [x: string]: JSONValue;
+} | Array<JSONValue>;
 
 declare interface LayoutModule extends RouteModule {
     readonly default: any;
@@ -694,5 +711,28 @@ export declare const useLocation: () => RouteLocation;
  * @alpha
  */
 export declare const useNavigate: () => RouteNavigate;
+
+export { z }
+
+/**
+ * @alpha
+ */
+export declare const zod$: Zod;
+
+declare interface Zod {
+    <T extends ActionOptions>(schema: T): ZodReturn<T>;
+    <T extends ActionOptions>(schema: (z: z) => T): ZodReturn<T>;
+}
+
+/**
+ * @alpha
+ */
+export declare const zodQrl: (qrl: QRL<z.ZodRawShape | ((z: z) => ActionOptions)>) => Promise<z.ZodObject<z.ZodRawShape, "strip", z.ZodTypeAny, {
+    [x: string]: any;
+}, {
+    [x: string]: any;
+}> | undefined>;
+
+declare type ZodReturn<T extends ActionOptions = any> = Promise<z.ZodObject<T>>;
 
 export { }

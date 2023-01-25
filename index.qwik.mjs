@@ -2,6 +2,8 @@ import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, w
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import swRegister from "@qwik-city-sw-register";
+import { z } from "zod";
+import { z as z2 } from "zod";
 const RouteStateContext = /* @__PURE__ */ createContext("qc-s");
 const ContentContext = /* @__PURE__ */ createContext("qc-c");
 const ContentInternalContext = /* @__PURE__ */ createContext("qc-ic");
@@ -589,7 +591,8 @@ class ServerActionImpl {
       }).then(({ result, status }) => {
         state2.isRunning = false;
         state2.status = status;
-        if (isFail(result)) {
+        const didFail = isFail(result);
+        if (didFail) {
           initialState2.value = void 0;
           initialState2.fail = result;
         } else {
@@ -599,14 +602,19 @@ class ServerActionImpl {
         if (form) {
           if (form.getAttribute("data-spa-reset") === "true")
             form.reset();
-          form.dispatchEvent(new CustomEvent("submitcompleted", {
+          const eventName = didFail ? "submitfail" : "submitsuccess";
+          const detail = didFail ? {
+            status,
+            fail: result
+          } : {
+            status,
+            value: result
+          };
+          form.dispatchEvent(new CustomEvent(eventName, {
             bubbles: false,
             cancelable: false,
             composed: false,
-            detail: {
-              status,
-              value: result
-            }
+            detail
           }));
         }
       });
@@ -623,6 +631,16 @@ const actionQrl = (actionQrl2, options) => {
   return new ServerActionImpl(actionQrl2, options);
 };
 const action$ = implicit$FirstArg(actionQrl);
+const zodQrl = async (qrl) => {
+  if (isServer) {
+    let obj = await qrl.resolve();
+    if (typeof obj === "function")
+      obj = obj(z);
+    return z.object(obj);
+  }
+  return void 0;
+};
+const zod$ = implicit$FirstArg(zodQrl);
 class ServerLoaderImpl {
   constructor(__qrl) {
     this.__qrl = __qrl;
@@ -646,7 +664,7 @@ const loaderQrl = (loaderQrl2) => {
 };
 const loader$ = implicit$FirstArg(loaderQrl);
 const isFail = (value) => {
-  return value.__brand === "fail";
+  return value && typeof value === "object" && value.__brand === "fail";
 };
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return jsx("form", {
@@ -678,5 +696,8 @@ export {
   useContent,
   useDocumentHead,
   useLocation,
-  useNavigate
+  useNavigate,
+  z2 as z,
+  zod$,
+  zodQrl
 };

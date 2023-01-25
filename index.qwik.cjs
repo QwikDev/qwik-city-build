@@ -26,6 +26,7 @@ const qwik = require("@builder.io/qwik");
 const jsxRuntime = require("@builder.io/qwik/jsx-runtime");
 const build = require("@builder.io/qwik/build");
 const swRegister = require("@qwik-city-sw-register");
+const zod = require("zod");
 const RouteStateContext = /* @__PURE__ */ qwik.createContext("qc-s");
 const ContentContext = /* @__PURE__ */ qwik.createContext("qc-c");
 const ContentInternalContext = /* @__PURE__ */ qwik.createContext("qc-ic");
@@ -613,7 +614,8 @@ class ServerActionImpl {
       }).then(({ result, status }) => {
         state2.isRunning = false;
         state2.status = status;
-        if (isFail(result)) {
+        const didFail = isFail(result);
+        if (didFail) {
           initialState2.value = void 0;
           initialState2.fail = result;
         } else {
@@ -623,14 +625,19 @@ class ServerActionImpl {
         if (form) {
           if (form.getAttribute("data-spa-reset") === "true")
             form.reset();
-          form.dispatchEvent(new CustomEvent("submitcompleted", {
+          const eventName = didFail ? "submitfail" : "submitsuccess";
+          const detail = didFail ? {
+            status,
+            fail: result
+          } : {
+            status,
+            value: result
+          };
+          form.dispatchEvent(new CustomEvent(eventName, {
             bubbles: false,
             cancelable: false,
             composed: false,
-            detail: {
-              status,
-              value: result
-            }
+            detail
           }));
         }
       });
@@ -647,6 +654,16 @@ const actionQrl = (actionQrl2, options) => {
   return new ServerActionImpl(actionQrl2, options);
 };
 const action$ = qwik.implicit$FirstArg(actionQrl);
+const zodQrl = async (qrl) => {
+  if (build.isServer) {
+    let obj = await qrl.resolve();
+    if (typeof obj === "function")
+      obj = obj(zod.z);
+    return zod.z.object(obj);
+  }
+  return void 0;
+};
+const zod$ = qwik.implicit$FirstArg(zodQrl);
 class ServerLoaderImpl {
   constructor(__qrl) {
     this.__qrl = __qrl;
@@ -670,7 +687,7 @@ const loaderQrl = (loaderQrl2) => {
 };
 const loader$ = qwik.implicit$FirstArg(loaderQrl);
 const isFail = (value) => {
-  return value.__brand === "fail";
+  return value && typeof value === "object" && value.__brand === "fail";
 };
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return qwik.jsx("form", {
@@ -685,6 +702,10 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
     ["data-spa-reset"]: spaReset ? "true" : void 0
   });
 };
+Object.defineProperty(exports, "z", {
+  enumerable: true,
+  get: () => zod.z
+});
 exports.Content = Content;
 exports.Form = Form;
 exports.Html = Html;
@@ -702,3 +723,5 @@ exports.useContent = useContent;
 exports.useDocumentHead = useDocumentHead;
 exports.useLocation = useLocation;
 exports.useNavigate = useNavigate;
+exports.zod$ = zod$;
+exports.zodQrl = zodQrl;
