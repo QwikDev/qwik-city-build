@@ -376,9 +376,26 @@ function actionsMiddleware(serverLoaders, serverActions) {
         const action = serverActions.find((a) => a.__qrl.getHash() === selectedAction);
         if (action) {
           setRequestAction(requestEv, selectedAction);
-          const formData = await requestEv.request.formData();
-          const actionResolved = await action.__qrl(formData, requestEv);
-          loaders[selectedAction] = actionResolved;
+          const isForm = isFormContentType(requestEv.request.headers);
+          let data = isForm ? formToObj(await requestEv.request.formData()) : await requestEv.request.json();
+          let failed = false;
+          if (action.__schema) {
+            const validator = await action.__schema;
+            const result = await validator.safeParseAsync(data);
+            if (!result.success) {
+              failed = true;
+              loaders[selectedAction] = {
+                __brand: "fail",
+                ...result.error.flatten()
+              };
+            } else {
+              data = result.data;
+            }
+          }
+          if (!failed) {
+            const actionResolved = await action.__qrl(data, requestEv);
+            loaders[selectedAction] = actionResolved;
+          }
         }
       }
     }
@@ -404,6 +421,28 @@ function actionsMiddleware(serverLoaders, serverActions) {
     }
   };
 }
+var formToObj = (formData) => {
+  const obj = {};
+  formData.forEach((value, key) => {
+    const keys = key.split(".").filter((k) => k);
+    let current = obj;
+    for (let i = 0; i < keys.length; i++) {
+      let k = keys[i];
+      if (i === keys.length - 1) {
+        if (k.endsWith("[]")) {
+          k = k.slice(0, -2);
+          current[k] = current[k] || [];
+          current[k].push(value);
+        } else {
+          current[k] = value;
+        }
+      } else {
+        current = current[k] = {};
+      }
+    }
+  });
+  return obj;
+};
 function fixTrailingSlash({ pathname, url, redirect }) {
   const trailingSlash = true;
   const basePathname = "/";
@@ -768,7 +807,10 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
       check();
       requestEv[RequestEvStatus] = statusCode;
       headers.delete("Cache-Control");
-      return data;
+      return {
+        __brand: "fail",
+        ...data
+      };
     },
     text: (statusCode, text) => {
       headers.set("Content-Type", "text/plain; charset=utf-8");
