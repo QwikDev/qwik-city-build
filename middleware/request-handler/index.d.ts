@@ -12,7 +12,12 @@ declare class AbortMessage {
 /**
  * @alpha
  */
-export declare interface CacheControl {
+export declare type CacheControl = CacheControlOptions | number | 'day' | 'week' | 'month' | 'year' | 'no-cache' | 'immutable' | 'private';
+
+/**
+ * @alpha
+ */
+declare interface CacheControlOptions {
     /**
      * The max-age=N response directive indicates that the response remains fresh until N seconds after the response is generated.
      * Note that max-age is not the elapsed time since the response was received; it is the elapsed time since the response was generated on the origin server. So if the other cache(s) — on the network route taken by the response — store the response for 100 seconds (indicated using the Age response header field), the browser cache would deduct 100 seconds from its freshness lifetime.
@@ -146,6 +151,10 @@ declare class ErrorResponse extends Error {
     constructor(status: number, message?: string);
 }
 
+declare type FailReturn<T> = T & {
+    __brand: 'fail';
+};
+
 /**
  * @alpha
  */
@@ -159,6 +168,10 @@ export declare interface GetData {
  */
 export declare function getErrorHtml(status: number, e: any): string;
 
+declare type GetFailReturn<T> = T extends FailReturn<infer I> ? I & {
+    [key: string]: undefined;
+} : never;
+
 /**
  * @alpha
  */
@@ -166,6 +179,8 @@ export declare interface GetSyncData {
     <T>(loader: ServerLoader<T>): T;
     <T>(loader: ServerAction<T>): T | undefined;
 }
+
+declare type GetValueReturn<T> = T extends FailReturn<{}> ? never : T;
 
 declare const isServerLoader: unique symbol;
 
@@ -177,7 +192,7 @@ export declare const mergeHeadersCookies: (headers: Headers, cookies: Cookie) =>
 declare interface QwikCityRun<T> {
     response: Promise<T | null>;
     requestEv: RequestEvent_2;
-    completion: Promise<RequestEvent_2>;
+    completion: Promise<unknown>;
 }
 
 declare class RedirectMessage extends AbortMessage {
@@ -330,7 +345,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
  */
 export declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
     getData: GetData;
-    fail: <T>(status: number, returnData: T) => T;
+    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn<T>;
 }
 
 declare const RequestEvLoaders: unique symbol;
@@ -364,23 +379,25 @@ declare interface SendMethod {
 /**
  * @alpha
  */
-declare interface ServerAction<RETURN> {
+declare interface ServerAction<RETURN, INPUT = Record<string, any>> {
     readonly [isServerLoader]?: true;
-    use(): ServerActionUse<RETURN>;
+    use(): ServerActionUse<RETURN, INPUT>;
 }
 
-declare type ServerActionExecute<RETURN> = QRL<(form: FormData | Record<string, string | string[] | Blob | Blob[]> | SubmitEvent) => Promise<RETURN>>;
+declare type ServerActionExecute<RETURN, INPUT> = QRL<(form: FormData | INPUT | SubmitEvent) => Promise<RETURN>>;
 
 /**
  * @alpha
  */
-declare interface ServerActionUse<RETURN> {
+declare interface ServerActionUse<RETURN, INPUT> {
     readonly id: string;
     readonly actionPath: string;
     readonly isRunning: boolean;
     readonly status?: number;
-    readonly value: RETURN | undefined;
-    readonly run: ServerActionExecute<RETURN>;
+    readonly formData: FormData | undefined;
+    readonly value: GetValueReturn<RETURN> | undefined;
+    readonly fail: GetFailReturn<RETURN> | undefined;
+    readonly run: ServerActionExecute<RETURN, INPUT>;
 }
 
 /**

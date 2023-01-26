@@ -195,9 +195,12 @@ function createQwikCity(opts) {
       const serverRequestEv = await fromNodeHttp(getUrl(req), req, res, "server");
       const handled = await (0, import_request_handler.requestHandler)(serverRequestEv, opts);
       if (handled) {
-        const requestEv = await handled.completion;
-        if (requestEv.headersSent) {
+        const err = await handled.completion;
+        if (handled.requestEv.headersSent) {
           return;
+        }
+        if (err) {
+          return next(err);
         }
       }
       next();

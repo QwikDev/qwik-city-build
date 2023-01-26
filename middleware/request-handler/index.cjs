@@ -376,9 +376,35 @@ function actionsMiddleware(serverLoaders, serverActions) {
         const action = serverActions.find((a) => a.__qrl.getHash() === selectedAction);
         if (action) {
           setRequestAction(requestEv, selectedAction);
-          const formData = await requestEv.request.formData();
-          const actionResolved = await action.__qrl(formData, requestEv);
-          loaders[selectedAction] = actionResolved;
+          const isForm = isFormContentType(requestEv.request.headers);
+          let data = isForm ? formToObj(await requestEv.request.formData()) : await requestEv.request.json();
+          let failed = false;
+          if (action.__schema) {
+            const validator = await action.__schema;
+            const result = await validator.safeParseAsync(data);
+            if (!result.success) {
+              failed = true;
+              if (globalThis.qDev) {
+                console.error(
+                  "\nVALIDATION ERROR\naction$() zod validated failed",
+                  "\n\n  - Received:",
+                  data,
+                  "\n  - Issues:",
+                  result.error.issues
+                );
+              }
+              loaders[selectedAction] = {
+                __brand: "fail",
+                ...result.error.flatten()
+              };
+            } else {
+              data = result.data;
+            }
+          }
+          if (!failed) {
+            const actionResolved = await action.__qrl(data, requestEv);
+            loaders[selectedAction] = actionResolved;
+          }
         }
       }
     }
@@ -404,6 +430,28 @@ function actionsMiddleware(serverLoaders, serverActions) {
     }
   };
 }
+var formToObj = (formData) => {
+  const obj = {};
+  formData.forEach((value, key) => {
+    const keys = key.split(".").filter((k) => k);
+    let current = obj;
+    for (let i = 0; i < keys.length; i++) {
+      let k = keys[i];
+      if (i === keys.length - 1) {
+        if (k.endsWith("[]")) {
+          k = k.slice(0, -2);
+          current[k] = current[k] || [];
+          current[k].push(value);
+        } else {
+          current[k] = value;
+        }
+      } else {
+        current = current[k] = {};
+      }
+    }
+  });
+  return obj;
+};
 function fixTrailingSlash({ pathname, url, redirect }) {
   const trailingSlash = true;
   const basePathname = "/";
@@ -466,6 +514,7 @@ function renderQwikMiddleware(render, opts) {
         }
       });
       const qData = {
+        __brand: "qdata",
         loaders: getRequestLoaders(requestEv),
         action: getRequestAction(requestEv),
         status: status !== 200 ? status : 200,
@@ -515,6 +564,7 @@ async function renderQData(requestEv) {
     requestEv.request.headers.forEach((value, key) => requestHeaders[key] = value);
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
     const qData = {
+      __brand: "qdata",
       loaders: getRequestLoaders(requestEv),
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,
@@ -572,6 +622,38 @@ function isFormContentType(headers) {
 // packages/qwik-city/middleware/request-handler/cache-control.ts
 function createCacheControl(cacheControl) {
   const controls = [];
+  if (cacheControl === "day") {
+    cacheControl = 60 * 60 * 24;
+  } else if (cacheControl === "week") {
+    cacheControl = 60 * 60 * 24 * 7;
+  } else if (cacheControl === "month") {
+    cacheControl = 60 * 60 * 24 * 30;
+  } else if (cacheControl === "year") {
+    cacheControl = 60 * 60 * 24 * 365;
+  } else if (cacheControl === "private") {
+    cacheControl = {
+      private: true,
+      noCache: true
+    };
+  } else if (cacheControl === "immutable") {
+    cacheControl = {
+      public: true,
+      immutable: true,
+      maxAge: 60 * 60 * 24 * 365,
+      staleWhileRevalidate: 60 * 60 * 24 * 365
+    };
+  } else if (cacheControl === "no-cache") {
+    cacheControl = {
+      noCache: true
+    };
+  }
+  if (typeof cacheControl === "number") {
+    cacheControl = {
+      maxAge: cacheControl,
+      sMaxAge: cacheControl,
+      staleWhileRevalidate: cacheControl
+    };
+  }
   if (cacheControl.immutable) {
     controls.push("immutable");
   }
@@ -734,7 +816,10 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
       check();
       requestEv[RequestEvStatus] = statusCode;
       headers.delete("Cache-Control");
-      return data;
+      return {
+        __brand: "fail",
+        ...data
+      };
     },
     text: (statusCode, text) => {
       headers.set("Content-Type", "text/plain; charset=utf-8");
@@ -806,20 +891,18 @@ async function runNext(requestEv, resolve) {
     if (e instanceof RedirectMessage) {
       requestEv.getWritableStream().close();
     } else if (e instanceof ErrorResponse) {
+      console.error(e);
       if (!requestEv.headersSent) {
         const html = getErrorHtml(e.status, e);
         requestEv.html(e.status, html);
       }
-      console.error(e);
     } else if (!(e instanceof AbortMessage)) {
-      if (!requestEv.headersSent) {
-        requestEv.status(500 /* InternalServerError */);
-      }
-      throw e;
+      return e;
     }
+  } finally {
+    resolve(null);
   }
-  resolve(null);
-  return requestEv;
+  return void 0;
 }
 function getRouteMatchPathname(pathname, trailingSlash) {
   if (pathname.endsWith(QDATA_JSON)) {
@@ -935,8 +1018,12 @@ async function requestHandler(serverRequestEv, opts) {
     render
   );
   if (loadedRoute) {
-    return handleErrors(
-      runQwikCity(serverRequestEv, loadedRoute[0], loadedRoute[1], trailingSlash, basePathname)
+    return runQwikCity(
+      serverRequestEv,
+      loadedRoute[0],
+      loadedRoute[1],
+      trailingSlash,
+      basePathname
     );
   }
   return null;
@@ -953,29 +1040,6 @@ async function loadRequestHandlers(serverPlugins, routes, menus, cacheModules, p
     return [(route == null ? void 0 : route[0]) ?? {}, requestHandlers];
   }
   return null;
-}
-function handleErrors(run) {
-  const requestEv = run.requestEv;
-  return {
-    response: run.response,
-    requestEv,
-    completion: run.completion.then(
-      () => {
-        if (requestEv.headersSent) {
-          requestEv.getWritableStream();
-        }
-      },
-      (e) => {
-        console.error(e);
-        const status = requestEv.status();
-        const html = getErrorHtml(status, e);
-        if (!requestEv.headersSent) {
-          requestEv.html(status, html);
-        } else {
-        }
-      }
-    ).then(() => requestEv)
-  };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

@@ -412,11 +412,239 @@ async function generateNotFoundPages(sys, opts, routes) {
 
 // packages/qwik-city/static/main-thread.ts
 import { pathToFileURL } from "url";
+import { relative as relative2 } from "path";
+
+// node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/index.mjs
+var FORCE_COLOR;
+var NODE_DISABLE_COLORS;
+var NO_COLOR;
+var TERM;
+var isTTY = true;
+if (typeof process !== "undefined") {
+  ({ FORCE_COLOR, NODE_DISABLE_COLORS, NO_COLOR, TERM } = process.env || {});
+  isTTY = process.stdout && process.stdout.isTTY;
+}
+var $ = {
+  enabled: !NODE_DISABLE_COLORS && NO_COLOR == null && TERM !== "dumb" && (FORCE_COLOR != null && FORCE_COLOR !== "0" || isTTY),
+  // modifiers
+  reset: init(0, 0),
+  bold: init(1, 22),
+  dim: init(2, 22),
+  italic: init(3, 23),
+  underline: init(4, 24),
+  inverse: init(7, 27),
+  hidden: init(8, 28),
+  strikethrough: init(9, 29),
+  // colors
+  black: init(30, 39),
+  red: init(31, 39),
+  green: init(32, 39),
+  yellow: init(33, 39),
+  blue: init(34, 39),
+  magenta: init(35, 39),
+  cyan: init(36, 39),
+  white: init(37, 39),
+  gray: init(90, 39),
+  grey: init(90, 39),
+  // background colors
+  bgBlack: init(40, 49),
+  bgRed: init(41, 49),
+  bgGreen: init(42, 49),
+  bgYellow: init(43, 49),
+  bgBlue: init(44, 49),
+  bgMagenta: init(45, 49),
+  bgCyan: init(46, 49),
+  bgWhite: init(47, 49)
+};
+function run(arr, str) {
+  let i = 0, tmp, beg = "", end = "";
+  for (; i < arr.length; i++) {
+    tmp = arr[i];
+    beg += tmp.open;
+    end += tmp.close;
+    if (!!~str.indexOf(tmp.close)) {
+      str = str.replace(tmp.rgx, tmp.close + tmp.open);
+    }
+  }
+  return beg + str + end;
+}
+function chain(has, keys) {
+  let ctx = { has, keys };
+  ctx.reset = $.reset.bind(ctx);
+  ctx.bold = $.bold.bind(ctx);
+  ctx.dim = $.dim.bind(ctx);
+  ctx.italic = $.italic.bind(ctx);
+  ctx.underline = $.underline.bind(ctx);
+  ctx.inverse = $.inverse.bind(ctx);
+  ctx.hidden = $.hidden.bind(ctx);
+  ctx.strikethrough = $.strikethrough.bind(ctx);
+  ctx.black = $.black.bind(ctx);
+  ctx.red = $.red.bind(ctx);
+  ctx.green = $.green.bind(ctx);
+  ctx.yellow = $.yellow.bind(ctx);
+  ctx.blue = $.blue.bind(ctx);
+  ctx.magenta = $.magenta.bind(ctx);
+  ctx.cyan = $.cyan.bind(ctx);
+  ctx.white = $.white.bind(ctx);
+  ctx.gray = $.gray.bind(ctx);
+  ctx.grey = $.grey.bind(ctx);
+  ctx.bgBlack = $.bgBlack.bind(ctx);
+  ctx.bgRed = $.bgRed.bind(ctx);
+  ctx.bgGreen = $.bgGreen.bind(ctx);
+  ctx.bgYellow = $.bgYellow.bind(ctx);
+  ctx.bgBlue = $.bgBlue.bind(ctx);
+  ctx.bgMagenta = $.bgMagenta.bind(ctx);
+  ctx.bgCyan = $.bgCyan.bind(ctx);
+  ctx.bgWhite = $.bgWhite.bind(ctx);
+  return ctx;
+}
+function init(open, close) {
+  let blk = {
+    open: `\x1B[${open}m`,
+    close: `\x1B[${close}m`,
+    rgx: new RegExp(`\\x1b\\[${close}m`, "g")
+  };
+  return function(txt) {
+    if (this !== void 0 && this.has !== void 0) {
+      !!~this.has.indexOf(open) || (this.has.push(open), this.keys.push(blk));
+      return txt === void 0 ? this : $.enabled ? run(this.keys, txt + "") : txt + "";
+    }
+    return txt === void 0 ? chain([open], [blk]) : $.enabled ? run([blk], txt + "") : txt + "";
+  };
+}
+var kleur_default = $;
+
+// packages/qwik/src/optimizer/src/plugins/vite-utils.ts
+var findLocation = (e) => {
+  const stack = e.stack;
+  if (typeof stack === "string") {
+    const lines = stack.split("\n");
+    for (let i = 1; i < lines.length; i++) {
+      const line = lines[i].replace("file:///", "/");
+      if (/^\s+at/.test(line)) {
+        const start = line.indexOf("/");
+        const end = line.indexOf(")", start);
+        if (start > 0) {
+          const path = line.slice(start, end);
+          const parts = path.split(":");
+          const nu0 = safeParseInt(parts[parts.length - 1]);
+          const nu1 = safeParseInt(parts[parts.length - 2]);
+          if (typeof nu0 === "number" && typeof nu1 === "number") {
+            parts.length -= 2;
+            return {
+              file: parts.join(":"),
+              line: nu1,
+              column: nu0
+            };
+          } else if (typeof nu0 === "number") {
+            parts.length -= 1;
+            return {
+              file: parts.join(":"),
+              line: nu0,
+              column: void 0
+            };
+          } else {
+            return {
+              file: parts.join(":"),
+              line: void 0,
+              column: void 0
+            };
+          }
+        }
+      }
+    }
+  }
+  return void 0;
+};
+var safeParseInt = (nu) => {
+  try {
+    return parseInt(nu, 10);
+  } catch {
+    return void 0;
+  }
+};
+var splitRE = /\r?\n/;
+var range = 2;
+function posToNumber(source, pos) {
+  if (typeof pos === "number")
+    return pos;
+  const lines = source.split(splitRE);
+  const { line, column } = pos;
+  let start = 0;
+  for (let i = 0; i < line - 1; i++) {
+    if (lines[i]) {
+      start += lines[i].length + 1;
+    }
+  }
+  return start + column;
+}
+function generateCodeFrame(source, start = 0, end) {
+  start = posToNumber(source, start);
+  end = end || start;
+  const lines = source.split(splitRE);
+  let count = 0;
+  const res = [];
+  for (let i = 0; i < lines.length; i++) {
+    count += lines[i].length + 1;
+    if (count >= start) {
+      for (let j = i - range; j <= i + range || end > count; j++) {
+        if (j < 0 || j >= lines.length)
+          continue;
+        const line = j + 1;
+        res.push(`${line}${" ".repeat(Math.max(3 - String(line).length, 0))}|  ${lines[j]}`);
+        const lineLength = lines[j].length;
+        if (j === i) {
+          const pad = Math.max(start - (count - lineLength) + 1, 0);
+          const length = Math.max(1, end > count ? lineLength - pad : end - start);
+          res.push(`   |  ` + " ".repeat(pad) + "^".repeat(length));
+        } else if (j > i) {
+          if (end > count) {
+            const length = Math.max(Math.min(end - count, lineLength), 1);
+            res.push(`   |  ` + "^".repeat(length));
+          }
+          count += lineLength + 1;
+        }
+      }
+      break;
+    }
+  }
+  return res.join("\n");
+}
+
+// packages/qwik-city/buildtime/vite/format-error.ts
+import fs3 from "fs";
+function formatError(e) {
+  if (e instanceof Error) {
+    const err = e;
+    let loc = err.loc;
+    if (!err.frame && !err.plugin) {
+      if (!loc) {
+        loc = findLocation(err);
+      }
+      if (loc) {
+        err.loc = loc;
+        if (loc.file) {
+          err.id = normalizePath(err.loc.file);
+          try {
+            const code = fs3.readFileSync(err.loc.file, "utf-8");
+            err.frame = generateCodeFrame(code, err.loc);
+          } catch {
+          }
+        }
+      }
+    }
+  }
+  return e;
+}
+
+// packages/qwik-city/static/main-thread.ts
+import { buildErrorMessage } from "vite";
 async function mainThread(sys) {
   const opts = sys.getOptions();
   validateOptions(opts);
   const main = await sys.createMainProcess();
   const log = await sys.createLogger();
+  log.info("\n" + kleur_default.bold().green("Starting Qwik City SSG..."));
   const qwikCityPlan = (await import(pathToFileURL(opts.qwikCityPlanModulePath).href)).default;
   const queue = [];
   const active = /* @__PURE__ */ new Set();
@@ -438,21 +666,25 @@ async function mainThread(sys) {
         const closePromise = main.close();
         await generateNotFoundPages(sys, opts, routes);
         generatorResult.duration = timer();
-        log.info("\nSSG results");
-        if (generatorResult.rendered > 0) {
-          log.info(
-            `- Generated: ${generatorResult.rendered} page${generatorResult.rendered === 1 ? "" : "s"}`
-          );
+        if (generatorResult.errors === 0) {
+          log.info(`
+${kleur_default.green("SSG results")}`);
+          if (generatorResult.rendered > 0) {
+            log.info(
+              `- Generated: ${kleur_default.dim(
+                `${generatorResult.rendered} page${generatorResult.rendered === 1 ? "" : "s"}`
+              )}`
+            );
+          }
+          log.info(`- Duration: ${kleur_default.dim(msToString(generatorResult.duration))}`);
+          const total = generatorResult.rendered + generatorResult.errors;
+          if (total > 0) {
+            log.info(
+              `- Average: ${kleur_default.dim(msToString(generatorResult.duration / total) + " per page")}`
+            );
+          }
+          log.info(``);
         }
-        if (generatorResult.errors > 0) {
-          log.info(`- Errors: ${generatorResult.errors}`);
-        }
-        log.info(`- Duration: ${msToString(generatorResult.duration)}`);
-        const total = generatorResult.rendered + generatorResult.errors;
-        if (total > 0) {
-          log.info(`- Average: ${msToString(generatorResult.duration / total)} per page`);
-        }
-        log.info(``);
         closePromise.then(() => {
           setTimeout(() => resolve2(generatorResult));
         }).catch(reject);
@@ -485,18 +717,27 @@ async function mainThread(sys) {
           const result = await main.render({ type: "render", ...staticRoute });
           active.delete(staticRoute.pathname);
           if (result.error) {
-            log.error(
-              `ERROR: SSG failed for path: ${staticRoute.pathname}
-`,
-              result.error,
-              "\n\n"
-            );
+            const err = new Error(result.error.message);
+            err.stack = result.error.stack;
+            log.error(`
+${kleur_default.bold().red("Error during SSG")}`);
+            log.error(kleur_default.red(err.message));
+            log.error(`  Pathname: ${kleur_default.magenta(staticRoute.pathname)}`);
+            Object.assign(formatError(err), {
+              plugin: "qwik-ssg"
+            });
+            log.error(buildErrorMessage(err));
             generatorResult.errors++;
-          } else if (result.ok) {
+          }
+          if (result.filePath != null) {
             generatorResult.rendered++;
             if (result.isStatic) {
               generatorResult.staticPaths.push(result.pathname);
             }
+            const base = opts.rootDir ?? opts.outDir;
+            const path = relative2(base, result.filePath);
+            const lastSlash = path.lastIndexOf("/");
+            log.info(`${kleur_default.dim(path.slice(0, lastSlash + 1))}${path.slice(lastSlash + 1)}`);
           }
           flushQueue();
         } catch (e) {
@@ -690,17 +931,19 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
       if (rsp != null) {
         return rsp.completion;
       }
-    }).catch((e) => {
-      if (e) {
-        if (e.stack) {
-          result.error = String(e.stack);
-        } else if (e.message) {
-          result.error = String(e.message);
+    }).then((e) => {
+      if (e !== void 0) {
+        if (e instanceof Error) {
+          result.error = {
+            message: e.message,
+            stack: e.stack
+          };
         } else {
-          result.error = String(e);
+          result.error = {
+            message: String(e),
+            stack: void 0
+          };
         }
-      } else {
-        result.error = `Error`;
       }
     }).finally(() => {
       pendingPromises.delete(promise);
@@ -708,16 +951,16 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     });
     pendingPromises.add(promise);
   } catch (e) {
-    if (e) {
-      if (e.stack) {
-        result.error = String(e.stack);
-      } else if (e.message) {
-        result.error = String(e.message);
-      } else {
-        result.error = String(e);
-      }
+    if (e instanceof Error) {
+      result.error = {
+        message: e.message,
+        stack: e.stack
+      };
     } else {
-      result.error = `Error`;
+      result.error = {
+        message: String(e),
+        stack: void 0
+      };
     }
     callback(result);
   }

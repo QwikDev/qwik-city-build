@@ -6,7 +6,6 @@ import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler'
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
-import { PropFunction } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -16,6 +15,7 @@ import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-han
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
+import { z } from 'zod';
 
 declare class AbortMessage {
 }
@@ -23,12 +23,19 @@ declare class AbortMessage {
 /**
  * @alpha
  */
-export declare const action$: <B>(first: (form: FormData, event: RequestEventLoader_2) => ValueOrPromise<B>) => ServerAction<B>;
+export declare const action$: Action;
+
+declare interface Action {
+    <O>(actionQrl: (form: DefaultActionType, event: RequestEventLoader_2) => ValueOrPromise<O>): ServerAction<O>;
+    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader_2) => ValueOrPromise<O>, options: B): ServerAction<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
+}
+
+declare type ActionOptions = z.ZodRawShape;
 
 /**
  * @alpha
  */
-export declare const actionQrl: <B>(actionQrl: QRL<(form: FormData, event: RequestEventLoader_2) => ValueOrPromise<B>>) => ServerAction<B>;
+export declare const actionQrl: <B, A>(actionQrl: QRL<(form: DefaultActionType, event: RequestEventLoader_2) => ValueOrPromise<B>>, options?: ZodReturn) => ServerAction<B, A>;
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
 
@@ -157,6 +164,10 @@ declare interface CookieValue_2 {
     number: () => number;
 }
 
+declare type DefaultActionType = {
+    [x: string]: JSONValue;
+};
+
 /**
  * @alpha
  */
@@ -264,20 +275,41 @@ declare class ErrorResponse extends Error {
     constructor(status: number, message?: string);
 }
 
-/**
- * @alpha
- */
-export declare const Form: <T>({ action, spaReset, reloadDocument, onSubmit$, ...rest }: FormProps<T>) => JSXNode<"form">;
+declare type FailReturn<T> = T & {
+    __brand: 'fail';
+};
 
 /**
  * @alpha
  */
-export declare interface FormProps<T> extends Omit<QwikJSX.IntrinsicElements['form'], 'action'> {
-    action: ServerActionUse<T>;
-    method?: 'post';
-    onSubmit$?: PropFunction<(event: Event) => void>;
+export declare const Form: <O, I>({ action, spaReset, reloadDocument, onSubmit$, ...rest }: FormProps<O, I>) => JSXNode<"form">;
+
+/**
+ * @alpha
+ */
+export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements['form'], 'action' | 'method'> {
+    action: ServerActionUse<O, I>;
     reloadDocument?: boolean;
     spaReset?: boolean;
+    onSubmit$?: (event: Event, form: HTMLFormElement) => ValueOrPromise<void>;
+    onSubmitSuccess$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
+    onSubmitFail$?: (event: CustomEvent<FormSubmitFailDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
+}
+
+/**
+ * @alpha
+ */
+declare interface FormSubmitFailDetail<T> {
+    status: number;
+    fail: GetFailReturn<T>;
+}
+
+/**
+ * @alpha
+ */
+declare interface FormSubmitSuccessDetail<T> {
+    status: number;
+    value: GetValueReturn<T>;
 }
 
 /**
@@ -288,6 +320,14 @@ declare interface GetData {
     <T>(loader: ServerAction<T>): Promise<T | undefined>;
 }
 
+declare type GetFailReturn<T> = T extends FailReturn<infer I> ? I & {
+    [key: string]: undefined;
+} : never;
+
+declare type GetValidatorType<B extends ZodReturn<any>> = B extends ZodReturn<infer TYPE> ? z.infer<z.ZodObject<TYPE>> : never;
+
+declare type GetValueReturn<T> = T extends FailReturn<{}> ? never : T;
+
 /**
  * @alpha
  * @deprecated - The "Html" component has been renamed to "QwikCity".
@@ -295,6 +335,10 @@ declare interface GetData {
 export declare const Html: Component<QwikCityProps>;
 
 declare const isServerLoader: unique symbol;
+
+declare type JSONValue = string | number | boolean | {
+    [x: string]: JSONValue;
+} | Array<JSONValue>;
 
 declare interface LayoutModule extends RouteModule {
     readonly default: any;
@@ -530,7 +574,7 @@ export { RequestEventLoader }
  */
 declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventCommon_2<PLATFORM> {
     getData: GetData;
-    fail: <T>(status: number, returnData: T) => T;
+    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn<T>;
 }
 
 export { RequestHandler }
@@ -597,23 +641,25 @@ declare interface SendMethod {
 /**
  * @alpha
  */
-export declare interface ServerAction<RETURN> {
+export declare interface ServerAction<RETURN, INPUT = Record<string, any>> {
     readonly [isServerLoader]?: true;
-    use(): ServerActionUse<RETURN>;
+    use(): ServerActionUse<RETURN, INPUT>;
 }
 
-declare type ServerActionExecute<RETURN> = QRL<(form: FormData | Record<string, string | string[] | Blob | Blob[]> | SubmitEvent) => Promise<RETURN>>;
+declare type ServerActionExecute<RETURN, INPUT> = QRL<(form: FormData | INPUT | SubmitEvent) => Promise<RETURN>>;
 
 /**
  * @alpha
  */
-export declare interface ServerActionUse<RETURN> {
+export declare interface ServerActionUse<RETURN, INPUT> {
     readonly id: string;
     readonly actionPath: string;
     readonly isRunning: boolean;
     readonly status?: number;
-    readonly value: RETURN | undefined;
-    readonly run: ServerActionExecute<RETURN>;
+    readonly formData: FormData | undefined;
+    readonly value: GetValueReturn<RETURN> | undefined;
+    readonly fail: GetFailReturn<RETURN> | undefined;
+    readonly run: ServerActionExecute<RETURN, INPUT>;
 }
 
 /**
@@ -665,5 +711,28 @@ export declare const useLocation: () => RouteLocation;
  * @alpha
  */
 export declare const useNavigate: () => RouteNavigate;
+
+export { z }
+
+/**
+ * @alpha
+ */
+export declare const zod$: Zod;
+
+declare interface Zod {
+    <T extends ActionOptions>(schema: T): ZodReturn<T>;
+    <T extends ActionOptions>(schema: (z: z) => T): ZodReturn<T>;
+}
+
+/**
+ * @alpha
+ */
+export declare const zodQrl: (qrl: QRL<z.ZodRawShape | ((z: z) => ActionOptions)>) => Promise<z.ZodObject<z.ZodRawShape, "strip", z.ZodTypeAny, {
+    [x: string]: any;
+}, {
+    [x: string]: any;
+}> | undefined>;
+
+declare type ZodReturn<T extends ActionOptions = any> = Promise<z.ZodObject<T>>;
 
 export { }

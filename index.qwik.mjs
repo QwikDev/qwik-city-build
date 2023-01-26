@@ -2,6 +2,8 @@ import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, w
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import swRegister from "@qwik-city-sw-register";
+import { z } from "zod";
+import { z as z2 } from "zod";
 const RouteStateContext = /* @__PURE__ */ createContext("qc-s");
 const ContentContext = /* @__PURE__ */ createContext("qc-c");
 const ContentInternalContext = /* @__PURE__ */ createContext("qc-ic");
@@ -260,14 +262,16 @@ const loadClientData = async (href, clearCache, action) => {
       body: actionData
     } : void 0;
     qData = fetch(clientDataPath, options).then((rsp) => {
-      if ((rsp.headers.get("content-type") || "").includes("json")) {
-        const redirectedURL = new URL(rsp.url);
-        if (redirectedURL.origin !== location.origin || !isQDataJson(redirectedURL.pathname)) {
-          location.href = redirectedURL.href;
-          return;
-        }
+      const redirectedURL = new URL(rsp.url);
+      if (redirectedURL.origin !== location.origin || !isQDataJson(redirectedURL.pathname)) {
+        location.href = redirectedURL.href;
+        return;
+      }
+      if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
           const clientData = parseData(text);
+          if (clientData.__brand !== "qdata")
+            return;
           if (clearCache)
             CLIENT_DATA_CACHE.delete(clientDataPath);
           if (clientData.redirect)
@@ -281,7 +285,7 @@ const loadClientData = async (href, clearCache, action) => {
           }
           return clientData;
         });
-      } else
+      else
         CLIENT_DATA_CACHE.delete(clientDataPath);
     });
     if (!action)
@@ -380,6 +384,8 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
         clientPageData = env2.response;
       else {
         const pageData = clientPageData = await loadClientData(url2.href, true, action);
+        if (!pageData)
+          return;
         const newHref = pageData?.href;
         if (newHref) {
           const newURL = new URL(newHref, url2.href);
@@ -526,8 +532,9 @@ const ServiceWorkerRegister = () => jsx("script", {
   dangerouslySetInnerHTML: swRegister
 });
 class ServerActionImpl {
-  constructor(__qrl) {
+  constructor(__qrl, __schema) {
     this.__qrl = __qrl;
+    this.__schema = __schema;
     this.__brand = "server_action";
   }
   use() {
@@ -535,7 +542,8 @@ class ServerActionImpl {
     const currentAction = useAction();
     const initialState = {
       status: void 0,
-      isRunning: false
+      isRunning: false,
+      formData: currentAction.value?.data
     };
     const state = useStore(() => {
       return untrack(() => {
@@ -543,10 +551,17 @@ class ServerActionImpl {
         if (currentAction.value?.output) {
           const { status, result } = currentAction.value.output;
           initialState.status = status;
-          initialState.value = result;
+          if (isFail(result)) {
+            initialState.value = void 0;
+            initialState.fail = result;
+          } else {
+            initialState.value = result;
+            initialState.fail = void 0;
+          }
         } else {
           initialState.status = void 0;
           initialState.value = void 0;
+          initialState.fail = void 0;
         }
         initialState.id = id;
         initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
@@ -555,18 +570,17 @@ class ServerActionImpl {
       });
     });
     initialState.run = inlinedQrl((input) => {
-      const [currentAction2, loc2, state2] = useLexicalScope();
+      const [currentAction2, initialState2, loc2, state2] = useLexicalScope();
       let data;
+      let form;
       if (input instanceof SubmitEvent) {
-        const form = input.target;
+        form = input.target;
         data = new FormData(form);
-        if (form.getAttribute("data-spa-reset") === "true")
-          form.reset();
-      } else if (input instanceof FormData)
+      } else
         data = input;
-      else
-        data = formDataFromObject(input);
       return new Promise((resolve) => {
+        if (data instanceof FormData)
+          state2.formData = data;
         state2.isRunning = true;
         loc2.isNavigating = true;
         currentAction2.value = {
@@ -574,23 +588,59 @@ class ServerActionImpl {
           id: state2.id,
           resolve: noSerialize(resolve)
         };
-      }).then((value) => {
+      }).then(({ result, status }) => {
         state2.isRunning = false;
-        state2.status = value.status;
-        state2.value = value.result;
+        state2.status = status;
+        const didFail = isFail(result);
+        if (didFail) {
+          initialState2.value = void 0;
+          initialState2.fail = result;
+        } else {
+          initialState2.value = result;
+          initialState2.fail = void 0;
+        }
+        if (form) {
+          if (form.getAttribute("data-spa-reset") === "true")
+            form.reset();
+          const eventName = didFail ? "submitfail" : "submitsuccess";
+          const detail = didFail ? {
+            status,
+            fail: result
+          } : {
+            status,
+            value: result
+          };
+          form.dispatchEvent(new CustomEvent(eventName, {
+            bubbles: false,
+            cancelable: false,
+            composed: false,
+            detail
+          }));
+        }
       });
     }, "ServerActionImpl_13yflRrKOuk", [
       currentAction,
+      initialState,
       loc,
       state
     ]);
     return state;
   }
 }
-const actionQrl = (actionQrl2) => {
-  return new ServerActionImpl(actionQrl2);
+const actionQrl = (actionQrl2, options) => {
+  return new ServerActionImpl(actionQrl2, options);
 };
 const action$ = implicit$FirstArg(actionQrl);
+const zodQrl = async (qrl) => {
+  if (isServer) {
+    let obj = await qrl.resolve();
+    if (typeof obj === "function")
+      obj = obj(z);
+    return z.object(obj);
+  }
+  return void 0;
+};
+const zod$ = implicit$FirstArg(zodQrl);
 class ServerLoaderImpl {
   constructor(__qrl) {
     this.__qrl = __qrl;
@@ -613,18 +663,9 @@ const loaderQrl = (loaderQrl2) => {
   return new ServerLoaderImpl(loaderQrl2);
 };
 const loader$ = implicit$FirstArg(loaderQrl);
-function formDataFromObject(obj) {
-  const formData = new FormData();
-  for (const key in obj) {
-    const value = obj[key];
-    if (Array.isArray(value))
-      for (const item of value)
-        formData.append(key, item);
-    else
-      formData.append(key, value);
-  }
-  return formData;
-}
+const isFail = (value) => {
+  return value && typeof value === "object" && value.__brand === "fail";
+};
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return jsx("form", {
     ...rest,
@@ -655,5 +696,8 @@ export {
   useContent,
   useDocumentHead,
   useLocation,
-  useNavigate
+  useNavigate,
+  z2 as z,
+  zod$,
+  zodQrl
 };

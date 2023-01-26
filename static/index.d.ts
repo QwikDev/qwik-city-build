@@ -26,6 +26,7 @@ export declare interface StaticGenerateOptions extends StaticGenerateRenderOptio
      * Defaults to `/`
      */
     basePathname?: string;
+    rootDir?: string;
 }
 
 /**

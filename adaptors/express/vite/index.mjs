@@ -10,6 +10,9 @@ function expressAdaptor(opts = {}) {
     cleanStaticGenerated: true,
     config() {
       return {
+        ssr: {
+          target: "node"
+        },
         build: {
           ssr: true
         },

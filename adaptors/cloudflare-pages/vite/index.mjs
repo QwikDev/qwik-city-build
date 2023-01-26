@@ -14,7 +14,8 @@ function cloudflarePagesAdaptor(opts = {}) {
     config() {
       return {
         ssr: {
-          target: "webworker",
+          target: "node",
+          format: "esm",
           noExternal: true
         },
         build: {
