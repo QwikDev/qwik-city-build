@@ -236,6 +236,7 @@ function viteAdaptor(opts) {
           const routes = qwikCityPlugin.api.getRoutes();
           const basePathname = qwikCityPlugin.api.getBasePathname();
           const clientOutDir = qwikVitePlugin.api.getClientOutDir();
+          const rootDir = qwikVitePlugin.api.getRootDir() ?? void 0;
           if (renderModulePath && qwikCityPlanModulePath && clientOutDir) {
             if (opts.staticGenerate) {
               this.warn(`Option "staticGenerate" is deprecated. Please use "ssg" option instead.`);
@@ -277,6 +278,7 @@ function viteAdaptor(opts) {
               maxWorkers: opts.maxWorkers,
               basePathname,
               outDir: clientOutDir,
+              rootDir,
               ...opts.ssg,
               origin: ssgOrigin,
               filter: pathFilter,
@@ -285,9 +287,11 @@ function viteAdaptor(opts) {
             };
             const staticGenerateResult = await staticGenerate.generate(generateOpts);
             if (staticGenerateResult.errors > 0) {
-              this.error(
+              const err = new Error(
                 `Error while runnning SSG from "${opts.name}" adaptor. At least one path failed to render.`
               );
+              err.stack = void 0;
+              this.error(err);
             }
             staticPaths.push(...staticGenerateResult.staticPaths);
             const { staticPathsCode, notFoundPathsCode } = await postBuild(

@@ -384,6 +384,15 @@ function actionsMiddleware(serverLoaders, serverActions) {
             const result = await validator.safeParseAsync(data);
             if (!result.success) {
               failed = true;
+              if (globalThis.qDev) {
+                console.error(
+                  "\nVALIDATION ERROR\naction$() zod validated failed",
+                  "\n\n  - Received:",
+                  data,
+                  "\n  - Issues:",
+                  result.error.issues
+                );
+              }
               loaders[selectedAction] = {
                 __brand: "fail",
                 ...result.error.flatten()
@@ -882,20 +891,18 @@ async function runNext(requestEv, resolve) {
     if (e instanceof RedirectMessage) {
       requestEv.getWritableStream().close();
     } else if (e instanceof ErrorResponse) {
+      console.error(e);
       if (!requestEv.headersSent) {
         const html = getErrorHtml(e.status, e);
         requestEv.html(e.status, html);
       }
-      console.error(e);
     } else if (!(e instanceof AbortMessage)) {
-      if (!requestEv.headersSent) {
-        requestEv.status(500 /* InternalServerError */);
-      }
-      throw e;
+      return e;
     }
+  } finally {
+    resolve(null);
   }
-  resolve(null);
-  return requestEv;
+  return void 0;
 }
 function getRouteMatchPathname(pathname, trailingSlash) {
   if (pathname.endsWith(QDATA_JSON)) {
@@ -1011,8 +1018,12 @@ async function requestHandler(serverRequestEv, opts) {
     render
   );
   if (loadedRoute) {
-    return handleErrors(
-      runQwikCity(serverRequestEv, loadedRoute[0], loadedRoute[1], trailingSlash, basePathname)
+    return runQwikCity(
+      serverRequestEv,
+      loadedRoute[0],
+      loadedRoute[1],
+      trailingSlash,
+      basePathname
     );
   }
   return null;
@@ -1029,29 +1040,6 @@ async function loadRequestHandlers(serverPlugins, routes, menus, cacheModules, p
     return [(route == null ? void 0 : route[0]) ?? {}, requestHandlers];
   }
   return null;
-}
-function handleErrors(run) {
-  const requestEv = run.requestEv;
-  return {
-    response: run.response,
-    requestEv,
-    completion: run.completion.then(
-      () => {
-        if (requestEv.headersSent) {
-          requestEv.getWritableStream();
-        }
-      },
-      (e) => {
-        console.error(e);
-        const status = requestEv.status();
-        const html = getErrorHtml(status, e);
-        if (!requestEv.headersSent) {
-          requestEv.html(status, html);
-        } else {
-        }
-      }
-    ).then(() => requestEv)
-  };
 }
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

@@ -6886,14 +6886,14 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs7 = this.flowScalar(this.type);
+              const fs8 = this.flowScalar(this.type);
               if (atNextItem || it.value) {
-                map.items.push({ start, key: fs7, sep: [] });
+                map.items.push({ start, key: fs8, sep: [] });
                 this.onKeyLine = true;
               } else if (it.sep) {
-                this.stack.push(fs7);
+                this.stack.push(fs8);
               } else {
-                Object.assign(it, { key: fs7, sep: [] });
+                Object.assign(it, { key: fs8, sep: [] });
                 this.onKeyLine = true;
               }
               return;
@@ -7012,13 +7012,13 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs7 = this.flowScalar(this.type);
+              const fs8 = this.flowScalar(this.type);
               if (!it || it.value)
-                fc.items.push({ start: [], key: fs7, sep: [] });
+                fc.items.push({ start: [], key: fs8, sep: [] });
               else if (it.sep)
-                this.stack.push(fs7);
+                this.stack.push(fs8);
               else
-                Object.assign(it, { key: fs7, sep: [] });
+                Object.assign(it, { key: fs8, sep: [] });
               return;
             }
             case "flow-map-end":
@@ -23288,7 +23288,7 @@ ${foundRoutes.map((r2) => `  - ${r2.filePath}`).join("\n")}`
 }
 
 // packages/qwik-city/buildtime/vite/dev-server.ts
-import fs4 from "fs";
+import fs5 from "fs";
 import { join as join4, resolve as resolve2 } from "path";
 
 // packages/qwik-city/middleware/request-handler/cookie.ts
@@ -23607,6 +23607,15 @@ function actionsMiddleware(serverLoaders, serverActions) {
             const result = await validator.safeParseAsync(data);
             if (!result.success) {
               failed = true;
+              if (globalThis.qDev) {
+                console.error(
+                  "\nVALIDATION ERROR\naction$() zod validated failed",
+                  "\n\n  - Received:",
+                  data,
+                  "\n  - Issues:",
+                  result.error.issues
+                );
+              }
               loaders[selectedAction] = {
                 __brand: "fail",
                 ...result.error.flatten()
@@ -24056,20 +24065,18 @@ async function runNext(requestEv, resolve4) {
     if (e instanceof RedirectMessage) {
       requestEv.getWritableStream().close();
     } else if (e instanceof ErrorResponse) {
+      console.error(e);
       if (!requestEv.headersSent) {
         const html3 = getErrorHtml(e.status, e);
         requestEv.html(e.status, html3);
       }
-      console.error(e);
     } else if (!(e instanceof AbortMessage)) {
-      if (!requestEv.headersSent) {
-        requestEv.status(500 /* InternalServerError */);
-      }
-      throw e;
+      return e;
     }
+  } finally {
+    resolve4(null);
   }
-  resolve4(null);
-  return requestEv;
+  return void 0;
 }
 function getRouteMatchPathname(pathname, trailingSlash) {
   if (pathname.endsWith(QDATA_JSON)) {
@@ -24168,11 +24175,11 @@ var findLocation = (e) => {
   if (typeof stack === "string") {
     const lines = stack.split("\n");
     for (let i = 1; i < lines.length; i++) {
-      const line = lines[i];
+      const line = lines[i].replace("file:///", "/");
       if (/^\s+at/.test(line)) {
-        const start = line.indexOf("(/") + 1;
+        const start = line.indexOf("/");
         const end = line.indexOf(")", start);
-        if (start > 0 && end > start) {
+        if (start > 0) {
           const path2 = line.slice(start, end);
           const parts = path2.split(":");
           const nu0 = safeParseInt(parts[parts.length - 1]);
@@ -24257,6 +24264,32 @@ function generateCodeFrame(source, start = 0, end) {
     }
   }
   return res.join("\n");
+}
+
+// packages/qwik-city/buildtime/vite/format-error.ts
+import fs4 from "fs";
+function formatError(e) {
+  if (e instanceof Error) {
+    const err = e;
+    let loc = err.loc;
+    if (!err.frame && !err.plugin) {
+      if (!loc) {
+        loc = findLocation(err);
+      }
+      if (loc) {
+        err.loc = loc;
+        if (loc.file) {
+          err.id = normalizePath(err.loc.file);
+          try {
+            const code2 = fs4.readFileSync(err.loc.file, "utf-8");
+            err.frame = generateCodeFrame(code2, err.loc);
+          } catch {
+          }
+        }
+      }
+    }
+  }
+  return e;
 }
 
 // packages/qwik-city/buildtime/vite/dev-server.ts
@@ -24351,14 +24384,14 @@ function ssrDevMiddleware(ctx, server) {
         );
         if (requestHandlers.length > 0) {
           const serverRequestEv = await fromNodeHttp(url, req, res, "dev");
-          const { completion } = runQwikCity(
+          const { completion, requestEv } = runQwikCity(
             serverRequestEv,
             params,
             requestHandlers,
             ctx.opts.trailingSlash,
             ctx.opts.basePathname
           );
-          const requestEv = await completion;
+          await completion;
           if (requestEv.headersSent || res.headersSent) {
             return;
           }
@@ -24433,13 +24466,13 @@ function staticDistMiddleware({ config }) {
     for (const distDir of distDirs) {
       try {
         const filePath = join4(distDir, relPath);
-        const s2 = await fs4.promises.stat(filePath);
+        const s2 = await fs5.promises.stat(filePath);
         if (s2.isFile()) {
           res.writeHead(200, {
             "Content-Type": contentType,
             "X-Source-Path": filePath
           });
-          fs4.createReadStream(filePath).pipe(res);
+          fs5.createReadStream(filePath).pipe(res);
           return;
         }
       } catch (e) {
@@ -24460,7 +24493,7 @@ function formatDevSerializeError(err, routeModulePaths) {
     const filePath = routeModulePaths.get(endpointModule);
     if (filePath) {
       try {
-        const code2 = fs4.readFileSync(filePath, "utf-8");
+        const code2 = fs5.readFileSync(filePath, "utf-8");
         err.plugin = "vite-plugin-qwik-city";
         err.id = normalizePath(filePath);
         err.loc = {
@@ -24534,29 +24567,6 @@ var DEV_SERVICE_WORKER = `/* Qwik City Dev Service Worker */
 addEventListener('install', () => self.skipWaiting());
 addEventListener('activate', () => self.clients.claim());
 `;
-function formatError(e) {
-  if (e instanceof Error) {
-    const err = e;
-    let loc = err.loc;
-    if (!err.frame && !err.plugin) {
-      if (!loc) {
-        loc = findLocation(err);
-      }
-      if (loc) {
-        err.loc = loc;
-        if (loc.file) {
-          err.id = normalizePath(err.loc.file);
-          try {
-            const code2 = fs4.readFileSync(err.loc.file, "utf-8");
-            err.frame = generateCodeFrame(code2, err.loc);
-          } catch {
-          }
-        }
-      }
-    }
-  }
-  return e;
-}
 
 // packages/qwik-city/middleware/node/node-fetch.ts
 import {
@@ -24589,7 +24599,7 @@ function patchGlobalThis() {
 }
 
 // packages/qwik-city/buildtime/vite/plugin.ts
-import fs6 from "fs";
+import fs7 from "fs";
 
 // sw-reg:@qwik-city-sw-register-build
 var qwik_city_sw_register_build_default = '((s,a,i,r)=>{i=(e,t)=>{t=document.querySelector("[q\\\\:base]"),t&&a.active&&a.active.postMessage({type:"qprefetch",base:t.getAttribute("q:base"),...e})},document.addEventListener("qprefetch",e=>{const t=e.detail;a?i(t):t.bundles&&s.push(...t.bundles)}),navigator.serviceWorker.register("__url").then(e=>{r=()=>{a=e,i({bundles:s})},e.installing?e.installing.addEventListener("statechange",t=>{t.target.state=="activated"&&r()}):e.active&&r()}).catch(e=>console.error(e))})([])';
@@ -24710,7 +24720,7 @@ navigator.serviceWorker.getRegistrations().then((regs) => {
 `;
 
 // packages/qwik-city/adaptors/shared/vite/post-build.ts
-import fs5 from "fs";
+import fs6 from "fs";
 import { join as join5 } from "path";
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ingorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
@@ -24723,16 +24733,16 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
     const fsPath = join5(fsDir, fsName);
     if (fsName === "index.html" || fsName === "q-data.json") {
       if (!staticPaths.has(pathname) && cleanStatic) {
-        await fs5.promises.unlink(fsPath);
+        await fs6.promises.unlink(fsPath);
       }
       return;
     }
     if (fsName === "404.html") {
-      const notFoundHtml = await fs5.promises.readFile(fsPath, "utf-8");
+      const notFoundHtml = await fs6.promises.readFile(fsPath, "utf-8");
       notFounds.push([pathname, notFoundHtml]);
       return;
     }
-    const stat = await fs5.promises.stat(fsPath);
+    const stat = await fs6.promises.stat(fsPath);
     if (stat.isDirectory()) {
       await loadDir(fsPath, pathname + fsName + "/");
     } else if (stat.isFile()) {
@@ -24740,10 +24750,10 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
     }
   };
   const loadDir = async (fsDir, pathname) => {
-    const itemNames = await fs5.promises.readdir(fsDir);
+    const itemNames = await fs6.promises.readdir(fsDir);
     await Promise.all(itemNames.map((i) => loadItem(fsDir, i, pathname)));
   };
-  if (fs5.existsSync(clientOutDir)) {
+  if (fs6.existsSync(clientOutDir)) {
     await loadDir(clientOutDir, basePathname);
   }
   const notFoundPathsCode = createNotFoundPathsModule(basePathname, notFounds, format);
@@ -24997,12 +25007,12 @@ function qwikCity(userOpts) {
             for (const swEntry of ctx.serviceWorkers) {
               try {
                 const swClientDistPath = join6(clientOutDir, swEntry.chunkFileName);
-                const swCode = await fs6.promises.readFile(swClientDistPath, "utf-8");
+                const swCode = await fs7.promises.readFile(swClientDistPath, "utf-8");
                 try {
                   const swCodeUpdate = prependManifestToServiceWorker(ctx, manifest, swCode);
                   if (swCodeUpdate) {
-                    await fs6.promises.mkdir(clientOutDir, { recursive: true });
-                    await fs6.promises.writeFile(swClientDistPath, swCodeUpdate);
+                    await fs7.promises.mkdir(clientOutDir, { recursive: true });
+                    await fs7.promises.writeFile(swClientDistPath, swCodeUpdate);
                   }
                 } catch (e2) {
                   console.error(e2);
@@ -25019,12 +25029,12 @@ function qwikCity(userOpts) {
             false
           );
           if (outDir) {
-            await fs6.promises.mkdir(outDir, { recursive: true });
+            await fs7.promises.mkdir(outDir, { recursive: true });
             const serverPackageJsonPath = join6(outDir, "package.json");
             let packageJson = {};
-            const packageJsonExists = fs6.existsSync(serverPackageJsonPath);
+            const packageJsonExists = fs7.existsSync(serverPackageJsonPath);
             if (packageJsonExists) {
-              const content = await ((_a2 = await fs6.promises.readFile(serverPackageJsonPath)) == null ? void 0 : _a2.toString());
+              const content = await ((_a2 = await fs7.promises.readFile(serverPackageJsonPath)) == null ? void 0 : _a2.toString());
               const contentAsJson = JSON.parse(content);
               packageJson = {
                 ...contentAsJson
@@ -25033,9 +25043,9 @@ function qwikCity(userOpts) {
             packageJson = { ...packageJson, type: "module" };
             const serverPackageJsonCode = JSON.stringify(packageJson, null, 2);
             await Promise.all([
-              fs6.promises.writeFile(join6(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
-              fs6.promises.writeFile(join6(outDir, RESOLVED_NOT_FOUND_PATHS_ID), notFoundPathsCode),
-              fs6.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode)
+              fs7.promises.writeFile(join6(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
+              fs7.promises.writeFile(join6(outDir, RESOLVED_NOT_FOUND_PATHS_ID), notFoundPathsCode),
+              fs7.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode)
             ]);
           }
         }

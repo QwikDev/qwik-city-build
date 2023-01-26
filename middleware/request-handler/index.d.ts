@@ -192,7 +192,7 @@ export declare const mergeHeadersCookies: (headers: Headers, cookies: Cookie) =>
 declare interface QwikCityRun<T> {
     response: Promise<T | null>;
     requestEv: RequestEvent_2;
-    completion: Promise<RequestEvent_2>;
+    completion: Promise<unknown>;
 }
 
 declare class RedirectMessage extends AbortMessage {
