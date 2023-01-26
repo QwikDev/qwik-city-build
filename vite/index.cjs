@@ -25004,7 +25004,6 @@ function qwikCity(userOpts) {
     closeBundle: {
       sequential: true,
       async handler() {
-        var _a2;
         if ((ctx == null ? void 0 : ctx.target) === "ssr") {
           const manifest = globalThis.QWIK_MANIFEST || qwikPlugin.api.getManifest();
           const clientOutDir = globalThis.QWIK_CLIENT_OUT_DIR || qwikPlugin.api.getClientOutDir();
@@ -25026,20 +25025,19 @@ function qwikCity(userOpts) {
               }
             }
           }
-          const { staticPathsCode, notFoundPathsCode } = await postBuild(
-            clientOutDir,
-            api.getBasePathname(),
-            [],
-            ssrFormat,
-            false
-          );
           if (outDir) {
+            const { staticPathsCode, notFoundPathsCode } = await postBuild(
+              clientOutDir,
+              api.getBasePathname(),
+              [],
+              ssrFormat,
+              false
+            );
             await import_node_fs8.default.promises.mkdir(outDir, { recursive: true });
             const serverPackageJsonPath = (0, import_node_path10.join)(outDir, "package.json");
             let packageJson = {};
-            const packageJsonExists = import_node_fs8.default.existsSync(serverPackageJsonPath);
-            if (packageJsonExists) {
-              const content = await ((_a2 = await import_node_fs8.default.promises.readFile(serverPackageJsonPath)) == null ? void 0 : _a2.toString());
+            if (import_node_fs8.default.existsSync(serverPackageJsonPath)) {
+              const content = await import_node_fs8.default.promises.readFile(serverPackageJsonPath, "utf-8");
               const contentAsJson = JSON.parse(content);
               packageJson = {
                 ...contentAsJson

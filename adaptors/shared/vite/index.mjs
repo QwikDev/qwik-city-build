@@ -204,13 +204,18 @@ function viteAdaptor(opts) {
           if (renderModulePath && qwikCityPlanModulePath && clientOutDir) {
             if (opts.staticGenerate) {
               this.warn(`Option "staticGenerate" is deprecated. Please use "ssg" option instead.`);
-              opts.ssg = opts.ssg || {};
+              opts.ssg = opts.ssg || {
+                include: []
+              };
               if (typeof opts.staticGenerate === "object") {
                 opts.ssg = {
                   ...opts.staticGenerate,
                   ...opts.ssg
                 };
               }
+            }
+            if (!Array.isArray((_a = opts.ssg) == null ? void 0 : _a.include) || ((_b = opts.ssg) == null ? void 0 : _b.include.length) === 0) {
+              return;
             }
             let ssgOrigin = opts.origin;
             if (!ssgOrigin) {
@@ -227,16 +232,6 @@ function viteAdaptor(opts) {
               );
               ssgOrigin = `https://yoursite.qwik.builder.io`;
             }
-            let pathFilter;
-            if (typeof ((_a = opts.ssg) == null ? void 0 : _a.filter) === "function") {
-              pathFilter = opts.ssg.filter;
-            } else if (((_b = opts.ssg) == null ? void 0 : _b.filter) === "all") {
-              pathFilter = () => true;
-            } else {
-              pathFilter = ({ isStatic }) => {
-                return !!isStatic;
-              };
-            }
             const staticGenerate = await import("../../../static/index.mjs");
             const generateOpts = {
               maxWorkers: opts.maxWorkers,
@@ -245,7 +240,6 @@ function viteAdaptor(opts) {
               rootDir,
               ...opts.ssg,
               origin: ssgOrigin,
-              filter: pathFilter,
               renderModulePath,
               qwikCityPlanModulePath
             };

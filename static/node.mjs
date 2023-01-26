@@ -91,7 +91,6 @@ async function createNodeMainProcess(opts) {
   const sitemapBuffer = [];
   let sitemapPromise = null;
   opts = { ...opts };
-  delete opts.filter;
   let outDir = opts.outDir;
   if (typeof outDir !== "string") {
     throw new Error(`Missing "outDir" option`);
@@ -275,9 +274,6 @@ async function createSystem(opts) {
       flags: "w"
     });
   };
-  const removeFile = (filePath) => {
-    return fs2.promises.unlink(filePath);
-  };
   const NS_PER_SEC = 1e9;
   const MS_PER_NS = 1e-6;
   const createTimer = () => {
@@ -326,7 +322,6 @@ async function createSystem(opts) {
     createLogger,
     getOptions: () => opts,
     ensureDir,
-    removeFile,
     createWriteStream,
     createTimer,
     access,
@@ -353,6 +348,47 @@ var access = async (path) => {
 
 // packages/qwik-city/static/node/index.ts
 import { isMainThread, workerData } from "worker_threads";
+
+// packages/qwik-city/static/routes.ts
+function createRouteTester(includeRoutes, excludeRoutes) {
+  const includes = routesToRegExps(includeRoutes);
+  const excludes = routesToRegExps(excludeRoutes);
+  return (pathname) => {
+    for (const exclude of excludes) {
+      if (exclude.test(pathname)) {
+        return false;
+      }
+    }
+    for (const include of includes) {
+      if (include.test(pathname)) {
+        return true;
+      }
+    }
+    return false;
+  };
+}
+function routesToRegExps(routes) {
+  if (!Array.isArray(routes)) {
+    return [];
+  }
+  return routes.filter((r) => typeof r === "string").map(routeToRegExp);
+}
+function routeToRegExp(rule) {
+  let transformedRule;
+  if (rule === "/" || rule === "/*") {
+    transformedRule = rule;
+  } else if (rule.endsWith("/*")) {
+    transformedRule = `${rule.substring(0, rule.length - 2)}(/*)?`;
+  } else if (rule.endsWith("/")) {
+    transformedRule = `${rule.substring(0, rule.length - 1)}(/)?`;
+  } else if (rule.endsWith("*")) {
+    transformedRule = rule;
+  } else {
+    transformedRule = `${rule}(/)?`;
+  }
+  transformedRule = `^${transformedRule.replace(/\*/g, ".*")}$`;
+  return new RegExp(transformedRule);
+}
 
 // packages/qwik-city/static/not-found.ts
 import { getErrorHtml } from "../middleware/request-handler/index.mjs";
@@ -614,6 +650,7 @@ async function mainThread(sys) {
   const active = /* @__PURE__ */ new Set();
   const routes = qwikCityPlan.routes || [];
   const trailingSlash = !!qwikCityPlan.trailingSlash;
+  const includeRoute = createRouteTester(opts.include, opts.exclude);
   return new Promise((resolve2, reject) => {
     try {
       const timer = sys.createTimer();
@@ -677,7 +714,6 @@ ${kleur_default.green("SSG results")}`);
       const render = async (staticRoute) => {
         try {
           active.add(staticRoute.pathname);
-          let shouldRemove = false;
           const result = await main.render({ type: "render", ...staticRoute });
           active.delete(staticRoute.pathname);
           if (result.error) {
@@ -692,31 +728,16 @@ ${kleur_default.bold().red("Error during SSG")}`);
             });
             log.error(buildErrorMessage(err));
             generatorResult.errors++;
-            shouldRemove = true;
-          } else if (result.ok) {
-            if (typeof opts.filter === "function" && result.filePath != null) {
-              const keepStaticFile = opts.filter({
-                ...staticRoute,
-                isStatic: result.isStatic
-              });
-              if (keepStaticFile === false) {
-                shouldRemove = true;
-              }
-            }
           }
           if (result.filePath != null) {
-            if (shouldRemove) {
-              sys.removeFile(result.filePath);
-            } else {
-              generatorResult.rendered++;
-              if (result.isStatic) {
-                generatorResult.staticPaths.push(result.pathname);
-              }
-              const base = opts.rootDir ?? opts.outDir;
-              const path = relative2(base, result.filePath);
-              const lastSlash = path.lastIndexOf("/");
-              log.info(`${kleur_default.dim(path.slice(0, lastSlash + 1))}${path.slice(lastSlash + 1)}`);
+            generatorResult.rendered++;
+            if (result.isStatic) {
+              generatorResult.staticPaths.push(result.pathname);
             }
+            const base = opts.rootDir ?? opts.outDir;
+            const path = relative2(base, result.filePath);
+            const lastSlash = path.lastIndexOf("/");
+            log.info(`${kleur_default.dim(path.slice(0, lastSlash + 1))}${path.slice(lastSlash + 1)}`);
           }
           flushQueue();
         } catch (e) {
@@ -742,7 +763,7 @@ ${kleur_default.bold().red("Error during SSG")}`);
               }
             }
           }
-          if (!queue.some((s) => s.pathname === pathname)) {
+          if (includeRoute(pathname) && !queue.some((s) => s.pathname === pathname)) {
             queue.push({
               pathname,
               params

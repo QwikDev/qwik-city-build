@@ -24999,7 +24999,6 @@ function qwikCity(userOpts) {
     closeBundle: {
       sequential: true,
       async handler() {
-        var _a2;
         if ((ctx == null ? void 0 : ctx.target) === "ssr") {
           const manifest = globalThis.QWIK_MANIFEST || qwikPlugin.api.getManifest();
           const clientOutDir = globalThis.QWIK_CLIENT_OUT_DIR || qwikPlugin.api.getClientOutDir();
@@ -25021,20 +25020,19 @@ function qwikCity(userOpts) {
               }
             }
           }
-          const { staticPathsCode, notFoundPathsCode } = await postBuild(
-            clientOutDir,
-            api.getBasePathname(),
-            [],
-            ssrFormat,
-            false
-          );
           if (outDir) {
+            const { staticPathsCode, notFoundPathsCode } = await postBuild(
+              clientOutDir,
+              api.getBasePathname(),
+              [],
+              ssrFormat,
+              false
+            );
             await fs7.promises.mkdir(outDir, { recursive: true });
             const serverPackageJsonPath = join6(outDir, "package.json");
             let packageJson = {};
-            const packageJsonExists = fs7.existsSync(serverPackageJsonPath);
-            if (packageJsonExists) {
-              const content = await ((_a2 = await fs7.promises.readFile(serverPackageJsonPath)) == null ? void 0 : _a2.toString());
+            if (fs7.existsSync(serverPackageJsonPath)) {
+              const content = await fs7.promises.readFile(serverPackageJsonPath, "utf-8");
               const contentAsJson = JSON.parse(content);
               packageJson = {
                 ...contentAsJson

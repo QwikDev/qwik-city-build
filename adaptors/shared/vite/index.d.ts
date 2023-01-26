@@ -1,27 +1,20 @@
 import type { Plugin as Plugin_2 } from 'vite';
-import type { StaticGeneratePathFilter } from '@builder.io/qwik-city/static';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 import type { UserConfig } from 'vite';
 
 /**
  * @alpha
  */
-export declare interface AdaptorSSGOptions extends Omit<StaticGenerateRenderOptions, 'outDir' | 'origin' | 'filter'> {
+export declare interface AdaptorSSGOptions extends Omit<StaticGenerateRenderOptions, 'outDir' | 'origin'> {
     /**
-     * The `filter` option can be used to determine which pages should be statically
-     * generated rather than server-side rendered (SSR). Defaults to `"auto"`.
-     *
-     * `"auto"` - Attempts to automatically decide if a page shiould be statically generated
-     * if it does not have dynamic data.
-     *
-     * `"all"` - All pages will be statically generated.
-     *
-     * `Function` - Callback function can be used to determine if a page should be statically
-     * generated or not. The filter function is passed the `pathname` and `params` data,
-     * and should return `true` if the page should be statically generated. Returning `false`
-     * will prevent the page from being statically generated.
+     * Defines routes that should be static generated. Accepts wildcard behavior.
      */
-    filter?: 'auto' | 'all' | StaticGeneratePathFilter;
+    include: string[];
+    /**
+     * Defines routes that should not be static generated. Accepts wildcard behavior. `exclude` always
+     * take priority over  `include`.
+     */
+    exclude?: string[];
     /**
      * The URL `origin`, which is a combination of the scheme (protocol) and hostname (domain).
      * For example, `https://qwik.builder.io` has the protocol `https://` and domain `qwik.builder.io`.
