@@ -24811,7 +24811,9 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
     )});`
   );
   c2.push(`function isStaticPath(method, url) {`);
-  c2.push(`  if (method.toUpperCase() !== 'GET') return false;`);
+  c2.push(`  if (method.toUpperCase() !== 'GET') {`);
+  c2.push(`    return true;`);
+  c2.push(`  }`);
   c2.push(`  const p = url.pathname;`);
   c2.push(`  if (p.startsWith(${JSON.stringify(baseBuildPath)})) {`);
   c2.push(`    return true;`);
@@ -24819,11 +24821,17 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
   c2.push(`  if (p.startsWith(${JSON.stringify(assetsPath)})) {`);
   c2.push(`    return true;`);
   c2.push(`  }`);
-  c2.push(`  if (url.search !== "") {`);
-  c2.push(`    return false;`);
-  c2.push(`  }`);
   c2.push(`  if (staticPaths.has(p)) {`);
   c2.push(`    return true;`);
+  c2.push(`  }`);
+  c2.push(`  if (p.endsWith('/q-data.json')) {`);
+  c2.push(`    const pWithoutQdata = p.replace(/\\/q-data.json$/, '');`);
+  c2.push(`    if (staticPaths.has(pWithoutQdata + '/')) {`);
+  c2.push(`      return true;`);
+  c2.push(`    }`);
+  c2.push(`    if (staticPaths.has(pWithoutQdata)) {`);
+  c2.push(`      return true;`);
+  c2.push(`    }`);
   c2.push(`  }`);
   c2.push(`  return false;`);
   c2.push(`}`);
