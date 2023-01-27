@@ -47,6 +47,9 @@ function cloudflarePagesAdaptor(opts = {}) {
     cleanStaticGenerated: true,
     config() {
       return {
+        resolve: {
+          conditions: ["webworker", "worker"]
+        },
         ssr: {
           target: "node",
           format: "esm",
