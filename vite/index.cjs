@@ -24812,7 +24812,7 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
   );
   c2.push(`function isStaticPath(method, url) {`);
   c2.push(`  if (method.toUpperCase() !== 'GET') {`);
-  c2.push(`    return true;`);
+  c2.push(`    return false;`);
   c2.push(`  }`);
   c2.push(`  const p = url.pathname;`);
   c2.push(`  if (p.startsWith(${JSON.stringify(baseBuildPath)})) {`);
