@@ -20403,8 +20403,6 @@ async function createMdxTransformer(ctx) {
   const { default: remarkFrontmatter2 } = await Promise.resolve().then(() => (init_remark_frontmatter(), remark_frontmatter_exports));
   const { default: remarkGfm2 } = await Promise.resolve().then(() => (init_remark_gfm(), remark_gfm_exports));
   const { default: rehypeAutolinkHeadings2 } = await Promise.resolve().then(() => (init_rehype_autolink_headings(), rehype_autolink_headings_exports));
-  const { default: rehypeRaw } = await import("rehype-raw");
-  const { nodeTypes } = await import("@mdx-js/mdx");
   const { VFile } = await import("vfile");
   const userMdxOpts = ctx.opts.mdx;
   const userRemarkPlugins = userMdxOpts.remarkPlugins || [];
@@ -20414,9 +20412,7 @@ async function createMdxTransformer(ctx) {
   if (typeof (coreMdxPlugins == null ? void 0 : coreMdxPlugins.remarkGfm) === "undefined" || coreMdxPlugins.remarkGfm) {
     coreRemarkPlugins.push(remarkGfm2);
   }
-  const coreRehypePlugins = [
-    [rehypeRaw, { passThrough: nodeTypes }]
-  ];
+  const coreRehypePlugins = [];
   if (typeof (coreMdxPlugins == null ? void 0 : coreMdxPlugins.rehypeSyntaxHighlight) === "undefined" || coreMdxPlugins.rehypeSyntaxHighlight) {
     coreRehypePlugins.push(rehypeSyntaxHighlight);
   }
