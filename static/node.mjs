@@ -354,6 +354,9 @@ function createRouteTester(includeRoutes, excludeRoutes) {
   const includes = routesToRegExps(includeRoutes);
   const excludes = routesToRegExps(excludeRoutes);
   return (pathname) => {
+    if (pathname.endsWith("404.html")) {
+      return true;
+    }
     for (const exclude of excludes) {
       if (exclude.test(pathname)) {
         return false;
