@@ -1070,7 +1070,7 @@ var collectValue = (obj, collector, leaks) => {
           return;
         }
         seen.add(obj);
-        if (!fastShouldSerialize(obj)) {
+        if (fastSkipSerialize(obj)) {
           collector.$objSet$.add(void 0);
           collector.$noSerialize$.push(obj);
           return;
@@ -1083,6 +1083,10 @@ var collectValue = (obj, collector, leaks) => {
             return;
           }
           seen.add(obj);
+          if (fastWeakSerialize(input)) {
+            collector.$objSet$.add(obj);
+            return;
+          }
           if (leaks) {
             collectSubscriptions(getProxyManager(input), collector);
           }
@@ -1394,6 +1398,13 @@ var SignalWrapperSerializer = {
   test: (v) => v instanceof SignalWrapper,
   collect(obj, collector, leaks) {
     collectValue(obj.ref, collector, leaks);
+    if (fastWeakSerialize(obj.ref)) {
+      const manager = getProxyManager(obj.ref);
+      if (!manager.$isTreeshakeable$(obj.prop)) {
+        collectValue(obj.ref[obj.prop], collector, leaks);
+      }
+      collectSubscriptions(manager, collector);
+    }
     return obj;
   },
   serialize: (obj, getObjId) => {
@@ -1574,14 +1585,18 @@ Please check out https://qwik.builder.io/docs/advanced/qrl/ for more information
   return value;
 };
 var noSerializeSet = /* @__PURE__ */ new WeakSet();
+var weakSerializeSet = /* @__PURE__ */ new WeakSet();
 var shouldSerialize = (obj) => {
   if (isObject(obj) || isFunction(obj)) {
     return !noSerializeSet.has(obj);
   }
   return true;
 };
-var fastShouldSerialize = (obj) => {
-  return !noSerializeSet.has(obj);
+var fastSkipSerialize = (obj) => {
+  return noSerializeSet.has(obj);
+};
+var fastWeakSerialize = (obj) => {
+  return weakSerializeSet.has(obj);
 };
 var unwrapProxy = (proxy) => {
   return isObject(proxy) ? getProxyTarget(proxy) ?? proxy : proxy;

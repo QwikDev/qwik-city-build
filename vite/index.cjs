@@ -33,18 +33,25 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// node_modules/.pnpm/hast-util-heading-rank@2.1.0/node_modules/hast-util-heading-rank/index.js
+// node_modules/.pnpm/hast-util-heading-rank@2.1.1/node_modules/hast-util-heading-rank/lib/index.js
 function headingRank(node) {
-  var name = node && node.type === "element" && node.tagName.toLowerCase() || "";
-  var code2 = name.length === 2 && name.charCodeAt(0) === 104 ? name.charCodeAt(1) : 0;
+  const name = node && node.type === "element" && node.tagName.toLowerCase() || "";
+  const code2 = name.length === 2 && name.charCodeAt(0) === 104 ? name.charCodeAt(1) : 0;
   return code2 > 48 && code2 < 55 ? code2 - 48 : null;
 }
-var init_hast_util_heading_rank = __esm({
-  "node_modules/.pnpm/hast-util-heading-rank@2.1.0/node_modules/hast-util-heading-rank/index.js"() {
+var init_lib = __esm({
+  "node_modules/.pnpm/hast-util-heading-rank@2.1.1/node_modules/hast-util-heading-rank/lib/index.js"() {
   }
 });
 
-// node_modules/.pnpm/unist-util-is@5.1.1/node_modules/unist-util-is/index.js
+// node_modules/.pnpm/hast-util-heading-rank@2.1.1/node_modules/hast-util-heading-rank/index.js
+var init_hast_util_heading_rank = __esm({
+  "node_modules/.pnpm/hast-util-heading-rank@2.1.1/node_modules/hast-util-heading-rank/index.js"() {
+    init_lib();
+  }
+});
+
+// node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/lib/index.js
 function anyFactory(tests) {
   const checks2 = [];
   let index = -1;
@@ -80,24 +87,21 @@ function typeFactory(check) {
 }
 function castFactory(check) {
   return assertion;
-  function assertion(...parameters) {
-    return Boolean(check.call(this, ...parameters));
+  function assertion(node, ...parameters) {
+    return Boolean(
+      node && typeof node === "object" && "type" in node && // @ts-expect-error: fine.
+      Boolean(check.call(this, node, ...parameters))
+    );
   }
 }
 function ok() {
   return true;
 }
 var convert;
-var init_unist_util_is = __esm({
-  "node_modules/.pnpm/unist-util-is@5.1.1/node_modules/unist-util-is/index.js"() {
+var init_lib2 = __esm({
+  "node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/lib/index.js"() {
     convert = /**
-     * Generate an assertion from a check.
      * @param {Test} [test]
-     * When nullish, checks if `node` is a `Node`.
-     * When `string`, works like passing `function (node) {return node.type === test}`.
-     * When `function` checks if function passed the node is true.
-     * When `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
-     * When `array`, checks any one of the subtests pass.
      * @returns {AssertAnything}
      */
     function(test) {
@@ -118,16 +122,23 @@ var init_unist_util_is = __esm({
   }
 });
 
-// node_modules/.pnpm/unist-util-visit-parents@5.1.1/node_modules/unist-util-visit-parents/color.js
+// node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/index.js
+var init_unist_util_is = __esm({
+  "node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/index.js"() {
+    init_lib2();
+  }
+});
+
+// node_modules/.pnpm/unist-util-visit-parents@5.1.3/node_modules/unist-util-visit-parents/lib/color.js
 function color(d) {
   return "\x1B[33m" + d + "\x1B[39m";
 }
 var init_color = __esm({
-  "node_modules/.pnpm/unist-util-visit-parents@5.1.1/node_modules/unist-util-visit-parents/color.js"() {
+  "node_modules/.pnpm/unist-util-visit-parents@5.1.3/node_modules/unist-util-visit-parents/lib/color.js"() {
   }
 });
 
-// node_modules/.pnpm/unist-util-visit-parents@5.1.1/node_modules/unist-util-visit-parents/index.js
+// node_modules/.pnpm/unist-util-visit-parents@5.1.3/node_modules/unist-util-visit-parents/lib/index.js
 function toResult(value2) {
   if (Array.isArray(value2)) {
     return value2;
@@ -137,19 +148,20 @@ function toResult(value2) {
   }
   return [value2];
 }
-var CONTINUE, SKIP, EXIT, visitParents;
-var init_unist_util_visit_parents = __esm({
-  "node_modules/.pnpm/unist-util-visit-parents@5.1.1/node_modules/unist-util-visit-parents/index.js"() {
+var CONTINUE, EXIT, SKIP, visitParents;
+var init_lib3 = __esm({
+  "node_modules/.pnpm/unist-util-visit-parents@5.1.3/node_modules/unist-util-visit-parents/lib/index.js"() {
     init_unist_util_is();
     init_color();
     CONTINUE = true;
-    SKIP = "skip";
     EXIT = false;
+    SKIP = "skip";
     visitParents = /**
      * @param {Node} tree
      * @param {Test} test
-     * @param {import('./complex-types.js').Visitor<Node>} visitor
-     * @param {boolean} [reverse=false]
+     * @param {Visitor<Node>} visitor
+     * @param {boolean | null | undefined} [reverse]
+     * @returns {void}
      */
     function(tree, test, visitor, reverse) {
       if (typeof test === "function" && typeof visitor !== "function") {
@@ -157,16 +169,21 @@ var init_unist_util_visit_parents = __esm({
         visitor = test;
         test = null;
       }
-      const is = convert(test);
+      const is2 = convert(test);
       const step = reverse ? -1 : 1;
-      factory(tree, null, [])();
+      factory(tree, void 0, [])();
       function factory(node, index, parents) {
-        const value2 = typeof node === "object" && node !== null ? node : {};
-        let name;
+        const value2 = node && typeof node === "object" ? node : {};
         if (typeof value2.type === "string") {
-          name = typeof value2.tagName === "string" ? value2.tagName : typeof value2.name === "string" ? value2.name : void 0;
+          const name = (
+            // `hast`
+            typeof value2.tagName === "string" ? value2.tagName : (
+              // `xast`
+              typeof value2.name === "string" ? value2.name : void 0
+            )
+          );
           Object.defineProperty(visit2, "name", {
-            value: "node (" + color(value2.type + (name ? "<" + name + ">" : "")) + ")"
+            value: "node (" + color(node.type + (name ? "<" + name + ">" : "")) + ")"
           });
         }
         return visit2;
@@ -175,7 +192,7 @@ var init_unist_util_visit_parents = __esm({
           let subresult;
           let offset;
           let grandparents;
-          if (!test || is(node, index, parents[parents.length - 1] || null)) {
+          if (!test || is2(node, index, parents[parents.length - 1] || null)) {
             result = toResult(visitor(node, parents));
             if (result[0] === EXIT) {
               return result;
@@ -199,17 +216,25 @@ var init_unist_util_visit_parents = __esm({
   }
 });
 
-// node_modules/.pnpm/unist-util-visit@4.1.1/node_modules/unist-util-visit/index.js
+// node_modules/.pnpm/unist-util-visit-parents@5.1.3/node_modules/unist-util-visit-parents/index.js
+var init_unist_util_visit_parents = __esm({
+  "node_modules/.pnpm/unist-util-visit-parents@5.1.3/node_modules/unist-util-visit-parents/index.js"() {
+    init_lib3();
+  }
+});
+
+// node_modules/.pnpm/unist-util-visit@4.1.2/node_modules/unist-util-visit/lib/index.js
 var visit;
-var init_unist_util_visit = __esm({
-  "node_modules/.pnpm/unist-util-visit@4.1.1/node_modules/unist-util-visit/index.js"() {
+var init_lib4 = __esm({
+  "node_modules/.pnpm/unist-util-visit@4.1.2/node_modules/unist-util-visit/lib/index.js"() {
     init_unist_util_visit_parents();
     init_unist_util_visit_parents();
     visit = /**
      * @param {Node} tree
      * @param {Test} test
-     * @param {import('./complex-types.js').Visitor} visitor
-     * @param {boolean} [reverse]
+     * @param {Visitor} visitor
+     * @param {boolean | null | undefined} [reverse]
+     * @returns {void}
      */
     function(tree, test, visitor, reverse) {
       if (typeof test === "function" && typeof visitor !== "function") {
@@ -227,6 +252,13 @@ var init_unist_util_visit = __esm({
         );
       }
     };
+  }
+});
+
+// node_modules/.pnpm/unist-util-visit@4.1.2/node_modules/unist-util-visit/index.js
+var init_unist_util_visit = __esm({
+  "node_modules/.pnpm/unist-util-visit@4.1.2/node_modules/unist-util-visit/index.js"() {
+    init_lib4();
   }
 });
 
@@ -11519,7 +11551,7 @@ function toFunction(replace2) {
   return typeof replace2 === "function" ? replace2 : () => replace2;
 }
 var own8, findAndReplace;
-var init_lib = __esm({
+var init_lib5 = __esm({
   "node_modules/.pnpm/mdast-util-find-and-replace@2.2.1/node_modules/mdast-util-find-and-replace/lib/index.js"() {
     init_escape_string_regexp();
     init_unist_util_visit_parents();
@@ -11629,7 +11661,7 @@ var init_lib = __esm({
 // node_modules/.pnpm/mdast-util-find-and-replace@2.2.1/node_modules/mdast-util-find-and-replace/index.js
 var init_mdast_util_find_and_replace = __esm({
   "node_modules/.pnpm/mdast-util-find-and-replace@2.2.1/node_modules/mdast-util-find-and-replace/index.js"() {
-    init_lib();
+    init_lib5();
   }
 });
 
@@ -12622,7 +12654,7 @@ function gfmTableToMarkdown(options2) {
   }
 }
 var gfmTableFromMarkdown;
-var init_lib2 = __esm({
+var init_lib6 = __esm({
   "node_modules/.pnpm/mdast-util-gfm-table@1.0.6/node_modules/mdast-util-gfm-table/lib/index.js"() {
     init_container_phrasing();
     init_inline_code();
@@ -12648,7 +12680,7 @@ var init_lib2 = __esm({
 // node_modules/.pnpm/mdast-util-gfm-table@1.0.6/node_modules/mdast-util-gfm-table/index.js
 var init_mdast_util_gfm_table = __esm({
   "node_modules/.pnpm/mdast-util-gfm-table@1.0.6/node_modules/mdast-util-gfm-table/index.js"() {
-    init_lib2();
+    init_lib6();
   }
 });
 
@@ -12816,7 +12848,7 @@ function gfmToMarkdown(options2) {
     ]
   };
 }
-var init_lib3 = __esm({
+var init_lib7 = __esm({
   "node_modules/.pnpm/mdast-util-gfm@2.0.1/node_modules/mdast-util-gfm/lib/index.js"() {
     init_mdast_util_gfm_autolink_literal();
     init_mdast_util_gfm_footnote();
@@ -12829,7 +12861,7 @@ var init_lib3 = __esm({
 // node_modules/.pnpm/mdast-util-gfm@2.0.1/node_modules/mdast-util-gfm/index.js
 var init_mdast_util_gfm = __esm({
   "node_modules/.pnpm/mdast-util-gfm@2.0.1/node_modules/mdast-util-gfm/index.js"() {
-    init_lib3();
+    init_lib7();
   }
 });
 
@@ -13040,7 +13072,7 @@ function rehypeAutolinkHeadings(options2 = {}) {
   const behavior = options2.behaviour || options2.behavior || "prepend";
   const content = options2.content || contentDefaults;
   const group = options2.group;
-  const is = convertElement(options2.test);
+  const is2 = convertElement(options2.test);
   let method;
   if (behavior === "wrap") {
     method = wrap;
@@ -13054,7 +13086,7 @@ function rehypeAutolinkHeadings(options2 = {}) {
   }
   return (tree) => {
     visit(tree, "element", (node, index, parent) => {
-      if (headingRank(node) && hasProperty2(node, "id") && is(node, index, parent)) {
+      if (headingRank(node) && hasProperty2(node, "id") && is2(node, index, parent)) {
         return method(node, index, parent);
       }
     });
@@ -13111,7 +13143,7 @@ function rehypeAutolinkHeadings(options2 = {}) {
   }
 }
 var import_extend, contentDefaults;
-var init_lib4 = __esm({
+var init_lib8 = __esm({
   "node_modules/.pnpm/rehype-autolink-headings@6.1.1/node_modules/rehype-autolink-headings/lib/index.js"() {
     import_extend = __toESM(require_extend(), 1);
     init_hast_util_has_property();
@@ -13134,7 +13166,7 @@ __export(rehype_autolink_headings_exports, {
 });
 var init_rehype_autolink_headings = __esm({
   "node_modules/.pnpm/rehype-autolink-headings@6.1.1/node_modules/rehype-autolink-headings/index.js"() {
-    init_lib4();
+    init_lib8();
   }
 });
 
@@ -24331,7 +24363,7 @@ var collectValue = (obj, collector, leaks) => {
           return;
         }
         seen.add(obj);
-        if (!fastShouldSerialize(obj)) {
+        if (fastSkipSerialize(obj)) {
           collector.$objSet$.add(void 0);
           collector.$noSerialize$.push(obj);
           return;
@@ -24344,6 +24376,10 @@ var collectValue = (obj, collector, leaks) => {
             return;
           }
           seen.add(obj);
+          if (fastWeakSerialize(input)) {
+            collector.$objSet$.add(obj);
+            return;
+          }
           if (leaks) {
             collectSubscriptions(getProxyManager(input), collector);
           }
@@ -24655,6 +24691,13 @@ var SignalWrapperSerializer = {
   test: (v) => v instanceof SignalWrapper,
   collect(obj, collector, leaks) {
     collectValue(obj.ref, collector, leaks);
+    if (fastWeakSerialize(obj.ref)) {
+      const manager = getProxyManager(obj.ref);
+      if (!manager.$isTreeshakeable$(obj.prop)) {
+        collectValue(obj.ref[obj.prop], collector, leaks);
+      }
+      collectSubscriptions(manager, collector);
+    }
     return obj;
   },
   serialize: (obj, getObjId) => {
@@ -24835,14 +24878,18 @@ Please check out https://qwik.builder.io/docs/advanced/qrl/ for more information
   return value2;
 };
 var noSerializeSet = /* @__PURE__ */ new WeakSet();
+var weakSerializeSet = /* @__PURE__ */ new WeakSet();
 var shouldSerialize = (obj) => {
   if (isObject(obj) || isFunction(obj)) {
     return !noSerializeSet.has(obj);
   }
   return true;
 };
-var fastShouldSerialize = (obj) => {
-  return !noSerializeSet.has(obj);
+var fastSkipSerialize = (obj) => {
+  return noSerializeSet.has(obj);
+};
+var fastWeakSerialize = (obj) => {
+  return weakSerializeSet.has(obj);
 };
 var unwrapProxy = (proxy) => {
   return isObject(proxy) ? getProxyTarget(proxy) ?? proxy : proxy;
