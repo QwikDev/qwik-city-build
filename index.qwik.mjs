@@ -1,4 +1,4 @@
-import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, untrack, _wrapSignal } from "@builder.io/qwik";
+import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, untrack, _wrapSignal } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import swRegister from "@qwik-city-sw-register";
@@ -269,7 +269,7 @@ const loadClientData = async (href, clearCache, action) => {
       }
       if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
-          const clientData = parseData(text);
+          const clientData = _deserializeData(text);
           if (clientData.__brand !== "qdata")
             return;
           if (clearCache)
@@ -293,19 +293,6 @@ const loadClientData = async (href, clearCache, action) => {
   }
   return qData;
 };
-function parseData(str) {
-  return JSON.parse(str, (_, value) => {
-    if (value && typeof value === "object" && value.__brand === "formdata")
-      return formDataFromArray(value.value);
-    return value;
-  });
-}
-function formDataFromArray(array) {
-  const formData = new FormData();
-  for (const [key, value] of array)
-    formData.append(key, value);
-  return formData;
-}
 const isQDataJson = (pathname) => {
   return pathname.endsWith(QDATA_JSON);
 };
