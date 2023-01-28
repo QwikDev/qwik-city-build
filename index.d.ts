@@ -4,6 +4,7 @@ import { Component } from '@builder.io/qwik';
 import { Cookie } from '@builder.io/qwik-city/middleware/request-handler';
 import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler';
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
+import type { FailReturn as FailReturn_2 } from '@builder.io/qwik-city';
 import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
@@ -13,7 +14,9 @@ import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
-import { Signal } from '@builder.io/qwik';
+import type { ServerAction as ServerAction_2 } from '@builder.io/qwik-city';
+import type { ServerLoader as ServerLoader_2 } from '@builder.io/qwik-city';
+import type { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
 
@@ -25,12 +28,18 @@ declare class AbortMessage {
  */
 export declare const action$: Action;
 
-declare interface Action {
-    <O>(actionQrl: (form: DefaultActionType, event: RequestEventLoader_2) => ValueOrPromise<O>): ServerAction<O>;
-    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader_2) => ValueOrPromise<O>, options: B): ServerAction<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
+/**
+ * @alpha
+ */
+export declare interface Action {
+    <O>(actionQrl: (form: DefaultActionType, event: RequestEventLoader) => ValueOrPromise<O>): ServerAction<O>;
+    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader) => ValueOrPromise<O>, options: B): ServerAction<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
 }
 
-declare type ActionOptions = z.ZodRawShape;
+/**
+ * @alpha
+ */
+export declare type ActionOptions = z.ZodRawShape;
 
 /**
  * @alpha
@@ -164,6 +173,9 @@ declare interface CookieValue_2 {
     number: () => number;
 }
 
+/**
+ * @alpha
+ */
 declare type DefaultActionType = {
     [x: string]: JSONValue;
 };
@@ -275,7 +287,10 @@ declare class ErrorResponse extends Error {
     constructor(status: number, message?: string);
 }
 
-declare type FailReturn<T> = T & {
+/**
+ * @alpha
+ */
+export declare type FailReturn<T> = T & {
     __brand: 'fail';
 };
 
@@ -299,7 +314,7 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
 /**
  * @alpha
  */
-declare interface FormSubmitFailDetail<T> {
+export declare interface FormSubmitFailDetail<T> {
     status: number;
     fail: GetFailReturn<T>;
 }
@@ -307,7 +322,7 @@ declare interface FormSubmitFailDetail<T> {
 /**
  * @alpha
  */
-declare interface FormSubmitSuccessDetail<T> {
+export declare interface FormSubmitSuccessDetail<T> {
     status: number;
     value: GetValueReturn<T>;
 }
@@ -316,16 +331,22 @@ declare interface FormSubmitSuccessDetail<T> {
  * @alpha
  */
 declare interface GetData {
-    <T>(loader: ServerLoader<T>): Promise<T>;
-    <T>(loader: ServerAction<T>): Promise<T | undefined>;
+    <T>(loader: ServerLoader_2<T>): Promise<T>;
+    <T>(loader: ServerAction_2<T>): Promise<T | undefined>;
 }
 
-declare type GetFailReturn<T> = T extends FailReturn<infer I> ? I & {
+/**
+ * @alpha
+ */
+export declare type GetFailReturn<T> = T extends FailReturn<infer I> ? I & {
     [key: string]: undefined;
 } : never;
 
 declare type GetValidatorType<B extends ZodReturn<any>> = B extends ZodReturn<infer TYPE> ? z.infer<z.ZodObject<TYPE>> : never;
 
+/**
+ * @alpha
+ */
 declare type GetValueReturn<T> = T extends FailReturn<{}> ? never : T;
 
 /**
@@ -336,6 +357,9 @@ export declare const Html: Component<QwikCityProps>;
 
 declare const isServerLoader: unique symbol;
 
+/**
+ * @alpha
+ */
 declare type JSONValue = string | number | boolean | {
     [x: string]: JSONValue;
 } | Array<JSONValue>;
@@ -367,7 +391,10 @@ export declare const loader$: <PLATFORM, B>(first: (event: RequestEventLoader_2<
  */
 export declare const loaderQrl: <PLATFORM, B>(loaderQrl: QRL<(event: RequestEventLoader_2<PLATFORM>) => B>) => ServerLoader<B>;
 
-declare type MenuData = [pathname: string, menuLoader: MenuModuleLoader];
+/**
+ * @alpha
+ */
+export declare type MenuData = [pathname: string, menuLoader: MenuModuleLoader];
 
 declare interface MenuModule {
     readonly default: ContentMenu;
@@ -574,7 +601,7 @@ export { RequestEventLoader }
  */
 declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventCommon_2<PLATFORM> {
     getData: GetData;
-    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn<T>;
+    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn_2<T>;
 }
 
 export { RequestHandler }
@@ -617,7 +644,10 @@ declare interface RouteModule<BODY = unknown> {
     onRequest?: RequestHandler<BODY> | RequestHandler<BODY>[];
 }
 
-declare type RouteNavigate = QRL<(path?: string) => Promise<void>>;
+/**
+ * @alpha
+ */
+export declare type RouteNavigate = QRL<(path?: string) => Promise<void>>;
 
 /**
  * @alpha
@@ -683,7 +713,7 @@ export declare const ServiceWorkerRegister: () => JSXNode<"script">;
 /**
  * @alpha
  */
-declare interface StaticGenerate {
+export declare interface StaticGenerate {
     params?: PathParams[];
 }
 
@@ -719,7 +749,10 @@ export { z }
  */
 export declare const zod$: Zod;
 
-declare interface Zod {
+/**
+ * @alpha
+ */
+export declare interface Zod {
     <T extends ActionOptions>(schema: T): ZodReturn<T>;
     <T extends ActionOptions>(schema: (z: z) => T): ZodReturn<T>;
 }
@@ -733,6 +766,9 @@ export declare const zodQrl: (qrl: QRL<z.ZodRawShape | ((z: z) => ActionOptions)
     [x: string]: any;
 }> | undefined>;
 
-declare type ZodReturn<T extends ActionOptions = any> = Promise<z.ZodObject<T>>;
+/**
+ * @alpha
+ */
+export declare type ZodReturn<T extends ActionOptions = any> = Promise<z.ZodObject<T>>;
 
 export { }
