@@ -292,7 +292,7 @@ const loadClientData = async (href, clearCache, action) => {
       }
       if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
-          const clientData = parseData(text);
+          const clientData = qwik._deserializeData(text);
           if (clientData.__brand !== "qdata")
             return;
           if (clearCache)
@@ -316,19 +316,6 @@ const loadClientData = async (href, clearCache, action) => {
   }
   return qData;
 };
-function parseData(str) {
-  return JSON.parse(str, (_, value) => {
-    if (value && typeof value === "object" && value.__brand === "formdata")
-      return formDataFromArray(value.value);
-    return value;
-  });
-}
-function formDataFromArray(array) {
-  const formData = new FormData();
-  for (const [key, value] of array)
-    formData.append(key, value);
-  return formData;
-}
 const isQDataJson = (pathname) => {
   return pathname.endsWith(QDATA_JSON);
 };
@@ -348,7 +335,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
     params: env.params,
     isNavigating: false
   });
-  const loaderState = qwik.useStore(env.response.loaders);
+  const loaderState = qwik._weakSerialize(qwik.useStore(env.response.loaders));
   const navPath = qwik.useSignal(toPath(url));
   const documentHead = qwik.useStore(createDocumentHead);
   const content = qwik.useStore({
@@ -670,16 +657,12 @@ class ServerLoaderImpl {
     this.__brand = "server_loader";
   }
   use() {
-    qwik.useRender(qwik.jsx(qwik.SSRHint, {
-      dynamic: true
-    }));
-    const state = qwik.useContext(RouteStateContext);
-    const hash = this.__qrl.getHash();
-    qwik.untrack(() => {
+    return qwik.useContext(RouteStateContext, (state) => {
+      const hash = this.__qrl.getHash();
       if (!(hash in state))
         throw new Error(`Loader not found: ${hash}`);
+      return qwik._wrapSignal(state, hash);
     });
-    return qwik._wrapSignal(state, hash);
   }
 }
 const loaderQrl = (loaderQrl2) => {
