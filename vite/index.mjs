@@ -25989,8 +25989,10 @@ function ssrDevMiddleware(ctx, server) {
           }
         }
       } catch (e) {
-        server.ssrFixStacktrace(e);
-        formatError(e);
+        if (e instanceof Error) {
+          server.ssrFixStacktrace(e);
+          formatError(e);
+        }
         if (e instanceof Error && e.id === "DEV_SERIALIZE") {
           next(formatDevSerializeError(e, routeModulePaths));
         } else {
