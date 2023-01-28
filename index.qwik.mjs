@@ -1,4 +1,4 @@
-import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, useStore, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, untrack, useRender, SSRHint, _wrapSignal } from "@builder.io/qwik";
+import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, untrack, _wrapSignal } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import swRegister from "@qwik-city-sw-register";
@@ -325,7 +325,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
     params: env.params,
     isNavigating: false
   });
-  const loaderState = useStore(env.response.loaders);
+  const loaderState = _weakSerialize(useStore(env.response.loaders));
   const navPath = useSignal(toPath(url));
   const documentHead = useStore(createDocumentHead);
   const content = useStore({
@@ -647,16 +647,12 @@ class ServerLoaderImpl {
     this.__brand = "server_loader";
   }
   use() {
-    useRender(jsx(SSRHint, {
-      dynamic: true
-    }));
-    const state = useContext(RouteStateContext);
-    const hash = this.__qrl.getHash();
-    untrack(() => {
+    return useContext(RouteStateContext, (state) => {
+      const hash = this.__qrl.getHash();
       if (!(hash in state))
         throw new Error(`Loader not found: ${hash}`);
+      return _wrapSignal(state, hash);
     });
-    return _wrapSignal(state, hash);
   }
 }
 const loaderQrl = (loaderQrl2) => {

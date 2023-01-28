@@ -348,7 +348,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
     params: env.params,
     isNavigating: false
   });
-  const loaderState = qwik.useStore(env.response.loaders);
+  const loaderState = qwik._weakSerialize(qwik.useStore(env.response.loaders));
   const navPath = qwik.useSignal(toPath(url));
   const documentHead = qwik.useStore(createDocumentHead);
   const content = qwik.useStore({
@@ -670,16 +670,12 @@ class ServerLoaderImpl {
     this.__brand = "server_loader";
   }
   use() {
-    qwik.useRender(qwik.jsx(qwik.SSRHint, {
-      dynamic: true
-    }));
-    const state = qwik.useContext(RouteStateContext);
-    const hash = this.__qrl.getHash();
-    qwik.untrack(() => {
+    return qwik.useContext(RouteStateContext, (state) => {
+      const hash = this.__qrl.getHash();
       if (!(hash in state))
         throw new Error(`Loader not found: ${hash}`);
+      return qwik._wrapSignal(state, hash);
     });
-    return qwik._wrapSignal(state, hash);
   }
 }
 const loaderQrl = (loaderQrl2) => {
