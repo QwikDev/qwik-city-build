@@ -25104,35 +25104,20 @@ function getQwikCityServerData(requestEv) {
 // packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
 var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
   const serverLoaders = [];
-  const serverActions = [];
   const requestHandlers = [];
   const isPageRoute = !!(route && isLastModulePageRoute(route[1]));
   if (serverPlugins) {
-    _resolveRequestHandlers(
-      serverLoaders,
-      serverActions,
-      requestHandlers,
-      serverPlugins,
-      isPageRoute,
-      method
-    );
+    _resolveRequestHandlers(serverLoaders, requestHandlers, serverPlugins, isPageRoute, method);
   }
   if (route) {
     if (isPageRoute) {
       requestHandlers.push(fixTrailingSlash);
       requestHandlers.push(renderQData);
     }
-    _resolveRequestHandlers(
-      serverLoaders,
-      serverActions,
-      requestHandlers,
-      route[1],
-      isPageRoute,
-      method
-    );
+    _resolveRequestHandlers(serverLoaders, requestHandlers, route[1], isPageRoute, method);
     if (isPageRoute) {
       if (serverLoaders.length + actionsMiddleware.length > 0) {
-        requestHandlers.push(actionsMiddleware(serverLoaders, serverActions));
+        requestHandlers.push(actionsMiddleware(serverLoaders));
       }
       requestHandlers.push(renderHandler);
     }
@@ -25142,7 +25127,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
   }
   return requestHandlers;
 };
-var _resolveRequestHandlers = (serverLoaders, serverActions, requestHandlers, routeModules, collectActions, method) => {
+var _resolveRequestHandlers = (serverLoaders, requestHandlers, routeModules, collectActions, method) => {
   for (const routeModule of routeModules) {
     if (typeof routeModule.onRequest === "function") {
       requestHandlers.push(routeModule.onRequest);
@@ -25189,18 +25174,14 @@ var _resolveRequestHandlers = (serverLoaders, serverActions, requestHandlers, ro
       const loaders = Object.values(routeModule).filter(
         (e) => checkBrand(e, "server_loader")
       );
-      const actions = Object.values(routeModule).filter(
-        (e) => checkBrand(e, "server_action")
-      );
       serverLoaders.push(...loaders);
-      serverActions.push(...actions);
     }
   }
 };
 var checkBrand = (obj, brand) => {
   return obj && typeof obj === "object" && obj.__brand === brand;
 };
-function actionsMiddleware(serverLoaders, serverActions) {
+function actionsMiddleware(serverLoaders) {
   return async (requestEv) => {
     if (requestEv.headersSent) {
       requestEv.exit();
@@ -25210,8 +25191,9 @@ function actionsMiddleware(serverLoaders, serverActions) {
     const loaders = getRequestLoaders(requestEv);
     if (method === "POST") {
       const selectedAction = requestEv.query.get(QACTION_KEY);
-      if (selectedAction) {
-        const action = serverActions.find((a) => a.__qrl.getHash() === selectedAction);
+      const serverActionsMap = globalThis._qwikActionsMap;
+      if (selectedAction && serverActionsMap) {
+        const action = serverActionsMap.get(selectedAction);
         if (action) {
           setRequestAction(requestEv, selectedAction);
           const isForm = isFormContentType(requestEv.request.headers);

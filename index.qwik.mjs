@@ -1,4 +1,4 @@
-import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, untrack, _wrapSignal } from "@builder.io/qwik";
+import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal, untrack } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import swRegister from "@qwik-city-sw-register";
@@ -615,7 +615,13 @@ class ServerActionImpl {
   }
 }
 const actionQrl = (actionQrl2, options) => {
-  return new ServerActionImpl(actionQrl2, options);
+  const action = new ServerActionImpl(actionQrl2, options);
+  if (isServer) {
+    if (typeof globalThis._qwikActionsMap === "undefined")
+      globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
+    globalThis._qwikActionsMap.set(actionQrl2.getHash(), action);
+  }
+  return action;
 };
 const action$ = implicit$FirstArg(actionQrl);
 const zodQrl = async (qrl) => {
