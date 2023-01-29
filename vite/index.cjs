@@ -13800,6 +13800,21 @@ The link "${url}", found within "${containingFilePath}" does not have a matching
 }
 
 // packages/qwik-city/buildtime/markdown/rehype.ts
+function rehypeSlug() {
+  return (ast) => {
+    const mdast = ast;
+    const slugs = new BananaSlug();
+    visit(mdast, "element", (node) => {
+      const level = headingRank(node);
+      if (level && node.properties) {
+        const text2 = toString(node);
+        if (!hasProperty(node, "id")) {
+          node.properties.id = slugs.slug(text2);
+        }
+      }
+    });
+  };
+}
 function rehypePage(ctx) {
   return (ast, vfile) => {
     const mdast = ast;
@@ -13841,20 +13856,18 @@ function exportContentHead(ctx, mdast, sourcePath) {
   }
 }
 function exportContentHeadings(mdast) {
-  const slugs = new BananaSlug();
   const headings = [];
   visit(mdast, "element", (node) => {
     const level = headingRank(node);
     if (level && node.properties) {
-      const text2 = toString(node);
-      if (!hasProperty(node, "id")) {
-        node.properties.id = slugs.slug(text2);
+      if (hasProperty(node, "id")) {
+        const text2 = toString(node);
+        headings.push({
+          text: text2,
+          id: node.properties.id,
+          level
+        });
       }
-      headings.push({
-        text: text2,
-        id: node.properties.id,
-        level
-      });
     }
   });
   if (headings.length > 0) {
@@ -20471,7 +20484,7 @@ async function createMdxTransformer(ctx) {
       remarkFrontmatter2,
       [parseFrontmatter, ctx]
     ],
-    rehypePlugins: [...userRehypePlugins, ...coreRehypePlugins, [rehypePage, ctx]]
+    rehypePlugins: [rehypeSlug, ...userRehypePlugins, ...coreRehypePlugins, [rehypePage, ctx]]
   };
   const { extnames, process: process2 } = createFormatAwareProcessors(mdxOpts);
   return async function(code2, id) {
@@ -25986,8 +25999,10 @@ function ssrDevMiddleware(ctx, server) {
           }
         }
       } catch (e) {
-        server.ssrFixStacktrace(e);
-        formatError(e);
+        if (e instanceof Error) {
+          server.ssrFixStacktrace(e);
+          formatError(e);
+        }
         if (e instanceof Error && e.id === "DEV_SERIALIZE") {
           next(formatDevSerializeError(e, routeModulePaths));
         } else {

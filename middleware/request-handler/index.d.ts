@@ -1,10 +1,10 @@
-import { QRL } from '@builder.io/qwik';
+import type { FailReturn } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
 import type { Render } from '@builder.io/qwik/server';
 import type { RenderOptions } from '@builder.io/qwik/server';
 import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
-import { Signal } from '@builder.io/qwik';
-import { ValueOrPromise } from '@builder.io/qwik';
+import type { ServerAction } from '@builder.io/qwik-city';
+import type { ServerLoader } from '@builder.io/qwik-city';
 
 declare class AbortMessage {
 }
@@ -151,10 +151,6 @@ declare class ErrorResponse extends Error {
     constructor(status: number, message?: string);
 }
 
-declare type FailReturn<T> = T & {
-    __brand: 'fail';
-};
-
 /**
  * @alpha
  */
@@ -168,10 +164,6 @@ export declare interface GetData {
  */
 export declare function getErrorHtml(status: number, e: any): string;
 
-declare type GetFailReturn<T> = T extends FailReturn<infer I> ? I & {
-    [key: string]: undefined;
-} : never;
-
 /**
  * @alpha
  */
@@ -179,10 +171,6 @@ export declare interface GetSyncData {
     <T>(loader: ServerLoader<T>): T;
     <T>(loader: ServerAction<T>): T | undefined;
 }
-
-declare type GetValueReturn<T> = T extends FailReturn<{}> ? never : T;
-
-declare const isServerLoader: unique symbol;
 
 /**
  * @alpha
@@ -375,43 +363,6 @@ declare interface SendMethod {
     (statusCode: number, data: any): AbortMessage;
     (response: Response): AbortMessage;
 }
-
-/**
- * @alpha
- */
-declare interface ServerAction<RETURN, INPUT = Record<string, any>> {
-    readonly [isServerLoader]?: true;
-    use(): ServerActionUse<RETURN, INPUT>;
-}
-
-declare type ServerActionExecute<RETURN, INPUT> = QRL<(form: FormData | INPUT | SubmitEvent) => Promise<RETURN>>;
-
-/**
- * @alpha
- */
-declare interface ServerActionUse<RETURN, INPUT> {
-    readonly id: string;
-    readonly actionPath: string;
-    readonly isRunning: boolean;
-    readonly status?: number;
-    readonly formData: FormData | undefined;
-    readonly value: GetValueReturn<RETURN> | undefined;
-    readonly fail: GetFailReturn<RETURN> | undefined;
-    readonly run: ServerActionExecute<RETURN, INPUT>;
-}
-
-/**
- * @alpha
- */
-declare interface ServerLoader<RETURN> {
-    readonly [isServerLoader]?: true;
-    use(): ServerLoaderUse<RETURN>;
-}
-
-/**
- * @alpha
- */
-declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
 
 /**
  * @alpha
