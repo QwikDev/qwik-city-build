@@ -86,6 +86,17 @@ function netifyEdgeAdaptor(opts = {}) {
           ],
           version: 1
         };
+        const jsPath = (0, import_node_path.join)(serverOutDir, "entry.netlify-edge.js");
+        const mjsPath = (0, import_node_path.join)(serverOutDir, "entry.netlify-edge.mjs");
+        if ((0, import_node_fs.existsSync)(mjsPath)) {
+          await import_node_fs.default.promises.writeFile(
+            jsPath,
+            [
+              `import entry_netlifyEdge from './entry.netlify-edge.mjs';`,
+              `export default entry_netlifyEdge;`
+            ].join("\n")
+          );
+        }
         const netlifyEdgeFnsDir = (0, import_vite.getParentDir)(serverOutDir, "edge-functions");
         await import_node_fs.default.promises.writeFile(
           (0, import_node_path.join)(netlifyEdgeFnsDir, "manifest.json"),

@@ -1,6 +1,6 @@
 // packages/qwik-city/adaptors/netlify-edge/vite/index.ts
 import { getParentDir, viteAdaptor } from "../../shared/vite/index.mjs";
-import fs from "fs";
+import fs, { existsSync } from "fs";
 import { join } from "path";
 
 // packages/qwik-city/runtime/src/qwik-city-plan.ts
@@ -52,6 +52,17 @@ function netifyEdgeAdaptor(opts = {}) {
           ],
           version: 1
         };
+        const jsPath = join(serverOutDir, "entry.netlify-edge.js");
+        const mjsPath = join(serverOutDir, "entry.netlify-edge.mjs");
+        if (existsSync(mjsPath)) {
+          await fs.promises.writeFile(
+            jsPath,
+            [
+              `import entry_netlifyEdge from './entry.netlify-edge.mjs';`,
+              `export default entry_netlifyEdge;`
+            ].join("\n")
+          );
+        }
         const netlifyEdgeFnsDir = getParentDir(serverOutDir, "edge-functions");
         await fs.promises.writeFile(
           join(netlifyEdgeFnsDir, "manifest.json"),
