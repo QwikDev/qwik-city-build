@@ -25966,7 +25966,10 @@ function ssrDevMiddleware(ctx, server) {
             ctx.opts.trailingSlash,
             ctx.opts.basePathname
           );
-          await completion;
+          const result = await completion;
+          if (result != null) {
+            throw result;
+          }
           if (requestEv.headersSent || res.headersSent) {
             return;
           }

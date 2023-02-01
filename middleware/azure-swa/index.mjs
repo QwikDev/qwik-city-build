@@ -50,12 +50,14 @@ function createQwikCity(opts) {
         }
       };
       const handledResponse = await requestHandler(serverRequestEv, opts);
-      if (handledResponse !== null) {
+      if (handledResponse) {
+        handledResponse.completion.then((v) => {
+          console.error(v);
+        });
         const response = await handledResponse.response;
         if (response) {
           return response;
         }
-        await handledResponse.requestEv;
       }
       return res;
     } catch (e) {
