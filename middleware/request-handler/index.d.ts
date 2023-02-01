@@ -1,12 +1,12 @@
+import type { Action } from '@builder.io/qwik-city';
 import type { FailReturn } from '@builder.io/qwik-city';
 import type { GetSyncData as GetSyncData_2 } from '@builder.io/qwik-city/middleware/request-handler';
+import type { Loader } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
 import type { Render } from '@builder.io/qwik/server';
 import type { RenderOptions } from '@builder.io/qwik/server';
 import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
 import type { RequestHandler as RequestHandler_2 } from '@builder.io/qwik-city/middleware/request-handler';
-import type { ServerAction } from '@builder.io/qwik-city';
-import type { ServerLoader } from '@builder.io/qwik-city';
 
 declare class AbortMessage {
 }
@@ -269,8 +269,8 @@ declare class ErrorResponse extends Error {
  * @alpha
  */
 export declare interface GetData {
-    <T>(loader: ServerLoader<T>): Promise<T>;
-    <T>(loader: ServerAction<T>): Promise<T | undefined>;
+    <T>(loader: Loader<T>): Promise<T>;
+    <T>(loader: Action<T>): Promise<T | undefined>;
 }
 
 /**
@@ -282,8 +282,8 @@ export declare function getErrorHtml(status: number, e: any): string;
  * @alpha
  */
 export declare interface GetSyncData {
-    <T>(loader: ServerLoader<T>): T;
-    <T>(loader: ServerAction<T>): T | undefined;
+    <T>(loader: Loader<T>): T;
+    <T>(loader: Action<T>): T | undefined;
 }
 
 declare interface LayoutModule extends RouteModule {
@@ -323,6 +323,8 @@ declare interface QwikCityRun<T> {
     requestEv: RequestEvent_2;
     completion: Promise<unknown>;
 }
+
+declare type RedirectCode = 301 | 302 | 303 | 307 | 308;
 
 declare class RedirectMessage extends AbortMessage {
 }
@@ -370,7 +372,7 @@ export declare interface RequestEventCommon<PLATFORM = unknown> {
      *
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections
      */
-    readonly redirect: (statusCode: number, url: string) => RedirectMessage;
+    readonly redirect: (statusCode: RedirectCode, url: string) => RedirectMessage;
     /**
      * When called, the response will immediately end with the given
      * status code. This could be useful to end a response with `404`,

@@ -1,4 +1,4 @@
-import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal, untrack } from "@builder.io/qwik";
+import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import swRegister from "@qwik-city-sw-register";
@@ -254,13 +254,9 @@ const loadClientData = async (href, clearCache, action) => {
     ]
   });
   if (!qData) {
-    const actionData = action?.data;
+    const options = getFetchOptions(action);
     if (action)
       action.data = void 0;
-    const options = actionData ? {
-      method: "POST",
-      body: actionData
-    } : void 0;
     qData = fetch(clientDataPath, options).then((rsp) => {
       const redirectedURL = new URL(rsp.url);
       if (redirectedURL.origin !== location.origin || !isQDataJson(redirectedURL.pathname)) {
@@ -277,10 +273,10 @@ const loadClientData = async (href, clearCache, action) => {
           if (clientData.redirect)
             location.href = clientData.redirect;
           else if (action) {
-            const actionData2 = clientData.loaders[action.id];
+            const actionData = clientData.loaders[action.id];
             action.resolve({
               status: rsp.status,
-              result: actionData2
+              result: actionData
             });
           }
           return clientData;
@@ -292,6 +288,24 @@ const loadClientData = async (href, clearCache, action) => {
       CLIENT_DATA_CACHE.set(clientDataPath, qData);
   }
   return qData;
+};
+const getFetchOptions = (action) => {
+  const actionData = action?.data;
+  if (!actionData)
+    return void 0;
+  if (actionData instanceof FormData)
+    return {
+      method: "POST",
+      body: actionData
+    };
+  else
+    return {
+      method: "POST",
+      body: JSON.stringify(actionData),
+      headers: {
+        "Content-Type": "application/json, charset=UTF-8"
+      }
+    };
 };
 const isQDataJson = (pathname) => {
   return pathname.endsWith(QDATA_JSON);
@@ -324,7 +338,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
   const currentAction = currentActionId ? env.response.loaders[currentActionId] : void 0;
   const actionState = useSignal(currentAction ? {
     id: currentActionId,
-    data: void 0,
+    data: env.response.formData,
     output: {
       result: currentAction,
       status: env.response.status
@@ -520,7 +534,7 @@ let windowInnerWidth = 0;
 const ServiceWorkerRegister = () => jsx("script", {
   dangerouslySetInnerHTML: swRegister
 });
-class ServerActionImpl {
+class ActionImpl {
   constructor(__qrl, __schema) {
     this.__qrl = __qrl;
     this.__schema = __schema;
@@ -531,35 +545,34 @@ class ServerActionImpl {
     const currentAction = useAction();
     const initialState = {
       status: void 0,
-      isRunning: false,
-      formData: currentAction.value?.data
+      isRunning: false
     };
+    const id = this.__qrl.getHash();
     const state = useStore(() => {
-      return untrack(() => {
-        const id = this.__qrl.getHash();
-        if (currentAction.value?.output) {
-          const { status, result } = currentAction.value.output;
-          initialState.status = status;
-          if (isFail(result)) {
-            initialState.value = void 0;
-            initialState.fail = result;
-          } else {
-            initialState.value = result;
-            initialState.fail = void 0;
-          }
-        } else {
-          initialState.status = void 0;
+      const value = currentAction.value;
+      const data = value?.data;
+      initialState.formData = data instanceof FormData ? data : void 0;
+      if (value?.output) {
+        const { status, result } = value.output;
+        initialState.status = status;
+        if (isFail(result)) {
           initialState.value = void 0;
+          initialState.fail = result;
+        } else {
+          initialState.value = result;
           initialState.fail = void 0;
         }
-        initialState.id = id;
-        initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
-        initialState.isRunning = false;
-        return initialState;
-      });
+      } else {
+        initialState.status = void 0;
+        initialState.value = void 0;
+        initialState.fail = void 0;
+      }
+      initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
+      initialState.isRunning = false;
+      return initialState;
     });
     initialState.run = inlinedQrl((input) => {
-      const [currentAction2, initialState2, loc2, state2] = useLexicalScope();
+      const [currentAction2, id2, loc2, state2] = useLexicalScope();
       let data;
       let form;
       if (input instanceof SubmitEvent) {
@@ -574,7 +587,7 @@ class ServerActionImpl {
         loc2.isNavigating = true;
         currentAction2.value = {
           data,
-          id: state2.id,
+          id: id2,
           resolve: noSerialize(resolve)
         };
       }).then(({ result, status }) => {
@@ -582,11 +595,11 @@ class ServerActionImpl {
         state2.status = status;
         const didFail = isFail(result);
         if (didFail) {
-          initialState2.value = void 0;
-          initialState2.fail = result;
+          state2.value = void 0;
+          state2.fail = result;
         } else {
-          initialState2.value = result;
-          initialState2.fail = void 0;
+          state2.value = result;
+          state2.fail = void 0;
         }
         if (form) {
           if (form.getAttribute("data-spa-reset") === "true")
@@ -606,10 +619,15 @@ class ServerActionImpl {
             detail
           }));
         }
+        return {
+          status,
+          value: !didFail ? result : void 0,
+          fail: didFail ? result : void 0
+        };
       });
-    }, "ServerActionImpl_13yflRrKOuk", [
+    }, "ActionImpl_MLsGa2EjBII", [
       currentAction,
-      initialState,
+      id,
       loc,
       state
     ]);
@@ -617,7 +635,7 @@ class ServerActionImpl {
   }
 }
 const actionQrl = (actionQrl2, options) => {
-  const action = new ServerActionImpl(actionQrl2, options);
+  const action = new ActionImpl(actionQrl2, options);
   if (isServer) {
     if (typeof globalThis._qwikActionsMap === "undefined")
       globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
@@ -626,6 +644,29 @@ const actionQrl = (actionQrl2, options) => {
   return action;
 };
 const action$ = implicit$FirstArg(actionQrl);
+class LoaderImpl {
+  constructor(__qrl) {
+    this.__qrl = __qrl;
+    this.__brand = "server_loader";
+  }
+  use() {
+    return useContext(RouteStateContext, (state) => {
+      const hash = this.__qrl.getHash();
+      if (!(hash in state))
+        throw new Error(`Loader was used in a path where the 'loader$' was not declared.
+This is likely because the used loader was not exported in a layout.tsx or index.tsx file of the existing route.
+For more information check: https://qwik.builder.io/qwikcity/loader`);
+      return _wrapSignal(state, hash);
+    });
+  }
+}
+const loaderQrl = (loaderQrl2) => {
+  return new LoaderImpl(loaderQrl2);
+};
+const loader$ = implicit$FirstArg(loaderQrl);
+const isFail = (value) => {
+  return value && typeof value === "object" && value.__brand === "fail";
+};
 const zodQrl = async (qrl) => {
   if (isServer) {
     let obj = await qrl.resolve();
@@ -636,27 +677,6 @@ const zodQrl = async (qrl) => {
   return void 0;
 };
 const zod$ = implicit$FirstArg(zodQrl);
-class ServerLoaderImpl {
-  constructor(__qrl) {
-    this.__qrl = __qrl;
-    this.__brand = "server_loader";
-  }
-  use() {
-    return useContext(RouteStateContext, (state) => {
-      const hash = this.__qrl.getHash();
-      if (!(hash in state))
-        throw new Error(`Loader not found: ${hash}`);
-      return _wrapSignal(state, hash);
-    });
-  }
-}
-const loaderQrl = (loaderQrl2) => {
-  return new ServerLoaderImpl(loaderQrl2);
-};
-const loader$ = implicit$FirstArg(loaderQrl);
-const isFail = (value) => {
-  return value && typeof value === "object" && value.__brand === "fail";
-};
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return jsx("form", {
     ...rest,

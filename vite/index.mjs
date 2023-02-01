@@ -25075,6 +25075,8 @@ function getQwikCityServerData(requestEv) {
   const { url, params, request, status, locale } = requestEv;
   const requestHeaders = {};
   request.headers.forEach((value2, key) => requestHeaders[key] = value2);
+  const action = getRequestAction(requestEv);
+  const formData = requestEv.sharedMap.get("actionFormData");
   return {
     url: new URL(url.pathname + url.search, url).href,
     requestHeaders,
@@ -25086,7 +25088,8 @@ function getQwikCityServerData(requestEv) {
       response: {
         status: status(),
         loaders: getRequestLoaders(requestEv),
-        action: getRequestAction(requestEv)
+        action,
+        formData
       }
     }
   };
@@ -25188,7 +25191,15 @@ function actionsMiddleware(serverLoaders) {
         if (action) {
           setRequestAction(requestEv, selectedAction);
           const isForm = isFormContentType(requestEv.request.headers);
-          let data = isForm ? formToObj(await requestEv.request.formData()) : await requestEv.request.json();
+          const req = requestEv.request.clone();
+          let data;
+          if (isForm) {
+            const formData = await req.formData();
+            requestEv.sharedMap.set("actionFormData", formData);
+            data = formToObj(formData);
+          } else {
+            data = await req.json();
+          }
           let failed = false;
           if (action.__schema) {
             const validator = await action.__schema;
@@ -25349,14 +25360,6 @@ function makeQDataPath(href) {
   } else {
     return void 0;
   }
-}
-function isContentType(headers, ...types) {
-  var _a2;
-  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(";", 1)[0].trim()) ?? "";
-  return types.includes(type);
-}
-function isFormContentType(headers) {
-  return isContentType(headers, "application/x-www-form-urlencoded", "multipart/form-data");
 }
 
 // packages/qwik-city/middleware/request-handler/cache-control.ts
@@ -25664,6 +25667,14 @@ var isQDataJson = (pathname) => {
 };
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
+function isFormContentType(headers) {
+  return isContentType(headers, "application/x-www-form-urlencoded", "multipart/form-data");
+}
+function isContentType(headers, ...types) {
+  var _a2;
+  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(";", 1)[0].trim()) ?? "";
+  return types.includes(type);
+}
 
 // packages/qwik-city/runtime/src/routing.ts
 var getPathParams = (paramNames, match) => {
@@ -25928,7 +25939,7 @@ function ssrDevMiddleware(ctx, server) {
           routeModules.push(endpointModule);
           routeModulePaths.set(endpointModule, route.filePath);
         }
-        const renderFn = (requestEv) => {
+        const renderFn = async (requestEv) => {
           const isPageDataReq = requestEv.pathname.endsWith(QDATA_JSON);
           if (!isPageDataReq) {
             const serverData = getQwikCityServerData(requestEv);
