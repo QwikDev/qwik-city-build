@@ -81,7 +81,8 @@ function netifyEdgeAdaptor(opts = {}) {
           functions: [
             {
               path: basePathname + "*",
-              function: "entry.netlify-edge"
+              function: "entry.netlify-edge",
+              cache: "manual"
             }
           ],
           version: 1
