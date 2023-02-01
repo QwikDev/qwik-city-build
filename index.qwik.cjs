@@ -638,7 +638,13 @@ class ServerActionImpl {
   }
 }
 const actionQrl = (actionQrl2, options) => {
-  return new ServerActionImpl(actionQrl2, options);
+  const action = new ServerActionImpl(actionQrl2, options);
+  if (build.isServer) {
+    if (typeof globalThis._qwikActionsMap === "undefined")
+      globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
+    globalThis._qwikActionsMap.set(actionQrl2.getHash(), action);
+  }
+  return action;
 };
 const action$ = qwik.implicit$FirstArg(actionQrl);
 const zodQrl = async (qrl) => {
