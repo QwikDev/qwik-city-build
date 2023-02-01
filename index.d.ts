@@ -61,6 +61,15 @@ export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: 
 /**
  * @alpha
  */
+declare interface ActionReturn<RETURN> {
+    readonly status?: number;
+    readonly value: GetValueReturn<RETURN> | undefined;
+    readonly fail: GetFailReturn<RETURN> | undefined;
+}
+
+/**
+ * @alpha
+ */
 export declare interface ActionStore<RETURN, INPUT> {
     /**
      * It's the "action" path that a native `<form>` should have in order to call the action.
@@ -125,7 +134,7 @@ export declare interface ActionStore<RETURN, INPUT> {
      * Method to execute the action programatically from the browser. Ie, instead of using a `<form>`, a 'click' handle can call the `run()` method of the action
      * in order to execute the action in the server.
      */
-    readonly run: (form: INPUT | FormData | SubmitEvent) => Promise<RETURN>;
+    readonly run: (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>;
 }
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
@@ -593,6 +602,8 @@ declare interface QwikCityProps {
  */
 export declare const QwikCityProvider: Component<QwikCityProps>;
 
+declare type RedirectCode = 301 | 302 | 303 | 307 | 308;
+
 declare class RedirectMessage extends AbortMessage {
 }
 
@@ -624,7 +635,7 @@ declare interface RequestEventCommon_2<PLATFORM = unknown> {
      *
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections
      */
-    readonly redirect: (statusCode: number, url: string) => RedirectMessage;
+    readonly redirect: (statusCode: RedirectCode, url: string) => RedirectMessage;
     /**
      * When called, the response will immediately end with the given
      * status code. This could be useful to end a response with `404`,

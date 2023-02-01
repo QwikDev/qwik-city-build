@@ -277,13 +277,9 @@ const loadClientData = async (href, clearCache, action) => {
     ]
   });
   if (!qData) {
-    const actionData = action?.data;
+    const options = getFetchOptions(action);
     if (action)
       action.data = void 0;
-    const options = actionData ? {
-      method: "POST",
-      body: actionData
-    } : void 0;
     qData = fetch(clientDataPath, options).then((rsp) => {
       const redirectedURL = new URL(rsp.url);
       if (redirectedURL.origin !== location.origin || !isQDataJson(redirectedURL.pathname)) {
@@ -300,10 +296,10 @@ const loadClientData = async (href, clearCache, action) => {
           if (clientData.redirect)
             location.href = clientData.redirect;
           else if (action) {
-            const actionData2 = clientData.loaders[action.id];
+            const actionData = clientData.loaders[action.id];
             action.resolve({
               status: rsp.status,
-              result: actionData2
+              result: actionData
             });
           }
           return clientData;
@@ -315,6 +311,24 @@ const loadClientData = async (href, clearCache, action) => {
       CLIENT_DATA_CACHE.set(clientDataPath, qData);
   }
   return qData;
+};
+const getFetchOptions = (action) => {
+  const actionData = action?.data;
+  if (!actionData)
+    return void 0;
+  if (actionData instanceof FormData)
+    return {
+      method: "POST",
+      body: actionData
+    };
+  else
+    return {
+      method: "POST",
+      body: JSON.stringify(actionData),
+      headers: {
+        "Content-Type": "application/json, charset=UTF-8"
+      }
+    };
 };
 const isQDataJson = (pathname) => {
   return pathname.endsWith(QDATA_JSON);
@@ -347,7 +361,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
   const currentAction = currentActionId ? env.response.loaders[currentActionId] : void 0;
   const actionState = qwik.useSignal(currentAction ? {
     id: currentActionId,
-    data: void 0,
+    data: env.response.formData,
     output: {
       result: currentAction,
       status: env.response.status
@@ -552,34 +566,34 @@ class ActionImpl {
     const currentAction = useAction();
     const initialState = {
       status: void 0,
-      isRunning: false,
-      formData: currentAction.value?.data
+      isRunning: false
     };
     const id = this.__qrl.getHash();
     const state = qwik.useStore(() => {
-      return qwik.untrack(() => {
-        if (currentAction.value?.output) {
-          const { status, result } = currentAction.value.output;
-          initialState.status = status;
-          if (isFail(result)) {
-            initialState.value = void 0;
-            initialState.fail = result;
-          } else {
-            initialState.value = result;
-            initialState.fail = void 0;
-          }
-        } else {
-          initialState.status = void 0;
+      const value = currentAction.value;
+      const data = value?.data;
+      initialState.formData = data instanceof FormData ? data : void 0;
+      if (value?.output) {
+        const { status, result } = value.output;
+        initialState.status = status;
+        if (isFail(result)) {
           initialState.value = void 0;
+          initialState.fail = result;
+        } else {
+          initialState.value = result;
           initialState.fail = void 0;
         }
-        initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
-        initialState.isRunning = false;
-        return initialState;
-      });
+      } else {
+        initialState.status = void 0;
+        initialState.value = void 0;
+        initialState.fail = void 0;
+      }
+      initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
+      initialState.isRunning = false;
+      return initialState;
     });
     initialState.run = qwik.inlinedQrl((input) => {
-      const [currentAction2, id2, initialState2, loc2, state2] = qwik.useLexicalScope();
+      const [currentAction2, id2, loc2, state2] = qwik.useLexicalScope();
       let data;
       let form;
       if (input instanceof SubmitEvent) {
@@ -602,11 +616,11 @@ class ActionImpl {
         state2.status = status;
         const didFail = isFail(result);
         if (didFail) {
-          initialState2.value = void 0;
-          initialState2.fail = result;
+          state2.value = void 0;
+          state2.fail = result;
         } else {
-          initialState2.value = result;
-          initialState2.fail = void 0;
+          state2.value = result;
+          state2.fail = void 0;
         }
         if (form) {
           if (form.getAttribute("data-spa-reset") === "true")
@@ -626,11 +640,15 @@ class ActionImpl {
             detail
           }));
         }
+        return {
+          status,
+          value: !didFail ? result : void 0,
+          fail: didFail ? result : void 0
+        };
       });
     }, "ActionImpl_MLsGa2EjBII", [
       currentAction,
       id,
-      initialState,
       loc,
       state
     ]);
