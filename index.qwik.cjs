@@ -541,7 +541,7 @@ let windowInnerWidth = 0;
 const ServiceWorkerRegister = () => qwik.jsx("script", {
   dangerouslySetInnerHTML: swRegister
 });
-class ServerActionImpl {
+class ActionImpl {
   constructor(__qrl, __schema) {
     this.__qrl = __qrl;
     this.__schema = __schema;
@@ -555,9 +555,9 @@ class ServerActionImpl {
       isRunning: false,
       formData: currentAction.value?.data
     };
+    const id = this.__qrl.getHash();
     const state = qwik.useStore(() => {
       return qwik.untrack(() => {
-        const id = this.__qrl.getHash();
         if (currentAction.value?.output) {
           const { status, result } = currentAction.value.output;
           initialState.status = status;
@@ -573,14 +573,13 @@ class ServerActionImpl {
           initialState.value = void 0;
           initialState.fail = void 0;
         }
-        initialState.id = id;
         initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
         initialState.isRunning = false;
         return initialState;
       });
     });
     initialState.run = qwik.inlinedQrl((input) => {
-      const [currentAction2, initialState2, loc2, state2] = qwik.useLexicalScope();
+      const [currentAction2, id2, initialState2, loc2, state2] = qwik.useLexicalScope();
       let data;
       let form;
       if (input instanceof SubmitEvent) {
@@ -595,7 +594,7 @@ class ServerActionImpl {
         loc2.isNavigating = true;
         currentAction2.value = {
           data,
-          id: state2.id,
+          id: id2,
           resolve: qwik.noSerialize(resolve)
         };
       }).then(({ result, status }) => {
@@ -628,8 +627,9 @@ class ServerActionImpl {
           }));
         }
       });
-    }, "ServerActionImpl_13yflRrKOuk", [
+    }, "ActionImpl_MLsGa2EjBII", [
       currentAction,
+      id,
       initialState,
       loc,
       state
@@ -638,7 +638,7 @@ class ServerActionImpl {
   }
 }
 const actionQrl = (actionQrl2, options) => {
-  const action = new ServerActionImpl(actionQrl2, options);
+  const action = new ActionImpl(actionQrl2, options);
   if (build.isServer) {
     if (typeof globalThis._qwikActionsMap === "undefined")
       globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
@@ -647,6 +647,29 @@ const actionQrl = (actionQrl2, options) => {
   return action;
 };
 const action$ = qwik.implicit$FirstArg(actionQrl);
+class LoaderImpl {
+  constructor(__qrl) {
+    this.__qrl = __qrl;
+    this.__brand = "server_loader";
+  }
+  use() {
+    return qwik.useContext(RouteStateContext, (state) => {
+      const hash = this.__qrl.getHash();
+      if (!(hash in state))
+        throw new Error(`Loader was used in a path where the 'loader$' was not declared.
+This is likely because the used loader was not exported in a layout.tsx or index.tsx file of the existing route.
+For more information check: https://qwik.builder.io/qwikcity/loader`);
+      return qwik._wrapSignal(state, hash);
+    });
+  }
+}
+const loaderQrl = (loaderQrl2) => {
+  return new LoaderImpl(loaderQrl2);
+};
+const loader$ = qwik.implicit$FirstArg(loaderQrl);
+const isFail = (value) => {
+  return value && typeof value === "object" && value.__brand === "fail";
+};
 const zodQrl = async (qrl) => {
   if (build.isServer) {
     let obj = await qrl.resolve();
@@ -657,27 +680,6 @@ const zodQrl = async (qrl) => {
   return void 0;
 };
 const zod$ = qwik.implicit$FirstArg(zodQrl);
-class ServerLoaderImpl {
-  constructor(__qrl) {
-    this.__qrl = __qrl;
-    this.__brand = "server_loader";
-  }
-  use() {
-    return qwik.useContext(RouteStateContext, (state) => {
-      const hash = this.__qrl.getHash();
-      if (!(hash in state))
-        throw new Error(`Loader not found: ${hash}`);
-      return qwik._wrapSignal(state, hash);
-    });
-  }
-}
-const loaderQrl = (loaderQrl2) => {
-  return new ServerLoaderImpl(loaderQrl2);
-};
-const loader$ = qwik.implicit$FirstArg(loaderQrl);
-const isFail = (value) => {
-  return value && typeof value === "object" && value.__brand === "fail";
-};
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return qwik.jsx("form", {
     ...rest,

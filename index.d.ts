@@ -1,5 +1,6 @@
 /// <reference path="./modules.d.ts" />
 
+import type { Action as Action_2 } from '@builder.io/qwik-city';
 import { Component } from '@builder.io/qwik';
 import { Cookie } from '@builder.io/qwik-city/middleware/request-handler';
 import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler';
@@ -7,6 +8,7 @@ import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import type { FailReturn as FailReturn_2 } from '@builder.io/qwik-city';
 import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
+import type { Loader as Loader_2 } from '@builder.io/qwik-city';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -14,8 +16,6 @@ import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
-import type { ServerAction as ServerAction_2 } from '@builder.io/qwik-city';
-import type { ServerLoader as ServerLoader_2 } from '@builder.io/qwik-city';
 import type { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
@@ -26,14 +26,26 @@ declare class AbortMessage {
 /**
  * @alpha
  */
-export declare const action$: Action;
+export declare const action$: ActionConstructor;
 
 /**
  * @alpha
  */
-export declare interface Action {
-    <O>(actionQrl: (form: DefaultActionType, event: RequestEventLoader) => ValueOrPromise<O>): ServerAction<O>;
-    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader) => ValueOrPromise<O>, options: B): ServerAction<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
+export declare interface Action<RETURN, INPUT = Record<string, any>> {
+    readonly [isServerLoader]?: true;
+    /**
+     * Returns the `ActionStore` containing the current action state and methods to invoke it from a component$().
+     * Like all `use-` functions and methods, it can only be invokated within a `component$()`.
+     */
+    use(): ActionStore<RETURN, INPUT>;
+}
+
+/**
+ * @alpha
+ */
+export declare interface ActionConstructor {
+    <O>(actionQrl: (form: JSONObject, event: RequestEventLoader) => ValueOrPromise<O>): Action<O>;
+    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader) => ValueOrPromise<O>, options: B): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
 }
 
 /**
@@ -44,7 +56,77 @@ export declare type ActionOptions = z.ZodRawShape;
 /**
  * @alpha
  */
-export declare const actionQrl: <B, A>(actionQrl: QRL<(form: DefaultActionType, event: RequestEventLoader_2) => ValueOrPromise<B>>, options?: ZodReturn) => ServerAction<B, A>;
+export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventLoader_2) => ValueOrPromise<B>>, options?: ZodReturn) => Action<B, A>;
+
+/**
+ * @alpha
+ */
+export declare interface ActionStore<RETURN, INPUT> {
+    /**
+     * It's the "action" path that a native `<form>` should have in order to call the action.
+     *
+     * ```tsx
+     *  <form action={action.actionPath} />
+     * ```
+     *
+     * Most of the time this property should not be used directly, instead use the `Form` component:
+     *
+     * ```tsx
+     * import {action$, Form} from '@builder.io/qwik-city';
+     *
+     * export const addUser = action$(() => { ... });
+     *
+     * export default component$(() => {
+     *   const action = addUser.use()l
+     *   return (
+     *     <Form action={action}/>
+     *   );
+     * });
+     * ```
+     */
+    readonly actionPath: string;
+    /**
+     * Reactive property that becomes `true` only in the browser, when a form is submited and switched back to false when the action finish, ie, it describes if the action is actively running.
+     *
+     * This property is specially useful to disable the submit button while the action is processing, to prevent multiple submissions, and to inform visually to the user that the action is actively running.
+     *
+     * It will be always `false` in the server, and only becomes `true` briefly while the action is running.
+     */
+    readonly isRunning: boolean;
+    /**
+     * Returned HTTP status code of the action after its last execution.
+     *
+     * It's `undefined` before the action is first called.
+     */
+    readonly status?: number;
+    /**
+     * When calling an action through a `<form>`, this property contains the previously submitted `FormData`.
+     *
+     * This is useful to keep the filled form data even after a full page reload.
+     *
+     * It's `undefined` before the action is first called.
+     */
+    readonly formData: FormData | undefined;
+    /**
+     * Returned succesful data of the action. This reactive property will contain the data returned inside the `action$` function.
+     *
+     * It's `undefined` before the action is first called.
+     */
+    readonly value: GetValueReturn<RETURN> | undefined;
+    /**
+     * Returned failed data of the action. This reactive property will contain the data returned inside the `action$` function using the `fail()` function.
+     *
+     * If `zod$()` is used, this property might contain also the validation errors.
+     *
+     * It's `undefined` before the action is first called.
+     */
+    readonly fail: GetFailReturn<RETURN> | undefined;
+    /**
+     * Method to execute the action programatically from the browser. Ie, instead of using a `<form>`, a 'click' handle can call the `run()` method of the action
+     * in order to execute the action in the server.
+     */
+    readonly run: (form: INPUT | FormData | SubmitEvent) => Promise<RETURN>;
+}
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
 
@@ -176,13 +258,6 @@ declare interface CookieValue_2 {
 /**
  * @alpha
  */
-declare type DefaultActionType = {
-    [x: string]: JSONValue;
-};
-
-/**
- * @alpha
- */
 export declare type DocumentHead = DocumentHeadValue | ((props: DocumentHeadProps) => DocumentHeadValue);
 
 /**
@@ -303,11 +378,31 @@ export declare const Form: <O, I>({ action, spaReset, reloadDocument, onSubmit$,
  * @alpha
  */
 export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements['form'], 'action' | 'method'> {
-    action: ServerActionUse<O, I>;
+    /**
+     * Reference to the action returned by `action.use()`.
+     */
+    action: ActionStore<O, I>;
+    /**
+     * When `true` the form submission will cause a full page reload, even if SPA mode is enabled and JS is available.
+     */
     reloadDocument?: boolean;
+    /**
+     * When `true` all the form inputs will be reset in SPA mode, just like happens in a full page form submission.
+     *
+     * Defaults to `false`
+     */
     spaReset?: boolean;
+    /**
+     * Event handler executed right when the form is submitted.
+     */
     onSubmit$?: (event: Event, form: HTMLFormElement) => ValueOrPromise<void>;
+    /**
+     * Event handler executed right after the action is executed sucesfully and returns some data.
+     */
     onSubmitSuccess$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
+    /**
+     * Event handler executed right after the action is executed and it returns some `failed` data, such as data passed to `fail()` or validation errors from `zod$()`.
+     */
     onSubmitFail$?: (event: CustomEvent<FormSubmitFailDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
 }
 
@@ -331,8 +426,8 @@ export declare interface FormSubmitSuccessDetail<T> {
  * @alpha
  */
 declare interface GetData {
-    <T>(loader: ServerLoader_2<T>): Promise<T>;
-    <T>(loader: ServerAction_2<T>): Promise<T | undefined>;
+    <T>(loader: Loader_2<T>): Promise<T>;
+    <T>(loader: Action_2<T>): Promise<T | undefined>;
 }
 
 /**
@@ -356,6 +451,13 @@ declare type GetValueReturn<T> = T extends FailReturn<{}> ? never : T;
 export declare const Html: Component<QwikCityProps>;
 
 declare const isServerLoader: unique symbol;
+
+/**
+ * @alpha
+ */
+declare type JSONObject = {
+    [x: string]: JSONValue;
+};
 
 /**
  * @alpha
@@ -384,12 +486,29 @@ export declare interface LinkProps extends AnchorAttributes {
 /**
  * @alpha
  */
-export declare const loader$: <RETURN, PLATFORM = unknown>(first: (event: RequestEventLoader_2<PLATFORM>) => RETURN) => ServerLoader<RETURN>;
+export declare const loader$: <RETURN, PLATFORM = unknown>(first: (event: RequestEventLoader_2<PLATFORM>) => RETURN) => Loader<RETURN>;
 
 /**
  * @alpha
  */
-export declare const loaderQrl: <RETURN, PLATFORM = unknown>(loaderQrl: QRL<(event: RequestEventLoader_2<PLATFORM>) => RETURN>) => ServerLoader<RETURN>;
+export declare interface Loader<RETURN> {
+    readonly [isServerLoader]?: true;
+    /**
+     * Returns the `Signal` containing the data returned by the `loader$` function.
+     * Like all `use-` functions and methods, it can only be invokated within a `component$()`.
+     */
+    use(): LoaderSignal<RETURN>;
+}
+
+/**
+ * @alpha
+ */
+export declare const loaderQrl: <RETURN, PLATFORM = unknown>(loaderQrl: QRL<(event: RequestEventLoader_2<PLATFORM>) => RETURN>) => Loader<RETURN>;
+
+/**
+ * @alpha
+ */
+export declare type LoaderSignal<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
 
 /**
  * @alpha
@@ -667,43 +786,6 @@ declare interface SendMethod {
     (statusCode: number, data: any): AbortMessage;
     (response: Response): AbortMessage;
 }
-
-/**
- * @alpha
- */
-export declare interface ServerAction<RETURN, INPUT = Record<string, any>> {
-    readonly [isServerLoader]?: true;
-    use(): ServerActionUse<RETURN, INPUT>;
-}
-
-declare type ServerActionExecute<RETURN, INPUT> = QRL<(form: FormData | INPUT | SubmitEvent) => Promise<RETURN>>;
-
-/**
- * @alpha
- */
-export declare interface ServerActionUse<RETURN, INPUT> {
-    readonly id: string;
-    readonly actionPath: string;
-    readonly isRunning: boolean;
-    readonly status?: number;
-    readonly formData: FormData | undefined;
-    readonly value: GetValueReturn<RETURN> | undefined;
-    readonly fail: GetFailReturn<RETURN> | undefined;
-    readonly run: ServerActionExecute<RETURN, INPUT>;
-}
-
-/**
- * @alpha
- */
-export declare interface ServerLoader<RETURN> {
-    readonly [isServerLoader]?: true;
-    use(): ServerLoaderUse<RETURN>;
-}
-
-/**
- * @alpha
- */
-export declare type ServerLoaderUse<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
 
 /**
  * @alpha
