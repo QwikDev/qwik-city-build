@@ -1,10 +1,12 @@
 import type { Action } from '@builder.io/qwik-city';
 import type { FailReturn } from '@builder.io/qwik-city';
+import type { GetSyncData as GetSyncData_2 } from '@builder.io/qwik-city/middleware/request-handler';
 import type { Loader } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
 import type { Render } from '@builder.io/qwik/server';
 import type { RenderOptions } from '@builder.io/qwik/server';
 import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
+import type { RequestHandler as RequestHandler_2 } from '@builder.io/qwik-city/middleware/request-handler';
 
 declare class AbortMessage {
 }
@@ -57,6 +59,28 @@ declare interface CacheControlOptions {
      */
     immutable?: boolean;
 }
+
+/**
+ * @alpha
+ */
+declare interface ContentHeading {
+    text: string;
+    id: string;
+    level: number;
+}
+
+/**
+ * @alpha
+ */
+declare interface ContentMenu {
+    text: string;
+    href?: string;
+    items?: ContentMenu[];
+}
+
+declare type ContentModule = PageModule | LayoutModule;
+
+declare type ContentModuleHead = DocumentHead | ResolvedDocumentHead;
 
 /**
  * @alpha
@@ -142,6 +166,96 @@ export declare interface CookieValue {
     number: () => number;
 }
 
+/**
+ * @alpha
+ */
+declare type DocumentHead = DocumentHeadValue | ((props: DocumentHeadProps) => DocumentHeadValue);
+
+/**
+ * @alpha
+ */
+declare interface DocumentHeadProps extends RouteLocation {
+    readonly head: ResolvedDocumentHead;
+    readonly withLocale: <T>(fn: () => T) => T;
+    readonly getData: GetSyncData_2;
+}
+
+/**
+ * @alpha
+ */
+declare interface DocumentHeadValue {
+    /**
+     * Sets `document.title`.
+     */
+    title?: string;
+    /**
+     * Used to manually set meta tags in the head. Additionally, the `data`
+     * property could be used to set arbitrary data which the `<head>` component
+     * could later use to generate `<meta>` tags.
+     */
+    meta?: DocumentMeta[];
+    /**
+     * Used to manually append `<link>` elements to the `<head>`.
+     */
+    links?: DocumentLink[];
+    /**
+     * Used to manually append `<style>` elements to the `<head>`.
+     */
+    styles?: DocumentStyle[];
+    /**
+     * Arbitrary object containing custom data. When the document head is created from
+     * markdown files, the frontmatter attributes that are not recognized as a well-known
+     * meta names (such as title, description, author, etc...), are stored in this property.
+     */
+    frontmatter?: Record<string, any>;
+}
+
+/**
+ * @alpha
+ */
+declare interface DocumentLink {
+    as?: string;
+    crossorigin?: string;
+    disabled?: boolean;
+    href?: string;
+    hreflang?: string;
+    id?: string;
+    imagesizes?: string;
+    imagesrcset?: string;
+    integrity?: string;
+    media?: string;
+    prefetch?: string;
+    referrerpolicy?: string;
+    rel?: string;
+    sizes?: string;
+    title?: string;
+    type?: string;
+    key?: string;
+}
+
+/**
+ * @alpha
+ */
+declare interface DocumentMeta {
+    content?: string;
+    httpEquiv?: string;
+    name?: string;
+    property?: string;
+    key?: string;
+    itemprop?: string;
+}
+
+/**
+ * @alpha
+ */
+declare interface DocumentStyle {
+    style: string;
+    props?: {
+        [propName: string]: string;
+    };
+    key?: string;
+}
+
 declare interface EnvGetter {
     get(key: string): string | undefined;
 }
@@ -172,10 +286,37 @@ export declare interface GetSyncData {
     <T>(loader: Action<T>): T | undefined;
 }
 
+declare interface LayoutModule extends RouteModule {
+    readonly default: any;
+    readonly head?: ContentModuleHead;
+}
+
+declare type LoadedRoute = [
+params: PathParams,
+mods: (RouteModule | ContentModule)[],
+menu: ContentMenu | undefined,
+routeBundleNames: string[] | undefined
+];
+
 /**
  * @alpha
  */
 export declare const mergeHeadersCookies: (headers: Headers, cookies: Cookie) => Headers;
+
+/**
+ * @alpha
+ */
+declare interface PageModule extends RouteModule {
+    readonly default: any;
+    readonly head?: ContentModuleHead;
+    readonly headings?: ContentHeading[];
+    readonly onStaticGenerate?: StaticGenerateHandler;
+}
+
+/**
+ * @alpha
+ */
+declare type PathParams = Record<string, string>;
 
 declare interface QwikCityRun<T> {
     response: Promise<T | null>;
@@ -328,6 +469,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
     [RequestEvAction]: string | undefined;
     [RequestEvTrailingSlash]: boolean;
     [RequestEvBasePathname]: string;
+    [RequestEvRoute]: LoadedRoute | null;
 }
 
 /**
@@ -344,6 +486,8 @@ declare const RequestEvLocale: unique symbol;
 
 declare const RequestEvMode: unique symbol;
 
+declare const RequestEvRoute: unique symbol;
+
 declare const RequestEvStatus: unique symbol;
 
 declare const RequestEvTrailingSlash: unique symbol;
@@ -357,6 +501,33 @@ export declare type RequestHandler<PLATFORM = unknown> = (ev: RequestEvent<PLATF
  * @alpha
  */
 export declare function requestHandler<T = unknown>(serverRequestEv: ServerRequestEvent<T>, opts: ServerRenderOptions): Promise<QwikCityRun<T> | null>;
+
+/**
+ * @alpha
+ */
+declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
+
+/**
+ * @alpha
+ */
+declare interface RouteLocation {
+    readonly params: Record<string, string>;
+    readonly href: string;
+    readonly pathname: string;
+    readonly query: URLSearchParams;
+    readonly isNavigating: boolean;
+}
+
+declare interface RouteModule<BODY = unknown> {
+    onDelete?: RequestHandler_2<BODY> | RequestHandler_2<BODY>[];
+    onGet?: RequestHandler_2<BODY> | RequestHandler_2<BODY>[];
+    onHead?: RequestHandler_2<BODY> | RequestHandler_2<BODY>[];
+    onOptions?: RequestHandler_2<BODY> | RequestHandler_2<BODY>[];
+    onPatch?: RequestHandler_2<BODY> | RequestHandler_2<BODY>[];
+    onPost?: RequestHandler_2<BODY> | RequestHandler_2<BODY>[];
+    onPut?: RequestHandler_2<BODY> | RequestHandler_2<BODY>[];
+    onRequest?: RequestHandler_2<BODY> | RequestHandler_2<BODY>[];
+}
 
 /**
  * @alpha
@@ -397,5 +568,17 @@ export declare type ServerRequestMode = 'dev' | 'static' | 'server';
  * @alpha
  */
 export declare type ServerResponseHandler<T = any> = (status: number, headers: Headers, cookies: Cookie, resolve: (response: T) => void, requestEv: RequestEventInternal) => WritableStream<Uint8Array>;
+
+/**
+ * @alpha
+ */
+declare interface StaticGenerate {
+    params?: PathParams[];
+}
+
+/**
+ * @alpha
+ */
+declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
 
 export { }

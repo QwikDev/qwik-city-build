@@ -1816,6 +1816,7 @@ function getQwikCityServerData(requestEv) {
     qwikcity: {
       // mode: getRequestMode(requestEv),
       params: { ...params },
+      loadedRoute: getRequestRoute(requestEv),
       response: {
         status: status(),
         loaders: getRequestLoaders(requestEv),
@@ -2209,10 +2210,11 @@ var RequestEvLoaders = Symbol("RequestEvLoaders");
 var RequestEvLocale = Symbol("RequestEvLocale");
 var RequestEvMode = Symbol("RequestEvMode");
 var RequestEvStatus = Symbol("RequestEvStatus");
+var RequestEvRoute = Symbol("RequestEvRoute");
 var RequestEvAction = Symbol("RequestEvAction");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvBasePathname = Symbol("RequestEvBasePathname");
-function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
   const { request, platform, env } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
   const headers = new Headers();
@@ -2271,11 +2273,12 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
     [RequestEvAction]: void 0,
     [RequestEvTrailingSlash]: trailingSlash,
     [RequestEvBasePathname]: basePathname,
+    [RequestEvRoute]: loadedRoute,
     cookie,
     headers,
     env,
     method: request.method,
-    params,
+    params: (loadedRoute == null ? void 0 : loadedRoute[0]) ?? {},
     pathname: url.pathname,
     platform,
     query: url.searchParams,
@@ -2375,6 +2378,9 @@ function createRequestEvent(serverRequestEv, params, requestHandlers, trailingSl
 function getRequestLoaders(requestEv) {
   return requestEv[RequestEvLoaders];
 }
+function getRequestRoute(requestEv) {
+  return requestEv[RequestEvRoute];
+}
 function getRequestAction(requestEv) {
   return requestEv[RequestEvAction];
 }
@@ -2387,7 +2393,7 @@ function getRequestMode(requestEv) {
 var ABORT_INDEX = 999999999;
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
-function runQwikCity(serverRequestEv, params, requestHandlers, trailingSlash = true, basePathname = "/") {
+function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/") {
   if (requestHandlers.length === 0) {
     throw new ErrorResponse(404 /* NotFound */, `Not Found`);
   }
@@ -2395,7 +2401,7 @@ function runQwikCity(serverRequestEv, params, requestHandlers, trailingSlash = t
   const responsePromise = new Promise((r) => resolve = r);
   const requestEv = createRequestEvent(
     serverRequestEv,
-    params,
+    loadedRoute,
     requestHandlers,
     trailingSlash,
     basePathname,
@@ -2539,7 +2545,7 @@ async function requestHandler(serverRequestEv, opts) {
   const { routes, serverPlugins, menus, cacheModules, trailingSlash, basePathname } = qwikCityPlan;
   const pathname = serverRequestEv.url.pathname;
   const matchPathname = getRouteMatchPathname(pathname, trailingSlash);
-  const loadedRoute = await loadRequestHandlers(
+  const route = await loadRequestHandlers(
     serverPlugins,
     routes,
     menus,
@@ -2548,14 +2554,8 @@ async function requestHandler(serverRequestEv, opts) {
     serverRequestEv.request.method,
     render
   );
-  if (loadedRoute) {
-    return runQwikCity(
-      serverRequestEv,
-      loadedRoute[0],
-      loadedRoute[1],
-      trailingSlash,
-      basePathname
-    );
+  if (route) {
+    return runQwikCity(serverRequestEv, route[0], route[1], trailingSlash, basePathname);
   }
   return null;
 }
@@ -2568,7 +2568,7 @@ async function loadRequestHandlers(serverPlugins, routes, menus, cacheModules, p
     renderQwikMiddleware(renderFn)
   );
   if (requestHandlers.length > 0) {
-    return [(route == null ? void 0 : route[0]) ?? {}, requestHandlers];
+    return [route, requestHandlers];
   }
   return null;
 }

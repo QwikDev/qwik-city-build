@@ -400,13 +400,15 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
         actionState2.value
       ]);
       const locale = qwik.getLocale("");
-      const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
       let url2 = new URL(path, routeLocation2.href);
-      let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
       let clientPageData;
-      if (build.isServer)
+      let loadedRoute = null;
+      if (build.isServer) {
+        loadedRoute = env2.loadedRoute;
         clientPageData = env2.response;
-      else {
+      } else {
+        const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
+        let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
         const pageData = clientPageData = await loadClientData(url2.href, true, action);
         if (!pageData)
           return;
@@ -418,16 +420,16 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
             loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
           }
         }
+        if (url2.pathname.endsWith("/")) {
+          if (!trailingSlash)
+            url2.pathname = url2.pathname.slice(0, -1);
+        } else if (trailingSlash)
+          url2.pathname += "/";
+        loadedRoute = await loadRoutePromise;
       }
-      if (url2.pathname.endsWith("/")) {
-        if (!trailingSlash)
-          url2.pathname = url2.pathname.slice(0, -1);
-      } else if (trailingSlash)
-        url2.pathname += "/";
-      const pathname = url2.pathname;
-      const loadedRoute = await loadRoutePromise;
       if (loadedRoute) {
         const [params, mods, menu] = loadedRoute;
+        const pathname = url2.pathname;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
         routeLocation2.href = url2.href;
