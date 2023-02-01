@@ -2516,13 +2516,7 @@ async function requestHandler(serverRequestEv, opts) {
     render
   );
   if (route) {
-    return runQwikCity(
-      serverRequestEv,
-      route[0],
-      route[1],
-      trailingSlash,
-      basePathname
-    );
+    return runQwikCity(serverRequestEv, route[0], route[1], trailingSlash, basePathname);
   }
   return null;
 }
