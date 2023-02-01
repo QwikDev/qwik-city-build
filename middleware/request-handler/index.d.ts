@@ -1,10 +1,10 @@
+import type { Action } from '@builder.io/qwik-city';
 import type { FailReturn } from '@builder.io/qwik-city';
+import type { Loader } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
 import type { Render } from '@builder.io/qwik/server';
 import type { RenderOptions } from '@builder.io/qwik/server';
 import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
-import type { ServerAction } from '@builder.io/qwik-city';
-import type { ServerLoader } from '@builder.io/qwik-city';
 
 declare class AbortMessage {
 }
@@ -155,8 +155,8 @@ declare class ErrorResponse extends Error {
  * @alpha
  */
 export declare interface GetData {
-    <T>(loader: ServerLoader<T>): Promise<T>;
-    <T>(loader: ServerAction<T>): Promise<T | undefined>;
+    <T>(loader: Loader<T>): Promise<T>;
+    <T>(loader: Action<T>): Promise<T | undefined>;
 }
 
 /**
@@ -168,8 +168,8 @@ export declare function getErrorHtml(status: number, e: any): string;
  * @alpha
  */
 export declare interface GetSyncData {
-    <T>(loader: ServerLoader<T>): T;
-    <T>(loader: ServerAction<T>): T | undefined;
+    <T>(loader: Loader<T>): T;
+    <T>(loader: Action<T>): T | undefined;
 }
 
 /**
