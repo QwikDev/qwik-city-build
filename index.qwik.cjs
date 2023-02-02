@@ -569,33 +569,34 @@ class ActionImpl {
   }
   use() {
     const loc = useLocation();
+    const id = this.__qrl.getHash();
     const currentAction = useAction();
     const initialState = {
+      actionPath: `?${QACTION_KEY}=${id}`,
+      isRunning: false,
       status: void 0,
-      isRunning: false
+      value: void 0,
+      fail: void 0,
+      formData: void 0
     };
-    const id = this.__qrl.getHash();
     const state = qwik.useStore(() => {
       const value = currentAction.value;
-      const data = value?.data;
-      initialState.formData = data instanceof FormData ? data : void 0;
-      if (value?.output) {
-        const { status, result } = value.output;
-        initialState.status = status;
-        if (isFail(result)) {
-          initialState.value = void 0;
-          initialState.fail = result;
-        } else {
-          initialState.value = result;
-          initialState.fail = void 0;
+      if (value && value?.id === id) {
+        const data = value.data;
+        if (data instanceof FormData)
+          initialState.formData = data;
+        if (value.output) {
+          const { status, result } = value.output;
+          initialState.status = status;
+          if (isFail(result)) {
+            initialState.value = void 0;
+            initialState.fail = result;
+          } else {
+            initialState.value = result;
+            initialState.fail = void 0;
+          }
         }
-      } else {
-        initialState.status = void 0;
-        initialState.value = void 0;
-        initialState.fail = void 0;
       }
-      initialState.actionPath = `${loc.pathname}?${QACTION_KEY}=${id}`;
-      initialState.isRunning = false;
       return initialState;
     });
     initialState.run = qwik.inlinedQrl((input) => {
