@@ -979,7 +979,10 @@ var _serializeData = (data) => {
     }
     throw qError(QError_verifySerializable, obj);
   });
-  return JSON.stringify([mustGetObjId(data), convertedObjs]);
+  return JSON.stringify({
+    _entry: mustGetObjId(data),
+    _objs: convertedObjs
+  });
 };
 var createCollector = (containerState) => {
   return {
@@ -2068,13 +2071,11 @@ function renderQwikMiddleware(render, opts) {
         }
       });
       const qData = {
-        __brand: "qdata",
         loaders: getRequestLoaders(requestEv),
         action: getRequestAction(requestEv),
         status: status !== 200 ? status : 200,
-        href: getPathname(requestEv.url, true),
+        href: getPathname(requestEv.url, true)
         // todo
-        isStatic: result.isStatic
       };
       if ((typeof result).html === "string") {
         await stream.write(result.html);
@@ -2118,7 +2119,6 @@ async function renderQData(requestEv) {
     requestEv.request.headers.forEach((value, key) => requestHeaders[key] = value);
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
     const qData = {
-      __brand: "qdata",
       loaders: getRequestLoaders(requestEv),
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,

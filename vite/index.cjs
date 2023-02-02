@@ -24257,7 +24257,10 @@ var _serializeData = (data) => {
     }
     throw qError(QError_verifySerializable, obj);
   });
-  return JSON.stringify([mustGetObjId(data), convertedObjs]);
+  return JSON.stringify({
+    _entry: mustGetObjId(data),
+    _objs: convertedObjs
+  });
 };
 var createCollector = (containerState) => {
   return {
@@ -25347,7 +25350,6 @@ async function renderQData(requestEv) {
     requestEv.request.headers.forEach((value2, key) => requestHeaders[key] = value2);
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
     const qData = {
-      __brand: "qdata",
       loaders: getRequestLoaders(requestEv),
       action: getRequestAction(requestEv),
       status: status !== 200 ? status : 200,

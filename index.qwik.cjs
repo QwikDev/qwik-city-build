@@ -289,8 +289,10 @@ const loadClientData = async (href, clearCache, action) => {
       if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
           const clientData = qwik._deserializeData(text);
-          if (clientData.__brand !== "qdata")
+          if (!clientData) {
+            location.href = href;
             return;
+          }
           if (clearCache)
             CLIENT_DATA_CACHE.delete(clientDataPath);
           if (clientData.redirect)
@@ -304,8 +306,10 @@ const loadClientData = async (href, clearCache, action) => {
           }
           return clientData;
         });
-      else
+      else {
+        location.href = href;
         CLIENT_DATA_CACHE.delete(clientDataPath);
+      }
     });
     if (!action)
       CLIENT_DATA_CACHE.set(clientDataPath, qData);
