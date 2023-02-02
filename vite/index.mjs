@@ -24259,6 +24259,7 @@ var createCollector = (containerState) => {
     $objSet$: /* @__PURE__ */ new Set(),
     $prefetch$: 0,
     $noSerialize$: [],
+    $resources$: [],
     $elements$: [],
     $qrls$: [],
     $deferElements$: [],
