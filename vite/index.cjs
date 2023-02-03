@@ -24150,6 +24150,7 @@ var getPathParams = (paramNames, match) => {
 };
 
 // packages/qwik-city/middleware/node/http.ts
+var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER = "host" } = process.env;
 async function fromNodeHttp(url, req, res, mode) {
   const requestHeaders = new Headers();
   const nodeRequestHeaders = req.headers;
@@ -24474,18 +24475,6 @@ function ssrDevMiddleware(ctx, server) {
         return;
       }
       next();
-    } catch (e) {
-      next(e);
-    }
-  };
-}
-function dev404Middleware() {
-  return async (req, res, next) => {
-    try {
-      const html3 = getErrorHtml(404, new Error("not found"));
-      res.statusCode = 404;
-      res.setHeader("Content-Type", "text/html; charset=utf-8");
-      res.write(html3);
     } catch (e) {
       next(e);
     }
@@ -24940,12 +24929,11 @@ function qwikCity(userOpts) {
       outDir = (_c = config.build) == null ? void 0 : _c.outDir;
     },
     configureServer(server) {
-      if (ctx) {
-        server.middlewares.use(staticDistMiddleware(server));
-        server.middlewares.use(ssrDevMiddleware(ctx, server));
-      }
       return () => {
-        server.middlewares.use(dev404Middleware());
+        server.middlewares.use(staticDistMiddleware(server));
+        if (ctx) {
+          server.middlewares.use(ssrDevMiddleware(ctx, server));
+        }
       };
     },
     buildStart() {
