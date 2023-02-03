@@ -308,13 +308,17 @@ const loadClientData = async (href, clearCache, action) => {
         });
       else {
         location.href = href;
-        CLIENT_DATA_CACHE.delete(clientDataPath);
+        return void 0;
       }
     });
     if (!action)
       CLIENT_DATA_CACHE.set(clientDataPath, qData);
   }
-  return qData;
+  return qData.then((v) => {
+    if (!v)
+      CLIENT_DATA_CACHE.delete(clientDataPath);
+    return v;
+  });
 };
 const getFetchOptions = (action) => {
   const actionData = action?.data;
