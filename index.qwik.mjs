@@ -395,8 +395,10 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
         const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
         let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
         const pageData = clientPageData = await loadClientData(url2.href, true, action);
-        if (!pageData)
+        if (!pageData) {
+          navPath2.untrackedValue = routeLocation2.pathname;
           return;
+        }
         const newHref = pageData?.href;
         if (newHref) {
           const newURL = new URL(newHref, url2.href);
