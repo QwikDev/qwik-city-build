@@ -605,6 +605,9 @@ class ActionImpl {
     });
     initialState.run = qwik.inlinedQrl((input) => {
       const [currentAction2, id2, loc2, state2] = qwik.useLexicalScope();
+      if (build.isServer)
+        throw new Error(`Actions can not be invoked within the server during SSR.
+Action.run() can only be called on the browser, for example when a user clicks a button, or submits a form.`);
       let data;
       let form;
       if (input instanceof SubmitEvent) {
