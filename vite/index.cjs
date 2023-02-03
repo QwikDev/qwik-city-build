@@ -24150,7 +24150,6 @@ var getPathParams = (paramNames, match) => {
 };
 
 // packages/qwik-city/middleware/node/http.ts
-var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER = "host" } = process.env;
 async function fromNodeHttp(url, req, res, mode) {
   const requestHeaders = new Headers();
   const nodeRequestHeaders = req.headers;
