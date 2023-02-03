@@ -184,36 +184,6 @@ var RedirectMessage = class extends AbortMessage {
 var MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 var QACTION_KEY = "qaction";
 
-// packages/qwik-city/utils/format.ts
-function validateSerializable(val) {
-  JSON.stringify(val);
-  if (!isSerializable(val)) {
-    throw new Error(`Unable to serialize value.`);
-  }
-}
-function isSerializable(val) {
-  if (val == null || typeof val === "string" || typeof val === "boolean" || typeof val === "number") {
-    return true;
-  }
-  if (Array.isArray(val)) {
-    for (const item of val) {
-      if (!isSerializable(item)) {
-        return false;
-      }
-    }
-    return true;
-  }
-  if (val.constructor == null || val.constructor === Object) {
-    for (const prop in val) {
-      if (!isSerializable(val[prop])) {
-        return false;
-      }
-    }
-    return true;
-  }
-  return false;
-}
-
 // packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
 import { _serializeData } from "@builder.io/qwik";
 
@@ -378,22 +348,11 @@ function actionsMiddleware(serverLoaders) {
       }
     }
     if (serverLoaders.length > 0) {
-      const isDevMode = getRequestMode(requestEv) === "dev";
       await Promise.all(
         serverLoaders.map(async (loader) => {
           const loaderId = loader.__qrl.getHash();
           const loaderResolved = await loader.__qrl(requestEv);
           loaders[loaderId] = typeof loaderResolved === "function" ? loaderResolved() : loaderResolved;
-          if (isDevMode) {
-            try {
-              validateSerializable(loaderResolved);
-            } catch (e) {
-              throw Object.assign(e, {
-                id: "DEV_SERIALIZE",
-                method
-              });
-            }
-          }
         })
       );
     }

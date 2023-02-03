@@ -203,11 +203,11 @@ function createQwikCity(opts) {
       const handled = await (0, import_request_handler.requestHandler)(serverRequestEv, opts);
       if (handled) {
         const err = await handled.completion;
+        if (err) {
+          throw err;
+        }
         if (handled.requestEv.headersSent) {
           return;
-        }
-        if (err) {
-          return next(err);
         }
       }
       next();
