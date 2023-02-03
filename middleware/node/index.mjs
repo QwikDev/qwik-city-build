@@ -8,9 +8,16 @@ import { extname, join } from "path";
 import { fileURLToPath } from "url";
 
 // packages/qwik-city/middleware/node/http.ts
+var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER = "host" } = process.env;
+function getOrigin(req) {
+  const headers = req.headers;
+  const protocol = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
+  const host = headers[HOST_HEADER];
+  return `${protocol}://${host}`;
+}
 function getUrl(req) {
-  const protocol = req.socket.encrypted || req.connection.encrypted ? "https" : "http";
-  return new URL(req.url || "/", `${protocol}://${req.headers.host}`);
+  const origin = ORIGIN ?? getOrigin(req);
+  return new URL(req.url || "/", origin);
 }
 async function fromNodeHttp(url, req, res, mode) {
   const requestHeaders = new Headers();
