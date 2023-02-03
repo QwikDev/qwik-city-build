@@ -64,18 +64,18 @@ declare interface CacheControlOptions {
  * @alpha
  */
 declare interface ContentHeading {
-    text: string;
-    id: string;
-    level: number;
+    readonly text: string;
+    readonly id: string;
+    readonly level: number;
 }
 
 /**
  * @alpha
  */
 declare interface ContentMenu {
-    text: string;
-    href?: string;
-    items?: ContentMenu[];
+    readonly text: string;
+    readonly href?: string;
+    readonly items?: ContentMenu[];
 }
 
 declare type ContentModule = PageModule | LayoutModule;
@@ -187,27 +187,27 @@ declare interface DocumentHeadValue {
     /**
      * Sets `document.title`.
      */
-    title?: string;
+    readonly title?: string;
     /**
      * Used to manually set meta tags in the head. Additionally, the `data`
      * property could be used to set arbitrary data which the `<head>` component
      * could later use to generate `<meta>` tags.
      */
-    meta?: DocumentMeta[];
+    readonly meta?: readonly DocumentMeta[];
     /**
      * Used to manually append `<link>` elements to the `<head>`.
      */
-    links?: DocumentLink[];
+    readonly links?: readonly DocumentLink[];
     /**
      * Used to manually append `<style>` elements to the `<head>`.
      */
-    styles?: DocumentStyle[];
+    readonly styles?: readonly DocumentStyle[];
     /**
      * Arbitrary object containing custom data. When the document head is created from
      * markdown files, the frontmatter attributes that are not recognized as a well-known
      * meta names (such as title, description, author, etc...), are stored in this property.
      */
-    frontmatter?: Record<string, any>;
+    readonly frontmatter?: Readonly<Record<string, any>>;
 }
 
 /**
@@ -237,23 +237,23 @@ declare interface DocumentLink {
  * @alpha
  */
 declare interface DocumentMeta {
-    content?: string;
-    httpEquiv?: string;
-    name?: string;
-    property?: string;
-    key?: string;
-    itemprop?: string;
+    readonly content?: string;
+    readonly httpEquiv?: string;
+    readonly name?: string;
+    readonly property?: string;
+    readonly key?: string;
+    readonly itemprop?: string;
 }
 
 /**
  * @alpha
  */
 declare interface DocumentStyle {
-    style: string;
-    props?: {
+    readonly style: string;
+    readonly props?: Readonly<{
         [propName: string]: string;
-    };
-    key?: string;
+    }>;
+    readonly key?: string;
 }
 
 declare interface EnvGetter {
@@ -511,7 +511,7 @@ declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
  * @alpha
  */
 declare interface RouteLocation {
-    readonly params: Record<string, string>;
+    readonly params: Readonly<Record<string, string>>;
     readonly href: string;
     readonly pathname: string;
     readonly query: URLSearchParams;
