@@ -24837,6 +24837,7 @@ function qwikCity(userOpts) {
   let ssrFormat = "esm";
   let outDir = null;
   patchGlobalThis();
+  globalThis.__qwikCityNew = true;
   const api = {
     getBasePathname: () => (ctx == null ? void 0 : ctx.opts.basePathname) ?? "/",
     getRoutes: () => {
