@@ -25035,7 +25035,11 @@ function qwikCity(userOpts) {
                 ...contentAsJson
               };
             }
-            packageJson = { ...packageJson, type: "module" };
+            const ssrFormat2pkgTypeMap = {
+              cjs: "commonjs",
+              esm: "module"
+            };
+            packageJson = { ...packageJson, type: ssrFormat2pkgTypeMap[ssrFormat] || "module" };
             const serverPackageJsonCode = JSON.stringify(packageJson, null, 2);
             await Promise.all([
               import_node_fs8.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
