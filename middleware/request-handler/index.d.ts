@@ -269,7 +269,7 @@ declare class ErrorResponse extends Error {
  * @alpha
  */
 export declare interface GetData {
-    <T>(loader: Loader<T>): Promise<T>;
+    <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Promise<T>;
     <T>(loader: Action<T>): Promise<T | undefined>;
 }
 
@@ -282,8 +282,8 @@ export declare function getErrorHtml(status: number, e: any): string;
  * @alpha
  */
 export declare interface GetSyncData {
-    <T>(loader: Loader<T>): T;
-    <T>(loader: Action<T>): T | undefined;
+    <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Awaited<T>;
+    <T>(action: Action<T>): Awaited<T> | undefined;
 }
 
 declare interface LayoutModule extends RouteModule {
@@ -346,6 +346,13 @@ export declare interface RequestEvent<PLATFORM = unknown> extends RequestEventCo
      */
     readonly getWritableStream: () => WritableStream<Uint8Array>;
     readonly next: () => Promise<void>;
+}
+
+/**
+ * @alpha
+ */
+export declare interface RequestEventAction<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn<T>;
 }
 
 /**
@@ -432,7 +439,7 @@ export declare interface RequestEventCommon<PLATFORM = unknown> {
      * URL path params which have been parsed from the current url pathname segments.
      * Use `query` to instead retrieve the query string search params.
      */
-    readonly params: Record<string, string>;
+    readonly params: Readonly<Record<string, string>>;
     /**
      * URL Query Strings (URL Search Params).
      * Use `params` to instead retrieve the route params found in the url pathname.
@@ -475,9 +482,8 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
 /**
  * @alpha
  */
-export declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+export declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventAction<PLATFORM> {
     getData: GetData;
-    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn<T>;
 }
 
 declare const RequestEvLoaders: unique symbol;

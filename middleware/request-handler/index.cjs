@@ -377,10 +377,11 @@ function actionsMiddleware(serverLoaders) {
     }
     if (serverLoaders.length > 0) {
       await Promise.all(
-        serverLoaders.map(async (loader) => {
+        serverLoaders.map((loader) => {
           const loaderId = loader.__qrl.getHash();
-          const loaderResolved = await loader.__qrl(requestEv);
-          loaders[loaderId] = typeof loaderResolved === "function" ? loaderResolved() : loaderResolved;
+          return loaders[loaderId] = Promise.resolve().then(() => loader.__qrl(requestEv)).then((loaderResolved) => {
+            return loaders[loaderId] = typeof loaderResolved === "function" ? loaderResolved() : loaderResolved;
+          });
         })
       );
     }
@@ -527,7 +528,8 @@ async function renderQData(requestEv) {
       redirect: location ?? void 0
     };
     const writer = requestEv.getWritableStream().getWriter();
-    writer.write(encoder.encode((0, import_qwik._serializeData)(qData)));
+    const data = await (0, import_qwik._serializeData)(qData);
+    writer.write(encoder.encode(data));
     requestEv.sharedMap.set("qData", qData);
     writer.close();
   }
@@ -700,11 +702,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       check();
       headers.set("Cache-Control", createCacheControl(cacheControl));
     },
-    getData: (loaderOrAction) => {
+    getData: async (loaderOrAction) => {
       const id = loaderOrAction.__qrl.getHash();
       if (loaderOrAction.__brand === "server_loader") {
-        if (id in loaders) {
-          throw new Error("Loader data does not exist");
+        if (!(id in loaders)) {
+          throw new Error(
+            "You can not get the returned data of a loader that has not been executed for this request."
+          );
         }
       }
       return loaders[id];
@@ -743,7 +747,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       requestEv[RequestEvStatus] = statusCode;
       headers.delete("Cache-Control");
       return {
-        __brand: "fail",
+        failed: true,
         ...data
       };
     },
@@ -800,9 +804,6 @@ var ABORT_INDEX = 999999999;
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
 function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/") {
-  if (requestHandlers.length === 0) {
-    throw new ErrorResponse(404 /* NotFound */, `Not Found`);
-  }
   let resolve;
   const responsePromise = new Promise((r) => resolve = r);
   const requestEv = createRequestEvent(

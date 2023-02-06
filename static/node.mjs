@@ -574,10 +574,8 @@ function posToNumber(source, pos) {
   const lines = source.split(splitRE);
   const { line, column } = pos;
   let start = 0;
-  for (let i = 0; i < line - 1; i++) {
-    if (lines[i]) {
-      start += lines[i].length + 1;
-    }
+  for (let i = 0; i < line - 1 && i < lines.length; i++) {
+    start += lines[i].length + 1;
   }
   return start + column;
 }
@@ -616,11 +614,17 @@ function generateCodeFrame(source, start = 0, end) {
 
 // packages/qwik-city/buildtime/vite/format-error.ts
 import fs3 from "fs";
+var filterStack = (stack, offset = 0) => {
+  return stack.split("\n").slice(offset).filter((l) => !l.includes("/node_modules/@builder.io/qwik") && !l.includes("(node:")).join("\n");
+};
 function formatError(e) {
   if (e instanceof Error) {
     const err = e;
     let loc = err.loc;
     if (!err.frame && !err.plugin) {
+      if (typeof e.stack === "string") {
+        e.stack = filterStack(e.stack);
+      }
       if (!loc) {
         loc = findLocation(err);
       }
@@ -902,12 +906,13 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
               htmlWriter.write(Buffer.from(chunk.buffer));
             }
           },
-          close() {
+          async close() {
             const data = requestEv.sharedMap.get("qData");
             if (writeDataEnabled) {
               if (data) {
+                const serialized = await _serializeData(data);
                 const dataWriter = sys.createWriteStream(dataFilePath);
-                dataWriter.write(_serializeData(data));
+                dataWriter.write(serialized);
                 dataWriter.end();
               }
             }

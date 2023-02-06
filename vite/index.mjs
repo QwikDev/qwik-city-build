@@ -23647,10 +23647,11 @@ function actionsMiddleware(serverLoaders) {
     }
     if (serverLoaders.length > 0) {
       await Promise.all(
-        serverLoaders.map(async (loader) => {
+        serverLoaders.map((loader) => {
           const loaderId = loader.__qrl.getHash();
-          const loaderResolved = await loader.__qrl(requestEv);
-          loaders[loaderId] = typeof loaderResolved === "function" ? loaderResolved() : loaderResolved;
+          return loaders[loaderId] = Promise.resolve().then(() => loader.__qrl(requestEv)).then((loaderResolved) => {
+            return loaders[loaderId] = typeof loaderResolved === "function" ? loaderResolved() : loaderResolved;
+          });
         })
       );
     }
@@ -23750,7 +23751,8 @@ async function renderQData(requestEv) {
       redirect: location ?? void 0
     };
     const writer = requestEv.getWritableStream().getWriter();
-    writer.write(encoder.encode(_serializeData(qData)));
+    const data = await _serializeData(qData);
+    writer.write(encoder.encode(data));
     requestEv.sharedMap.set("qData", qData);
     writer.close();
   }
@@ -23923,11 +23925,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       check();
       headers.set("Cache-Control", createCacheControl(cacheControl));
     },
-    getData: (loaderOrAction) => {
+    getData: async (loaderOrAction) => {
       const id = loaderOrAction.__qrl.getHash();
       if (loaderOrAction.__brand === "server_loader") {
-        if (id in loaders) {
-          throw new Error("Loader data does not exist");
+        if (!(id in loaders)) {
+          throw new Error(
+            "You can not get the returned data of a loader that has not been executed for this request."
+          );
         }
       }
       return loaders[id];
@@ -23966,7 +23970,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       requestEv[RequestEvStatus] = statusCode;
       headers.delete("Cache-Control");
       return {
-        __brand: "fail",
+        failed: true,
         ...data
       };
     },
@@ -24020,9 +24024,6 @@ var ABORT_INDEX = 999999999;
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
 function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/") {
-  if (requestHandlers.length === 0) {
-    throw new ErrorResponse(404 /* NotFound */, `Not Found`);
-  }
   let resolve4;
   const responsePromise = new Promise((r2) => resolve4 = r2);
   const requestEv = createRequestEvent(
@@ -24216,10 +24217,8 @@ function posToNumber(source, pos) {
   const lines = source.split(splitRE);
   const { line, column } = pos;
   let start = 0;
-  for (let i = 0; i < line - 1; i++) {
-    if (lines[i]) {
-      start += lines[i].length + 1;
-    }
+  for (let i = 0; i < line - 1 && i < lines.length; i++) {
+    start += lines[i].length + 1;
   }
   return start + column;
 }
@@ -24258,11 +24257,17 @@ function generateCodeFrame(source, start = 0, end) {
 
 // packages/qwik-city/buildtime/vite/format-error.ts
 import fs4 from "fs";
+var filterStack = (stack, offset = 0) => {
+  return stack.split("\n").slice(offset).filter((l) => !l.includes("/node_modules/@builder.io/qwik") && !l.includes("(node:")).join("\n");
+};
 function formatError(e) {
   if (e instanceof Error) {
     const err = e;
     let loc = err.loc;
     if (!err.frame && !err.plugin) {
+      if (typeof e.stack === "string") {
+        e.stack = filterStack(e.stack);
+      }
       if (!loc) {
         loc = findLocation(err);
       }
@@ -24409,6 +24414,7 @@ function ssrDevMiddleware(ctx, server) {
         } else {
           next(e);
         }
+        return;
       }
       const ext = getExtension(req.originalUrl);
       if (STATIC_CONTENT_TYPES[ext]) {

@@ -13,6 +13,7 @@ import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
 import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
+import type { RequestEventAction } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
@@ -31,21 +32,21 @@ export declare const action$: ActionConstructor;
 /**
  * @alpha
  */
-export declare interface Action<RETURN, INPUT = Record<string, any>> {
+export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL extends boolean = true> {
     readonly [isServerLoader]?: true;
     /**
      * Returns the `ActionStore` containing the current action state and methods to invoke it from a component$().
      * Like all `use-` functions and methods, it can only be invokated within a `component$()`.
      */
-    use(): ActionStore<RETURN, INPUT>;
+    use(): ActionStore<RETURN, INPUT, OPTIONAL>;
 }
 
 /**
  * @alpha
  */
 export declare interface ActionConstructor {
-    <O>(actionQrl: (form: JSONObject, event: RequestEventLoader) => ValueOrPromise<O>): Action<O>;
-    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventLoader) => ValueOrPromise<O>, options: B): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>>;
+    <O>(actionQrl: (form: JSONObject, event: RequestEventAction) => ValueOrPromise<O>): Action<O>;
+    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>, false>;
 }
 
 /**
@@ -56,21 +57,20 @@ export declare type ActionOptions = z.ZodRawShape;
 /**
  * @alpha
  */
-export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventLoader_2) => ValueOrPromise<B>>, options?: ZodReturn) => Action<B, A>;
+export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventLoader_2) => ValueOrPromise<B>>, options?: ZodReturn) => Action<B, A, true>;
 
 /**
  * @alpha
  */
 declare interface ActionReturn<RETURN> {
     readonly status?: number;
-    readonly value: GetValueReturn<RETURN> | undefined;
-    readonly fail: GetFailReturn<RETURN> | undefined;
+    readonly value: GetValueReturn<RETURN>;
 }
 
 /**
  * @alpha
  */
-export declare interface ActionStore<RETURN, INPUT> {
+export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = true> {
     /**
      * It's the "action" path that a native `<form>` should have in order to call the action.
      *
@@ -123,18 +123,10 @@ export declare interface ActionStore<RETURN, INPUT> {
      */
     readonly value: GetValueReturn<RETURN> | undefined;
     /**
-     * Returned failed data of the action. This reactive property will contain the data returned inside the `action$` function using the `fail()` function.
-     *
-     * If `zod$()` is used, this property might contain also the validation errors.
-     *
-     * It's `undefined` before the action is first called.
-     */
-    readonly fail: GetFailReturn<RETURN> | undefined;
-    /**
      * Method to execute the action programatically from the browser. Ie, instead of using a `<form>`, a 'click' handle can call the `run()` method of the action
      * in order to execute the action in the server.
      */
-    readonly run: QRL<(form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
+    readonly run: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
 }
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
@@ -374,11 +366,13 @@ declare class ErrorResponse extends Error {
     constructor(status: number, message?: string);
 }
 
+declare type F<T> = T extends FailReturn<any> ? T : never;
+
 /**
  * @alpha
  */
 export declare type FailReturn<T> = T & {
-    __brand: 'fail';
+    failed: true;
 };
 
 /**
@@ -393,7 +387,7 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
     /**
      * Reference to the action returned by `action.use()`.
      */
-    action: ActionStore<O, I>;
+    action: ActionStore<O, I, true | false>;
     /**
      * When `true` the form submission will cause a full page reload, even if SPA mode is enabled and JS is available.
      */
@@ -411,19 +405,7 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
     /**
      * Event handler executed right after the action is executed sucesfully and returns some data.
      */
-    onSubmitSuccess$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
-    /**
-     * Event handler executed right after the action is executed and it returns some `failed` data, such as data passed to `fail()` or validation errors from `zod$()`.
-     */
-    onSubmitFail$?: (event: CustomEvent<FormSubmitFailDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
-}
-
-/**
- * @alpha
- */
-export declare interface FormSubmitFailDetail<T> {
-    status: number;
-    fail: GetFailReturn<T>;
+    onSubmitCompleted$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
 }
 
 /**
@@ -431,30 +413,20 @@ export declare interface FormSubmitFailDetail<T> {
  */
 export declare interface FormSubmitSuccessDetail<T> {
     status: number;
-    value: GetValueReturn<T>;
+    value: T;
 }
 
 /**
  * @alpha
  */
 declare interface GetData {
-    <T>(loader: Loader_2<T>): Promise<T>;
+    <T>(loader: Loader_2<T>): Awaited<T> extends () => any ? never : Promise<T>;
     <T>(loader: Action_2<T>): Promise<T | undefined>;
 }
 
-/**
- * @alpha
- */
-export declare type GetFailReturn<T> = T extends FailReturn<infer I> ? I & {
-    [key: string]: undefined;
-} : never;
-
 declare type GetValidatorType<B extends ZodReturn<any>> = B extends ZodReturn<infer TYPE> ? z.infer<z.ZodObject<TYPE>> : never;
 
-/**
- * @alpha
- */
-declare type GetValueReturn<T> = T extends FailReturn<{}> ? never : T;
+declare type GetValueReturn<T> = (V<T> & Record<keyof F<T>, undefined>) | (F<T> & Record<keyof V<T>, undefined>);
 
 /**
  * @alpha
@@ -612,6 +584,13 @@ declare class RedirectMessage extends AbortMessage {
 
 export { RequestEvent }
 
+/**
+ * @alpha
+ */
+declare interface RequestEventAction_2<PLATFORM = unknown> extends RequestEventCommon_2<PLATFORM> {
+    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn_2<T>;
+}
+
 export { RequestEventCommon }
 
 /**
@@ -698,7 +677,7 @@ declare interface RequestEventCommon_2<PLATFORM = unknown> {
      * URL path params which have been parsed from the current url pathname segments.
      * Use `query` to instead retrieve the query string search params.
      */
-    readonly params: Record<string, string>;
+    readonly params: Readonly<Record<string, string>>;
     /**
      * URL Query Strings (URL Search Params).
      * Use `params` to instead retrieve the route params found in the url pathname.
@@ -732,9 +711,8 @@ export { RequestEventLoader }
 /**
  * @alpha
  */
-declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventCommon_2<PLATFORM> {
+declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventAction_2<PLATFORM> {
     getData: GetData;
-    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn_2<T>;
 }
 
 export { RequestHandler }
@@ -837,6 +815,11 @@ export declare const useLocation: () => RouteLocation;
  * @alpha
  */
 export declare const useNavigate: () => RouteNavigate;
+
+/**
+ * @alpha
+ */
+declare type V<T> = T extends FailReturn<any> ? never : T;
 
 export { z }
 

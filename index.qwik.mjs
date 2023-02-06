@@ -97,7 +97,17 @@ const getPathParams = (paramNames, match) => {
 };
 const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   const head = createDocumentHead();
-  const getData = (loader) => endpoint?.loaders[loader.__qrl.getHash()];
+  const getData = (loaderOrAction) => {
+    const id = loaderOrAction.__qrl.getHash();
+    if (loaderOrAction.__brand === "server_loader") {
+      if (!(id in endpoint.loaders))
+        throw new Error("You can not get the returned data of a loader that has not been executed for this request.");
+    }
+    const data = endpoint.loaders[id];
+    if (data instanceof Promise)
+      throw new Error("Loaders returning a function can not be refered to in the head function.");
+    return data;
+  };
   const headProps = {
     head,
     withLocale: (fn) => withLocale(locale, fn),
@@ -399,13 +409,11 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
           navPath2.untrackedValue = routeLocation2.pathname;
           return;
         }
-        const newHref = pageData?.href;
-        if (newHref) {
-          const newURL = new URL(newHref, url2.href);
-          if (newURL.pathname !== url2.pathname) {
-            url2 = newURL;
-            loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
-          }
+        const newHref = pageData.href;
+        const newURL = new URL(newHref, url2.href);
+        if (newURL.pathname !== url2.pathname) {
+          url2 = newURL;
+          loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
         }
         if (url2.pathname.endsWith("/")) {
           if (!trailingSlash)
@@ -559,7 +567,6 @@ class ActionImpl {
       isRunning: false,
       status: void 0,
       value: void 0,
-      fail: void 0,
       formData: void 0
     };
     const state = useStore(() => {
@@ -571,13 +578,7 @@ class ActionImpl {
         if (value.output) {
           const { status, result } = value.output;
           initialState.status = status;
-          if (isFail(result)) {
-            initialState.value = void 0;
-            initialState.fail = result;
-          } else {
-            initialState.value = result;
-            initialState.fail = void 0;
-          }
+          initialState.value = result;
         }
       }
       return initialState;
@@ -607,26 +608,15 @@ Action.run() can only be called on the browser, for example when a user clicks a
       }).then(({ result, status }) => {
         state2.isRunning = false;
         state2.status = status;
-        const didFail = isFail(result);
-        if (didFail) {
-          state2.value = void 0;
-          state2.fail = result;
-        } else {
-          state2.value = result;
-          state2.fail = void 0;
-        }
+        state2.value = result;
         if (form) {
           if (form.getAttribute("data-spa-reset") === "true")
             form.reset();
-          const eventName = didFail ? "submitfail" : "submitsuccess";
-          const detail = didFail ? {
-            status,
-            fail: result
-          } : {
+          const detail = {
             status,
             value: result
           };
-          form.dispatchEvent(new CustomEvent(eventName, {
+          form.dispatchEvent(new CustomEvent("submitcompleted", {
             bubbles: false,
             cancelable: false,
             composed: false,
@@ -635,8 +625,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
         }
         return {
           status,
-          value: !didFail ? result : void 0,
-          fail: didFail ? result : void 0
+          value: result
         };
       });
     }, "ActionImpl_MLsGa2EjBII", [
@@ -678,9 +667,6 @@ const loaderQrl = (loaderQrl2) => {
   return new LoaderImpl(loaderQrl2);
 };
 const loader$ = implicit$FirstArg(loaderQrl);
-const isFail = (value) => {
-  return value && typeof value === "object" && value.__brand === "fail";
-};
 const zodQrl = async (qrl) => {
   if (isServer) {
     let obj = await qrl.resolve();
