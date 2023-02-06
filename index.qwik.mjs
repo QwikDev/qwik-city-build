@@ -1,4 +1,4 @@
-import { createContext, componentQrl, inlinedQrl, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
+import { createContext, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import swRegister from "@qwik-city-sw-register";
@@ -18,7 +18,10 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
       cmp = jsx(value[i].default, {
-        children: cmp
+        children: cmp,
+        [_IMMUTABLE]: {
+          children: false
+        }
       });
     return cmp;
   }
