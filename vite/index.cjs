@@ -24095,6 +24095,17 @@ function isContentType(headers, ...types) {
 }
 
 // packages/qwik-city/runtime/src/routing.ts
+var getMenuLoader = (menus, pathname) => {
+  if (menus) {
+    pathname = pathname.endsWith("/") ? pathname : pathname + "/";
+    const menu = menus.find(
+      (m) => m[0] === pathname || pathname.startsWith(m[0] + (pathname.endsWith("/") ? "" : "/"))
+    );
+    if (menu) {
+      return menu[1];
+    }
+  }
+};
 var getPathParams = (paramNames, match) => {
   const params = {};
   let i;
@@ -24381,7 +24392,24 @@ function ssrDevMiddleware(ctx, server) {
             return qwikRenderPromise;
           }
         };
-        const loadedRoute = [params, routeModules, void 0, void 0];
+        let menu = void 0;
+        const menus = ctx.menus.map((buildMenu) => {
+          const menuLoader2 = async () => {
+            const m = await server.ssrLoadModule(buildMenu.filePath);
+            const menuModule = {
+              default: m.default
+            };
+            return menuModule;
+          };
+          const menuData = [buildMenu.pathname, menuLoader2];
+          return menuData;
+        });
+        const menuLoader = getMenuLoader(menus, url.pathname);
+        if (menuLoader) {
+          const menuModule = await menuLoader();
+          menu = menuModule == null ? void 0 : menuModule.default;
+        }
+        const loadedRoute = [params, routeModules, menu, void 0];
         const requestHandlers = resolveRequestHandlers(
           serverPlugins,
           loadedRoute,

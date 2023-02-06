@@ -356,7 +356,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
   const env = useQwikCityEnv();
   if (!env?.params)
     throw new Error(`Missing Qwik City Env Data`);
-  const urlEnv = qwik.useEnvData("url");
+  const urlEnv = qwik.useServerData("url");
   if (!urlEnv)
     throw new Error(`Missing Qwik URL Env Data`);
   const url = new URL(urlEnv);
