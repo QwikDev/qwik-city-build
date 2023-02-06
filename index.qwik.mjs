@@ -583,7 +583,7 @@ class ActionImpl {
       }
       return initialState;
     });
-    initialState.run = inlinedQrl((input) => {
+    initialState.run = inlinedQrl((input = {}) => {
       const [currentAction2, id2, loc2, state2] = useLexicalScope();
       if (isServer)
         throw new Error(`Actions can not be invoked within the server during SSR.

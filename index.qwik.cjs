@@ -606,7 +606,7 @@ class ActionImpl {
       }
       return initialState;
     });
-    initialState.run = qwik.inlinedQrl((input) => {
+    initialState.run = qwik.inlinedQrl((input = {}) => {
       const [currentAction2, id2, loc2, state2] = qwik.useLexicalScope();
       if (build.isServer)
         throw new Error(`Actions can not be invoked within the server during SSR.
