@@ -36,7 +36,7 @@ export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL ex
     readonly [isServerLoader]?: true;
     /**
      * Returns the `ActionStore` containing the current action state and methods to invoke it from a component$().
-     * Like all `use-` functions and methods, it can only be invokated within a `component$()`.
+     * Like all `use-` functions and methods, it can only be invoked within a `component$()`.
      */
     use(): ActionStore<RETURN, INPUT, OPTIONAL>;
 }
@@ -479,7 +479,7 @@ export declare interface Loader<RETURN> {
     readonly [isServerLoader]?: true;
     /**
      * Returns the `Signal` containing the data returned by the `loader$` function.
-     * Like all `use-` functions and methods, it can only be invokated within a `component$()`.
+     * Like all `use-` functions and methods, it can only be invoked within a `component$()`.
      */
     use(): LoaderSignal<RETURN>;
 }
