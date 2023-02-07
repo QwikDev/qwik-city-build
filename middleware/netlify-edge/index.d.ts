@@ -1,5 +1,4 @@
 import type { Context } from '@netlify/edge-functions';
-import type { RequestHandler } from '@builder.io/qwik-city';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
 /**
@@ -10,7 +9,7 @@ export declare function createQwikCity(opts: QwikCityNetlifyOptions): (request: 
 /**
  * @alpha
  */
-export declare interface EventPluginContext extends Context {
+export declare interface PlatformNetlify extends Omit<Context, 'next' | 'cookies'> {
 }
 
 /**
@@ -18,10 +17,5 @@ export declare interface EventPluginContext extends Context {
  */
 export declare interface QwikCityNetlifyOptions extends ServerRenderOptions {
 }
-
-/**
- * @alpha
- */
-export declare type RequestHandlerNetlify = RequestHandler<Omit<Context, 'next' | 'cookies'>>;
 
 export { }

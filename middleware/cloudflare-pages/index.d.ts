@@ -1,4 +1,3 @@
-import type { RequestHandler } from '@builder.io/qwik-city';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
 /**
@@ -19,14 +18,14 @@ export declare interface EventPluginContext {
 /**
  * @alpha
  */
-export declare interface QwikCityCloudflarePagesOptions extends ServerRenderOptions {
+export declare interface PlatformCloudflarePages {
+    env: EventPluginContext['env'];
 }
 
 /**
  * @alpha
  */
-export declare type RequestHandlerCloudflarePages = RequestHandler<{
-    env: EventPluginContext['env'];
-}>;
+export declare interface QwikCityCloudflarePagesOptions extends ServerRenderOptions {
+}
 
 export { }

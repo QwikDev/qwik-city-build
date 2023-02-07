@@ -24730,14 +24730,14 @@ function getAppBundleId(appBundles, bundleName) {
   return appBundles.findIndex((b) => b[0] === bundleName);
 }
 var SW_UNREGISTER = `
-navigator.serviceWorker.getRegistrations().then((regs) => {
+navigator.serviceWorker?.getRegistrations().then((regs) => {
   for (const reg of regs) {
     reg.unregister();
   }
 });
 `;
 
-// packages/qwik-city/adaptors/shared/vite/post-build.ts
+// packages/qwik-city/adapters/shared/vite/post-build.ts
 import fs6 from "fs";
 import { join as join5 } from "path";
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
@@ -24856,7 +24856,7 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
   return c2.join("\n");
 }
 
-// packages/qwik-city/adaptors/shared/vite/index.ts
+// packages/qwik-city/adapters/shared/vite/index.ts
 var STATIC_PATHS_ID = "@qwik-city-static-paths";
 var RESOLVED_STATIC_PATHS_ID = `${STATIC_PATHS_ID}.js`;
 var NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";

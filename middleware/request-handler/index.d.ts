@@ -336,7 +336,7 @@ declare const RequestEvBasePathname: unique symbol;
 /**
  * @alpha
  */
-export declare interface RequestEvent<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+export declare interface RequestEvent<PLATFORM = QwikCityPlatform> extends RequestEventCommon<PLATFORM> {
     readonly headersSent: boolean;
     readonly exited: boolean;
     readonly cacheControl: (cacheControl: CacheControl) => void;
@@ -351,14 +351,14 @@ export declare interface RequestEvent<PLATFORM = unknown> extends RequestEventCo
 /**
  * @alpha
  */
-export declare interface RequestEventAction<PLATFORM = unknown> extends RequestEventCommon<PLATFORM> {
+export declare interface RequestEventAction<PLATFORM = QwikCityPlatform> extends RequestEventCommon<PLATFORM> {
     fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn<T>;
 }
 
 /**
  * @alpha
  */
-export declare interface RequestEventCommon<PLATFORM = unknown> {
+export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> {
     /**
      * HTTP response status code. Sets the status code when called with an
      * argument. Always returns the status code, so calling `status()` without
@@ -482,7 +482,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
 /**
  * @alpha
  */
-export declare interface RequestEventLoader<PLATFORM = unknown> extends RequestEventAction<PLATFORM> {
+export declare interface RequestEventLoader<PLATFORM = QwikCityPlatform> extends RequestEventAction<PLATFORM> {
     getData: GetData;
 }
 
@@ -501,7 +501,7 @@ declare const RequestEvTrailingSlash: unique symbol;
 /**
  * @alpha
  */
-export declare type RequestHandler<PLATFORM = unknown> = (ev: RequestEvent<PLATFORM>) => Promise<void> | void;
+export declare type RequestHandler<PLATFORM = QwikCityPlatform> = (ev: RequestEvent<PLATFORM>) => Promise<void> | void;
 
 /**
  * @alpha

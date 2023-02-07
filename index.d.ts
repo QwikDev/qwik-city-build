@@ -587,7 +587,7 @@ export { RequestEvent }
 /**
  * @alpha
  */
-declare interface RequestEventAction_2<PLATFORM = unknown> extends RequestEventCommon_2<PLATFORM> {
+declare interface RequestEventAction_2<PLATFORM = QwikCityPlatform> extends RequestEventCommon_2<PLATFORM> {
     fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn_2<T>;
 }
 
@@ -596,7 +596,7 @@ export { RequestEventCommon }
 /**
  * @alpha
  */
-declare interface RequestEventCommon_2<PLATFORM = unknown> {
+declare interface RequestEventCommon_2<PLATFORM = QwikCityPlatform> {
     /**
      * HTTP response status code. Sets the status code when called with an
      * argument. Always returns the status code, so calling `status()` without
@@ -711,7 +711,7 @@ export { RequestEventLoader }
 /**
  * @alpha
  */
-declare interface RequestEventLoader_2<PLATFORM = unknown> extends RequestEventAction_2<PLATFORM> {
+declare interface RequestEventLoader_2<PLATFORM = QwikCityPlatform> extends RequestEventAction_2<PLATFORM> {
     getData: GetData;
 }
 
