@@ -15,7 +15,9 @@ function azureSwaAdapter(opts = {}) {
       const serverPackageJsonCode = `{"type":"module"}`;
       await fs.promises.mkdir(serverOutDir, { recursive: true });
       await fs.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode);
-      const azureSwaModulePath = outputEntries.find((entryName) => entryName === "entry.azure-swa");
+      const azureSwaModulePath = outputEntries.find(
+        (entryName) => entryName.indexOf("entry.azure-swa") === 0
+      );
       const funcJsonPath = join(serverOutDir, "function.json");
       const funcJson = JSON.stringify(
         {

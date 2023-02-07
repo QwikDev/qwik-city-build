@@ -15,6 +15,7 @@ function createQwikCity(opts) {
         }
       };
       const body = req.method === "HEAD" || req.method === "GET" ? void 0 : getRequestBody();
+      const url = req.headers["x-ms-original-url"];
       const options = {
         method: req.method,
         headers: req.headers,
@@ -24,14 +25,14 @@ function createQwikCity(opts) {
       const serverRequestEv = {
         mode: "server",
         locale: void 0,
-        url: new URL(req.url),
+        url: new URL(url),
         platform: context,
         env: {
           get(key) {
             return process.env[key];
           }
         },
-        request: new Request(req.url, options),
+        request: new Request(url, options),
         getWritableStream: (status, headers, _cookies) => {
           res.status = status;
           headers.forEach((value, key) => res.headers[key] = value);

@@ -50,7 +50,9 @@ function azureSwaAdapter(opts = {}) {
       const serverPackageJsonCode = `{"type":"module"}`;
       await import_node_fs.default.promises.mkdir(serverOutDir, { recursive: true });
       await import_node_fs.default.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode);
-      const azureSwaModulePath = outputEntries.find((entryName) => entryName === "entry.azure-swa");
+      const azureSwaModulePath = outputEntries.find(
+        (entryName) => entryName.indexOf("entry.azure-swa") === 0
+      );
       const funcJsonPath = (0, import_node_path.join)(serverOutDir, "function.json");
       const funcJson = JSON.stringify(
         {
