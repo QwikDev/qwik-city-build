@@ -7,7 +7,6 @@ function createQwikCity(opts) {
       status: 200,
       headers: {}
     };
-    const decoder = new TextDecoder();
     try {
       const getRequestBody = async function* () {
         for await (const chunk of req) {
@@ -36,18 +35,7 @@ function createQwikCity(opts) {
         getWritableStream: (status, headers, _cookies) => {
           res.status = status;
           headers.forEach((value, key) => res.headers[key] = value);
-          const writable = new WritableStream({
-            write(chunk) {
-              if (res.body) {
-                res.body += decoder.decode(chunk);
-              } else {
-                res.body = decoder.decode(chunk);
-              }
-            },
-            close() {
-            }
-          });
-          return writable;
+          return new WritableStream(new AzureWritableStreamSink(res));
         }
       };
       const handledResponse = await requestHandler(serverRequestEv, opts);
@@ -75,6 +63,23 @@ function createQwikCity(opts) {
 function qwikCity(render, opts) {
   return createQwikCity({ render, qwikCityPlan, ...opts });
 }
+var AzureWritableStreamSink = class {
+  constructor(res) {
+    this.res = res;
+  }
+  start() {
+    this.buffer = new Uint8Array();
+  }
+  write(chunk) {
+    const newBuffer = new Uint8Array(this.buffer.length + chunk.length);
+    newBuffer.set(this.buffer);
+    newBuffer.set(chunk, this.buffer.length);
+    this.buffer = newBuffer;
+  }
+  close() {
+    this.res.body = this.buffer;
+  }
+};
 export {
   createQwikCity,
   qwikCity
