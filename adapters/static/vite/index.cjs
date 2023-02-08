@@ -345,10 +345,11 @@ var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
 function staticAdapter(opts) {
   return viteAdapter({
     name: "static-generate",
+    origin: opts.origin,
     ssg: {
-      include: ["/*"]
-    },
-    ...opts
+      include: ["/*"],
+      ...opts
+    }
   });
 }
 var staticAdaptor = staticAdapter;
