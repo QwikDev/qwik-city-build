@@ -35,7 +35,7 @@ function createQwikCity(opts) {
           resolve(response);
           return writable;
         },
-        platform: process.env
+        platform: {}
       };
       const handledResponse = await requestHandler(serverRequestEv, opts);
       if (handledResponse) {
