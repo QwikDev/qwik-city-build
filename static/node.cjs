@@ -553,7 +553,7 @@ var kleur_default = $;
 var findLocation = (e) => {
   const stack = e.stack;
   if (typeof stack === "string") {
-    const lines = stack.split("\n");
+    const lines = stack.split("\n").filter((l) => !l.includes("/node_modules/@builder.io/qwik") && !l.includes("(node:"));
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].replace("file:///", "/");
       if (/^\s+at/.test(line)) {
@@ -646,17 +646,11 @@ function generateCodeFrame(source, start = 0, end) {
 
 // packages/qwik-city/buildtime/vite/format-error.ts
 var import_node_fs3 = __toESM(require("fs"), 1);
-var filterStack = (stack, offset = 0) => {
-  return stack.split("\n").slice(offset).filter((l) => !l.includes("/node_modules/@builder.io/qwik") && !l.includes("(node:")).join("\n");
-};
 function formatError(e) {
   if (e instanceof Error) {
     const err = e;
     let loc = err.loc;
     if (!err.frame && !err.plugin) {
-      if (typeof e.stack === "string") {
-        e.stack = filterStack(e.stack);
-      }
       if (!loc) {
         loc = findLocation(err);
       }

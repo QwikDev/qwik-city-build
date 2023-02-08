@@ -89,11 +89,9 @@ const getMenuLoader = (menus, pathname) => {
 };
 const getPathParams = (paramNames, match) => {
   const params = {};
-  let i;
-  let param;
   if (paramNames)
-    for (i = 0; i < paramNames.length; i++) {
-      param = match ? match[i + 1] : "";
+    for (let i = 0; i < paramNames.length; i++) {
+      const param = match?.[i + 1] ?? "";
       params[paramNames[i]] = param.endsWith("/") ? param.slice(0, -1) : param;
     }
   return params;
