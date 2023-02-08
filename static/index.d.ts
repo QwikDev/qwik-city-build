@@ -66,7 +66,7 @@ export declare interface StaticGenerateRenderOptions extends RenderOptions {
      * and written to the root of the `outDir`. Setting to `null` will prevent
      * the sitemap from being created.
      */
-    sitemapOutFile?: string;
+    sitemapOutFile?: string | null;
     /**
      * Log level.
      */
