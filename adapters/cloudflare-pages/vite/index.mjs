@@ -17,8 +17,7 @@ function cloudflarePagesAdapter(opts = {}) {
           conditions: ["webworker", "worker"]
         },
         ssr: {
-          target: "node",
-          format: "esm",
+          target: "webworker",
           noExternal: true
         },
         build: {
