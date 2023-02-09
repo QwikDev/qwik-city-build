@@ -23997,6 +23997,9 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       return send(statusCode, JSON.stringify(data));
     },
     send,
+    isDirty: () => {
+      return writableStream !== null;
+    },
     getWritableStream: () => {
       if (writableStream === null) {
         writableStream = serverRequestEv.getWritableStream(
@@ -24066,7 +24069,9 @@ async function runNext(requestEv, resolve4) {
       return e;
     }
   } finally {
-    resolve4(null);
+    if (!requestEv.isDirty()) {
+      resolve4(null);
+    }
   }
   return void 0;
 }

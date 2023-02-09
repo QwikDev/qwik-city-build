@@ -477,6 +477,12 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
     [RequestEvTrailingSlash]: boolean;
     [RequestEvBasePathname]: string;
     [RequestEvRoute]: LoadedRoute | null;
+    /**
+     * Check if this request is already written to.
+     *
+     * @returns true, if `getWritableStream()` has already been called.
+     */
+    isDirty(): boolean;
 }
 
 /**
