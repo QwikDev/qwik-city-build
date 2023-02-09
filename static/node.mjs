@@ -294,27 +294,31 @@ async function createSystem(opts) {
   const outDir = normalizePath(opts.outDir);
   const basePathname = opts.basePathname || "/";
   const basenameLen = basePathname.length;
-  const getFsDir = (pathname) => {
+  const getRouteFilePath = (pathname, isHtml) => {
     pathname = pathname.slice(basenameLen);
-    if (!pathname.endsWith("/")) {
-      pathname += "/";
-    }
-    return pathname;
-  };
-  const getPageFilePath = (pathname) => {
-    if (pathname.endsWith(".html")) {
-      pathname = pathname.slice(basenameLen);
+    if (isHtml) {
+      if (!pathname.endsWith(".html")) {
+        if (pathname.endsWith("/")) {
+          pathname += "index.html";
+        } else {
+          pathname += "/index.html";
+        }
+      }
     } else {
-      pathname = getFsDir(pathname) + "index.html";
+      if (pathname.endsWith("/")) {
+        pathname = pathname.slice(0, -1);
+      }
     }
     return join(outDir, pathname);
   };
   const getDataFilePath = (pathname) => {
-    if (!pathname.endsWith(".html")) {
-      pathname = getFsDir(pathname) + "q-data.json";
-      return join(outDir, pathname);
+    pathname = pathname.slice(basenameLen);
+    if (pathname.endsWith("/")) {
+      pathname += "q-data.json";
+    } else {
+      pathname += "/q-data.json";
     }
-    return null;
+    return join(outDir, pathname);
   };
   const sys = {
     createMainProcess: () => createNodeMainProcess(opts),
@@ -325,8 +329,9 @@ async function createSystem(opts) {
     createWriteStream,
     createTimer,
     access,
-    getPageFilePath,
+    getRouteFilePath,
     getDataFilePath,
+    getEnv: (key) => process.env[key],
     platform: {
       static: true,
       node: process.versions.node
@@ -401,7 +406,7 @@ async function generateNotFoundPages(sys, opts, routes) {
     const rootNotFoundPathname = basePathname + "404.html";
     const hasRootNotFound = routes.some((r) => r[3] === rootNotFoundPathname);
     if (!hasRootNotFound) {
-      const filePath = sys.getPageFilePath(rootNotFoundPathname);
+      const filePath = sys.getRouteFilePath(rootNotFoundPathname, true);
       const html = getErrorHtml(404, "Resource Not Found");
       await sys.ensureDir(filePath);
       return new Promise((resolve2) => {
@@ -775,7 +780,8 @@ ${kleur_default.bold().red("Error during SSG")}`);
         const [_, loaders, paramNames, originalPathname] = route;
         const modules = await Promise.all(loaders.map((loader) => loader()));
         const pageModule = modules[modules.length - 1];
-        if (pageModule.default) {
+        const isValidStaticModule = pageModule && (pageModule.default || pageModule.onRequest || pageModule.onGet);
+        if (isValidStaticModule) {
           if (Array.isArray(paramNames) && paramNames.length > 0) {
             if (typeof pageModule.onStaticGenerate === "function" && paramNames.length > 0) {
               const staticGenerate = await pageModule.onStaticGenerate();
@@ -867,16 +873,15 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     url: url.href,
     ok: false,
     error: null,
-    filePath: null
+    filePath: null,
+    contentType: null
   };
-  const htmlFilePath = sys.getPageFilePath(staticRoute.pathname);
-  const dataFilePath = sys.getDataFilePath(staticRoute.pathname);
-  const writeHtmlEnabled = opts.emitHtml !== false;
-  const writeDataEnabled = opts.emitData !== false && !!dataFilePath;
-  if (writeHtmlEnabled || writeDataEnabled) {
-    await sys.ensureDir(htmlFilePath);
-  }
   try {
+    let hasRouteWriter = false;
+    let closeResolved;
+    const closePromise = new Promise((closePromiseResolve) => {
+      closeResolved = closePromiseResolve;
+    });
     const request = new Request(url);
     const requestCtx = {
       mode: "static",
@@ -885,48 +890,90 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
       request,
       env: {
         get(key) {
-          return process.env[key];
+          return sys.getEnv(key);
         }
       },
+      platform: sys.platform,
       getWritableStream: (status, headers, _, _r, requestEv) => {
-        result.ok = status >= 200 && status <= 299 && (headers.get("Content-Type") || "").includes("text/html");
+        result.ok = status >= 200 && status < 300;
         if (!result.ok) {
           return noopWriter;
         }
-        const htmlWriter = writeHtmlEnabled ? sys.createWriteStream(htmlFilePath) : null;
+        const contentType = (headers.get("Content-Type") || "").toLowerCase();
+        const isHtml = contentType.includes("text/html");
+        const routeFilePath = sys.getRouteFilePath(url.pathname, isHtml);
+        hasRouteWriter = isHtml ? opts.emitHtml !== false : true;
+        const writeQDataEnabled = isHtml && opts.emitData !== false;
+        const routeWriter = hasRouteWriter ? sys.createWriteStream(routeFilePath) : null;
+        if (routeWriter) {
+          routeWriter.on("error", (e) => {
+            console.error(e);
+            hasRouteWriter = false;
+            result.error = {
+              message: e.message,
+              stack: e.stack
+            };
+            routeWriter.end();
+          });
+        }
         const stream = new WritableStream2({
+          async start() {
+            if (isHtml && (hasRouteWriter || writeQDataEnabled)) {
+              await sys.ensureDir(routeFilePath);
+            }
+          },
           write(chunk) {
-            if (htmlWriter) {
-              htmlWriter.write(Buffer.from(chunk.buffer));
+            if (routeWriter) {
+              routeWriter.write(Buffer.from(chunk.buffer));
             }
           },
           async close() {
-            const data = requestEv.sharedMap.get("qData");
-            if (writeDataEnabled) {
-              if (data) {
-                const serialized = await _serializeData(data);
-                const dataWriter = sys.createWriteStream(dataFilePath);
+            const writePromises = [];
+            if (writeQDataEnabled) {
+              const qData = requestEv.sharedMap.get("qData");
+              if (qData && !url.pathname.endsWith("/404.html")) {
+                const qDataFilePath = sys.getDataFilePath(url.pathname);
+                const dataWriter = sys.createWriteStream(qDataFilePath);
+                dataWriter.on("error", (e) => {
+                  console.error(e);
+                  result.error = {
+                    message: e.message,
+                    stack: e.stack
+                  };
+                });
+                const serialized = await _serializeData(qData);
                 dataWriter.write(serialized);
-                dataWriter.end();
+                writePromises.push(
+                  new Promise((resolve2) => {
+                    result.filePath = routeFilePath;
+                    dataWriter.end(resolve2);
+                  })
+                );
               }
             }
-            if (data) {
-              if (htmlWriter) {
-                return new Promise((resolve2) => {
-                  result.filePath = htmlFilePath;
-                  htmlWriter.end(resolve2);
-                });
-              }
+            if (routeWriter) {
+              writePromises.push(
+                new Promise((resolve2) => {
+                  result.filePath = routeFilePath;
+                  routeWriter.end(resolve2);
+                }).finally(closeResolved)
+              );
+            }
+            if (writePromises.length > 0) {
+              await Promise.all(writePromises);
             }
           }
         });
         return stream;
-      },
-      platform: sys.platform
+      }
     };
-    const promise = requestHandler(requestCtx, opts).then((rsp) => {
+    const promise = requestHandler(requestCtx, opts).then(async (rsp) => {
       if (rsp != null) {
-        return rsp.completion;
+        const r = await rsp.completion;
+        if (hasRouteWriter) {
+          await closePromise;
+        }
+        return r;
       }
     }).then((e) => {
       if (e !== void 0) {
