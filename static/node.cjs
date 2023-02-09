@@ -909,7 +909,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     contentType: null
   };
   try {
-    let hasRouteWriter = false;
+    let routeWriter = null;
     let closeResolved;
     const closePromise = new Promise((closePromiseResolve) => {
       closeResolved = closePromiseResolve;
@@ -934,24 +934,23 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
         const contentType = (headers.get("Content-Type") || "").toLowerCase();
         const isHtml = contentType.includes("text/html");
         const routeFilePath = sys.getRouteFilePath(url.pathname, isHtml);
-        hasRouteWriter = isHtml ? opts.emitHtml !== false : true;
+        const hasRouteWriter = isHtml ? opts.emitHtml !== false : true;
         const writeQDataEnabled = isHtml && opts.emitData !== false;
-        const routeWriter = hasRouteWriter ? sys.createWriteStream(routeFilePath) : null;
-        if (routeWriter) {
-          routeWriter.on("error", (e) => {
-            console.error(e);
-            hasRouteWriter = false;
-            result.error = {
-              message: e.message,
-              stack: e.stack
-            };
-            routeWriter.end();
-          });
-        }
         const stream = new import_web2.WritableStream({
           async start() {
             if (isHtml && (hasRouteWriter || writeQDataEnabled)) {
               await sys.ensureDir(routeFilePath);
+            }
+            if (hasRouteWriter) {
+              routeWriter = sys.createWriteStream(routeFilePath);
+              routeWriter.on("error", (e) => {
+                console.error(e);
+                routeWriter = null;
+                result.error = {
+                  message: e.message,
+                  stack: e.stack
+                };
+              });
             }
           },
           write(chunk) {
@@ -1002,7 +1001,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     const promise = (0, import_request_handler2.requestHandler)(requestCtx, opts).then(async (rsp) => {
       if (rsp != null) {
         const r = await rsp.completion;
-        if (hasRouteWriter) {
+        if (routeWriter) {
           await closePromise;
         }
         return r;
