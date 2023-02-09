@@ -270,7 +270,7 @@ declare class ErrorResponse extends Error {
  */
 export declare interface GetData {
     <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Promise<T>;
-    <T>(loader: Action<T>): Promise<T | undefined>;
+    <T>(action: Action<T>): Promise<T | undefined>;
 }
 
 /**

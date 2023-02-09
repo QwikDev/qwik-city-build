@@ -421,7 +421,7 @@ export declare interface FormSubmitSuccessDetail<T> {
  */
 declare interface GetData {
     <T>(loader: Loader_2<T>): Awaited<T> extends () => any ? never : Promise<T>;
-    <T>(loader: Action_2<T>): Promise<T | undefined>;
+    <T>(action: Action_2<T>): Promise<T | undefined>;
 }
 
 declare type GetValidatorType<B extends ZodReturn<any>> = B extends ZodReturn<infer TYPE> ? z.infer<z.ZodObject<TYPE>> : never;
@@ -430,7 +430,7 @@ declare type GetValueReturn<T> = (V<T> & Record<keyof F<T>, undefined>) | (F<T> 
 
 /**
  * @alpha
- * @deprecated - The "Html" component has been renamed to "QwikCity".
+ * @deprecated - The "Html" component has been renamed to "QwikCityProvider".
  */
 export declare const Html: Component<QwikCityProps>;
 
@@ -492,7 +492,7 @@ export declare const loaderQrl: <RETURN, PLATFORM = unknown>(loaderQrl: QRL<(eve
 /**
  * @alpha
  */
-export declare type LoaderSignal<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Signal<ValueOrPromise<B>> : Signal<Awaited<T>>;
+export declare type LoaderSignal<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Readonly<Signal<ValueOrPromise<B>>> : Readonly<Signal<Awaited<T>>>;
 
 /**
  * @alpha

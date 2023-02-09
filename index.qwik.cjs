@@ -216,9 +216,8 @@ const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
   }
   return null;
 };
-const clientNavigate = (win, pathname, routeNavigate) => {
+const clientNavigate = (win, newUrl, routeNavigate) => {
   const currentUrl = win.location;
-  const newUrl = toUrl(pathname, currentUrl);
   if (isSameOriginDifferentPathname(currentUrl, newUrl)) {
     handleScroll(win, currentUrl, newUrl);
     win.history.pushState("", "", toPath(newUrl));
@@ -427,10 +426,15 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
         clientPageData = env2.response;
       } else {
         const { routes, menus, cacheModules, trailingSlash } = await import("@qwik-city-plan");
+        if (url2.pathname.endsWith("/")) {
+          if (!trailingSlash)
+            url2.pathname = url2.pathname.slice(0, -1);
+        } else if (trailingSlash)
+          url2.pathname += "/";
         let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
         const pageData = clientPageData = await loadClientData(url2.href, true, action);
         if (!pageData) {
-          navPath2.untrackedValue = routeLocation2.pathname;
+          navPath2.untrackedValue = toPath(url2);
           return;
         }
         const newHref = pageData.href;
@@ -439,25 +443,19 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
           url2 = newURL;
           loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
         }
-        if (url2.pathname.endsWith("/")) {
-          if (!trailingSlash)
-            url2.pathname = url2.pathname.slice(0, -1);
-        } else if (trailingSlash)
-          url2.pathname += "/";
         loadedRoute = await loadRoutePromise;
       }
       if (loadedRoute) {
         const [params, mods, menu] = loadedRoute;
-        const pathname = url2.pathname;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
         routeLocation2.href = url2.href;
-        routeLocation2.pathname = pathname;
+        routeLocation2.pathname = url2.pathname;
         routeLocation2.params = {
           ...params
         };
         routeLocation2.query = url2.searchParams;
-        navPath2.untrackedValue = pathname;
+        navPath2.untrackedValue = toPath(url2);
         const resolvedHead = resolveHead(clientPageData, routeLocation2, contentModules, locale);
         content2.headings = pageModule.headings;
         content2.menu = menu;
@@ -472,7 +470,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
           if (loaders)
             Object.assign(loaderState2, loaders);
           CLIENT_DATA_CACHE.clear();
-          clientNavigate(window, pathname, navPath2);
+          clientNavigate(window, url2, navPath2);
           routeLocation2.isNavigating = false;
         }
       }
@@ -495,7 +493,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
   return /* @__PURE__ */ jsxRuntime.jsx(qwik.Slot, {}, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
 const QwikCity = QwikCityProvider;
-const Html = QwikCity;
+const Html = QwikCityProvider;
 const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((props) => {
   const urlEnv = props.url ?? "http://localhost/";
   const url = new URL(urlEnv);
