@@ -906,7 +906,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
         const writeQDataEnabled = isHtml && opts.emitData !== false;
         const stream = new WritableStream2({
           async start() {
-            if (isHtml && (hasRouteWriter || writeQDataEnabled)) {
+            if (hasRouteWriter || writeQDataEnabled) {
               await sys.ensureDir(routeFilePath);
             }
             if (hasRouteWriter) {
