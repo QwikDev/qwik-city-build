@@ -187,13 +187,15 @@ function createQwikCity(opts) {
   };
   const notFound = async (req, res, next) => {
     try {
-      const url = getUrl(req);
-      const notFoundHtml = getNotFound(url.pathname);
-      res.writeHead(404, {
-        "Content-Type": "text/html; charset=utf-8",
-        "X-Not-Found": url.pathname
-      });
-      res.end(notFoundHtml);
+      if (!res.headersSent) {
+        const url = getUrl(req);
+        const notFoundHtml = getNotFound(url.pathname);
+        res.writeHead(404, {
+          "Content-Type": "text/html; charset=utf-8",
+          "X-Not-Found": url.pathname
+        });
+        res.end(notFoundHtml);
+      }
     } catch (e) {
       console.error(e);
       next(e);
