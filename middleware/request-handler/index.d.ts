@@ -490,6 +490,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
  */
 export declare interface RequestEventLoader<PLATFORM = QwikCityPlatform> extends RequestEventAction<PLATFORM> {
     getData: GetData;
+    streaming: <T>(returnData: Promise<T> | (() => Promise<T>)) => StreamingReturn<T>;
 }
 
 declare const RequestEvLoaders: unique symbol;
@@ -592,5 +593,10 @@ declare interface StaticGenerate {
  * @alpha
  */
 declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
+
+/**
+ * @alpha
+ */
+export declare type StreamingReturn<T> = () => Promise<T>;
 
 export { }

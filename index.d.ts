@@ -18,6 +18,7 @@ import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-han
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import type { Signal } from '@builder.io/qwik';
+import { StreamingReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
 
@@ -717,6 +718,7 @@ export { RequestEventLoader }
  */
 declare interface RequestEventLoader_2<PLATFORM = QwikCityPlatform> extends RequestEventAction_2<PLATFORM> {
     getData: GetData;
+    streaming: <T>(returnData: Promise<T> | (() => Promise<T>)) => StreamingReturn_2<T>;
 }
 
 export { RequestHandler }
@@ -799,6 +801,13 @@ export declare interface StaticGenerate {
  * @alpha
  */
 export declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
+
+export { StreamingReturn }
+
+/**
+ * @alpha
+ */
+declare type StreamingReturn_2<T> = () => Promise<T>;
 
 /**
  * @alpha

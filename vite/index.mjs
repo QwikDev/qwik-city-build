@@ -23650,7 +23650,8 @@ function actionsMiddleware(serverLoaders) {
         serverLoaders.map((loader) => {
           const loaderId = loader.__qrl.getHash();
           return loaders[loaderId] = Promise.resolve().then(() => loader.__qrl(requestEv)).then((loaderResolved) => {
-            return loaders[loaderId] = typeof loaderResolved === "function" ? loaderResolved() : loaderResolved;
+            loaders[loaderId] = typeof loaderResolved === "function" ? loaderResolved() : loaderResolved;
+            return loaderResolved;
           });
         })
       );
@@ -23964,6 +23965,9 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
         headers.set("Cache-Control", "no-store");
       }
       return new RedirectMessage();
+    },
+    streaming: (returnData) => {
+      return typeof returnData === "function" ? returnData : () => returnData;
     },
     fail: (statusCode, data) => {
       check();
