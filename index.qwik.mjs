@@ -13,12 +13,12 @@ const RouteLocationContext = /* @__PURE__ */ createContext("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContext("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContext("qc-a");
 const RouterOutlet = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
-  const { value } = useContext(ContentInternalContext);
-  if (value && value.length > 0) {
-    const contentsLen = value.length;
+  const context = useContext(ContentInternalContext);
+  if (context.value && context.value.length > 0) {
+    const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
-      cmp = jsx(value[i].default, {
+      cmp = jsx(context.value[i].default, {
         children: cmp,
         [_IMMUTABLE]: {
           children: false

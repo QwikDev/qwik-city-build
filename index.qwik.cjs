@@ -14,12 +14,12 @@ const RouteLocationContext = /* @__PURE__ */ qwik.createContext("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ qwik.createContext("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContext("qc-a");
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() => {
-  const { value } = qwik.useContext(ContentInternalContext);
-  if (value && value.length > 0) {
-    const contentsLen = value.length;
+  const context = qwik.useContext(ContentInternalContext);
+  if (context.value && context.value.length > 0) {
+    const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
-      cmp = qwik.jsx(value[i].default, {
+      cmp = qwik.jsx(context.value[i].default, {
         children: cmp,
         [qwik._IMMUTABLE]: {
           children: false
