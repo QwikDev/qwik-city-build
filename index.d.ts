@@ -33,10 +33,13 @@ export declare const action$: ActionConstructor;
  * @alpha
  */
 export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL extends boolean = true> {
-    readonly [isServerLoader]?: true;
     /**
      * Returns the `ActionStore` containing the current action state and methods to invoke it from a component$().
      * Like all `use-` functions and methods, it can only be invoked within a `component$()`.
+     */
+    (): ActionStore<RETURN, INPUT, OPTIONAL>;
+    /**
+     * @deprecated - call as a function instead
      */
     use(): ActionStore<RETURN, INPUT, OPTIONAL>;
 }
@@ -83,10 +86,10 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      * ```tsx
      * import {action$, Form} from '@builder.io/qwik-city';
      *
-     * export const addUser = action$(() => { ... });
+     * export const useAddUser = action$(() => { ... });
      *
      * export default component$(() => {
-     *   const action = addUser.use()l
+     *   const action = useAddUser()l
      *   return (
      *     <Form action={action}/>
      *   );
@@ -385,7 +388,7 @@ export declare const Form: <O, I>({ action, spaReset, reloadDocument, onSubmit$,
  */
 export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements['form'], 'action' | 'method'> {
     /**
-     * Reference to the action returned by `action.use()`.
+     * Reference to the action returned by `action()`.
      */
     action: ActionStore<O, I, true | false>;
     /**
@@ -434,8 +437,6 @@ declare type GetValueReturn<T> = (V<T> & Record<keyof F<T>, undefined>) | (F<T> 
  */
 export declare const Html: Component<QwikCityProps>;
 
-declare const isServerLoader: unique symbol;
-
 /**
  * @alpha
  */
@@ -476,10 +477,13 @@ export declare const loader$: <RETURN, PLATFORM = unknown>(first: (event: Reques
  * @alpha
  */
 export declare interface Loader<RETURN> {
-    readonly [isServerLoader]?: true;
     /**
      * Returns the `Signal` containing the data returned by the `loader$` function.
      * Like all `use-` functions and methods, it can only be invoked within a `component$()`.
+     */
+    (): LoaderSignal<RETURN>;
+    /**
+     * @deprecated - call as a function instead
      */
     use(): LoaderSignal<RETURN>;
 }

@@ -23598,7 +23598,7 @@ var _resolveRequestHandlers = (serverLoaders, requestHandlers, routeModules, col
   }
 };
 var checkBrand = (obj, brand) => {
-  return obj && typeof obj === "object" && obj.__brand === brand;
+  return obj && typeof obj === "function" && obj.__brand === brand;
 };
 function actionsMiddleware(serverLoaders) {
   return async (requestEv) => {

@@ -551,15 +551,10 @@ let windowInnerWidth = 0;
 const ServiceWorkerRegister = () => jsx("script", {
   dangerouslySetInnerHTML: swRegister
 });
-class ActionImpl {
-  constructor(__qrl, __schema) {
-    this.__qrl = __qrl;
-    this.__schema = __schema;
-    this.__brand = "server_action";
-  }
-  use() {
+const actionQrl = (actionQrl2, options) => {
+  const id = actionQrl2.getHash();
+  function action() {
     const loc = useLocation();
-    const id = this.__qrl.getHash();
     const currentAction = useAction();
     const initialState = {
       actionPath: `?${QACTION_KEY}=${id}`,
@@ -627,7 +622,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
           value: result
         };
       });
-    }, "ActionImpl_MLsGa2EjBII", [
+    }, "actionQrl_action_8eAhmK7N0n0", [
       currentAction,
       id,
       loc,
@@ -635,9 +630,10 @@ Action.run() can only be called on the browser, for example when a user clicks a
     ]);
     return state;
   }
-}
-const actionQrl = (actionQrl2, options) => {
-  const action = new ActionImpl(actionQrl2, options);
+  action.__brand = "server_action";
+  action.__schema = options;
+  action.__qrl = actionQrl2;
+  action.use = action;
   if (isServer) {
     if (typeof globalThis._qwikActionsMap === "undefined")
       globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
@@ -646,24 +642,21 @@ const actionQrl = (actionQrl2, options) => {
   return action;
 };
 const action$ = implicit$FirstArg(actionQrl);
-class LoaderImpl {
-  constructor(__qrl) {
-    this.__qrl = __qrl;
-    this.__brand = "server_loader";
-  }
-  use() {
+const loaderQrl = (loaderQrl2) => {
+  const hash = loaderQrl2.getHash();
+  function loader() {
     return useContext(RouteStateContext, (state) => {
-      const hash = this.__qrl.getHash();
       if (!(hash in state))
         throw new Error(`Loader was used in a path where the 'loader$' was not declared.
-This is likely because the used loader was not exported in a layout.tsx or index.tsx file of the existing route.
-For more information check: https://qwik.builder.io/qwikcity/loader`);
+    This is likely because the used loader was not exported in a layout.tsx or index.tsx file of the existing route.
+    For more information check: https://qwik.builder.io/qwikcity/loader`);
       return _wrapSignal(state, hash);
     });
   }
-}
-const loaderQrl = (loaderQrl2) => {
-  return new LoaderImpl(loaderQrl2);
+  loader.__brand = "server_loader";
+  loader.__qrl = loaderQrl2;
+  loader.use = loader;
+  return loader;
 };
 const loader$ = implicit$FirstArg(loaderQrl);
 const zodQrl = async (qrl) => {
