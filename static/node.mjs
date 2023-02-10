@@ -906,60 +906,84 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
         const writeQDataEnabled = isHtml && opts.emitData !== false;
         const stream = new WritableStream2({
           async start() {
-            if (hasRouteWriter || writeQDataEnabled) {
-              await sys.ensureDir(routeFilePath);
-            }
-            if (hasRouteWriter) {
-              routeWriter = sys.createWriteStream(routeFilePath);
-              routeWriter.on("error", (e) => {
-                console.error(e);
-                routeWriter = null;
-                result.error = {
-                  message: e.message,
-                  stack: e.stack
-                };
-              });
-            }
-          },
-          write(chunk) {
-            if (routeWriter) {
-              routeWriter.write(Buffer.from(chunk.buffer));
-            }
-          },
-          async close() {
-            const writePromises = [];
-            if (writeQDataEnabled) {
-              const qData = requestEv.sharedMap.get("qData");
-              if (qData && !url.pathname.endsWith("/404.html")) {
-                const qDataFilePath = sys.getDataFilePath(url.pathname);
-                const dataWriter = sys.createWriteStream(qDataFilePath);
-                dataWriter.on("error", (e) => {
+            try {
+              if (hasRouteWriter || writeQDataEnabled) {
+                await sys.ensureDir(routeFilePath);
+              }
+              if (hasRouteWriter) {
+                routeWriter = sys.createWriteStream(routeFilePath);
+                routeWriter.on("error", (e) => {
                   console.error(e);
+                  routeWriter = null;
                   result.error = {
                     message: e.message,
                     stack: e.stack
                   };
                 });
-                const serialized = await _serializeData(qData);
-                dataWriter.write(serialized);
+              }
+            } catch (e) {
+              routeWriter = null;
+              result.error = {
+                message: String(e),
+                stack: e.stack || ""
+              };
+            }
+          },
+          write(chunk) {
+            try {
+              if (routeWriter) {
+                routeWriter.write(Buffer.from(chunk.buffer));
+              }
+            } catch (e) {
+              routeWriter = null;
+              result.error = {
+                message: String(e),
+                stack: e.stack || ""
+              };
+            }
+          },
+          async close() {
+            const writePromises = [];
+            try {
+              if (writeQDataEnabled) {
+                const qData = requestEv.sharedMap.get("qData");
+                if (qData && !url.pathname.endsWith("/404.html")) {
+                  const qDataFilePath = sys.getDataFilePath(url.pathname);
+                  const dataWriter = sys.createWriteStream(qDataFilePath);
+                  dataWriter.on("error", (e) => {
+                    console.error(e);
+                    result.error = {
+                      message: e.message,
+                      stack: e.stack
+                    };
+                  });
+                  const serialized = await _serializeData(qData);
+                  dataWriter.write(serialized);
+                  writePromises.push(
+                    new Promise((resolve2) => {
+                      result.filePath = routeFilePath;
+                      dataWriter.end(resolve2);
+                    })
+                  );
+                }
+              }
+              if (routeWriter) {
                 writePromises.push(
                   new Promise((resolve2) => {
                     result.filePath = routeFilePath;
-                    dataWriter.end(resolve2);
-                  })
+                    routeWriter.end(resolve2);
+                  }).finally(closeResolved)
                 );
               }
-            }
-            if (routeWriter) {
-              writePromises.push(
-                new Promise((resolve2) => {
-                  result.filePath = routeFilePath;
-                  routeWriter.end(resolve2);
-                }).finally(closeResolved)
-              );
-            }
-            if (writePromises.length > 0) {
-              await Promise.all(writePromises);
+              if (writePromises.length > 0) {
+                await Promise.all(writePromises);
+              }
+            } catch (e) {
+              routeWriter = null;
+              result.error = {
+                message: String(e),
+                stack: e.stack || ""
+              };
             }
           }
         });
