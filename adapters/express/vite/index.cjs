@@ -36,8 +36,7 @@ function expressAdapter(opts = {}) {
     config() {
       return {
         ssr: {
-          target: "webworker",
-          noExternal: true
+          target: "node"
         },
         build: {
           ssr: true
