@@ -5,6 +5,7 @@ import { Component } from '@builder.io/qwik';
 import { Cookie } from '@builder.io/qwik-city/middleware/request-handler';
 import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler';
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
+import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { FailReturn as FailReturn_2 } from '@builder.io/qwik-city';
 import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
@@ -18,7 +19,6 @@ import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-han
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import type { Signal } from '@builder.io/qwik';
-import { StreamingReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
 
@@ -262,6 +262,13 @@ declare interface CookieValue_2 {
     json: <T = unknown>() => T;
     number: () => number;
 }
+
+export { DeferReturn }
+
+/**
+ * @alpha
+ */
+declare type DeferReturn_2<T> = () => Promise<T>;
 
 /**
  * @alpha
@@ -718,7 +725,7 @@ export { RequestEventLoader }
  */
 declare interface RequestEventLoader_2<PLATFORM = QwikCityPlatform> extends RequestEventAction_2<PLATFORM> {
     getData: GetData;
-    streaming: <T>(returnData: Promise<T> | (() => Promise<T>)) => StreamingReturn_2<T>;
+    defer: <T>(returnData: Promise<T> | (() => Promise<T>)) => DeferReturn_2<T>;
 }
 
 export { RequestHandler }
@@ -801,13 +808,6 @@ export declare interface StaticGenerate {
  * @alpha
  */
 export declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
-
-export { StreamingReturn }
-
-/**
- * @alpha
- */
-declare type StreamingReturn_2<T> = () => Promise<T>;
 
 /**
  * @alpha

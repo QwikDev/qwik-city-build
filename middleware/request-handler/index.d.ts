@@ -169,6 +169,11 @@ export declare interface CookieValue {
 /**
  * @alpha
  */
+export declare type DeferReturn<T> = () => Promise<T>;
+
+/**
+ * @alpha
+ */
 declare type DocumentHead = DocumentHeadValue | ((props: DocumentHeadProps) => DocumentHeadValue);
 
 /**
@@ -490,7 +495,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
  */
 export declare interface RequestEventLoader<PLATFORM = QwikCityPlatform> extends RequestEventAction<PLATFORM> {
     getData: GetData;
-    streaming: <T>(returnData: Promise<T> | (() => Promise<T>)) => StreamingReturn<T>;
+    defer: <T>(returnData: Promise<T> | (() => Promise<T>)) => DeferReturn<T>;
 }
 
 declare const RequestEvLoaders: unique symbol;
@@ -593,10 +598,5 @@ declare interface StaticGenerate {
  * @alpha
  */
 declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
-
-/**
- * @alpha
- */
-export declare type StreamingReturn<T> = () => Promise<T>;
 
 export { }

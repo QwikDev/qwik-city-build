@@ -743,7 +743,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       }
       return new RedirectMessage();
     },
-    streaming: (returnData) => {
+    defer: (returnData) => {
       return typeof returnData === "function" ? returnData : () => returnData;
     },
     fail: (statusCode, data) => {
