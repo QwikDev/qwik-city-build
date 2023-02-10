@@ -8,17 +8,11 @@ import { getNotFound } from "@qwik-city-not-found-paths";
 function createQwikCity(opts) {
   async function onAzureSwaRequest(context, req) {
     try {
-      const getRequestBody = async function* () {
-        for await (const chunk of req) {
-          yield chunk;
-        }
-      };
-      const body = req.method === "HEAD" || req.method === "GET" ? void 0 : getRequestBody();
       const url = new URL(req.headers["x-ms-original-url"]);
       const options = {
         method: req.method,
         headers: req.headers,
-        body,
+        body: req.body,
         duplex: "half"
       };
       const serverRequestEv = {
