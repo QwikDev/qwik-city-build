@@ -751,8 +751,18 @@ routeBundleNames: string[]
  */
 export declare interface RouteLocation {
     readonly params: Readonly<Record<string, string>>;
+    readonly url: URL;
+    /**
+     * @deprecated Please use `url` instead of href
+     */
     readonly href: string;
+    /**
+     * @deprecated Please use `url` instead of pathname
+     */
     readonly pathname: string;
+    /**
+     * @deprecated Please use `url` instead of query
+     */
     readonly query: URLSearchParams;
     readonly isNavigating: boolean;
 }
