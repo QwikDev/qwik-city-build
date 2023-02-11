@@ -43,11 +43,13 @@ var import_node_path = require("path");
 var import_node_url = require("url");
 
 // packages/qwik-city/middleware/node/http.ts
-var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER = "host" } = process.env;
+var import_node_http2 = require("http2");
+var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER } = process.env;
 function getOrigin(req) {
   const headers = req.headers;
   const protocol = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
-  const host = headers[HOST_HEADER];
+  const hostHeader = HOST_HEADER ?? (req instanceof import_node_http2.Http2ServerRequest ? ":authority" : "host");
+  const host = headers[hostHeader];
   return `${protocol}://${host}`;
 }
 function getUrl(req) {

@@ -24117,7 +24117,19 @@ var getPathParams = (paramNames, match) => {
 };
 
 // packages/qwik-city/middleware/node/http.ts
-var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER = "host" } = process.env;
+import { Http2ServerRequest } from "http2";
+var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER } = process.env;
+function getOrigin(req) {
+  const headers = req.headers;
+  const protocol2 = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
+  const hostHeader = HOST_HEADER ?? (req instanceof Http2ServerRequest ? ":authority" : "host");
+  const host = headers[hostHeader];
+  return `${protocol2}://${host}`;
+}
+function getUrl(req) {
+  const origin = ORIGIN ?? getOrigin(req);
+  return new URL(req.url || "/", origin);
+}
 async function fromNodeHttp(url, req, res, mode) {
   const requestHeaders = new Headers();
   const nodeRequestHeaders = req.headers;
@@ -24327,7 +24339,7 @@ function ssrDevMiddleware(ctx, server) {
   };
   return async (req, res, next) => {
     try {
-      const url = new URL(req.originalUrl, `http://${req.headers.host}`);
+      const url = getUrl(req);
       if (skipRequest(url.pathname) || isVitePing(url.pathname, req.headers)) {
         next();
         return;

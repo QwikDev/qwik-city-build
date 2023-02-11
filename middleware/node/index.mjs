@@ -8,11 +8,13 @@ import { extname, join } from "path";
 import { fileURLToPath } from "url";
 
 // packages/qwik-city/middleware/node/http.ts
-var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER = "host" } = process.env;
+import { Http2ServerRequest } from "http2";
+var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER } = process.env;
 function getOrigin(req) {
   const headers = req.headers;
   const protocol = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
-  const host = headers[HOST_HEADER];
+  const hostHeader = HOST_HEADER ?? (req instanceof Http2ServerRequest ? ":authority" : "host");
+  const host = headers[hostHeader];
   return `${protocol}://${host}`;
 }
 function getUrl(req) {
