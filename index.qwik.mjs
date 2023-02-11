@@ -1,17 +1,17 @@
-import { createContext, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import { cacheModules, menus, routes, trailingSlash } from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
 import { z } from "zod";
 import { z as z2 } from "zod";
-const RouteStateContext = /* @__PURE__ */ createContext("qc-s");
-const ContentContext = /* @__PURE__ */ createContext("qc-c");
-const ContentInternalContext = /* @__PURE__ */ createContext("qc-ic");
-const DocumentHeadContext = /* @__PURE__ */ createContext("qc-h");
-const RouteLocationContext = /* @__PURE__ */ createContext("qc-l");
-const RouteNavigateContext = /* @__PURE__ */ createContext("qc-n");
-const RouteActionContext = /* @__PURE__ */ createContext("qc-a");
+const RouteStateContext = /* @__PURE__ */ createContextId("qc-s");
+const ContentContext = /* @__PURE__ */ createContextId("qc-c");
+const ContentInternalContext = /* @__PURE__ */ createContextId("qc-ic");
+const DocumentHeadContext = /* @__PURE__ */ createContextId("qc-h");
+const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
+const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
+const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouterOutlet = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {

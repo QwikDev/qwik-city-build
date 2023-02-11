@@ -6,13 +6,13 @@ const build = require("@builder.io/qwik/build");
 const _qwikCityPlan = require("@qwik-city-plan");
 const swRegister = require("@qwik-city-sw-register");
 const zod = require("zod");
-const RouteStateContext = /* @__PURE__ */ qwik.createContext("qc-s");
-const ContentContext = /* @__PURE__ */ qwik.createContext("qc-c");
-const ContentInternalContext = /* @__PURE__ */ qwik.createContext("qc-ic");
-const DocumentHeadContext = /* @__PURE__ */ qwik.createContext("qc-h");
-const RouteLocationContext = /* @__PURE__ */ qwik.createContext("qc-l");
-const RouteNavigateContext = /* @__PURE__ */ qwik.createContext("qc-n");
-const RouteActionContext = /* @__PURE__ */ qwik.createContext("qc-a");
+const RouteStateContext = /* @__PURE__ */ qwik.createContextId("qc-s");
+const ContentContext = /* @__PURE__ */ qwik.createContextId("qc-c");
+const ContentInternalContext = /* @__PURE__ */ qwik.createContextId("qc-ic");
+const DocumentHeadContext = /* @__PURE__ */ qwik.createContextId("qc-h");
+const RouteLocationContext = /* @__PURE__ */ qwik.createContextId("qc-l");
+const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
+const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() => {
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
