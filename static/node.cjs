@@ -116,9 +116,248 @@ function normalizePath(path) {
   return path;
 }
 
+// packages/qwik-city/static/worker-thread.ts
+var import_request_handler = require("../middleware/request-handler/index.cjs");
+var import_node_url = require("url");
+var import_web2 = require("stream/web");
+var import_qwik = require("@builder.io/qwik");
+async function workerThread(sys) {
+  const ssgOpts = sys.getOptions();
+  const pendingPromises = /* @__PURE__ */ new Set();
+  const opts = {
+    ...ssgOpts,
+    render: (await import((0, import_node_url.pathToFileURL)(ssgOpts.renderModulePath).href)).default,
+    qwikCityPlan: (await import((0, import_node_url.pathToFileURL)(ssgOpts.qwikCityPlanModulePath).href)).default
+  };
+  sys.createWorkerProcess(async (msg) => {
+    switch (msg.type) {
+      case "render": {
+        return new Promise((resolve2) => {
+          workerRender(sys, opts, msg, pendingPromises, resolve2);
+        });
+      }
+      case "close": {
+        const promises = Array.from(pendingPromises);
+        pendingPromises.clear();
+        await Promise.all(promises);
+        return { type: "close" };
+      }
+    }
+  });
+}
+async function createSingleThreadWorker(sys) {
+  const ssgOpts = sys.getOptions();
+  const pendingPromises = /* @__PURE__ */ new Set();
+  const opts = {
+    ...ssgOpts,
+    render: (await import((0, import_node_url.pathToFileURL)(ssgOpts.renderModulePath).href)).default,
+    qwikCityPlan: (await import((0, import_node_url.pathToFileURL)(ssgOpts.qwikCityPlanModulePath).href)).default
+  };
+  return (staticRoute) => {
+    return new Promise((resolve2) => {
+      workerRender(sys, opts, staticRoute, pendingPromises, resolve2);
+    });
+  };
+}
+async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
+  const url = new URL(staticRoute.pathname, opts.origin);
+  const result = {
+    type: "render",
+    pathname: staticRoute.pathname,
+    url: url.href,
+    ok: false,
+    error: null,
+    filePath: null,
+    contentType: null
+  };
+  try {
+    let routeWriter = null;
+    let closeResolved;
+    const closePromise = new Promise((closePromiseResolve) => {
+      closeResolved = closePromiseResolve;
+    });
+    const request = new Request(url);
+    const requestCtx = {
+      mode: "static",
+      locale: void 0,
+      url,
+      request,
+      env: {
+        get(key) {
+          return sys.getEnv(key);
+        }
+      },
+      platform: sys.platform,
+      getWritableStream: (status, headers, _, _r, requestEv) => {
+        result.ok = status >= 200 && status < 300;
+        if (!result.ok) {
+          return noopWritableStream;
+        }
+        const contentType = (headers.get("Content-Type") || "").toLowerCase();
+        const isHtml = contentType.includes("text/html");
+        const routeFilePath = sys.getRouteFilePath(url.pathname, isHtml);
+        const hasRouteWriter = isHtml ? opts.emitHtml !== false : true;
+        const writeQDataEnabled = isHtml && opts.emitData !== false;
+        const stream = new import_web2.WritableStream({
+          async start() {
+            try {
+              if (hasRouteWriter || writeQDataEnabled) {
+                await sys.ensureDir(routeFilePath);
+              }
+              if (hasRouteWriter) {
+                routeWriter = sys.createWriteStream(routeFilePath);
+                routeWriter.on("error", (e) => {
+                  console.error(e);
+                  routeWriter = null;
+                  result.error = {
+                    message: e.message,
+                    stack: e.stack
+                  };
+                });
+              }
+            } catch (e) {
+              routeWriter = null;
+              result.error = {
+                message: String(e),
+                stack: e.stack || ""
+              };
+            }
+          },
+          write(chunk) {
+            try {
+              if (routeWriter) {
+                routeWriter.write(Buffer.from(chunk.buffer));
+              }
+            } catch (e) {
+              routeWriter = null;
+              result.error = {
+                message: String(e),
+                stack: e.stack || ""
+              };
+            }
+          },
+          async close() {
+            const writePromises = [];
+            try {
+              if (writeQDataEnabled) {
+                const qData = requestEv.sharedMap.get("qData");
+                if (qData && !url.pathname.endsWith("/404.html")) {
+                  const qDataFilePath = sys.getDataFilePath(url.pathname);
+                  const dataWriter = sys.createWriteStream(qDataFilePath);
+                  dataWriter.on("error", (e) => {
+                    console.error(e);
+                    result.error = {
+                      message: e.message,
+                      stack: e.stack
+                    };
+                  });
+                  const serialized = await (0, import_qwik._serializeData)(qData);
+                  dataWriter.write(serialized);
+                  writePromises.push(
+                    new Promise((resolve2) => {
+                      result.filePath = routeFilePath;
+                      dataWriter.end(resolve2);
+                    })
+                  );
+                }
+              }
+              if (routeWriter) {
+                writePromises.push(
+                  new Promise((resolve2) => {
+                    result.filePath = routeFilePath;
+                    routeWriter.end(resolve2);
+                  }).finally(closeResolved)
+                );
+              }
+              if (writePromises.length > 0) {
+                await Promise.all(writePromises);
+              }
+            } catch (e) {
+              routeWriter = null;
+              result.error = {
+                message: String(e),
+                stack: e.stack || ""
+              };
+            }
+          }
+        });
+        return stream;
+      }
+    };
+    const promise = (0, import_request_handler.requestHandler)(requestCtx, opts).then((rsp) => {
+      if (rsp != null) {
+        return rsp.completion.then((r) => {
+          if (routeWriter) {
+            return closePromise.then(() => r);
+          }
+          return r;
+        });
+      }
+    }).then((e) => {
+      if (e !== void 0) {
+        if (e instanceof Error) {
+          result.error = {
+            message: e.message,
+            stack: e.stack
+          };
+        } else {
+          result.error = {
+            message: String(e),
+            stack: void 0
+          };
+        }
+      }
+    }).finally(() => {
+      pendingPromises.delete(promise);
+      callback(result);
+    });
+    pendingPromises.add(promise);
+  } catch (e) {
+    if (e instanceof Error) {
+      result.error = {
+        message: e.message,
+        stack: e.stack
+      };
+    } else {
+      result.error = {
+        message: String(e),
+        stack: void 0
+      };
+    }
+    callback(result);
+  }
+}
+var noopWriter = {
+  closed: Promise.resolve(void 0),
+  ready: Promise.resolve(void 0),
+  desiredSize: 0,
+  async close() {
+  },
+  async abort() {
+  },
+  async write() {
+  },
+  releaseLock() {
+  }
+};
+var noopWritableStream = {
+  get locked() {
+    return false;
+  },
+  set locked(_) {
+  },
+  async abort() {
+  },
+  async close() {
+  },
+  getWriter() {
+    return noopWriter;
+  }
+};
+
 // packages/qwik-city/static/node/node-main.ts
 var import_meta = {};
-async function createNodeMainProcess(opts) {
+async function createNodeMainProcess(sys, opts) {
   const ssgWorkers = [];
   const sitemapBuffer = [];
   let sitemapPromise = null;
@@ -148,7 +387,24 @@ async function createNodeMainProcess(opts) {
       sitemapOutFile = (0, import_node_path2.resolve)(outDir, sitemapOutFile);
     }
   }
-  const createWorker = () => {
+  const singleThreadWorker = await createSingleThreadWorker(sys);
+  const createWorker = (workerIndex) => {
+    if (workerIndex === 0) {
+      const ssgSameThreadWorker = {
+        activeTasks: 0,
+        totalTasks: 0,
+        render: async (staticRoute) => {
+          ssgSameThreadWorker.activeTasks++;
+          ssgSameThreadWorker.totalTasks++;
+          const result = await singleThreadWorker(staticRoute);
+          ssgSameThreadWorker.activeTasks--;
+          return result;
+        },
+        terminate: async () => {
+        }
+      };
+      return ssgSameThreadWorker;
+    }
     let terminateResolve = null;
     const mainTasks = /* @__PURE__ */ new Map();
     let workerFilePath;
@@ -269,7 +525,7 @@ async function createNodeMainProcess(opts) {
     );
   }
   for (let i = 0; i < maxWorkers; i++) {
-    ssgWorkers.push(createWorker());
+    ssgWorkers.push(createWorker(i));
   }
   const mainCtx = {
     hasAvailableWorker,
@@ -353,7 +609,7 @@ async function createSystem(opts) {
     return (0, import_node_path3.join)(outDir, pathname);
   };
   const sys = {
-    createMainProcess: () => createNodeMainProcess(opts),
+    createMainProcess: null,
     createWorkerProcess: createNodeWorkerProcess,
     createLogger,
     getOptions: () => opts,
@@ -369,6 +625,7 @@ async function createSystem(opts) {
       node: process.versions.node
     }
   };
+  sys.createMainProcess = () => createNodeMainProcess(sys, opts);
   return sys;
 }
 var ensureDir = async (filePath) => {
@@ -431,7 +688,7 @@ function routeToRegExp(rule) {
 }
 
 // packages/qwik-city/static/not-found.ts
-var import_request_handler = require("../middleware/request-handler/index.cjs");
+var import_request_handler2 = require("../middleware/request-handler/index.cjs");
 async function generateNotFoundPages(sys, opts, routes) {
   if (opts.emit404Pages !== false) {
     const basePathname = opts.basePathname || "/";
@@ -439,7 +696,7 @@ async function generateNotFoundPages(sys, opts, routes) {
     const hasRootNotFound = routes.some((r) => r[3] === rootNotFoundPathname);
     if (!hasRootNotFound) {
       const filePath = sys.getRouteFilePath(rootNotFoundPathname, true);
-      const html = (0, import_request_handler.getErrorHtml)(404, "Resource Not Found");
+      const html = (0, import_request_handler2.getErrorHtml)(404, "Resource Not Found");
       await sys.ensureDir(filePath);
       return new Promise((resolve2) => {
         const writer = sys.createWriteStream(filePath);
@@ -451,7 +708,7 @@ async function generateNotFoundPages(sys, opts, routes) {
 }
 
 // packages/qwik-city/static/main-thread.ts
-var import_node_url = require("url");
+var import_node_url2 = require("url");
 var import_node_path4 = require("path");
 
 // node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/index.mjs
@@ -683,7 +940,7 @@ async function mainThread(sys) {
   const main = await sys.createMainProcess();
   const log = await sys.createLogger();
   log.info("\n" + kleur_default.bold().green("Starting Qwik City SSG..."));
-  const qwikCityPlan = (await import((0, import_node_url.pathToFileURL)(opts.qwikCityPlanModulePath).href)).default;
+  const qwikCityPlan = (await import((0, import_node_url2.pathToFileURL)(opts.qwikCityPlanModulePath).href)).default;
   const queue = [];
   const active = /* @__PURE__ */ new Set();
   const routes = qwikCityPlan.routes || [];
@@ -867,209 +1124,6 @@ function validateOptions(opts) {
     throw new Error(`Invalid "origin": ${e}`);
   }
 }
-
-// packages/qwik-city/static/worker-thread.ts
-var import_request_handler2 = require("../middleware/request-handler/index.cjs");
-var import_node_url2 = require("url");
-var import_web2 = require("stream/web");
-var import_qwik = require("@builder.io/qwik");
-async function workerThread(sys) {
-  const ssgOpts = sys.getOptions();
-  const pendingPromises = /* @__PURE__ */ new Set();
-  const opts = {
-    ...ssgOpts,
-    render: (await import((0, import_node_url2.pathToFileURL)(ssgOpts.renderModulePath).href)).default,
-    qwikCityPlan: (await import((0, import_node_url2.pathToFileURL)(ssgOpts.qwikCityPlanModulePath).href)).default
-  };
-  sys.createWorkerProcess(async (msg) => {
-    switch (msg.type) {
-      case "render": {
-        return new Promise((resolve2) => {
-          workerRender(sys, opts, msg, pendingPromises, resolve2);
-        });
-      }
-      case "close": {
-        const promises = Array.from(pendingPromises);
-        pendingPromises.clear();
-        await Promise.all(promises);
-        return { type: "close" };
-      }
-    }
-  });
-}
-async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
-  const url = new URL(staticRoute.pathname, opts.origin);
-  const result = {
-    type: "render",
-    pathname: staticRoute.pathname,
-    url: url.href,
-    ok: false,
-    error: null,
-    filePath: null,
-    contentType: null
-  };
-  try {
-    let routeWriter = null;
-    let closeResolved;
-    const closePromise = new Promise((closePromiseResolve) => {
-      closeResolved = closePromiseResolve;
-    });
-    const request = new Request(url);
-    const requestCtx = {
-      mode: "static",
-      locale: void 0,
-      url,
-      request,
-      env: {
-        get(key) {
-          return sys.getEnv(key);
-        }
-      },
-      platform: sys.platform,
-      getWritableStream: (status, headers, _, _r, requestEv) => {
-        result.ok = status >= 200 && status < 300;
-        if (!result.ok) {
-          return noopWriter;
-        }
-        const contentType = (headers.get("Content-Type") || "").toLowerCase();
-        const isHtml = contentType.includes("text/html");
-        const routeFilePath = sys.getRouteFilePath(url.pathname, isHtml);
-        const hasRouteWriter = isHtml ? opts.emitHtml !== false : true;
-        const writeQDataEnabled = isHtml && opts.emitData !== false;
-        const stream = new import_web2.WritableStream({
-          async start() {
-            try {
-              if (hasRouteWriter || writeQDataEnabled) {
-                await sys.ensureDir(routeFilePath);
-              }
-              if (hasRouteWriter) {
-                routeWriter = sys.createWriteStream(routeFilePath);
-                routeWriter.on("error", (e) => {
-                  console.error(e);
-                  routeWriter = null;
-                  result.error = {
-                    message: e.message,
-                    stack: e.stack
-                  };
-                });
-              }
-            } catch (e) {
-              routeWriter = null;
-              result.error = {
-                message: String(e),
-                stack: e.stack || ""
-              };
-            }
-          },
-          write(chunk) {
-            try {
-              if (routeWriter) {
-                routeWriter.write(Buffer.from(chunk.buffer));
-              }
-            } catch (e) {
-              routeWriter = null;
-              result.error = {
-                message: String(e),
-                stack: e.stack || ""
-              };
-            }
-          },
-          async close() {
-            const writePromises = [];
-            try {
-              if (writeQDataEnabled) {
-                const qData = requestEv.sharedMap.get("qData");
-                if (qData && !url.pathname.endsWith("/404.html")) {
-                  const qDataFilePath = sys.getDataFilePath(url.pathname);
-                  const dataWriter = sys.createWriteStream(qDataFilePath);
-                  dataWriter.on("error", (e) => {
-                    console.error(e);
-                    result.error = {
-                      message: e.message,
-                      stack: e.stack
-                    };
-                  });
-                  const serialized = await (0, import_qwik._serializeData)(qData);
-                  dataWriter.write(serialized);
-                  writePromises.push(
-                    new Promise((resolve2) => {
-                      result.filePath = routeFilePath;
-                      dataWriter.end(resolve2);
-                    })
-                  );
-                }
-              }
-              if (routeWriter) {
-                writePromises.push(
-                  new Promise((resolve2) => {
-                    result.filePath = routeFilePath;
-                    routeWriter.end(resolve2);
-                  }).finally(closeResolved)
-                );
-              }
-              if (writePromises.length > 0) {
-                await Promise.all(writePromises);
-              }
-            } catch (e) {
-              routeWriter = null;
-              result.error = {
-                message: String(e),
-                stack: e.stack || ""
-              };
-            }
-          }
-        });
-        return stream;
-      }
-    };
-    const promise = (0, import_request_handler2.requestHandler)(requestCtx, opts).then(async (rsp) => {
-      if (rsp != null) {
-        const r = await rsp.completion;
-        if (routeWriter) {
-          await closePromise;
-        }
-        return r;
-      }
-    }).then((e) => {
-      if (e !== void 0) {
-        if (e instanceof Error) {
-          result.error = {
-            message: e.message,
-            stack: e.stack
-          };
-        } else {
-          result.error = {
-            message: String(e),
-            stack: void 0
-          };
-        }
-      }
-    }).finally(() => {
-      pendingPromises.delete(promise);
-      callback(result);
-    });
-    pendingPromises.add(promise);
-  } catch (e) {
-    if (e instanceof Error) {
-      result.error = {
-        message: e.message,
-        stack: e.stack
-      };
-    } else {
-      result.error = {
-        message: String(e),
-        stack: void 0
-      };
-    }
-    callback(result);
-  }
-}
-var noopWriter = /* @__PURE__ */ new import_web2.WritableStream({
-  write() {
-  },
-  close() {
-  }
-});
 
 // packages/qwik-city/static/node/index.ts
 async function generate(opts) {

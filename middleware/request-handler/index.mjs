@@ -804,7 +804,8 @@ async function runNext(requestEv, resolve) {
     await requestEv.next();
   } catch (e) {
     if (e instanceof RedirectMessage) {
-      requestEv.getWritableStream().close();
+      const stream = requestEv.getWritableStream();
+      await stream.close();
     } else if (e instanceof ErrorResponse) {
       console.error(e);
       if (!requestEv.headersSent) {
