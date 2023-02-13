@@ -74,6 +74,7 @@ async function fromNodeHttp(url, req, res, mode) {
     },
     platform: {
       ssr: true,
+      incomingMessage: req,
       node: process.versions.node
     },
     locale: void 0

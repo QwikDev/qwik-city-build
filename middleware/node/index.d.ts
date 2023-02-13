@@ -23,6 +23,15 @@ export declare function createQwikCity(opts: QwikCityNodeRequestOptions): {
 
 /**
  * @alpha
+ */
+export declare interface PlatformNode {
+    ssr: true;
+    incomingMessage: IncomingMessage;
+    node: string;
+}
+
+/**
+ * @alpha
  * @deprecated Please use `createQwikCity()` instead.
  *
  * Example:
