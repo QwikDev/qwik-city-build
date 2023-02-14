@@ -23936,7 +23936,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       check();
       headers.set("Cache-Control", createCacheControl(cacheControl));
     },
-    getData: async (loaderOrAction) => {
+    resolveValue: async (loaderOrAction) => {
       const id = loaderOrAction.__qrl.getHash();
       if (loaderOrAction.__brand === "server_loader") {
         if (!(id in loaders)) {
@@ -24911,10 +24911,11 @@ function qwikCity(userOpts) {
         appType: "custom",
         base: userOpts == null ? void 0 : userOpts.basePathname,
         optimizeDeps: {
+          include: ["zod"],
           exclude: [QWIK_CITY, QWIK_CITY_PLAN_ID, QWIK_CITY_ENTRIES_ID, QWIK_CITY_SW_REGISTER]
         },
         ssr: {
-          noExternal: [QWIK_CITY, QWIK_CITY_PLAN_ID, QWIK_CITY_ENTRIES_ID, QWIK_CITY_SW_REGISTER]
+          noExternal: [QWIK_CITY_PLAN_ID, QWIK_CITY_ENTRIES_ID, QWIK_CITY_SW_REGISTER]
         }
       };
       return updatedViteConfig;

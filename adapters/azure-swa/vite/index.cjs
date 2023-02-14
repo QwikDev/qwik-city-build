@@ -45,7 +45,7 @@ function azureSwaAdapter(opts = {}) {
     staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     cleanStaticGenerated: true,
-    async generate({ outputEntries, serverOutDir }) {
+    async generate({ outputEntries, serverOutDir, clientOutDir }) {
       const serverPackageJsonPath = (0, import_node_path.join)(serverOutDir, "package.json");
       const serverPackageJsonCode = `{"type":"module"}`;
       await import_node_fs.default.promises.mkdir(serverOutDir, { recursive: true });
@@ -86,6 +86,9 @@ function azureSwaAdapter(opts = {}) {
         2
       );
       await import_node_fs.default.promises.writeFile(funcJsonPath, funcJson);
+      if (!import_node_fs.default.existsSync((0, import_node_path.join)(clientOutDir, "index.html"))) {
+        await import_node_fs.default.promises.writeFile((0, import_node_path.join)(clientOutDir, "index.html"), "");
+      }
     }
   });
 }
