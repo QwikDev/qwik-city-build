@@ -1,12 +1,12 @@
 import type { Action } from '@builder.io/qwik-city';
 import type { FailReturn } from '@builder.io/qwik-city';
+import type { GetSyncData as GetSyncData_2 } from '@builder.io/qwik-city/middleware/request-handler';
 import type { Loader } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
 import type { Render } from '@builder.io/qwik/server';
 import type { RenderOptions } from '@builder.io/qwik/server';
 import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
 import type { RequestHandler as RequestHandler_2 } from '@builder.io/qwik-city/middleware/request-handler';
-import type { ResolveSyncValue as ResolveSyncValue_2 } from '@builder.io/qwik-city/middleware/request-handler';
 
 declare class AbortMessage {
 }
@@ -182,7 +182,7 @@ declare type DocumentHead = DocumentHeadValue | ((props: DocumentHeadProps) => D
 declare interface DocumentHeadProps extends RouteLocation {
     readonly head: ResolvedDocumentHead;
     readonly withLocale: <T>(fn: () => T) => T;
-    readonly resolveValue: ResolveSyncValue_2;
+    readonly getData: GetSyncData_2;
 }
 
 /**
@@ -273,7 +273,23 @@ declare class ErrorResponse extends Error {
 /**
  * @alpha
  */
+export declare interface GetData {
+    <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Promise<T>;
+    <T>(action: Action<T>): Promise<T | undefined>;
+}
+
+/**
+ * @alpha
+ */
 export declare function getErrorHtml(status: number, e: any): string;
+
+/**
+ * @alpha
+ */
+export declare interface GetSyncData {
+    <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Awaited<T>;
+    <T>(action: Action<T>): Awaited<T> | undefined;
+}
 
 declare interface LayoutModule extends RouteModule {
     readonly default: any;
@@ -478,7 +494,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
  * @alpha
  */
 export declare interface RequestEventLoader<PLATFORM = QwikCityPlatform> extends RequestEventAction<PLATFORM> {
-    resolveValue: ResolveValue;
+    getData: GetData;
     defer: <T>(returnData: Promise<T> | (() => Promise<T>)) => DeferReturn<T>;
 }
 
@@ -508,22 +524,6 @@ export declare function requestHandler<T = unknown>(serverRequestEv: ServerReque
  * @alpha
  */
 declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
-
-/**
- * @alpha
- */
-export declare interface ResolveSyncValue {
-    <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Awaited<T>;
-    <T>(action: Action<T>): Awaited<T> | undefined;
-}
-
-/**
- * @alpha
- */
-export declare interface ResolveValue {
-    <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Promise<T>;
-    <T>(action: Action<T>): Promise<T | undefined>;
-}
 
 /**
  * @alpha

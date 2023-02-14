@@ -114,7 +114,7 @@ const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   const headProps = {
     head,
     withLocale: (fn) => withLocale(locale, fn),
-    resolveValue: getData,
+    getData,
     ...routeLocation
   };
   for (let i = contentModules.length - 1; i >= 0; i--) {

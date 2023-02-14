@@ -675,7 +675,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       check();
       headers.set("Cache-Control", createCacheControl(cacheControl));
     },
-    resolveValue: async (loaderOrAction) => {
+    getData: async (loaderOrAction) => {
       const id = loaderOrAction.__qrl.getHash();
       if (loaderOrAction.__brand === "server_loader") {
         if (!(id in loaders)) {
