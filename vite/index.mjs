@@ -23926,7 +23926,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       check();
       headers.set("Cache-Control", createCacheControl(cacheControl));
     },
-    getData: async (loaderOrAction) => {
+    resolveValue: async (loaderOrAction) => {
       const id = loaderOrAction.__qrl.getHash();
       if (loaderOrAction.__brand === "server_loader") {
         if (!(id in loaders)) {

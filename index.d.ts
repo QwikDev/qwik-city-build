@@ -7,7 +7,6 @@ import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler'
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { FailReturn as FailReturn_2 } from '@builder.io/qwik-city';
-import type { GetSyncData } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
 import type { Loader as Loader_2 } from '@builder.io/qwik-city';
 import { QRL } from '@builder.io/qwik';
@@ -18,6 +17,7 @@ import { RequestEventAction } from '@builder.io/qwik-city/middleware/request-han
 import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
+import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-handler';
 import type { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
@@ -281,7 +281,7 @@ export declare type DocumentHead = DocumentHeadValue | ((props: DocumentHeadProp
 export declare interface DocumentHeadProps extends RouteLocation {
     readonly head: ResolvedDocumentHead;
     readonly withLocale: <T>(fn: () => T) => T;
-    readonly getData: GetSyncData;
+    readonly resolveValue: ResolveSyncValue;
 }
 
 /**
@@ -425,14 +425,6 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
 export declare interface FormSubmitSuccessDetail<T> {
     status: number;
     value: T;
-}
-
-/**
- * @alpha
- */
-declare interface GetData {
-    <T>(loader: Loader_2<T>): Awaited<T> extends () => any ? never : Promise<T>;
-    <T>(action: Action_2<T>): Promise<T | undefined>;
 }
 
 declare type GetValidatorType<B extends ZodReturn<any>> = B extends ZodReturn<infer TYPE> ? z.infer<z.ZodObject<TYPE>> : never;
@@ -726,7 +718,7 @@ export { RequestEventLoader }
  * @alpha
  */
 declare interface RequestEventLoader_2<PLATFORM = QwikCityPlatform> extends RequestEventAction_2<PLATFORM> {
-    getData: GetData;
+    resolveValue: ResolveValue;
     defer: <T>(returnData: Promise<T> | (() => Promise<T>)) => DeferReturn_2<T>;
 }
 
@@ -736,6 +728,14 @@ export { RequestHandler }
  * @alpha
  */
 export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
+
+/**
+ * @alpha
+ */
+declare interface ResolveValue {
+    <T>(loader: Loader_2<T>): Awaited<T> extends () => any ? never : Promise<T>;
+    <T>(action: Action_2<T>): Promise<T | undefined>;
+}
 
 /**
  * @alpha
