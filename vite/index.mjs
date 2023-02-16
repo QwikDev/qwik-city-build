@@ -20747,11 +20747,14 @@ async function walkRoutes(routesDir) {
   return sourceFiles;
 }
 async function walkRouteDir(sourceFiles, dirPath, dirName) {
-  try {
-    const dirItemNames = await fs2.promises.readdir(dirPath);
-    await Promise.all(
-      dirItemNames.map(async (itemName) => {
-        const itemPath = normalizePath(join2(dirPath, itemName));
+  const dirItemNames = await fs2.promises.readdir(dirPath);
+  await Promise.all(
+    dirItemNames.map(async (itemName) => {
+      const itemPath = normalizePath(join2(dirPath, itemName));
+      const stat = await fs2.promises.stat(itemPath);
+      if (stat.isDirectory()) {
+        await walkRouteDir(sourceFiles, itemPath, itemName);
+      } else {
         const sourceFileName = getSourceFile(itemName);
         if (sourceFileName !== null) {
           sourceFiles.push({
@@ -20761,13 +20764,10 @@ async function walkRouteDir(sourceFiles, dirPath, dirName) {
             dirName,
             dirPath
           });
-        } else {
-          await walkRouteDir(sourceFiles, itemPath, itemName);
         }
-      })
-    );
-  } catch (e) {
-  }
+      }
+    })
+  );
 }
 
 // packages/qwik-city/buildtime/routing/resolve-source-file.ts
