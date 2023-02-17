@@ -1,7 +1,7 @@
-import { createContextId, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
-import { cacheModules, menus, routes, trailingSlash } from "@qwik-city-plan";
+import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
 import { z } from "zod";
 import { z as z2 } from "zod";
@@ -34,9 +34,9 @@ const POPSTATE_FALLBACK_INITIALIZED = /* @__PURE__ */ Symbol();
 const CLIENT_HISTORY_INITIALIZED = /* @__PURE__ */ Symbol();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
-const loadRoute = async (routes2, menus2, cacheModules2, pathname) => {
-  if (Array.isArray(routes2))
-    for (const route of routes2) {
+const loadRoute = async (routes, menus, cacheModules, pathname) => {
+  if (Array.isArray(routes))
+    for (const route of routes) {
       const match = route[0].exec(pathname);
       if (match) {
         const loaders = route[1];
@@ -44,12 +44,12 @@ const loadRoute = async (routes2, menus2, cacheModules2, pathname) => {
         const routeBundleNames = route[4];
         const mods = new Array(loaders.length);
         const pendingLoads = [];
-        const menuLoader = getMenuLoader(menus2, pathname);
+        const menuLoader = getMenuLoader(menus, pathname);
         let menu = void 0;
         loaders.forEach((moduleLoader, i) => {
-          loadModule(moduleLoader, pendingLoads, (routeModule) => mods[i] = routeModule, cacheModules2);
+          loadModule(moduleLoader, pendingLoads, (routeModule) => mods[i] = routeModule, cacheModules);
         });
-        loadModule(menuLoader, pendingLoads, (menuModule) => menu = menuModule?.default, cacheModules2);
+        loadModule(menuLoader, pendingLoads, (menuModule) => menu = menuModule?.default, cacheModules);
         if (pendingLoads.length > 0)
           await Promise.all(pendingLoads);
         return [
@@ -62,7 +62,7 @@ const loadRoute = async (routes2, menus2, cacheModules2, pathname) => {
     }
   return null;
 };
-const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules2) => {
+const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules) => {
   if (typeof moduleLoader === "function") {
     const loadedModule = MODULE_CACHE.get(moduleLoader);
     if (loadedModule)
@@ -71,7 +71,7 @@ const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules2) => 
       const l = moduleLoader();
       if (typeof l.then === "function")
         pendingLoads.push(l.then((loadedModule2) => {
-          if (cacheModules2 !== false)
+          if (cacheModules !== false)
             MODULE_CACHE.set(moduleLoader, loadedModule2);
           moduleSetter(loadedModule2);
         }));
@@ -80,10 +80,10 @@ const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules2) => 
     }
   }
 };
-const getMenuLoader = (menus2, pathname) => {
-  if (menus2) {
+const getMenuLoader = (menus, pathname) => {
+  if (menus) {
     pathname = pathname.endsWith("/") ? pathname : pathname + "/";
-    const menu = menus2.find((m) => m[0] === pathname || pathname.startsWith(m[0] + (pathname.endsWith("/") ? "" : "/")));
+    const menu = menus.find((m) => m[0] === pathname || pathname.startsWith(m[0] + (pathname.endsWith("/") ? "" : "/")));
     if (menu)
       return menu[1];
   }
@@ -252,7 +252,7 @@ const dispatchPrefetchEvent = (prefetchData) => {
       detail: prefetchData
     }));
 };
-const loadClientData = async (url, clearCache, action) => {
+const loadClientData = async (url, element, clearCache, action) => {
   const pagePathname = url.pathname;
   const pageSearch = url.search;
   const clientDataPath = getClientDataPath(pagePathname, pageSearch, action);
@@ -276,7 +276,7 @@ const loadClientData = async (url, clearCache, action) => {
       }
       if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
-          const clientData = _deserializeData(text);
+          const clientData = _deserializeData(text, element);
           if (!clientData) {
             location.href = url.href;
             return;
@@ -375,9 +375,11 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       navPath2.value = "";
       navPath2.value = value;
     }
-    const prefetchURL = new URL(navPath2.value, routeLocation2.url);
-    loadClientData(prefetchURL);
-    loadRoute(routes, menus, cacheModules, prefetchURL.pathname);
+    if (isBrowser) {
+      const prefetchURL = new URL(navPath2.value, routeLocation2.url);
+      loadClientData(prefetchURL, _getContextElement());
+      loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, prefetchURL.pathname);
+    }
     actionState2.value = void 0;
     routeLocation2.isNavigating = true;
   }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
@@ -408,12 +410,13 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         clientPageData = env2.response;
       } else {
         if (url2.pathname.endsWith("/")) {
-          if (!trailingSlash)
+          if (!qwikCity.trailingSlash)
             url2.pathname = url2.pathname.slice(0, -1);
-        } else if (trailingSlash)
+        } else if (qwikCity.trailingSlash)
           url2.pathname += "/";
-        let loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
-        const pageData = clientPageData = await loadClientData(url2, true, action);
+        let loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, url2.pathname);
+        const element = _getContextElement();
+        const pageData = clientPageData = await loadClientData(url2, element, true, action);
         if (!pageData) {
           navPath2.untrackedValue = toPath(url2);
           return;
@@ -422,7 +425,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         const newURL = new URL(newHref, url2.href);
         if (newURL.pathname !== url2.pathname) {
           url2 = newURL;
-          loadRoutePromise = loadRoute(routes, menus, cacheModules, url2.pathname);
+          loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, url2.pathname);
         }
         loadedRoute = await loadRoutePromise;
       }
@@ -550,7 +553,7 @@ const prefetchLinkResources = (elm, isOnVisible) => {
     if (!windowInnerWidth)
       windowInnerWidth = innerWidth;
     if (!isOnVisible || isOnVisible && windowInnerWidth < 520)
-      loadClientData(new URL(elm.href));
+      loadClientData(new URL(elm.href), elm);
   }
 };
 let windowInnerWidth = 0;

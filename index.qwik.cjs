@@ -3,9 +3,26 @@ Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const qwik = require("@builder.io/qwik");
 const jsxRuntime = require("@builder.io/qwik/jsx-runtime");
 const build = require("@builder.io/qwik/build");
-const _qwikCityPlan = require("@qwik-city-plan");
+const qwikCity = require("@qwik-city-plan");
 const swRegister = require("@qwik-city-sw-register");
 const zod = require("zod");
+function _interopNamespaceDefault(e) {
+  const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
+  if (e) {
+    for (const k in e) {
+      if (k !== "default") {
+        const d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: () => e[k]
+        });
+      }
+    }
+  }
+  n.default = e;
+  return Object.freeze(n);
+}
+const qwikCity__namespace = /* @__PURE__ */ _interopNamespaceDefault(qwikCity);
 const RouteStateContext = /* @__PURE__ */ qwik.createContextId("qc-s");
 const ContentContext = /* @__PURE__ */ qwik.createContextId("qc-c");
 const ContentInternalContext = /* @__PURE__ */ qwik.createContextId("qc-ic");
@@ -253,7 +270,7 @@ const dispatchPrefetchEvent = (prefetchData) => {
       detail: prefetchData
     }));
 };
-const loadClientData = async (url, clearCache, action) => {
+const loadClientData = async (url, element, clearCache, action) => {
   const pagePathname = url.pathname;
   const pageSearch = url.search;
   const clientDataPath = getClientDataPath(pagePathname, pageSearch, action);
@@ -277,7 +294,7 @@ const loadClientData = async (url, clearCache, action) => {
       }
       if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
-          const clientData = qwik._deserializeData(text);
+          const clientData = qwik._deserializeData(text, element);
           if (!clientData) {
             location.href = url.href;
             return;
@@ -376,9 +393,11 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
       navPath2.value = "";
       navPath2.value = value;
     }
-    const prefetchURL = new URL(navPath2.value, routeLocation2.url);
-    loadClientData(prefetchURL);
-    loadRoute(_qwikCityPlan.routes, _qwikCityPlan.menus, _qwikCityPlan.cacheModules, prefetchURL.pathname);
+    if (build.isBrowser) {
+      const prefetchURL = new URL(navPath2.value, routeLocation2.url);
+      loadClientData(prefetchURL, qwik._getContextElement());
+      loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, prefetchURL.pathname);
+    }
     actionState2.value = void 0;
     routeLocation2.isNavigating = true;
   }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
@@ -409,12 +428,13 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
         clientPageData = env2.response;
       } else {
         if (url2.pathname.endsWith("/")) {
-          if (!_qwikCityPlan.trailingSlash)
+          if (!qwikCity__namespace.trailingSlash)
             url2.pathname = url2.pathname.slice(0, -1);
-        } else if (_qwikCityPlan.trailingSlash)
+        } else if (qwikCity__namespace.trailingSlash)
           url2.pathname += "/";
-        let loadRoutePromise = loadRoute(_qwikCityPlan.routes, _qwikCityPlan.menus, _qwikCityPlan.cacheModules, url2.pathname);
-        const pageData = clientPageData = await loadClientData(url2, true, action);
+        let loadRoutePromise = loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, url2.pathname);
+        const element = qwik._getContextElement();
+        const pageData = clientPageData = await loadClientData(url2, element, true, action);
         if (!pageData) {
           navPath2.untrackedValue = toPath(url2);
           return;
@@ -423,7 +443,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
         const newURL = new URL(newHref, url2.href);
         if (newURL.pathname !== url2.pathname) {
           url2 = newURL;
-          loadRoutePromise = loadRoute(_qwikCityPlan.routes, _qwikCityPlan.menus, _qwikCityPlan.cacheModules, url2.pathname);
+          loadRoutePromise = loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, url2.pathname);
         }
         loadedRoute = await loadRoutePromise;
       }
@@ -551,7 +571,7 @@ const prefetchLinkResources = (elm, isOnVisible) => {
     if (!windowInnerWidth)
       windowInnerWidth = innerWidth;
     if (!isOnVisible || isOnVisible && windowInnerWidth < 520)
-      loadClientData(new URL(elm.href));
+      loadClientData(new URL(elm.href), elm);
   }
 };
 let windowInnerWidth = 0;
