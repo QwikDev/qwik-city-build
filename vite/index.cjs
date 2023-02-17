@@ -24950,7 +24950,16 @@ function qwikCity(userOpts) {
       resetBuildContext(ctx);
     },
     resolveId(id) {
-      if (id === QWIK_CITY_PLAN_ID || id === QWIK_CITY_ENTRIES_ID || id === QWIK_CITY_SW_REGISTER) {
+      if (id === QWIK_CITY_PLAN_ID || id === QWIK_CITY_ENTRIES_ID) {
+        return {
+          id: (0, import_node_path10.join)(rootDir, id),
+          // user entries added in the routes, like src/routes/service-worker.ts
+          // are added as dynamic imports to the qwik-city-plan as a way to create
+          // a new entry point for the build. Ensure these are not treeshaked.
+          moduleSideEffects: "no-treeshake"
+        };
+      }
+      if (id === QWIK_CITY_SW_REGISTER) {
         return (0, import_node_path10.join)(rootDir, id);
       }
       if (id === STATIC_PATHS_ID) {
