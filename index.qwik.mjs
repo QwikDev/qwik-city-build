@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useLexicalScope, useContextProvider, useTaskQrl, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import { cacheModules, menus, routes, trailingSlash } from "@qwik-city-plan";
@@ -12,7 +12,7 @@ const DocumentHeadContext = /* @__PURE__ */ createContextId("qc-h");
 const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
-const RouterOutlet = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
+const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -330,7 +330,7 @@ const isQDataJson = (pathname) => {
   return pathname.endsWith(QDATA_JSON);
 };
 const QDATA_JSON = "/q-data.json";
-const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
+const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   const env = useQwikCityEnv();
   if (!env?.params)
     throw new Error(`Missing Qwik City Env Data`);
@@ -364,7 +364,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
       status: env.response.status
     }
   } : void 0);
-  const goto = inlinedQrl(async (path) => {
+  const goto = /* @__PURE__ */ inlinedQrl(async (path) => {
     const [actionState2, navPath2, routeLocation2] = useLexicalScope();
     const value = navPath2.value;
     if (path) {
@@ -392,7 +392,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
   useContextProvider(RouteNavigateContext, goto);
   useContextProvider(RouteStateContext, loaderState);
   useContextProvider(RouteActionContext, actionState);
-  useTaskQrl(inlinedQrl(({ track }) => {
+  useTaskQrl(/* @__PURE__ */ inlinedQrl(({ track }) => {
     const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, routeLocation2] = useLexicalScope();
     async function run() {
       const [path, action] = track(() => [
@@ -476,7 +476,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(inlinedQrl(() => {
 }, "QwikCityProvider_component_TxCFOy819ag"));
 const QwikCity = QwikCityProvider;
 const Html = QwikCityProvider;
-const QwikCityMockProvider = /* @__PURE__ */ componentQrl(inlinedQrl((props) => {
+const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const urlEnv = props.url ?? "http://localhost/";
   const url = new URL(urlEnv);
   const routeLocation = useStore({
@@ -488,7 +488,7 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(inlinedQrl((props) => 
     isNavigating: false
   });
   const loaderState = useSignal({});
-  const goto = inlinedQrl(async (path) => {
+  const goto = /* @__PURE__ */ inlinedQrl(async (path) => {
     throw new Error("Not implemented");
   }, "QwikCityMockProvider_component_goto_BUbtvTyvVRE");
   const documentHead = useStore(createDocumentHead);
@@ -505,7 +505,7 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(inlinedQrl((props) => 
   useContextProvider(RouteStateContext, loaderState);
   return /* @__PURE__ */ jsx$1(Slot, {}, "qY_1");
 }, "QwikCityMockProvider_component_WmYC5H00wtI"));
-const Link = /* @__PURE__ */ componentQrl(inlinedQrl((props) => {
+const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
   const originalHref = props.href;
@@ -516,7 +516,7 @@ const Link = /* @__PURE__ */ componentQrl(inlinedQrl((props) => {
   const prefetchDataset = getPrefetchDataset(props, clientNavPath, loc);
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || originalHref;
-  useOnDocument("qinit", inlinedQrl(() => {
+  useOnDocument("qinit", /* @__PURE__ */ inlinedQrl(() => {
     if (!window[POPSTATE_FALLBACK_INITIALIZED]) {
       window[POPSTATE_FALLBACK_INITIALIZED] = () => {
         if (!window[CLIENT_HISTORY_INITIALIZED])
@@ -529,7 +529,7 @@ const Link = /* @__PURE__ */ componentQrl(inlinedQrl((props) => {
   }, "Link_component_useOnDocument_u0YVoxt2aTY"));
   return /* @__PURE__ */ jsx$1("a", {
     ...linkProps,
-    onClick$: inlinedQrl(() => {
+    onClick$: /* @__PURE__ */ inlinedQrl(() => {
       const [clientNavPath2, linkProps2, nav2] = useLexicalScope();
       if (clientNavPath2)
         nav2(linkProps2.href);
@@ -539,9 +539,9 @@ const Link = /* @__PURE__ */ componentQrl(inlinedQrl((props) => {
       nav
     ]),
     "data-prefetch": prefetchDataset,
-    onMouseOver$: inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onMouseOver_yiXwCC0m3jY"),
-    onFocus$: inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
-    onQVisible$: inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4"),
+    onMouseOver$: /* @__PURE__ */ inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onMouseOver_yiXwCC0m3jY"),
+    onFocus$: /* @__PURE__ */ inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
+    onQVisible$: /* @__PURE__ */ inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4"),
     children: /* @__PURE__ */ jsx$1(Slot, {}, "AD_0")
   }, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
@@ -583,7 +583,7 @@ const actionQrl = (actionQrl2, options) => {
       }
       return initialState;
     });
-    initialState.run = inlinedQrl((input = {}) => {
+    initialState.run = /* @__PURE__ */ inlinedQrl((input = {}) => {
       const [currentAction2, id2, loc2, state2] = useLexicalScope();
       if (isServer)
         throw new Error(`Actions can not be invoked within the server during SSR.

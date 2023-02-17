@@ -13,7 +13,7 @@ const DocumentHeadContext = /* @__PURE__ */ qwik.createContextId("qc-h");
 const RouteLocationContext = /* @__PURE__ */ qwik.createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
-const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() => {
+const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -331,7 +331,7 @@ const isQDataJson = (pathname) => {
   return pathname.endsWith(QDATA_JSON);
 };
 const QDATA_JSON = "/q-data.json";
-const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() => {
+const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   const env = useQwikCityEnv();
   if (!env?.params)
     throw new Error(`Missing Qwik City Env Data`);
@@ -365,7 +365,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
       status: env.response.status
     }
   } : void 0);
-  const goto = qwik.inlinedQrl(async (path) => {
+  const goto = /* @__PURE__ */ qwik.inlinedQrl(async (path) => {
     const [actionState2, navPath2, routeLocation2] = qwik.useLexicalScope();
     const value = navPath2.value;
     if (path) {
@@ -393,7 +393,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
   qwik.useContextProvider(RouteNavigateContext, goto);
   qwik.useContextProvider(RouteStateContext, loaderState);
   qwik.useContextProvider(RouteActionContext, actionState);
-  qwik.useTaskQrl(qwik.inlinedQrl(({ track }) => {
+  qwik.useTaskQrl(/* @__PURE__ */ qwik.inlinedQrl(({ track }) => {
     const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, routeLocation2] = qwik.useLexicalScope();
     async function run() {
       const [path, action] = track(() => [
@@ -477,7 +477,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl(() =>
 }, "QwikCityProvider_component_TxCFOy819ag"));
 const QwikCity = QwikCityProvider;
 const Html = QwikCityProvider;
-const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((props) => {
+const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const urlEnv = props.url ?? "http://localhost/";
   const url = new URL(urlEnv);
   const routeLocation = qwik.useStore({
@@ -489,7 +489,7 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((
     isNavigating: false
   });
   const loaderState = qwik.useSignal({});
-  const goto = qwik.inlinedQrl(async (path) => {
+  const goto = /* @__PURE__ */ qwik.inlinedQrl(async (path) => {
     throw new Error("Not implemented");
   }, "QwikCityMockProvider_component_goto_BUbtvTyvVRE");
   const documentHead = qwik.useStore(createDocumentHead);
@@ -506,7 +506,7 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((
   qwik.useContextProvider(RouteStateContext, loaderState);
   return /* @__PURE__ */ jsxRuntime.jsx(qwik.Slot, {}, "qY_1");
 }, "QwikCityMockProvider_component_WmYC5H00wtI"));
-const Link = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((props) => {
+const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
   const originalHref = props.href;
@@ -517,7 +517,7 @@ const Link = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((props) => {
   const prefetchDataset = getPrefetchDataset(props, clientNavPath, loc);
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || originalHref;
-  qwik.useOnDocument("qinit", qwik.inlinedQrl(() => {
+  qwik.useOnDocument("qinit", /* @__PURE__ */ qwik.inlinedQrl(() => {
     if (!window[POPSTATE_FALLBACK_INITIALIZED]) {
       window[POPSTATE_FALLBACK_INITIALIZED] = () => {
         if (!window[CLIENT_HISTORY_INITIALIZED])
@@ -530,7 +530,7 @@ const Link = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((props) => {
   }, "Link_component_useOnDocument_u0YVoxt2aTY"));
   return /* @__PURE__ */ jsxRuntime.jsx("a", {
     ...linkProps,
-    onClick$: qwik.inlinedQrl(() => {
+    onClick$: /* @__PURE__ */ qwik.inlinedQrl(() => {
       const [clientNavPath2, linkProps2, nav2] = qwik.useLexicalScope();
       if (clientNavPath2)
         nav2(linkProps2.href);
@@ -540,9 +540,9 @@ const Link = /* @__PURE__ */ qwik.componentQrl(qwik.inlinedQrl((props) => {
       nav
     ]),
     "data-prefetch": prefetchDataset,
-    onMouseOver$: qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onMouseOver_yiXwCC0m3jY"),
-    onFocus$: qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
-    onQVisible$: qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4"),
+    onMouseOver$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onMouseOver_yiXwCC0m3jY"),
+    onFocus$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
+    onQVisible$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4"),
     children: /* @__PURE__ */ jsxRuntime.jsx(qwik.Slot, {}, "AD_0")
   }, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
@@ -584,7 +584,7 @@ const actionQrl = (actionQrl2, options) => {
       }
       return initialState;
     });
-    initialState.run = qwik.inlinedQrl((input = {}) => {
+    initialState.run = /* @__PURE__ */ qwik.inlinedQrl((input = {}) => {
       const [currentAction2, id2, loc2, state2] = qwik.useLexicalScope();
       if (build.isServer)
         throw new Error(`Actions can not be invoked within the server during SSR.
