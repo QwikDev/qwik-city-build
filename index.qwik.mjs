@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -327,9 +327,8 @@ const getFetchOptions = (action) => {
     };
 };
 const isQDataJson = (pathname) => {
-  return pathname.endsWith(QDATA_JSON);
+  return pathname.endsWith("/q-data.json");
 };
-const QDATA_JSON = "/q-data.json";
 const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   const env = useQwikCityEnv();
   if (!env?.params)
@@ -431,8 +430,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       }
       if (loadedRoute) {
         const [params, mods, menu] = loadedRoute;
-        const contentModules = mods;
-        const pageModule = contentModules[contentModules.length - 1];
+        const pageModule = mods[mods.length - 1];
         routeLocation2.url = url2;
         routeLocation2.href = url2.href;
         routeLocation2.pathname = url2.pathname;
@@ -441,10 +439,10 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         };
         routeLocation2.query = url2.searchParams;
         navPath2.untrackedValue = toPath(url2);
-        const resolvedHead = resolveHead(clientPageData, routeLocation2, contentModules, locale);
+        const resolvedHead = resolveHead(clientPageData, routeLocation2, mods, locale);
         content2.headings = pageModule.headings;
         content2.menu = menu;
-        contentInternal2.value = noSerialize(contentModules);
+        contentInternal2.value = noSerialize(mods);
         documentHead2.links = resolvedHead.links;
         documentHead2.meta = resolvedHead.meta;
         documentHead2.styles = resolvedHead.styles;
@@ -650,7 +648,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
   }
   return action;
 };
-const action$ = implicit$FirstArg(actionQrl);
+const action$ = /* @__PURE__ */ implicit$FirstArg(actionQrl);
 const loaderQrl = (loaderQrl2) => {
   const hash = loaderQrl2.getHash();
   function loader() {
@@ -667,17 +665,64 @@ const loaderQrl = (loaderQrl2) => {
   loader.use = loader;
   return loader;
 };
-const loader$ = implicit$FirstArg(loaderQrl);
+const loader$ = /* @__PURE__ */ implicit$FirstArg(loaderQrl);
 const zodQrl = async (qrl) => {
   if (isServer) {
     let obj = await qrl.resolve();
     if (typeof obj === "function")
       obj = obj(z);
+    else if (obj instanceof z.Schema)
+      return obj;
     return z.object(obj);
   }
   return void 0;
 };
-const zod$ = implicit$FirstArg(zodQrl);
+const zod$ = /* @__PURE__ */ implicit$FirstArg(zodQrl);
+const serverQrl = (qrl) => {
+  if (isServer) {
+    const captured = qrl.getCaptured();
+    if (captured && captured.length > 0 && !_getContextElement())
+      throw new Error("For security reasons, we cannot serialize QRLs that capture lexical scope.");
+  }
+  function client() {
+    return /* @__PURE__ */ inlinedQrl(async (...args) => {
+      const [qrl2] = useLexicalScope();
+      if (isServer)
+        throw new Error(`Server functions can not be invoked within the server during SSR.`);
+      else {
+        const filtered = args.map((arg) => {
+          if (arg instanceof Event)
+            return null;
+          else if (arg instanceof Node)
+            return null;
+          return arg;
+        });
+        const path = `?qfunc=${qrl2.getHash()}`;
+        const body = await _serializeData([
+          qrl2,
+          ...filtered
+        ], false);
+        const res = await fetch(path, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/qwik-json",
+            "X-QRL": qrl2.getHash()
+          },
+          body
+        });
+        if (!res.ok)
+          throw new Error(`Server function failed: ${res.statusText}`);
+        const str = await res.text();
+        const obj = await _deserializeData(str);
+        return obj;
+      }
+    }, "serverQrl_client_b0uBOzEpu7U", [
+      qrl
+    ]);
+  }
+  return client();
+};
+const server$ = /* @__PURE__ */ implicit$FirstArg(serverQrl);
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return jsx("form", {
     ...rest,
@@ -705,6 +750,8 @@ export {
   actionQrl,
   loader$,
   loaderQrl,
+  server$,
+  serverQrl,
   useContent,
   useDocumentHead,
   useLocation,

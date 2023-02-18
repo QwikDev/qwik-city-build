@@ -195,15 +195,21 @@ function patchGlobalThis() {
 }
 
 // packages/qwik-city/middleware/node/index.ts
+var import_qwik = require("@builder.io/qwik");
 var import_meta = {};
 function createQwikCity(opts) {
   var _a;
   patchGlobalThis();
+  const qwikSerializer = {
+    _deserializeData: import_qwik._deserializeData,
+    _serializeData: import_qwik._serializeData,
+    _verifySerializable: import_qwik._verifySerializable
+  };
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? (0, import_node_path.join)((0, import_node_url.fileURLToPath)(import_meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {
       const serverRequestEv = await fromNodeHttp(getUrl(req), req, res, "server");
-      const handled = await (0, import_request_handler.requestHandler)(serverRequestEv, opts);
+      const handled = await (0, import_request_handler.requestHandler)(serverRequestEv, opts, qwikSerializer);
       if (handled) {
         const err = await handled.completion;
         if (err) {

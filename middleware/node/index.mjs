@@ -165,14 +165,20 @@ function patchGlobalThis() {
 }
 
 // packages/qwik-city/middleware/node/index.ts
+import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 function createQwikCity(opts) {
   var _a;
   patchGlobalThis();
+  const qwikSerializer = {
+    _deserializeData,
+    _serializeData,
+    _verifySerializable
+  };
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? join(fileURLToPath(import.meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {
       const serverRequestEv = await fromNodeHttp(getUrl(req), req, res, "server");
-      const handled = await requestHandler(serverRequestEv, opts);
+      const handled = await requestHandler(serverRequestEv, opts, qwikSerializer);
       if (handled) {
         const err = await handled.completion;
         if (err) {

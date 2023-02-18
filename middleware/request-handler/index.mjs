@@ -183,9 +183,7 @@ var RedirectMessage = class extends AbortMessage {
 // packages/qwik-city/runtime/src/constants.ts
 var MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 var QACTION_KEY = "qaction";
-
-// packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
-import { _serializeData } from "@builder.io/qwik";
+var QFN_KEY = "qfunc";
 
 // packages/qwik-city/middleware/request-handler/response-page.ts
 function getQwikCityServerData(requestEv) {
@@ -213,6 +211,7 @@ function getQwikCityServerData(requestEv) {
 }
 
 // packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
+import { isDev } from "@builder.io/qwik/build";
 var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
   const serverLoaders = [];
   const requestHandlers = [];
@@ -222,6 +221,9 @@ var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
   }
   if (route) {
     if (isPageRoute) {
+      if (method === "POST") {
+        requestHandlers.push(pureServerFunction);
+      }
       requestHandlers.push(fixTrailingSlash);
       requestHandlers.push(renderQData);
     }
@@ -300,6 +302,7 @@ function actionsMiddleware(serverLoaders) {
     }
     const { method } = requestEv;
     const loaders = getRequestLoaders(requestEv);
+    const qwikSerializer = requestEv[RequestEvQwikSerializer];
     if (method === "POST") {
       const selectedAction = requestEv.query.get(QACTION_KEY);
       const serverActionsMap = globalThis._qwikActionsMap;
@@ -332,6 +335,7 @@ function actionsMiddleware(serverLoaders) {
                   result.error.issues
                 );
               }
+              requestEv.status(400);
               loaders[selectedAction] = {
                 __brand: "fail",
                 ...result.error.flatten()
@@ -342,6 +346,7 @@ function actionsMiddleware(serverLoaders) {
           }
           if (!failed) {
             const actionResolved = await action.__qrl(data, requestEv);
+            verifySerializable(qwikSerializer, actionResolved, action.__qrl);
             loaders[selectedAction] = actionResolved;
           }
         }
@@ -352,7 +357,12 @@ function actionsMiddleware(serverLoaders) {
         serverLoaders.map((loader) => {
           const loaderId = loader.__qrl.getHash();
           return loaders[loaderId] = Promise.resolve().then(() => loader.__qrl(requestEv)).then((loaderResolved) => {
-            loaders[loaderId] = typeof loaderResolved === "function" ? loaderResolved() : loaderResolved;
+            if (typeof loaderResolved === "function") {
+              loaders[loaderId] = loaderResolved();
+            } else {
+              verifySerializable(qwikSerializer, loaderResolved, loader.__qrl);
+              loaders[loaderId] = loaderResolved;
+            }
             return loaderResolved;
           });
         })
@@ -382,6 +392,28 @@ var formToObj = (formData) => {
   });
   return obj;
 };
+async function pureServerFunction(ev) {
+  const fn = ev.query.get(QFN_KEY);
+  if (fn && ev.request.headers.get("Content-Type") === "application/qwik-json") {
+    ev.exit();
+    const fnHeader = ev.request.headers.get("X-QRL");
+    if (fnHeader === fn) {
+      const qwikSerializer = ev[RequestEvQwikSerializer];
+      const data = qwikSerializer._deserializeData(await ev.request.text());
+      if (Array.isArray(data)) {
+        const [qrl, ...args] = data;
+        if (isQrl(qrl) && qrl.getHash() === fn) {
+          const result = await qrl(ev, ...args);
+          verifySerializable(qwikSerializer, result, qrl);
+          ev.headers.set("Content-Type", "application/qwik-json");
+          ev.send(200, await qwikSerializer._serializeData(result, true));
+          return;
+        }
+      }
+    }
+    throw ev.error(500, "Invalid request");
+  }
+}
 function fixTrailingSlash(ev) {
   const trailingSlash = getRequestTrailingSlash(ev);
   const basePathname = getRequestBasePathname(ev);
@@ -398,6 +430,21 @@ function fixTrailingSlash(ev) {
     }
   }
 }
+function verifySerializable(qwikSerializer, data, qrl) {
+  if (isDev) {
+    try {
+      qwikSerializer._verifySerializable(data, void 0);
+    } catch (e) {
+      if (e instanceof Error && qrl.dev) {
+        e.loc = qrl.dev;
+      }
+      throw e;
+    }
+  }
+}
+var isQrl = (value) => {
+  return typeof value === "function" && typeof value.getSymbol === "function";
+};
 function isLastModulePageRoute(routeModules) {
   const lastRouteModule = routeModules[routeModules.length - 1];
   return lastRouteModule && typeof lastRouteModule.default === "function";
@@ -501,7 +548,8 @@ async function renderQData(requestEv) {
       redirect: location ?? void 0
     };
     const writer = requestEv.getWritableStream().getWriter();
-    const data = await _serializeData(qData);
+    const qwikSerializer = requestEv[RequestEvQwikSerializer];
+    const data = await qwikSerializer._serializeData(qData, true);
     writer.write(encoder.encode(data));
     requestEv.sharedMap.set("qData", qData);
     writer.close();
@@ -586,10 +634,11 @@ var RequestEvLocale = Symbol("RequestEvLocale");
 var RequestEvMode = Symbol("RequestEvMode");
 var RequestEvStatus = Symbol("RequestEvStatus");
 var RequestEvRoute = Symbol("RequestEvRoute");
+var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
 var RequestEvAction = Symbol("RequestEvAction");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvBasePathname = Symbol("RequestEvBasePathname");
-function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", resolved) {
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer, resolved) {
   const { request, platform, env } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
   const headers = new Headers();
@@ -649,6 +698,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     [RequestEvTrailingSlash]: trailingSlash,
     [RequestEvBasePathname]: basePathname,
     [RequestEvRoute]: loadedRoute,
+    [RequestEvQwikSerializer]: qwikSerializer,
     cookie,
     headers,
     env,
@@ -782,7 +832,7 @@ function getRequestMode(requestEv) {
 var ABORT_INDEX = 999999999;
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
-function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/") {
+function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer) {
   let resolve;
   const responsePromise = new Promise((r) => resolve = r);
   const requestEv = createRequestEvent(
@@ -791,6 +841,7 @@ function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlas
     requestHandlers,
     trailingSlash,
     basePathname,
+    qwikSerializer,
     resolve
   );
   return {
@@ -928,7 +979,7 @@ var getPathParams = (paramNames, match) => {
 };
 
 // packages/qwik-city/middleware/request-handler/request-handler.ts
-async function requestHandler(serverRequestEv, opts) {
+async function requestHandler(serverRequestEv, opts, qwikSerializer) {
   const { render, qwikCityPlan } = opts;
   const { routes, serverPlugins, menus, cacheModules, trailingSlash, basePathname } = qwikCityPlan;
   const pathname = serverRequestEv.url.pathname;
@@ -943,7 +994,14 @@ async function requestHandler(serverRequestEv, opts) {
     render
   );
   if (route) {
-    return runQwikCity(serverRequestEv, route[0], route[1], trailingSlash, basePathname);
+    return runQwikCity(
+      serverRequestEv,
+      route[0],
+      route[1],
+      trailingSlash,
+      basePathname,
+      qwikSerializer
+    );
   }
   return null;
 }

@@ -807,6 +807,20 @@ declare interface SendMethod {
 /**
  * @alpha
  */
+export declare const server$: Server;
+
+declare interface Server {
+    <T extends (ev: RequestEvent, ...args: any[]) => any>(fn: T): T extends (ev: RequestEvent, ...args: infer ARGS) => infer RETURN ? QRL<(...args: ARGS) => RETURN> : never;
+}
+
+/**
+ * @alpha
+ */
+export declare const serverQrl: <T extends (...args: any[]) => any>(qrl: QRL<T>) => QRL<T>;
+
+/**
+ * @alpha
+ */
 export declare const ServiceWorkerRegister: () => JSXNode<"script">;
 
 /**
@@ -857,22 +871,20 @@ export declare const zod$: Zod;
  * @alpha
  */
 export declare interface Zod {
-    <T extends ActionOptions>(schema: T): ZodReturn<T>;
-    <T extends ActionOptions>(schema: (z: z) => T): ZodReturn<T>;
+    <T extends ActionOptions>(schema: T): Promise<z.ZodObject<T>>;
+    <T extends ActionOptions>(schema: (z: z) => T): Promise<z.ZodObject<T>>;
+    <T extends z.Schema>(schema: T): Promise<T>;
+    <T extends z.Schema>(schema: (z: z) => T): Promise<T>;
 }
 
 /**
  * @alpha
  */
-export declare const zodQrl: (qrl: QRL<z.ZodRawShape | ((z: z) => ActionOptions)>) => Promise<z.ZodObject<z.ZodRawShape, "strip", z.ZodTypeAny, {
-    [x: string]: any;
-}, {
-    [x: string]: any;
-}> | undefined>;
+export declare const zodQrl: (qrl: QRL<z.ZodRawShape | z.ZodType<any, z.ZodTypeDef, any> | ((z: z) => ActionOptions)>) => Promise<z.ZodType<any, z.ZodTypeDef, any> | undefined>;
 
 /**
  * @alpha
  */
-export declare type ZodReturn<T extends ActionOptions = any> = Promise<z.ZodObject<T>>;
+export declare type ZodReturn<T extends ActionOptions = any> = Promise<z.ZodObject<T> | z.ZodEffects<z.ZodObject<T>>>;
 
 export { }

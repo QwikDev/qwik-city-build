@@ -5,7 +5,13 @@ import {
   requestHandler
 } from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
+import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 function createQwikCity(opts) {
+  const qwikSerializer = {
+    _deserializeData,
+    _serializeData,
+    _verifySerializable
+  };
   async function onAzureSwaRequest(context, req) {
     try {
       const url = new URL(req.headers["x-ms-original-url"]);
@@ -50,7 +56,7 @@ function createQwikCity(opts) {
           });
         }
       };
-      const handledResponse = await requestHandler(serverRequestEv, opts);
+      const handledResponse = await requestHandler(serverRequestEv, opts, qwikSerializer);
       if (handledResponse) {
         handledResponse.completion.then((err) => {
           if (err) {

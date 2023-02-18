@@ -89,7 +89,7 @@ function normalizePath(path) {
 import { requestHandler } from "../middleware/request-handler/index.mjs";
 import { pathToFileURL } from "url";
 import { WritableStream as WritableStream2 } from "stream/web";
-import { _serializeData } from "@builder.io/qwik";
+import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 async function workerThread(sys) {
   const ssgOpts = sys.getOptions();
   const pendingPromises = /* @__PURE__ */ new Set();
@@ -129,6 +129,11 @@ async function createSingleThreadWorker(sys) {
   };
 }
 async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
+  const qwikSerializer = {
+    _deserializeData,
+    _serializeData,
+    _verifySerializable
+  };
   const url = new URL(staticRoute.pathname, opts.origin);
   const result = {
     type: "render",
@@ -220,7 +225,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
                       stack: e.stack
                     };
                   });
-                  const serialized = await _serializeData(qData);
+                  const serialized = await _serializeData(qData, true);
                   dataWriter.write(serialized);
                   writePromises.push(
                     new Promise((resolve2) => {
@@ -253,7 +258,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
         return stream;
       }
     };
-    const promise = requestHandler(requestCtx, opts).then((rsp) => {
+    const promise = requestHandler(requestCtx, opts, qwikSerializer).then((rsp) => {
       if (rsp != null) {
         return rsp.completion.then((r) => {
           if (routeWriter) {
@@ -783,7 +788,9 @@ var kleur_default = $;
 var findLocation = (e) => {
   const stack = e.stack;
   if (typeof stack === "string") {
-    const lines = stack.split("\n").filter((l) => !l.includes("/node_modules/@builder.io/qwik") && !l.includes("(node:"));
+    const lines = stack.split("\n").filter(
+      (l) => !l.includes("/node_modules/@builder.io/qwik") && !l.includes("(node:") && !l.includes("/qwik-city/lib/")
+    );
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].replace("file:///", "/");
       if (/^\s+at/.test(line)) {
@@ -833,6 +840,8 @@ var range = 2;
 function posToNumber(source, pos) {
   if (typeof pos === "number")
     return pos;
+  if (pos.lo != null)
+    return pos.lo;
   const lines = source.split(splitRE);
   const { line, column } = pos;
   let start = 0;

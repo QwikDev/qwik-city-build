@@ -1,4 +1,5 @@
 import type { Action } from '@builder.io/qwik-city';
+import type { _deserializeData } from '@builder.io/qwik';
 import type { FailReturn } from '@builder.io/qwik-city';
 import type { Loader } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
@@ -7,6 +8,8 @@ import type { RenderOptions } from '@builder.io/qwik/server';
 import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
 import type { RequestHandler as RequestHandler_2 } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ResolveSyncValue as ResolveSyncValue_2 } from '@builder.io/qwik-city/middleware/request-handler';
+import type { _serializeData } from '@builder.io/qwik';
+import type { _verifySerializable } from '@builder.io/qwik';
 
 declare class AbortMessage {
 }
@@ -313,6 +316,15 @@ declare interface QwikCityRun<T> {
     completion: Promise<unknown>;
 }
 
+/**
+ * @alpha
+ */
+declare interface QwikSerializer {
+    _deserializeData: typeof _deserializeData;
+    _serializeData: typeof _serializeData;
+    _verifySerializable: typeof _verifySerializable;
+}
+
 declare type RedirectCode = 301 | 302 | 303 | 307 | 308;
 
 declare class RedirectMessage extends AbortMessage {
@@ -466,6 +478,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
     [RequestEvTrailingSlash]: boolean;
     [RequestEvBasePathname]: string;
     [RequestEvRoute]: LoadedRoute | null;
+    [RequestEvQwikSerializer]: QwikSerializer;
     /**
      * Check if this request is already written to.
      *
@@ -488,6 +501,8 @@ declare const RequestEvLocale: unique symbol;
 
 declare const RequestEvMode: unique symbol;
 
+declare const RequestEvQwikSerializer: unique symbol;
+
 declare const RequestEvRoute: unique symbol;
 
 declare const RequestEvStatus: unique symbol;
@@ -502,7 +517,7 @@ export declare type RequestHandler<PLATFORM = QwikCityPlatform> = (ev: RequestEv
 /**
  * @alpha
  */
-export declare function requestHandler<T = unknown>(serverRequestEv: ServerRequestEvent<T>, opts: ServerRenderOptions): Promise<QwikCityRun<T> | null>;
+export declare function requestHandler<T = unknown>(serverRequestEv: ServerRequestEvent<T>, opts: ServerRenderOptions, qwikSerializer: QwikSerializer): Promise<QwikCityRun<T> | null>;
 
 /**
  * @alpha
