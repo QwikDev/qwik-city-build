@@ -19,7 +19,7 @@ export declare interface EventPluginContext {
  * @alpha
  */
 export declare interface PlatformCloudflarePages {
-    env: EventPluginContext['env'];
+    env?: EventPluginContext['env'];
 }
 
 /**

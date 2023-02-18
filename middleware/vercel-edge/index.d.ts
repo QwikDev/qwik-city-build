@@ -8,6 +8,12 @@ export declare function createQwikCity(opts: QwikCityVercelEdgeOptions): (reques
 /**
  * @alpha
  */
+export declare interface PlatformVercel {
+}
+
+/**
+ * @alpha
+ */
 export declare interface QwikCityVercelEdgeOptions extends ServerRenderOptions {
 }
 

@@ -471,7 +471,7 @@ export declare interface LinkProps extends AnchorAttributes {
 /**
  * @alpha
  */
-export declare const loader$: <RETURN, PLATFORM = unknown>(first: (event: RequestEventLoader_2<PLATFORM>) => RETURN) => Loader<RETURN>;
+export declare const loader$: <RETURN>(first: (event: RequestEventLoader_2) => RETURN) => Loader<RETURN>;
 
 /**
  * @alpha
@@ -491,7 +491,7 @@ export declare interface Loader<RETURN> {
 /**
  * @alpha
  */
-export declare const loaderQrl: <RETURN, PLATFORM = unknown>(loaderQrl: QRL<(event: RequestEventLoader_2<PLATFORM>) => RETURN>) => Loader<RETURN>;
+export declare const loaderQrl: <RETURN>(loaderQrl: QRL<(event: RequestEventLoader_2) => RETURN>) => Loader<RETURN>;
 
 /**
  * @alpha

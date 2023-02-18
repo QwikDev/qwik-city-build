@@ -9,7 +9,7 @@ export declare function createQwikCity(opts: QwikCityNetlifyOptions): (request: 
 /**
  * @alpha
  */
-export declare interface PlatformNetlify extends Omit<Context, 'next' | 'cookies'> {
+export declare interface PlatformNetlify extends Partial<Omit<Context, 'next' | 'cookies'>> {
 }
 
 /**

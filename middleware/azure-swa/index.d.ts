@@ -12,7 +12,7 @@ export declare function createQwikCity(opts: QwikCityAzureOptions): AzureFunctio
 /**
  * @alpha
  */
-export declare interface EventPluginContext extends Context {
+export declare interface PlatformAzure extends Partial<Context> {
 }
 
 /**
