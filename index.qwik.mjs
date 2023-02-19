@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, useContext, jsx, _IMMUTABLE, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -13,16 +13,14 @@ const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
+  _jsxBranch();
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
       cmp = jsx(context.value[i].default, {
-        children: cmp,
-        [_IMMUTABLE]: {
-          children: false
-        }
+        children: cmp
       });
     return cmp;
   }

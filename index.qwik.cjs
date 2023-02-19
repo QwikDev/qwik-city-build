@@ -31,16 +31,14 @@ const RouteLocationContext = /* @__PURE__ */ qwik.createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
+  qwik._jsxBranch();
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
       cmp = qwik.jsx(context.value[i].default, {
-        children: cmp,
-        [qwik._IMMUTABLE]: {
-          children: false
-        }
+        children: cmp
       });
     return cmp;
   }
