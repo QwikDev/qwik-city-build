@@ -142,7 +142,7 @@
     "zod": "^3.20.6"
   },
   "peerDependencies": {
-    "@builder.io/qwik": ">=0.17.0"
+    "@builder.io/qwik": ">=0.18.0"
   },
   "license": "MIT",
   "homepage": "https://qwik.builder.io/",
