@@ -23490,10 +23490,12 @@ function getQwikCityServerData(requestEv) {
   request.headers.forEach((value2, key) => requestHeaders[key] = value2);
   const action = getRequestAction(requestEv);
   const formData = requestEv.sharedMap.get("actionFormData");
+  const nonce = requestEv.sharedMap.get("@nonce");
   return {
     url: new URL(url.pathname + url.search, url).href,
     requestHeaders,
     locale: locale(),
+    nonce,
     qwikcity: {
       // mode: getRequestMode(requestEv),
       params: { ...params },

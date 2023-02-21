@@ -571,8 +571,9 @@ const prefetchLinkResources = (elm, isOnVisible) => {
   }
 };
 let windowInnerWidth = 0;
-const ServiceWorkerRegister = () => qwik.jsx("script", {
-  dangerouslySetInnerHTML: swRegister
+const ServiceWorkerRegister = (props) => qwik.jsx("script", {
+  dangerouslySetInnerHTML: swRegister,
+  nonce: props.nonce
 });
 const actionQrl = (actionQrl2, options) => {
   const id = actionQrl2.getHash();

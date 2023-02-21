@@ -821,7 +821,9 @@ export declare const serverQrl: <T extends (...args: any[]) => any>(qrl: QRL<T>)
 /**
  * @alpha
  */
-export declare const ServiceWorkerRegister: () => JSXNode<"script">;
+export declare const ServiceWorkerRegister: (props: {
+    nonce?: string;
+}) => JSXNode<"script">;
 
 /**
  * @alpha
