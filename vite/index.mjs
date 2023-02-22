@@ -24412,11 +24412,15 @@ function ssrDevMiddleware(ctx, server) {
       }
       const routeModulePaths = /* @__PURE__ */ new WeakMap();
       try {
-        const { _deserializeData, _serializeData, _verifySerializable } = await server.ssrLoadModule("@builder.io/qwik");
+        const { _deserializeData, _serializeData, _verifySerializable } = await server.ssrLoadModule("@qwik-serializer", {
+          fixStacktrace: false
+        });
         const qwikSerializer = { _deserializeData, _serializeData, _verifySerializable };
         const serverPlugins = [];
         for (const file of ctx.serverPlugins) {
-          const layoutModule = await server.ssrLoadModule(file.filePath);
+          const layoutModule = await server.ssrLoadModule(file.filePath, {
+            fixStacktrace: false
+          });
           serverPlugins.push(layoutModule);
           routeModulePaths.set(layoutModule, file.filePath);
         }
@@ -24428,11 +24432,15 @@ function ssrDevMiddleware(ctx, server) {
           const route = routeResult.route;
           params = routeResult.params;
           for (const layout of route.layouts) {
-            const layoutModule = await server.ssrLoadModule(layout.filePath);
+            const layoutModule = await server.ssrLoadModule(layout.filePath, {
+              fixStacktrace: false
+            });
             routeModules.push(layoutModule);
             routeModulePaths.set(layoutModule, layout.filePath);
           }
-          const endpointModule = await server.ssrLoadModule(route.filePath);
+          const endpointModule = await server.ssrLoadModule(route.filePath, {
+            fixStacktrace: false
+          });
           routeModules.push(endpointModule);
           routeModulePaths.set(endpointModule, route.filePath);
         }
@@ -24458,7 +24466,9 @@ function ssrDevMiddleware(ctx, server) {
         let menu = void 0;
         const menus = ctx.menus.map((buildMenu) => {
           const menuLoader2 = async () => {
-            const m = await server.ssrLoadModule(buildMenu.filePath);
+            const m = await server.ssrLoadModule(buildMenu.filePath, {
+              fixStacktrace: false
+            });
             const menuModule = {
               default: m.default
             };
@@ -25003,6 +25013,9 @@ function qwikCity(userOpts) {
       resetBuildContext(ctx);
     },
     resolveId(id) {
+      if (id === QWIK_SERIALIZER) {
+        return join6(rootDir, id);
+      }
       if (id === QWIK_CITY_PLAN_ID || id === QWIK_CITY_ENTRIES_ID) {
         return {
           id: join6(rootDir, id),
@@ -25034,8 +25047,12 @@ function qwikCity(userOpts) {
         if (id.endsWith(QWIK_CITY_ENTRIES_ID)) {
           return generateQwikCityEntries(ctx);
         }
+        const isSerializer = id.endsWith(QWIK_SERIALIZER);
         const isCityPlan = id.endsWith(QWIK_CITY_PLAN_ID);
         const isSwRegister = id.endsWith(QWIK_CITY_SW_REGISTER);
+        if (isSerializer) {
+          return `export {_deserializeData, _serializeData, _verifySerializable} from '@builder.io/qwik'`;
+        }
         if (isCityPlan || isSwRegister) {
           if (!ctx.isDevServer && ctx.isDirty) {
             await build(ctx);
@@ -25166,6 +25183,7 @@ function qwikCity(userOpts) {
   };
   return plugin;
 }
+var QWIK_SERIALIZER = "@qwik-serializer";
 var QWIK_CITY_PLAN_ID = "@qwik-city-plan";
 var QWIK_CITY_ENTRIES_ID = "@qwik-city-entries";
 var QWIK_CITY = "@builder.io/qwik-city";
