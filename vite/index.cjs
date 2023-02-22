@@ -20702,7 +20702,7 @@ function normalizeOptions(rootDir, userOpts) {
   }
   opts.routesDir = normalizePath(opts.routesDir);
   if (typeof opts.serverPluginsDir !== "string") {
-    opts.serverPluginsDir = (0, import_node_path3.resolve)(rootDir, "src", "routes");
+    opts.serverPluginsDir = opts.routesDir;
   } else if (!(0, import_node_path3.isAbsolute)(opts.serverPluginsDir)) {
     opts.serverPluginsDir = (0, import_node_path3.resolve)(rootDir, opts.serverPluginsDir);
   }
