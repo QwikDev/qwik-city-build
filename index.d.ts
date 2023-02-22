@@ -49,19 +49,29 @@ export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL ex
  * @alpha
  */
 export declare interface ActionConstructor {
-    <O>(actionQrl: (form: JSONObject, event: RequestEventAction) => ValueOrPromise<O>): Action<O>;
-    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>, false>;
+    <O>(actionQrl: (form: JSONObject, event: RequestEventAction, options: ActionOptions) => ValueOrPromise<O>, options?: ActionOptions): Action<O>;
+    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B | ActionOptionsWithValidation<B>): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>, false>;
 }
 
 /**
  * @alpha
  */
-export declare type ActionOptions = z.ZodRawShape;
+export declare interface ActionOptions {
+    id?: string;
+}
 
 /**
  * @alpha
  */
-export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventLoader_2) => ValueOrPromise<B>>, options?: ZodReturn) => Action<B, A, true>;
+export declare interface ActionOptionsWithValidation<B extends ZodReturn> extends ActionOptions {
+    id?: string;
+    validation: B;
+}
+
+/**
+ * @alpha
+ */
+export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<B>>, options?: ActionOptionsWithValidation<ZodReturn> | ZodReturn) => Action<B, A, true>;
 
 /**
  * @alpha
@@ -471,7 +481,7 @@ export declare interface LinkProps extends AnchorAttributes {
 /**
  * @alpha
  */
-export declare const loader$: <RETURN>(first: (event: RequestEventLoader_2) => RETURN) => Loader<RETURN>;
+export declare const loader$: <RETURN>(first: (event: RequestEventLoader_2) => RETURN, options?: LoaderOptions | undefined) => Loader<RETURN>;
 
 /**
  * @alpha
@@ -491,7 +501,14 @@ export declare interface Loader<RETURN> {
 /**
  * @alpha
  */
-export declare const loaderQrl: <RETURN>(loaderQrl: QRL<(event: RequestEventLoader_2) => RETURN>) => Loader<RETURN>;
+declare interface LoaderOptions {
+    id?: string;
+}
+
+/**
+ * @alpha
+ */
+export declare const loaderQrl: <RETURN>(loaderQrl: QRL<(event: RequestEventLoader_2) => RETURN>, options?: LoaderOptions) => Loader<RETURN>;
 
 /**
  * @alpha
@@ -873,8 +890,8 @@ export declare const zod$: Zod;
  * @alpha
  */
 export declare interface Zod {
-    <T extends ActionOptions>(schema: T): Promise<z.ZodObject<T>>;
-    <T extends ActionOptions>(schema: (z: z) => T): Promise<z.ZodObject<T>>;
+    <T extends z.ZodRawShape>(schema: T): Promise<z.ZodObject<T>>;
+    <T extends z.ZodRawShape>(schema: (z: z) => T): Promise<z.ZodObject<T>>;
     <T extends z.Schema>(schema: T): Promise<T>;
     <T extends z.Schema>(schema: (z: z) => T): Promise<T>;
 }
@@ -882,11 +899,11 @@ export declare interface Zod {
 /**
  * @alpha
  */
-export declare const zodQrl: (qrl: QRL<z.ZodRawShape | z.ZodType<any, z.ZodTypeDef, any> | ((z: z) => ActionOptions)>) => Promise<z.ZodType<any, z.ZodTypeDef, any> | undefined>;
+export declare const zodQrl: (qrl: QRL<z.ZodRawShape | z.ZodType<any, z.ZodTypeDef, any> | ((z: z) => z.ZodRawShape)>) => Promise<z.ZodType<any, z.ZodTypeDef, any> | undefined>;
 
 /**
  * @alpha
  */
-export declare type ZodReturn<T extends ActionOptions = any> = Promise<z.ZodObject<T> | z.ZodEffects<z.ZodObject<T>>>;
+export declare type ZodReturn<T extends z.ZodRawShape = any> = Promise<z.ZodObject<T> | z.ZodEffects<z.ZodObject<T>>>;
 
 export { }

@@ -470,7 +470,7 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> {
 }
 
 declare interface RequestEventInternal extends RequestEvent, RequestEventLoader {
-    [RequestEvLoaders]: Record<string, Promise<any>>;
+    [RequestEvLoaders]: Record<string, Promise<any> | undefined>;
     [RequestEvLocale]: string | undefined;
     [RequestEvMode]: ServerRequestMode;
     [RequestEvStatus]: number;

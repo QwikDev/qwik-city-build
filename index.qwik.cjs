@@ -117,7 +117,7 @@ const getPathParams = (paramNames, match) => {
 const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   const head = createDocumentHead();
   const getData = (loaderOrAction) => {
-    const id = loaderOrAction.__qrl.getHash();
+    const id = loaderOrAction.__id;
     if (loaderOrAction.__brand === "server_loader") {
       if (!(id in endpoint.loaders))
         throw new Error("You can not get the returned data of a loader that has not been executed for this request.");
@@ -576,7 +576,17 @@ const ServiceWorkerRegister = (props) => qwik.jsx("script", {
   nonce: props.nonce
 });
 const actionQrl = (actionQrl2, options) => {
-  const id = actionQrl2.getHash();
+  let _id;
+  let schema;
+  if (options && typeof options === "object") {
+    if (options instanceof Promise)
+      schema = options;
+    else {
+      _id = options.id;
+      schema = options.validation;
+    }
+  }
+  const id = getId(actionQrl2, _id);
   function action() {
     const loc = useLocation();
     const currentAction = useAction();
@@ -655,30 +665,32 @@ Action.run() can only be called on the browser, for example when a user clicks a
     return state;
   }
   action.__brand = "server_action";
-  action.__schema = options;
+  action.__schema = schema;
   action.__qrl = actionQrl2;
+  action.__id = id;
   action.use = action;
   if (build.isServer) {
     if (typeof globalThis._qwikActionsMap === "undefined")
       globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
-    globalThis._qwikActionsMap.set(actionQrl2.getHash(), action);
+    globalThis._qwikActionsMap.set(id, action);
   }
   return action;
 };
 const action$ = /* @__PURE__ */ qwik.implicit$FirstArg(actionQrl);
-const loaderQrl = (loaderQrl2) => {
-  const hash = loaderQrl2.getHash();
+const loaderQrl = (loaderQrl2, options) => {
+  const id = getId(loaderQrl2, options?.id);
   function loader() {
     return qwik.useContext(RouteStateContext, (state) => {
-      if (!(hash in state))
-        throw new Error(`Loader was used in a path where the 'loader$' was not declared.
+      if (!(id in state))
+        throw new Error(`Loader (${id}) was used in a path where the 'loader$' was not declared.
     This is likely because the used loader was not exported in a layout.tsx or index.tsx file of the existing route.
     For more information check: https://qwik.builder.io/qwikcity/loader`);
-      return qwik._wrapSignal(state, hash);
+      return qwik._wrapSignal(state, id);
     });
   }
   loader.__brand = "server_loader";
   loader.__qrl = loaderQrl2;
+  loader.__id = id;
   loader.use = loader;
   return loader;
 };
@@ -695,6 +707,16 @@ const zodQrl = async (qrl) => {
   return void 0;
 };
 const zod$ = /* @__PURE__ */ qwik.implicit$FirstArg(zodQrl);
+const getId = (qrl, id) => {
+  if (typeof id === "string") {
+    if (build.isDev) {
+      if (!/^[\w/.-]+$/.test(id))
+        throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
+    }
+    return `id_${id}`;
+  }
+  return qrl.getHash();
+};
 const serverQrl = (qrl) => {
   if (build.isServer) {
     const captured = qrl.getCaptured();
@@ -714,6 +736,7 @@ const serverQrl = (qrl) => {
             return null;
           return arg;
         });
+        const hash = qrl2.getHash();
         const path = `?qfunc=${qrl2.getHash()}`;
         const body = await qwik._serializeData([
           qrl2,
@@ -723,7 +746,7 @@ const serverQrl = (qrl) => {
           method: "POST",
           headers: {
             "Content-Type": "application/qwik-json",
-            "X-QRL": qrl2.getHash()
+            "X-QRL": hash
           },
           body
         });

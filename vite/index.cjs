@@ -23665,7 +23665,14 @@ function actionsMiddleware(serverLoaders) {
     if (serverLoaders.length > 0) {
       await Promise.all(
         serverLoaders.map((loader) => {
-          const loaderId = loader.__qrl.getHash();
+          const loaderId = loader.__id;
+          if (import_build.isDev) {
+            if (loaders[loaderId]) {
+              throw new Error(
+                `Duplicate loader id "${loaderId}" detected. Please ensure that all loader ids are unique.`
+              );
+            }
+          }
           return loaders[loaderId] = Promise.resolve().then(() => loader.__qrl(requestEv)).then((loaderResolved) => {
             if (typeof loaderResolved === "function") {
               loaders[loaderId] = loaderResolved();
@@ -23989,7 +23996,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       headers.set("Cache-Control", createCacheControl(cacheControl));
     },
     resolveValue: async (loaderOrAction) => {
-      const id = loaderOrAction.__qrl.getHash();
+      const id = loaderOrAction.__id;
       if (loaderOrAction.__brand === "server_loader") {
         if (!(id in loaders)) {
           throw new Error(
