@@ -23435,7 +23435,7 @@ function getErrorHtml(status, e) {
       message = String(e);
     }
   }
-  return minimalHtmlResponse(status, message);
+  return `<html>` + minimalHtmlResponse(status, message) + `</html>`;
 }
 function minimalHtmlResponse(status, message) {
   if (typeof status !== "number") {
@@ -23448,8 +23448,7 @@ function minimalHtmlResponse(status, message) {
   }
   const width = typeof message === "string" ? "600px" : "300px";
   const color2 = status >= 500 ? COLOR_500 : COLOR_400;
-  return `<!DOCTYPE html>
-<html>
+  return `
 <head>
   <meta charset="utf-8">
   <meta http-equiv="Status" content="${status}">
@@ -23463,7 +23462,7 @@ function minimalHtmlResponse(status, message) {
   </style>
 </head>
 <body><p><strong>${status}</strong> <span>${message}</span></p></body>
-</html>`;
+`;
 }
 var ESCAPE_HTML = /[&<>]/g;
 var escapeHtml = (s2) => {
@@ -23773,7 +23772,14 @@ function getPathname(url, trailingSlash) {
   return url.pathname;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
-function securityMiddleware({ method, url, request, error }) {
+function securityMiddleware({
+  method,
+  url,
+  request,
+  error,
+  next,
+  getWritableStream
+}) {
   const forbidden = method === "POST" && request.headers.get("origin") !== url.origin && isFormContentType(request.headers);
   if (forbidden) {
     throw error(403, `Cross-site ${request.method} form submissions are forbidden`);
@@ -24131,6 +24137,18 @@ async function runNext(requestEv, resolve4) {
         requestEv.html(e.status, html3);
       }
     } else if (!(e instanceof AbortMessage)) {
+      try {
+        if (!requestEv.headersSent) {
+          requestEv.headers.set("content-type", "text/html; charset=utf-8");
+          requestEv.cacheControl({ noCache: true });
+          requestEv.status(500);
+        }
+        const stream = requestEv.getWritableStream();
+        const writer = stream.getWriter();
+        await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
+        await writer.close();
+      } catch {
+      }
       return e;
     }
   } finally {
