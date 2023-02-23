@@ -20652,10 +20652,10 @@ function generateQwikCityPlan(ctx, qwikPlugin) {
 
 // packages/qwik-city/buildtime/context.ts
 import { isAbsolute, resolve } from "path";
-function createBuildContext(rootDir, userOpts, target) {
+function createBuildContext(rootDir, viteBasePath, userOpts, target) {
   const ctx = {
     rootDir: normalizePath(rootDir),
-    opts: normalizeOptions(rootDir, userOpts),
+    opts: normalizeOptions(rootDir, viteBasePath, userOpts),
     routes: [],
     serverPlugins: [],
     layouts: [],
@@ -20683,7 +20683,7 @@ function resetBuildContext(ctx) {
     ctx.isDirty = true;
   }
 }
-function normalizeOptions(rootDir, userOpts) {
+function normalizeOptions(rootDir, viteBasePath, userOpts) {
   const opts = { ...userOpts };
   if (typeof opts.routesDir !== "string") {
     opts.routesDir = resolve(rootDir, "src", "routes");
@@ -20701,13 +20701,12 @@ function normalizeOptions(rootDir, userOpts) {
     opts.basePathname = opts.baseUrl;
   }
   if (typeof opts.basePathname !== "string") {
-    opts.basePathname = "/";
-  } else {
-    const url = new URL(opts.basePathname, "https://qwik.builer.io/");
-    opts.basePathname = url.pathname;
-    if (!opts.basePathname.endsWith("/")) {
-      opts.basePathname += "/";
-    }
+    opts.basePathname = viteBasePath;
+  }
+  const url = new URL(opts.basePathname, "https://qwik.builer.io/");
+  opts.basePathname = url.pathname;
+  if (!opts.basePathname.endsWith("/")) {
+    opts.basePathname += "/";
   }
   if (typeof opts.trailingSlash !== "boolean") {
     opts.trailingSlash = true;
@@ -23487,9 +23486,9 @@ function getQwikCityServerData(requestEv) {
   const { url, params, request, status, locale } = requestEv;
   const requestHeaders = {};
   request.headers.forEach((value2, key) => requestHeaders[key] = value2);
-  const action = getRequestAction(requestEv);
-  const formData = requestEv.sharedMap.get("actionFormData");
-  const nonce = requestEv.sharedMap.get("@nonce");
+  const action = requestEv.sharedMap.get(RequestEvSharedActionId);
+  const formData = requestEv.sharedMap.get(RequestEvSharedActionFormData);
+  const nonce = requestEv.sharedMap.get(RequestEvSharedNonce);
   return {
     url: new URL(url.pathname + url.search, url).href,
     requestHeaders,
@@ -23608,13 +23607,13 @@ function actionsMiddleware(serverLoaders) {
       if (selectedAction && serverActionsMap) {
         const action = serverActionsMap.get(selectedAction);
         if (action) {
-          setRequestAction(requestEv, selectedAction);
+          requestEv.sharedMap.set(RequestEvSharedActionId, selectedAction);
           const isForm = isFormContentType(requestEv.request.headers);
           const req = requestEv.request.clone();
           let data;
           if (isForm) {
             const formData = await req.formData();
-            requestEv.sharedMap.set("actionFormData", formData);
+            requestEv.sharedMap.set(RequestEvSharedActionFormData, formData);
             data = formToObj(formData);
           } else {
             data = await req.json();
@@ -23808,7 +23807,7 @@ async function renderQData(requestEv) {
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
     const qData = {
       loaders: getRequestLoaders(requestEv),
-      action: getRequestAction(requestEv),
+      action: requestEv.sharedMap.get(RequestEvSharedActionId),
       status: status !== 200 ? status : 200,
       href: getPathname(requestEv.url, trailingSlash),
       redirect: location ?? void 0
@@ -23898,12 +23897,13 @@ function createCacheControl(cacheControl) {
 var RequestEvLoaders = Symbol("RequestEvLoaders");
 var RequestEvLocale = Symbol("RequestEvLocale");
 var RequestEvMode = Symbol("RequestEvMode");
-var RequestEvStatus = Symbol("RequestEvStatus");
 var RequestEvRoute = Symbol("RequestEvRoute");
 var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
-var RequestEvAction = Symbol("RequestEvAction");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvBasePathname = Symbol("RequestEvBasePathname");
+var RequestEvSharedActionId = "@actionId";
+var RequestEvSharedActionFormData = "@actionFormData";
+var RequestEvSharedNonce = "@nonce";
 function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer, resolved) {
   const { request, platform, env } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
@@ -23911,6 +23911,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   const url = new URL(request.url);
   let routeModuleIndex = -1;
   let writableStream = null;
+  let status = 200;
   const next = async () => {
     routeModuleIndex++;
     while (routeModuleIndex < requestHandlers.length) {
@@ -23930,14 +23931,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   const send = (statusOrResponse, body) => {
     check();
     if (typeof statusOrResponse === "number") {
-      requestEv[RequestEvStatus] = statusOrResponse;
+      status = statusOrResponse;
       const writableStream2 = requestEv.getWritableStream();
       const writer = writableStream2.getWriter();
       writer.write(typeof body === "string" ? encoder.encode(body) : body);
       writer.close();
     } else {
-      const status = statusOrResponse.status;
-      requestEv[RequestEvStatus] = status;
+      status = statusOrResponse.status;
       statusOrResponse.headers.forEach((value2, key) => {
         headers.append(key, value2);
       });
@@ -23959,8 +23959,6 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     [RequestEvLoaders]: loaders,
     [RequestEvLocale]: serverRequestEv.locale,
     [RequestEvMode]: serverRequestEv.mode,
-    [RequestEvStatus]: 200,
-    [RequestEvAction]: void 0,
     [RequestEvTrailingSlash]: trailingSlash,
     [RequestEvBasePathname]: basePathname,
     [RequestEvRoute]: loadedRoute,
@@ -24005,10 +24003,10 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     status: (statusCode) => {
       if (typeof statusCode === "number") {
         check();
-        requestEv[RequestEvStatus] = statusCode;
+        status = statusCode;
         return statusCode;
       }
-      return requestEv[RequestEvStatus];
+      return status;
     },
     locale: (locale) => {
       if (typeof locale === "string") {
@@ -24017,13 +24015,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       return requestEv[RequestEvLocale] || "";
     },
     error: (statusCode, message) => {
-      requestEv[RequestEvStatus] = statusCode;
+      status = statusCode;
       headers.delete("Cache-Control");
       return new ErrorResponse(statusCode, message);
     },
     redirect: (statusCode, url2) => {
       check();
-      requestEv[RequestEvStatus] = statusCode;
+      status = statusCode;
       headers.set("Location", url2);
       headers.delete("Cache-Control");
       if (statusCode > 301) {
@@ -24036,7 +24034,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     },
     fail: (statusCode, data) => {
       check();
-      requestEv[RequestEvStatus] = statusCode;
+      status = statusCode;
       headers.delete("Cache-Control");
       return {
         failed: true,
@@ -24062,7 +24060,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     getWritableStream: () => {
       if (writableStream === null) {
         writableStream = serverRequestEv.getWritableStream(
-          requestEv[RequestEvStatus],
+          status,
           headers,
           cookie,
           resolved,
@@ -24072,7 +24070,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       return writableStream;
     }
   };
-  return requestEv;
+  return Object.freeze(requestEv);
 }
 function getRequestLoaders(requestEv) {
   return requestEv[RequestEvLoaders];
@@ -24085,12 +24083,6 @@ function getRequestBasePathname(requestEv) {
 }
 function getRequestRoute(requestEv) {
   return requestEv[RequestEvRoute];
-}
-function getRequestAction(requestEv) {
-  return requestEv[RequestEvAction];
-}
-function setRequestAction(requestEv, id) {
-  requestEv[RequestEvAction] = id;
 }
 var ABORT_INDEX = 999999999;
 
@@ -24998,6 +24990,7 @@ function qwikCity(userOpts) {
       const updatedViteConfig = {
         appType: "custom",
         base: userOpts == null ? void 0 : userOpts.basePathname,
+        // TODO: Remove
         optimizeDeps: {
           include: ["zod"],
           exclude: [QWIK_CITY, QWIK_CITY_PLAN_ID, QWIK_CITY_ENTRIES_ID, QWIK_CITY_SW_REGISTER]
@@ -25012,7 +25005,7 @@ function qwikCity(userOpts) {
       var _a2, _b, _c;
       rootDir = resolve3(config.root);
       const target = ((_a2 = config.build) == null ? void 0 : _a2.ssr) || config.mode === "ssr" ? "ssr" : "client";
-      ctx = createBuildContext(rootDir, userOpts, target);
+      ctx = createBuildContext(rootDir, config.base, userOpts, target);
       ctx.isDevServer = config.command === "serve";
       ctx.isDevServerClientOnly = ctx.isDevServer && config.mode !== "ssr";
       await validatePlugin(ctx.opts);

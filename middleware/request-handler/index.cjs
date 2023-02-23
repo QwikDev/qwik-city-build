@@ -217,9 +217,9 @@ function getQwikCityServerData(requestEv) {
   const { url, params, request, status, locale } = requestEv;
   const requestHeaders = {};
   request.headers.forEach((value, key) => requestHeaders[key] = value);
-  const action = getRequestAction(requestEv);
-  const formData = requestEv.sharedMap.get("actionFormData");
-  const nonce = requestEv.sharedMap.get("@nonce");
+  const action = requestEv.sharedMap.get(RequestEvSharedActionId);
+  const formData = requestEv.sharedMap.get(RequestEvSharedActionFormData);
+  const nonce = requestEv.sharedMap.get(RequestEvSharedNonce);
   return {
     url: new URL(url.pathname + url.search, url).href,
     requestHeaders,
@@ -338,13 +338,13 @@ function actionsMiddleware(serverLoaders) {
       if (selectedAction && serverActionsMap) {
         const action = serverActionsMap.get(selectedAction);
         if (action) {
-          setRequestAction(requestEv, selectedAction);
+          requestEv.sharedMap.set(RequestEvSharedActionId, selectedAction);
           const isForm = isFormContentType(requestEv.request.headers);
           const req = requestEv.request.clone();
           let data;
           if (isForm) {
             const formData = await req.formData();
-            requestEv.sharedMap.set("actionFormData", formData);
+            requestEv.sharedMap.set(RequestEvSharedActionFormData, formData);
             data = formToObj(formData);
           } else {
             data = await req.json();
@@ -537,7 +537,7 @@ function renderQwikMiddleware(render, opts) {
       });
       const qData = {
         loaders: getRequestLoaders(requestEv),
-        action: getRequestAction(requestEv),
+        action: requestEv.sharedMap.get(RequestEvSharedActionId),
         status: status !== 200 ? status : 200,
         href: getPathname(requestEv.url, trailingSlash)
       };
@@ -586,7 +586,7 @@ async function renderQData(requestEv) {
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
     const qData = {
       loaders: getRequestLoaders(requestEv),
-      action: getRequestAction(requestEv),
+      action: requestEv.sharedMap.get(RequestEvSharedActionId),
       status: status !== 200 ? status : 200,
       href: getPathname(requestEv.url, trailingSlash),
       redirect: location ?? void 0
@@ -676,12 +676,13 @@ function createCacheControl(cacheControl) {
 var RequestEvLoaders = Symbol("RequestEvLoaders");
 var RequestEvLocale = Symbol("RequestEvLocale");
 var RequestEvMode = Symbol("RequestEvMode");
-var RequestEvStatus = Symbol("RequestEvStatus");
 var RequestEvRoute = Symbol("RequestEvRoute");
 var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
-var RequestEvAction = Symbol("RequestEvAction");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvBasePathname = Symbol("RequestEvBasePathname");
+var RequestEvSharedActionId = "@actionId";
+var RequestEvSharedActionFormData = "@actionFormData";
+var RequestEvSharedNonce = "@nonce";
 function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer, resolved) {
   const { request, platform, env } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
@@ -689,6 +690,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   const url = new URL(request.url);
   let routeModuleIndex = -1;
   let writableStream = null;
+  let status = 200;
   const next = async () => {
     routeModuleIndex++;
     while (routeModuleIndex < requestHandlers.length) {
@@ -708,14 +710,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   const send = (statusOrResponse, body) => {
     check();
     if (typeof statusOrResponse === "number") {
-      requestEv[RequestEvStatus] = statusOrResponse;
+      status = statusOrResponse;
       const writableStream2 = requestEv.getWritableStream();
       const writer = writableStream2.getWriter();
       writer.write(typeof body === "string" ? encoder.encode(body) : body);
       writer.close();
     } else {
-      const status = statusOrResponse.status;
-      requestEv[RequestEvStatus] = status;
+      status = statusOrResponse.status;
       statusOrResponse.headers.forEach((value, key) => {
         headers.append(key, value);
       });
@@ -737,8 +738,6 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     [RequestEvLoaders]: loaders,
     [RequestEvLocale]: serverRequestEv.locale,
     [RequestEvMode]: serverRequestEv.mode,
-    [RequestEvStatus]: 200,
-    [RequestEvAction]: void 0,
     [RequestEvTrailingSlash]: trailingSlash,
     [RequestEvBasePathname]: basePathname,
     [RequestEvRoute]: loadedRoute,
@@ -783,10 +782,10 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     status: (statusCode) => {
       if (typeof statusCode === "number") {
         check();
-        requestEv[RequestEvStatus] = statusCode;
+        status = statusCode;
         return statusCode;
       }
-      return requestEv[RequestEvStatus];
+      return status;
     },
     locale: (locale) => {
       if (typeof locale === "string") {
@@ -795,13 +794,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       return requestEv[RequestEvLocale] || "";
     },
     error: (statusCode, message) => {
-      requestEv[RequestEvStatus] = statusCode;
+      status = statusCode;
       headers.delete("Cache-Control");
       return new ErrorResponse(statusCode, message);
     },
     redirect: (statusCode, url2) => {
       check();
-      requestEv[RequestEvStatus] = statusCode;
+      status = statusCode;
       headers.set("Location", url2);
       headers.delete("Cache-Control");
       if (statusCode > 301) {
@@ -814,7 +813,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     },
     fail: (statusCode, data) => {
       check();
-      requestEv[RequestEvStatus] = statusCode;
+      status = statusCode;
       headers.delete("Cache-Control");
       return {
         failed: true,
@@ -840,7 +839,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     getWritableStream: () => {
       if (writableStream === null) {
         writableStream = serverRequestEv.getWritableStream(
-          requestEv[RequestEvStatus],
+          status,
           headers,
           cookie,
           resolved,
@@ -850,7 +849,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       return writableStream;
     }
   };
-  return requestEv;
+  return Object.freeze(requestEv);
 }
 function getRequestLoaders(requestEv) {
   return requestEv[RequestEvLoaders];
@@ -863,12 +862,6 @@ function getRequestBasePathname(requestEv) {
 }
 function getRequestRoute(requestEv) {
   return requestEv[RequestEvRoute];
-}
-function getRequestAction(requestEv) {
-  return requestEv[RequestEvAction];
-}
-function setRequestAction(requestEv, id) {
-  requestEv[RequestEvAction] = id;
 }
 function getRequestMode(requestEv) {
   return requestEv[RequestEvMode];

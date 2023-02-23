@@ -94,10 +94,6 @@ declare interface PluginOptions {
      * MDX Options https://mdxjs.com/
      */
     mdx?: any;
-    /**
-     * @deprecated Please use "basePathname" instead.
-     */
-    baseUrl?: string;
 }
 
 /**
@@ -125,9 +121,13 @@ declare interface QwikCityPluginApi {
 /**
  * @alpha
  */
-export declare interface QwikCityVitePluginOptions extends PluginOptions {
+export declare interface QwikCityVitePluginOptions extends Omit<PluginOptions, 'basePathname'> {
     mdxPlugins?: MdxPlugins;
     mdx?: MdxOptions;
+    /**
+     * @deprecated Please use the "base" property in vite config file.
+     */
+    basePathname?: string;
 }
 
 export { }

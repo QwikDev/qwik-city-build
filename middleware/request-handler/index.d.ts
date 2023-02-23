@@ -330,8 +330,6 @@ declare type RedirectCode = 301 | 302 | 303 | 307 | 308;
 declare class RedirectMessage extends AbortMessage {
 }
 
-declare const RequestEvAction: unique symbol;
-
 declare const RequestEvBasePathname: unique symbol;
 
 /**
@@ -473,8 +471,6 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
     [RequestEvLoaders]: Record<string, Promise<any> | undefined>;
     [RequestEvLocale]: string | undefined;
     [RequestEvMode]: ServerRequestMode;
-    [RequestEvStatus]: number;
-    [RequestEvAction]: string | undefined;
     [RequestEvTrailingSlash]: boolean;
     [RequestEvBasePathname]: string;
     [RequestEvRoute]: LoadedRoute | null;
@@ -504,8 +500,6 @@ declare const RequestEvMode: unique symbol;
 declare const RequestEvQwikSerializer: unique symbol;
 
 declare const RequestEvRoute: unique symbol;
-
-declare const RequestEvStatus: unique symbol;
 
 declare const RequestEvTrailingSlash: unique symbol;
 
