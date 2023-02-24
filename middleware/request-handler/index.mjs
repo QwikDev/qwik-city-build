@@ -463,20 +463,13 @@ function getPathname(url, trailingSlash) {
   return url.pathname;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
-function securityMiddleware({
-  method,
-  url,
-  request,
-  error,
-  next,
-  getWritableStream
-}) {
+function securityMiddleware({ method, url, request, error }) {
   const forbidden = method === "POST" && request.headers.get("origin") !== url.origin && isFormContentType(request.headers);
   if (forbidden) {
     throw error(403, `Cross-site ${request.method} form submissions are forbidden`);
   }
 }
-function renderQwikMiddleware(render, opts) {
+function renderQwikMiddleware(render) {
   return async (requestEv) => {
     if (requestEv.headersSent) {
       return;
@@ -500,6 +493,7 @@ function renderQwikMiddleware(render, opts) {
     try {
       const isStatic = getRequestMode(requestEv) === "static";
       const result = await render({
+        base: requestEv.basePathname + "build/",
         stream,
         serverData: getQwikCityServerData(requestEv),
         containerAttributes: {
