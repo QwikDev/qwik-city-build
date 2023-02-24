@@ -23210,7 +23210,7 @@ function resolveRoute(opts, appLayouts, sourceFile) {
 }
 function resolveEntry(opts, sourceFile) {
   const pathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
-  const chunkFileName = pathname.slice(1);
+  const chunkFileName = pathname.slice(opts.basePathname.length);
   const buildEntry = {
     id: createFileId(opts.routesDir, sourceFile.filePath),
     filePath: sourceFile.filePath,
