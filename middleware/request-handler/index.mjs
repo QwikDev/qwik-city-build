@@ -869,10 +869,13 @@ async function runNext(requestEv, resolve) {
           requestEv.status(500);
         }
         const stream = requestEv.getWritableStream();
-        const writer = stream.getWriter();
-        await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
-        await writer.close();
+        if (!stream.locked) {
+          const writer = stream.getWriter();
+          await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
+          await writer.close();
+        }
       } catch {
+        console.error("Unable to render error page");
       }
       return e;
     }
