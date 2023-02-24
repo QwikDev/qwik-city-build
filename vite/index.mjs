@@ -25136,8 +25136,8 @@ function qwikCity(userOpts) {
       sequential: true,
       async handler() {
         if ((ctx == null ? void 0 : ctx.target) === "ssr") {
-          const manifest = globalThis.QWIK_MANIFEST || qwikPlugin.api.getManifest();
-          const clientOutDir = globalThis.QWIK_CLIENT_OUT_DIR || qwikPlugin.api.getClientOutDir();
+          const manifest = qwikPlugin.api.getManifest();
+          const clientOutDir = qwikPlugin.api.getClientOutDir();
           if (manifest && clientOutDir) {
             for (const swEntry of ctx.serviceWorkers) {
               try {
@@ -25156,7 +25156,7 @@ function qwikCity(userOpts) {
               }
             }
           }
-          if (outDir) {
+          if (outDir && clientOutDir) {
             const { staticPathsCode, notFoundPathsCode } = await postBuild(
               clientOutDir,
               api.getBasePathname(),

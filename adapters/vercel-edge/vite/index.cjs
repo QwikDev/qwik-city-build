@@ -48,7 +48,7 @@ function vercelEdgeAdapter(opts = {}) {
     cleanStaticGenerated: true,
     config(config) {
       var _a2;
-      const outDir = ((_a2 = config.build) == null ? void 0 : _a2.outDir) || ".vercel/output/functions/_qwik-city.func";
+      const outDir = ((_a2 = config.build) == null ? void 0 : _a2.outDir) || (0, import_node_path.join)(".vercel", "output", "functions", "_qwik-city.func");
       return {
         resolve: {
           conditions: ["webworker", "worker"]
@@ -88,7 +88,6 @@ function vercelEdgeAdapter(opts = {}) {
           JSON.stringify(vercelOutputConfig, null, 2)
         );
       }
-      const vcConfigPath = (0, import_node_path.join)(serverOutDir, ".vc-config.json");
       let entrypoint = opts.vcConfigEntryPoint;
       if (!entrypoint) {
         if (outputEntries.some((n) => n === "entry.vercel-edge.mjs")) {
@@ -97,17 +96,21 @@ function vercelEdgeAdapter(opts = {}) {
           entrypoint = "entry.vercel-edge.js";
         }
       }
+      const vcConfigPath = (0, import_node_path.join)(serverOutDir, ".vc-config.json");
       const vcConfig = {
         runtime: "edge",
         entrypoint,
         envVarsInUse: opts.vcConfigEnvVarsInUse
       };
       await import_node_fs.default.promises.writeFile(vcConfigPath, JSON.stringify(vcConfig, null, 2));
-      const staticDir = (0, import_node_path.join)(vercelOutputDir, "static");
-      if (import_node_fs.default.existsSync(staticDir)) {
-        await import_node_fs.default.promises.rm(staticDir, { recursive: true });
+      let vercelStaticDir = (0, import_node_path.join)(vercelOutputDir, "static");
+      const basePathnameParts = basePathname.split("/").filter((p) => p.length > 0);
+      if (basePathnameParts.length > 0) {
+        vercelStaticDir = (0, import_node_path.join)(vercelStaticDir, ...basePathnameParts);
       }
-      await import_node_fs.default.promises.rename(clientOutDir, staticDir);
+      await import_node_fs.default.promises.rm(vercelStaticDir, { recursive: true, force: true });
+      await import_node_fs.default.promises.mkdir((0, import_node_path.dirname)(vercelStaticDir), { recursive: true });
+      await import_node_fs.default.promises.rename(clientOutDir, vercelStaticDir);
     }
   });
 }
