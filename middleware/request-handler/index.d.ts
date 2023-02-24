@@ -330,8 +330,6 @@ declare type RedirectCode = 301 | 302 | 303 | 307 | 308;
 declare class RedirectMessage extends AbortMessage {
 }
 
-declare const RequestEvBasePathname: unique symbol;
-
 /**
  * @alpha
  */
@@ -449,6 +447,11 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> {
      */
     readonly url: URL;
     /**
+     * The base pathname of the request, which can be configured at build time.
+     * Defaults to `/`.
+     */
+    readonly basePathname: string;
+    /**
      * HTTP request information.
      */
     readonly request: Request;
@@ -472,7 +475,6 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
     [RequestEvLocale]: string | undefined;
     [RequestEvMode]: ServerRequestMode;
     [RequestEvTrailingSlash]: boolean;
-    [RequestEvBasePathname]: string;
     [RequestEvRoute]: LoadedRoute | null;
     [RequestEvQwikSerializer]: QwikSerializer;
     /**

@@ -711,6 +711,11 @@ declare interface RequestEventCommon_2<PLATFORM = QwikCityPlatform> {
      */
     readonly url: URL;
     /**
+     * The base pathname of the request, which can be configured at build time.
+     * Defaults to `/`.
+     */
+    readonly basePathname: string;
+    /**
      * HTTP request information.
      */
     readonly request: Request;

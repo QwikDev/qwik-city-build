@@ -19,7 +19,7 @@ function getOrigin(req) {
 }
 function getUrl(req) {
   const origin = ORIGIN ?? getOrigin(req);
-  return new URL(req.url || "/", origin);
+  return new URL(req.originalUrl || req.url || "/", origin);
 }
 async function fromNodeHttp(url, req, res, mode) {
   const requestHeaders = new Headers();

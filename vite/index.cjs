@@ -23731,8 +23731,7 @@ async function pureServerFunction(ev) {
 }
 function fixTrailingSlash(ev) {
   const trailingSlash = getRequestTrailingSlash(ev);
-  const basePathname = getRequestBasePathname(ev);
-  const { pathname, url } = ev;
+  const { basePathname, pathname, url } = ev;
   if (!isQDataJson(pathname) && pathname !== basePathname && !pathname.endsWith(".html")) {
     if (trailingSlash) {
       if (!pathname.endsWith("/")) {
@@ -23910,7 +23909,6 @@ var RequestEvMode = Symbol("RequestEvMode");
 var RequestEvRoute = Symbol("RequestEvRoute");
 var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
-var RequestEvBasePathname = Symbol("RequestEvBasePathname");
 var RequestEvSharedActionId = "@actionId";
 var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
@@ -23970,7 +23968,6 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     [RequestEvLocale]: serverRequestEv.locale,
     [RequestEvMode]: serverRequestEv.mode,
     [RequestEvTrailingSlash]: trailingSlash,
-    [RequestEvBasePathname]: basePathname,
     [RequestEvRoute]: loadedRoute,
     [RequestEvQwikSerializer]: qwikSerializer,
     cookie,
@@ -23983,6 +23980,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     query: url.searchParams,
     request,
     url,
+    basePathname,
     sharedMap: /* @__PURE__ */ new Map(),
     get headersSent() {
       return writableStream !== null;
@@ -24087,9 +24085,6 @@ function getRequestLoaders(requestEv) {
 }
 function getRequestTrailingSlash(requestEv) {
   return requestEv[RequestEvTrailingSlash];
-}
-function getRequestBasePathname(requestEv) {
-  return requestEv[RequestEvBasePathname];
 }
 function getRequestRoute(requestEv) {
   return requestEv[RequestEvRoute];
@@ -24210,7 +24205,7 @@ function getOrigin(req) {
 }
 function getUrl(req) {
   const origin = ORIGIN ?? getOrigin(req);
-  return new URL(req.url || "/", origin);
+  return new URL(req.originalUrl || req.url || "/", origin);
 }
 async function fromNodeHttp(url, req, res, mode) {
   const requestHeaders = new Headers();
