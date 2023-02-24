@@ -617,12 +617,15 @@ var access = async (path) => {
 import { isMainThread, workerData } from "worker_threads";
 
 // packages/qwik-city/static/routes.ts
-function createRouteTester(includeRoutes, excludeRoutes) {
+function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
   const includes = routesToRegExps(includeRoutes);
   const excludes = routesToRegExps(excludeRoutes);
   return (pathname) => {
     if (pathname.endsWith("404.html")) {
       return true;
+    }
+    if (basePathname !== "/") {
+      pathname = pathname.slice(basePathname.length - 1);
     }
     for (const exclude of excludes) {
       if (exclude.test(pathname)) {
@@ -920,7 +923,7 @@ async function mainThread(sys) {
   const active = /* @__PURE__ */ new Set();
   const routes = qwikCityPlan.routes || [];
   const trailingSlash = !!qwikCityPlan.trailingSlash;
-  const includeRoute = createRouteTester(opts.include, opts.exclude);
+  const includeRoute = createRouteTester(opts.basePathname || "/", opts.include, opts.exclude);
   return new Promise((resolve2, reject) => {
     try {
       const timer = sys.createTimer();
