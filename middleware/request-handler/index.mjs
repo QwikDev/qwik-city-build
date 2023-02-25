@@ -214,34 +214,47 @@ function getQwikCityServerData(requestEv) {
 // packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
 import { isDev } from "@builder.io/qwik/build";
 var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
-  const serverLoaders = [];
+  const routeLoaders = [];
+  const routeActions = [];
   const requestHandlers = [];
   const isPageRoute = !!(route && isLastModulePageRoute(route[1]));
   if (serverPlugins) {
-    _resolveRequestHandlers(serverLoaders, requestHandlers, serverPlugins, isPageRoute, method);
+    _resolveRequestHandlers(
+      routeLoaders,
+      routeActions,
+      requestHandlers,
+      serverPlugins,
+      isPageRoute,
+      method
+    );
   }
   if (route) {
     if (isPageRoute) {
       if (method === "POST") {
+        requestHandlers.unshift(securityMiddleware);
         requestHandlers.push(pureServerFunction);
       }
       requestHandlers.push(fixTrailingSlash);
       requestHandlers.push(renderQData);
     }
-    _resolveRequestHandlers(serverLoaders, requestHandlers, route[1], isPageRoute, method);
+    _resolveRequestHandlers(
+      routeLoaders,
+      routeActions,
+      requestHandlers,
+      route[1],
+      isPageRoute,
+      method
+    );
     if (isPageRoute) {
-      if (serverLoaders.length + actionsMiddleware.length > 0) {
-        requestHandlers.push(actionsMiddleware(serverLoaders));
+      if (routeLoaders.length + actionsMiddleware.length > 0) {
+        requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
       }
       requestHandlers.push(renderHandler);
     }
   }
-  if (requestHandlers.length > 0) {
-    requestHandlers.unshift(securityMiddleware);
-  }
   return requestHandlers;
 };
-var _resolveRequestHandlers = (serverLoaders, requestHandlers, routeModules, collectActions, method) => {
+var _resolveRequestHandlers = (routeLoaders, routeActions, requestHandlers, routeModules, collectActions, method) => {
   for (const routeModule of routeModules) {
     if (typeof routeModule.onRequest === "function") {
       requestHandlers.push(routeModule.onRequest);
@@ -288,14 +301,18 @@ var _resolveRequestHandlers = (serverLoaders, requestHandlers, routeModules, col
       const loaders = Object.values(routeModule).filter(
         (e) => checkBrand(e, "server_loader")
       );
-      serverLoaders.push(...loaders);
+      routeLoaders.push(...loaders);
+      const actions = Object.values(routeModule).filter(
+        (e) => checkBrand(e, "server_action")
+      );
+      routeActions.push(...actions);
     }
   }
 };
 var checkBrand = (obj, brand) => {
   return obj && typeof obj === "function" && obj.__brand === brand;
 };
-function actionsMiddleware(serverLoaders) {
+function actionsMiddleware(routeLoaders, routeActions) {
   return async (requestEv) => {
     if (requestEv.headersSent) {
       requestEv.exit();
@@ -308,54 +325,27 @@ function actionsMiddleware(serverLoaders) {
       const selectedAction = requestEv.query.get(QACTION_KEY);
       const serverActionsMap = globalThis._qwikActionsMap;
       if (selectedAction && serverActionsMap) {
-        const action = serverActionsMap.get(selectedAction);
+        const action = routeActions.find((action2) => action2.__id === selectedAction) ?? serverActionsMap.get(selectedAction);
         if (action) {
           requestEv.sharedMap.set(RequestEvSharedActionId, selectedAction);
-          const isForm = isFormContentType(requestEv.request.headers);
-          const req = requestEv.request.clone();
-          let data;
-          if (isForm) {
-            const formData = await req.formData();
-            requestEv.sharedMap.set(RequestEvSharedActionFormData, formData);
-            data = formToObj(formData);
+          const data = await requestEv.parseBody();
+          if (!data || typeof data !== "object") {
+            throw new Error("Expected request data to be an object");
+          }
+          const result = await runValidators(requestEv, action.__validators, data);
+          if (!result.success) {
+            loaders[selectedAction] = requestEv.fail(result.status ?? 500, result.error);
           } else {
-            data = await req.json();
-          }
-          let failed = false;
-          if (action.__schema) {
-            const validator = await action.__schema;
-            const result = await validator.safeParseAsync(data);
-            if (!result.success) {
-              failed = true;
-              if (globalThis.qDev) {
-                console.error(
-                  "\nVALIDATION ERROR\naction$() zod validated failed",
-                  "\n\n  - Received:",
-                  data,
-                  "\n  - Issues:",
-                  result.error.issues
-                );
-              }
-              requestEv.status(400);
-              loaders[selectedAction] = {
-                __brand: "fail",
-                ...result.error.flatten()
-              };
-            } else {
-              data = result.data;
-            }
-          }
-          if (!failed) {
-            const actionResolved = await action.__qrl(data, requestEv);
+            const actionResolved = await action.__qrl(result.data, requestEv);
             verifySerializable(qwikSerializer, actionResolved, action.__qrl);
             loaders[selectedAction] = actionResolved;
           }
         }
       }
     }
-    if (serverLoaders.length > 0) {
+    if (routeLoaders.length > 0) {
       await Promise.all(
-        serverLoaders.map((loader) => {
+        routeLoaders.map((loader) => {
           const loaderId = loader.__id;
           if (isDev) {
             if (loaders[loaderId]) {
@@ -378,45 +368,37 @@ function actionsMiddleware(serverLoaders) {
     }
   };
 }
-var formToObj = (formData) => {
-  const obj = {};
-  formData.forEach((value, key) => {
-    const keys = key.split(".").filter((k) => k);
-    let current = obj;
-    for (let i = 0; i < keys.length; i++) {
-      let k = keys[i];
-      if (i === keys.length - 1) {
-        if (k.endsWith("[]")) {
-          k = k.slice(0, -2);
-          current[k] = current[k] || [];
-          current[k].push(value);
-        } else {
-          current[k] = value;
-        }
+async function runValidators(requestEv, validators, data) {
+  let lastResult = {
+    success: true,
+    data
+  };
+  if (validators) {
+    for (const validator of validators) {
+      lastResult = await validator.validate(requestEv, data);
+      if (!lastResult.success) {
+        return lastResult;
       } else {
-        current = current[k] = {};
+        data = lastResult.data;
       }
     }
-  });
-  return obj;
-};
+  }
+  return lastResult;
+}
 async function pureServerFunction(ev) {
   const fn = ev.query.get(QFN_KEY);
-  if (fn && ev.request.headers.get("Content-Type") === "application/qwik-json") {
+  if (fn && ev.request.headers.get("X-QRL") === fn && ev.request.headers.get("Content-Type") === "application/qwik-json") {
     ev.exit();
-    const fnHeader = ev.request.headers.get("X-QRL");
-    if (fnHeader === fn) {
-      const qwikSerializer = ev[RequestEvQwikSerializer];
-      const data = qwikSerializer._deserializeData(await ev.request.text());
-      if (Array.isArray(data)) {
-        const [qrl, ...args] = data;
-        if (isQrl(qrl) && qrl.getHash() === fn) {
-          const result = await qrl(ev, ...args);
-          verifySerializable(qwikSerializer, result, qrl);
-          ev.headers.set("Content-Type", "application/qwik-json");
-          ev.send(200, await qwikSerializer._serializeData(result, true));
-          return;
-        }
+    const qwikSerializer = ev[RequestEvQwikSerializer];
+    const data = await ev.parseBody();
+    if (Array.isArray(data)) {
+      const [qrl, ...args] = data;
+      if (isQrl(qrl) && qrl.getHash() === fn) {
+        const result = await qrl.apply(ev, args);
+        verifySerializable(qwikSerializer, result, qrl);
+        ev.headers.set("Content-Type", "application/qwik-json");
+        ev.send(200, await qwikSerializer._serializeData(result, true));
+        return;
       }
     }
     throw ev.error(500, "Invalid request");
@@ -463,8 +445,8 @@ function getPathname(url, trailingSlash) {
   return url.pathname;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
-function securityMiddleware({ method, url, request, error }) {
-  const forbidden = method === "POST" && request.headers.get("origin") !== url.origin && isFormContentType(request.headers);
+function securityMiddleware({ url, request, error }) {
+  const forbidden = request.headers.get("origin") !== url.origin;
   if (forbidden) {
     throw error(403, `Cross-site ${request.method} form submissions are forbidden`);
   }
@@ -654,6 +636,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   const url = new URL(request.url);
   let routeModuleIndex = -1;
   let writableStream = null;
+  let requestData = void 0;
   let status = 200;
   const next = async () => {
     routeModuleIndex++;
@@ -698,6 +681,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     return new AbortMessage();
   };
   const loaders = {};
+  const sharedMap = /* @__PURE__ */ new Map();
   const requestEv = {
     [RequestEvLoaders]: loaders,
     [RequestEvLocale]: serverRequestEv.locale,
@@ -716,7 +700,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     request,
     url,
     basePathname,
-    sharedMap: /* @__PURE__ */ new Map(),
+    sharedMap,
     get headersSent() {
       return writableStream !== null;
     },
@@ -792,6 +776,12 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       headers.set("Content-Type", "text/html; charset=utf-8");
       return send(statusCode, html);
     },
+    parseBody: async () => {
+      if (requestData !== void 0) {
+        return requestData;
+      }
+      return requestData = parseRequest(requestEv.request, sharedMap, qwikSerializer);
+    },
     json: (statusCode, data) => {
       headers.set("Content-Type", "application/json; charset=utf-8");
       return send(statusCode, JSON.stringify(data));
@@ -828,6 +818,44 @@ function getRequestMode(requestEv) {
   return requestEv[RequestEvMode];
 }
 var ABORT_INDEX = 999999999;
+var parseRequest = async (request, sharedMap, qwikSerializer) => {
+  var _a2;
+  const req = request.clone();
+  const type = ((_a2 = request.headers.get("content-type")) == null ? void 0 : _a2.split(/[;,]/, 1)[0].trim()) ?? "";
+  if (type === "application/x-www-form-urlencoded" || type === "multipart/form-data") {
+    const formData = await req.formData();
+    sharedMap.set(RequestEvSharedActionFormData, formData);
+    return formToObj(formData);
+  } else if (type === "application/json") {
+    const data = await req.json();
+    return data;
+  } else if (type === "application/qwik-json") {
+    return qwikSerializer._deserializeData(await req.text());
+  }
+  return void 0;
+};
+var formToObj = (formData) => {
+  const obj = {};
+  formData.forEach((value, key) => {
+    const keys = key.split(".").filter((k) => k);
+    let current = obj;
+    for (let i = 0; i < keys.length; i++) {
+      let k = keys[i];
+      if (i === keys.length - 1) {
+        if (k.endsWith("[]")) {
+          k = k.slice(0, -2);
+          current[k] = current[k] || [];
+          current[k].push(value);
+        } else {
+          current[k] = value;
+        }
+      } else {
+        current = current[k] = {};
+      }
+    }
+  });
+  return obj;
+};
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
 function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer) {
@@ -901,14 +929,6 @@ var isQDataJson = (pathname) => {
 };
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
-function isFormContentType(headers) {
-  return isContentType(headers, "application/x-www-form-urlencoded", "multipart/form-data");
-}
-function isContentType(headers, ...types) {
-  var _a2;
-  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(";", 1)[0].trim()) ?? "";
-  return types.includes(type);
-}
 
 // packages/qwik-city/runtime/src/routing.ts
 var loadRoute = async (routes, menus, cacheModules, pathname) => {

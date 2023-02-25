@@ -27,6 +27,7 @@ declare class AbortMessage {
 
 /**
  * @alpha
+ * @deprecated - use `globalAction$()` instead
  */
 export declare const action$: ActionConstructor;
 
@@ -50,28 +51,38 @@ export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL ex
  */
 export declare interface ActionConstructor {
     <O>(actionQrl: (form: JSONObject, event: RequestEventAction, options: ActionOptions) => ValueOrPromise<O>, options?: ActionOptions): Action<O>;
-    <O, B extends ZodReturn>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B | ActionOptionsWithValidation<B>): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>, false>;
+    <O, B extends TypedDataValidator>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B | ActionOptionsWithValidation<B>): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>, false>;
+    <O, B extends TypedDataValidator>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B, ...rest: DataValidator[]): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>, false>;
+}
+
+declare interface ActionInternal extends Action<any, any> {
+    readonly __brand: 'server_action';
+    __id: string;
+    __qrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<any>>;
+    __validators: ValidatorInternal[] | undefined;
+    (): ActionStore<any, any>;
 }
 
 /**
  * @alpha
  */
 export declare interface ActionOptions {
-    id?: string;
+    readonly id?: string;
 }
 
 /**
  * @alpha
  */
-export declare interface ActionOptionsWithValidation<B extends ZodReturn> extends ActionOptions {
-    id?: string;
-    validation: B;
+export declare interface ActionOptionsWithValidation<B extends TypedDataValidator = TypedDataValidator> extends ActionOptions {
+    readonly id?: string;
+    readonly validation: [val: B, ...a: DataValidator[]];
 }
 
 /**
  * @alpha
+ * @deprecated - use `globalAction$()` instead
  */
-export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<B>>, options?: ActionOptionsWithValidation<ZodReturn> | ZodReturn) => Action<B, A, true>;
+export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<B>>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => Action<B, A, true>;
 
 /**
  * @alpha
@@ -144,6 +155,14 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
 }
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
+
+/**
+ * @alpha
+ */
+declare interface CommonLoaderActionOptions {
+    readonly id?: string;
+    readonly validation?: DataValidator[];
+}
 
 /**
  * @deprecated Please use `RouterOutlet` instead.
@@ -271,6 +290,13 @@ declare interface CookieValue_2 {
     value: string;
     json: <T = unknown>() => T;
     number: () => number;
+}
+
+/**
+ * @alpha
+ */
+declare interface DataValidator {
+    validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn>;
 }
 
 export { DeferReturn }
@@ -437,9 +463,19 @@ export declare interface FormSubmitSuccessDetail<T> {
     value: T;
 }
 
-declare type GetValidatorType<B extends ZodReturn<any>> = B extends ZodReturn<infer TYPE> ? z.infer<z.ZodObject<TYPE>> : never;
+declare type GetValidatorType<B extends TypedDataValidator> = B extends TypedDataValidator<infer TYPE> ? z.infer<TYPE> : never;
 
 declare type GetValueReturn<T> = (V<T> & Record<keyof F<T>, undefined>) | (F<T> & Record<keyof V<T>, undefined>);
+
+/**
+ * @alpha
+ */
+export declare const globalAction$: ActionConstructor;
+
+/**
+ * @alpha
+ */
+export declare const globalActionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<B>>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => Action<B, A, true>;
 
 /**
  * @alpha
@@ -480,8 +516,9 @@ export declare interface LinkProps extends AnchorAttributes {
 
 /**
  * @alpha
+ * @deprecated - use `routeLoader$()` instead
  */
-export declare const loader$: <RETURN>(first: (event: RequestEventLoader_2) => RETURN, options?: LoaderOptions | undefined) => Loader<RETURN>;
+export declare const loader$: <RETURN>(first: (event: RequestEventLoader_2) => RETURN, ...rest: (DataValidator | CommonLoaderActionOptions)[]) => Loader<RETURN>;
 
 /**
  * @alpha
@@ -500,15 +537,9 @@ export declare interface Loader<RETURN> {
 
 /**
  * @alpha
+ * @deprecated - use `routeLoader$()` instead
  */
-declare interface LoaderOptions {
-    id?: string;
-}
-
-/**
- * @alpha
- */
-export declare const loaderQrl: <RETURN>(loaderQrl: QRL<(event: RequestEventLoader_2) => RETURN>, options?: LoaderOptions) => Loader<RETURN>;
+export declare const loaderQrl: <RETURN>(loaderQrl: QRL<(event: RequestEventLoader_2) => RETURN>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => Loader<RETURN>;
 
 /**
  * @alpha
@@ -732,6 +763,13 @@ declare interface RequestEventCommon_2<PLATFORM = QwikCityPlatform> {
      * the shared map. The shared map is useful for sharing data between request handlers.
      */
     readonly sharedMap: Map<string, any>;
+    /**
+     * This method will check the request headers for a `Content-Type` header and parse the body accordingly.
+     * It supports `application/json`, `application/x-www-form-urlencoded`, and `multipart/form-data` content types.
+     *
+     * If the `Content-Type` header is not set, it will return `null`.
+     */
+    readonly parseBody: () => Promise<unknown>;
 }
 
 export { RequestEventLoader }
@@ -762,6 +800,16 @@ declare interface ResolveValue {
 /**
  * @alpha
  */
+export declare const routeAction$: ActionConstructor;
+
+/**
+ * @alpha
+ */
+export declare const routeActionQrl: <B>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<B>>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => ActionInternal;
+
+/**
+ * @alpha
+ */
 export declare type RouteData = [pattern: RegExp, loaders: ModuleLoader[]] | [pattern: RegExp, loaders: ModuleLoader[], paramNames: string[]] | [
 pattern: RegExp,
 loaders: ModuleLoader[],
@@ -769,6 +817,16 @@ paramNames: string[],
 originalPathname: string,
 routeBundleNames: string[]
 ];
+
+/**
+ * @alpha
+ */
+export declare const routeLoader$: <RETURN>(first: (event: RequestEventLoader_2) => RETURN, ...rest: (DataValidator | CommonLoaderActionOptions)[]) => Loader<RETURN>;
+
+/**
+ * @alpha
+ */
+export declare const routeLoaderQrl: <RETURN>(loaderQrl: QRL<(event: RequestEventLoader_2) => RETURN>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => Loader<RETURN>;
 
 /**
  * @alpha
@@ -832,7 +890,11 @@ declare interface SendMethod {
 export declare const server$: Server;
 
 declare interface Server {
-    <T extends (ev: RequestEvent, ...args: any[]) => any>(fn: T): T extends (ev: RequestEvent, ...args: infer ARGS) => infer RETURN ? QRL<(...args: ARGS) => RETURN> : never;
+    <T extends ServerFunction>(fn: T): QRL<T>;
+}
+
+declare interface ServerFunction {
+    (this: RequestEvent, ...args: any[]): any;
 }
 
 /**
@@ -862,6 +924,14 @@ export declare type StaticGenerateHandler = () => Promise<StaticGenerate> | Stat
 /**
  * @alpha
  */
+declare interface TypedDataValidator<T extends z.ZodType = any> {
+    __zod: z.ZodSchema<T>;
+    validate(ev: RequestEvent, data: unknown): Promise<z.SafeParseReturnType<T, T>>;
+}
+
+/**
+ * @alpha
+ */
 export declare const useContent: () => ContentState;
 
 /**
@@ -884,6 +954,22 @@ export declare const useNavigate: () => RouteNavigate;
  */
 declare type V<T> = T extends FailReturn<any> ? never : T;
 
+declare type ValidatorFromShape<T extends z.ZodRawShape> = TypedDataValidator<z.ZodObject<T>>;
+
+/**
+ * @alpha
+ */
+declare interface ValidatorInternal {
+    validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn>;
+}
+
+declare interface ValidatorReturn {
+    success: boolean;
+    status?: number;
+    data?: any;
+    error?: any;
+}
+
 export { z }
 
 /**
@@ -895,20 +981,15 @@ export declare const zod$: Zod;
  * @alpha
  */
 export declare interface Zod {
-    <T extends z.ZodRawShape>(schema: T): Promise<z.ZodObject<T>>;
-    <T extends z.ZodRawShape>(schema: (z: z) => T): Promise<z.ZodObject<T>>;
-    <T extends z.Schema>(schema: T): Promise<T>;
-    <T extends z.Schema>(schema: (z: z) => T): Promise<T>;
+    <T extends z.ZodRawShape>(schema: T): ValidatorFromShape<T>;
+    <T extends z.ZodRawShape>(schema: (z: z) => T): ValidatorFromShape<T>;
+    <T extends z.Schema>(schema: T): TypedDataValidator<T>;
+    <T extends z.Schema>(schema: (z: z) => T): TypedDataValidator<T>;
 }
 
 /**
  * @alpha
  */
-export declare const zodQrl: (qrl: QRL<z.ZodRawShape | z.ZodType<any, z.ZodTypeDef, any> | ((z: z) => z.ZodRawShape)>) => Promise<z.ZodType<any, z.ZodTypeDef, any> | undefined>;
-
-/**
- * @alpha
- */
-export declare type ZodReturn<T extends z.ZodRawShape = any> = Promise<z.ZodObject<T> | z.ZodEffects<z.ZodObject<T>>>;
+export declare const zodQrl: (qrl: QRL<z.ZodType<any, z.ZodTypeDef, any> | z.ZodRawShape | ((z: z) => z.ZodRawShape)>) => ValidatorInternal;
 
 export { }

@@ -557,18 +557,8 @@ const ServiceWorkerRegister = (props) => jsx("script", {
   dangerouslySetInnerHTML: swRegister,
   nonce: props.nonce
 });
-const actionQrl = (actionQrl2, options) => {
-  let _id;
-  let schema;
-  if (options && typeof options === "object") {
-    if (options instanceof Promise)
-      schema = options;
-    else {
-      _id = options.id;
-      schema = options.validation;
-    }
-  }
-  const id = getId(actionQrl2, _id);
+const routeActionQrl = (actionQrl2, ...rest) => {
+  const { id, validators } = getValidators(rest, actionQrl2);
   function action() {
     const loc = useLocation();
     const currentAction = useAction();
@@ -638,7 +628,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
           value: result
         };
       });
-    }, "actionQrl_action_8eAhmK7N0n0", [
+    }, "routeActionQrl_action_X5cKKrhH8rs", [
       currentAction,
       id,
       loc,
@@ -647,20 +637,25 @@ Action.run() can only be called on the browser, for example when a user clicks a
     return state;
   }
   action.__brand = "server_action";
-  action.__schema = schema;
+  action.__validators = validators;
   action.__qrl = actionQrl2;
   action.__id = id;
   action.use = action;
+  return action;
+};
+const globalActionQrl = (actionQrl2, ...rest) => {
+  const action = routeActionQrl(actionQrl2, ...rest);
   if (isServer) {
     if (typeof globalThis._qwikActionsMap === "undefined")
       globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
-    globalThis._qwikActionsMap.set(id, action);
+    globalThis._qwikActionsMap.set(action.__id, action);
   }
   return action;
 };
-const action$ = /* @__PURE__ */ implicit$FirstArg(actionQrl);
-const loaderQrl = (loaderQrl2, options) => {
-  const id = getId(loaderQrl2, options?.id);
+const routeAction$ = /* @__PURE__ */ implicit$FirstArg(routeActionQrl);
+const globalAction$ = /* @__PURE__ */ implicit$FirstArg(globalActionQrl);
+const routeLoaderQrl = (loaderQrl2, ...rest) => {
+  const { id, validators } = getValidators(rest, loaderQrl2);
   function loader() {
     return useContext(RouteStateContext, (state) => {
       if (!(id in state))
@@ -672,33 +667,43 @@ const loaderQrl = (loaderQrl2, options) => {
   }
   loader.__brand = "server_loader";
   loader.__qrl = loaderQrl2;
+  loader.__validators = validators;
   loader.__id = id;
   loader.use = loader;
   return loader;
 };
-const loader$ = /* @__PURE__ */ implicit$FirstArg(loaderQrl);
-const zodQrl = async (qrl) => {
+const routeLoader$ = /* @__PURE__ */ implicit$FirstArg(routeLoaderQrl);
+const zodQrl = (qrl) => {
   if (isServer) {
-    let obj = await qrl.resolve();
-    if (typeof obj === "function")
-      obj = obj(z);
-    else if (obj instanceof z.Schema)
-      return obj;
-    return z.object(obj);
+    const schema = qrl.resolve().then((obj) => {
+      if (typeof obj === "function")
+        obj = obj(z);
+      if (obj instanceof z.Schema)
+        return obj;
+      else
+        return z.object(obj);
+    });
+    return {
+      async validate(ev, inputData) {
+        const data = inputData ?? await ev.parseBody();
+        const result = await (await schema).safeParseAsync(data);
+        if (result.success)
+          return result;
+        else {
+          if (isDev)
+            console.error("\nVALIDATION ERROR\naction$() zod validated failed", "\n  - Issues:", result.error.issues);
+          return {
+            success: false,
+            status: 400,
+            error: result.error.flatten()
+          };
+        }
+      }
+    };
   }
   return void 0;
 };
 const zod$ = /* @__PURE__ */ implicit$FirstArg(zodQrl);
-const getId = (qrl, id) => {
-  if (typeof id === "string") {
-    if (isDev) {
-      if (!/^[\w/.-]+$/.test(id))
-        throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
-    }
-    return `id_${id}`;
-  }
-  return qrl.getHash();
-};
 const serverQrl = (qrl) => {
   if (isServer) {
     const captured = qrl.getCaptured();
@@ -709,7 +714,7 @@ const serverQrl = (qrl) => {
     return /* @__PURE__ */ inlinedQrl(async (...args) => {
       const [qrl2] = useLexicalScope();
       if (isServer)
-        throw new Error(`Server functions can not be invoked within the server during SSR.`);
+        return qrl2(...args);
       else {
         const filtered = args.map((arg) => {
           if (arg instanceof Event)
@@ -745,6 +750,41 @@ const serverQrl = (qrl) => {
   return client();
 };
 const server$ = /* @__PURE__ */ implicit$FirstArg(serverQrl);
+const getId = (qrl, id) => {
+  if (typeof id === "string") {
+    if (isDev) {
+      if (!/^[\w/.-]+$/.test(id))
+        throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
+    }
+    return `id_${id}`;
+  }
+  return qrl.getHash();
+};
+const actionQrl = globalActionQrl;
+const action$ = globalAction$;
+const loaderQrl = routeLoaderQrl;
+const loader$ = routeLoader$;
+const getValidators = (rest, qrl) => {
+  let _id;
+  const validators = [];
+  if (rest.length === 1) {
+    const options = rest[0];
+    if (options && typeof options === "object") {
+      if ("validate" in options)
+        validators.push(options);
+      else {
+        _id = options.id;
+        if (options.validation)
+          validators.push(...options.validation);
+      }
+    }
+  } else if (rest.length > 1)
+    validators.push(...rest.filter((v) => !!v));
+  return {
+    validators: validators.reverse(),
+    id: getId(qrl, _id)
+  };
+};
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return jsx("form", {
     ...rest,
@@ -770,8 +810,14 @@ export {
   ServiceWorkerRegister,
   action$,
   actionQrl,
+  globalAction$,
+  globalActionQrl,
   loader$,
   loaderQrl,
+  routeAction$,
+  routeActionQrl,
+  routeLoader$,
+  routeLoaderQrl,
   server$,
   serverQrl,
   useContent,
