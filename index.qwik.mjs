@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, useOnDocument, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnWindow, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -14,6 +14,18 @@ const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   _jsxBranch();
+  useOnWindow("qinit", /* @__PURE__ */ inlinedQrl(() => {
+    const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
+    if (!window["_qCityPopstateFallback"]) {
+      window[POPSTATE_FALLBACK_INITIALIZED] = () => {
+        if (!window["_qCityHistory"])
+          location.reload();
+      };
+      setTimeout(() => {
+        addEventListener("popstate", window["_qCityPopstateFallback"]);
+      }, 0);
+    }
+  }, "RouterOutlet_component_useOnWindow_P9EdGkxN8cs"));
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -28,8 +40,6 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
 }, "RouterOutlet_component_AKetNByE5TM"));
 const Content = RouterOutlet;
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
-const POPSTATE_FALLBACK_INITIALIZED = /* @__PURE__ */ Symbol();
-const CLIENT_HISTORY_INITIALIZED = /* @__PURE__ */ Symbol();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
 const loadRoute = async (routes, menus, cacheModules, pathname) => {
@@ -199,8 +209,8 @@ const clientNavigate = (win, newUrl, routeNavigate) => {
     handleScroll(win, currentUrl, newUrl);
     win.history.pushState("", "", toPath(newUrl));
   }
-  if (!win[CLIENT_HISTORY_INITIALIZED]) {
-    win[CLIENT_HISTORY_INITIALIZED] = 1;
+  if (!win._qCityHistory) {
+    win._qCityHistory = 1;
     win.addEventListener("popstate", () => {
       const currentUrl2 = win.location;
       const previousUrl = toUrl(routeNavigate.value, currentUrl2);
@@ -209,7 +219,7 @@ const clientNavigate = (win, newUrl, routeNavigate) => {
         routeNavigate.value = toPath(currentUrl2);
       }
     });
-    win.removeEventListener("popstate", win[POPSTATE_FALLBACK_INITIALIZED]);
+    win.removeEventListener("popstate", win._qCityPopstateFallback);
   }
 };
 const handleScroll = async (win, previousUrl, newUrl) => {
@@ -515,17 +525,6 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   const prefetchDataset = getPrefetchDataset(props, clientNavPath, loc);
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || originalHref;
-  useOnDocument("qinit", /* @__PURE__ */ inlinedQrl(() => {
-    if (!window[POPSTATE_FALLBACK_INITIALIZED]) {
-      window[POPSTATE_FALLBACK_INITIALIZED] = () => {
-        if (!window[CLIENT_HISTORY_INITIALIZED])
-          location.reload();
-      };
-      setTimeout(() => {
-        addEventListener("popstate", window[POPSTATE_FALLBACK_INITIALIZED]);
-      }, 0);
-    }
-  }, "Link_component_useOnDocument_u0YVoxt2aTY"));
   return /* @__PURE__ */ jsx$1("a", {
     ...linkProps,
     onClick$: /* @__PURE__ */ inlinedQrl(() => {

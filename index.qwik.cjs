@@ -32,6 +32,18 @@ const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   qwik._jsxBranch();
+  qwik.useOnWindow("qinit", /* @__PURE__ */ qwik.inlinedQrl(() => {
+    const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
+    if (!window["_qCityPopstateFallback"]) {
+      window[POPSTATE_FALLBACK_INITIALIZED] = () => {
+        if (!window["_qCityHistory"])
+          location.reload();
+      };
+      setTimeout(() => {
+        addEventListener("popstate", window["_qCityPopstateFallback"]);
+      }, 0);
+    }
+  }, "RouterOutlet_component_useOnWindow_P9EdGkxN8cs"));
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -46,8 +58,6 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
 }, "RouterOutlet_component_AKetNByE5TM"));
 const Content = RouterOutlet;
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
-const POPSTATE_FALLBACK_INITIALIZED = /* @__PURE__ */ Symbol();
-const CLIENT_HISTORY_INITIALIZED = /* @__PURE__ */ Symbol();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
 const loadRoute = async (routes, menus, cacheModules, pathname) => {
@@ -217,8 +227,8 @@ const clientNavigate = (win, newUrl, routeNavigate) => {
     handleScroll(win, currentUrl, newUrl);
     win.history.pushState("", "", toPath(newUrl));
   }
-  if (!win[CLIENT_HISTORY_INITIALIZED]) {
-    win[CLIENT_HISTORY_INITIALIZED] = 1;
+  if (!win._qCityHistory) {
+    win._qCityHistory = 1;
     win.addEventListener("popstate", () => {
       const currentUrl2 = win.location;
       const previousUrl = toUrl(routeNavigate.value, currentUrl2);
@@ -227,7 +237,7 @@ const clientNavigate = (win, newUrl, routeNavigate) => {
         routeNavigate.value = toPath(currentUrl2);
       }
     });
-    win.removeEventListener("popstate", win[POPSTATE_FALLBACK_INITIALIZED]);
+    win.removeEventListener("popstate", win._qCityPopstateFallback);
   }
 };
 const handleScroll = async (win, previousUrl, newUrl) => {
@@ -533,17 +543,6 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
   const prefetchDataset = getPrefetchDataset(props, clientNavPath, loc);
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || originalHref;
-  qwik.useOnDocument("qinit", /* @__PURE__ */ qwik.inlinedQrl(() => {
-    if (!window[POPSTATE_FALLBACK_INITIALIZED]) {
-      window[POPSTATE_FALLBACK_INITIALIZED] = () => {
-        if (!window[CLIENT_HISTORY_INITIALIZED])
-          location.reload();
-      };
-      setTimeout(() => {
-        addEventListener("popstate", window[POPSTATE_FALLBACK_INITIALIZED]);
-      }, 0);
-    }
-  }, "Link_component_useOnDocument_u0YVoxt2aTY"));
   return /* @__PURE__ */ jsxRuntime.jsx("a", {
     ...linkProps,
     onClick$: /* @__PURE__ */ qwik.inlinedQrl(() => {
