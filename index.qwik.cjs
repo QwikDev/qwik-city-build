@@ -768,22 +768,12 @@ const serverQrl = (qrl) => {
   return client();
 };
 const server$ = /* @__PURE__ */ qwik.implicit$FirstArg(serverQrl);
-const getId = (qrl, id) => {
-  if (typeof id === "string") {
-    if (build.isDev) {
-      if (!/^[\w/.-]+$/.test(id))
-        throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
-    }
-    return `id_${id}`;
-  }
-  return qrl.getHash();
-};
 const actionQrl = globalActionQrl;
 const action$ = globalAction$;
 const loaderQrl = routeLoaderQrl;
 const loader$ = routeLoader$;
 const getValidators = (rest, qrl) => {
-  let _id;
+  let id;
   const validators = [];
   if (rest.length === 1) {
     const options = rest[0];
@@ -791,16 +781,24 @@ const getValidators = (rest, qrl) => {
       if ("validate" in options)
         validators.push(options);
       else {
-        _id = options.id;
+        id = options.id;
         if (options.validation)
           validators.push(...options.validation);
       }
     }
   } else if (rest.length > 1)
     validators.push(...rest.filter((v) => !!v));
+  if (typeof id === "string") {
+    if (build.isDev) {
+      if (!/^[\w/.-]+$/.test(id))
+        throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
+    }
+    id = `id_${id}`;
+  } else
+    id = qrl.getHash();
   return {
     validators: validators.reverse(),
-    id: getId(qrl, _id)
+    id
   };
 };
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
