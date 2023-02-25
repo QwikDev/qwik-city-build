@@ -173,7 +173,8 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
     ok: false,
     error: null,
     filePath: null,
-    contentType: null
+    contentType: null,
+    resourceType: null
   };
   try {
     let routeWriter = null;
@@ -198,9 +199,15 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
         if (!result.ok) {
           return noopWritableStream;
         }
-        const contentType = (headers.get("Content-Type") || "").toLowerCase();
-        const isHtml = contentType.includes("text/html");
+        result.contentType = (headers.get("Content-Type") || "").toLowerCase();
+        const isHtml = result.contentType.includes("text/html");
+        const is404ErrorPage = url.pathname.endsWith("/404.html");
         const routeFilePath = sys.getRouteFilePath(url.pathname, isHtml);
+        if (is404ErrorPage) {
+          result.resourceType = "404";
+        } else if (isHtml) {
+          result.resourceType = "page";
+        }
         const hasRouteWriter = isHtml ? opts.emitHtml !== false : true;
         const writeQDataEnabled = isHtml && opts.emitData !== false;
         const stream = new import_web2.WritableStream({
@@ -246,7 +253,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
             try {
               if (writeQDataEnabled) {
                 const qData = requestEv.sharedMap.get("qData");
-                if (qData && !url.pathname.endsWith("/404.html")) {
+                if (qData && !is404ErrorPage) {
                   const qDataFilePath = sys.getDataFilePath(url.pathname);
                   const dataWriter = sys.createWriteStream(qDataFilePath);
                   dataWriter.on("error", (e) => {
@@ -487,7 +494,7 @@ async function createNodeMainProcess(sys, opts) {
   const render = async (staticRoute) => {
     const ssgWorker = getNextWorker();
     const result = await ssgWorker.render(staticRoute);
-    if (sitemapOutFile && result.ok) {
+    if (sitemapOutFile && result.ok && result.resourceType === "page") {
       sitemapBuffer.push(`<url><loc>${result.url}</loc></url>`);
       if (sitemapBuffer.length > 50) {
         if (sitemapPromise) {
