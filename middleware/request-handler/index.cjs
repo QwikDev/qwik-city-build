@@ -649,7 +649,6 @@ function createCacheControl(cacheControl) {
 
 // packages/qwik-city/middleware/request-handler/request-event.ts
 var RequestEvLoaders = Symbol("RequestEvLoaders");
-var RequestEvLocale = Symbol("RequestEvLocale");
 var RequestEvMode = Symbol("RequestEvMode");
 var RequestEvRoute = Symbol("RequestEvRoute");
 var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
@@ -665,6 +664,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   let routeModuleIndex = -1;
   let writableStream = null;
   let requestData = void 0;
+  let locale = serverRequestEv.locale;
   let status = 200;
   const next = async () => {
     routeModuleIndex++;
@@ -712,7 +712,6 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   const sharedMap = /* @__PURE__ */ new Map();
   const requestEv = {
     [RequestEvLoaders]: loaders,
-    [RequestEvLocale]: serverRequestEv.locale,
     [RequestEvMode]: serverRequestEv.mode,
     [RequestEvTrailingSlash]: trailingSlash,
     [RequestEvRoute]: loadedRoute,
@@ -763,11 +762,11 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       }
       return status;
     },
-    locale: (locale) => {
+    locale: (_locale) => {
       if (typeof locale === "string") {
-        requestEv[RequestEvLocale] = locale;
+        locale = _locale;
       }
-      return requestEv[RequestEvLocale] || "";
+      return locale || "";
     },
     error: (statusCode, message) => {
       status = statusCode;
