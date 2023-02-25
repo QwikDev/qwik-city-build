@@ -13744,7 +13744,8 @@ function getMarkdownRelativeUrl(opts, containingFilePath, url, checkFileExists) 
   const querySplit = url.split("?");
   const hashSplit = url.split("#");
   const strippedUrl = url.split("?")[0].split("#")[0];
-  if (isMarkdownExt(getExtension(strippedUrl))) {
+  const extension = getExtension(strippedUrl);
+  if (isMarkdownExt(extension)) {
     const isAbsolute3 = strippedUrl.startsWith("/");
     const parts = normalizePath(strippedUrl).split("/").filter((p) => p.length > 0);
     const filePath = isAbsolute3 ? (0, import_node_path2.join)(opts.routesDir, ...parts) : (0, import_node_path2.join)((0, import_node_path2.dirname)(containingFilePath), ...parts);
@@ -13766,6 +13767,14 @@ The link "${url}", found within "${containingFilePath}" does not have a matching
         pathname += "#" + hashSplit[1];
       }
       return pathname;
+    }
+  } else if (extension === "") {
+    if (url.endsWith("/")) {
+      if (!opts.trailingSlash) {
+        url = url.slice(0, -1);
+      }
+    } else if (opts.trailingSlash) {
+      url += "/";
     }
   }
   return url;
