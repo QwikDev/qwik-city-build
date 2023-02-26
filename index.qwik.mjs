@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnWindow, useContext, jsx, SkipRender, withLocale, noSerialize, useEnvData, _deserializeData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnWindow, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -42,134 +42,6 @@ const Content = RouterOutlet;
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
-const loadRoute = async (routes, menus, cacheModules, pathname) => {
-  if (Array.isArray(routes))
-    for (const route of routes) {
-      const match = route[0].exec(pathname);
-      if (match) {
-        const loaders = route[1];
-        const params = getPathParams(route[2], match);
-        const routeBundleNames = route[4];
-        const mods = new Array(loaders.length);
-        const pendingLoads = [];
-        const menuLoader = getMenuLoader(menus, pathname);
-        let menu = void 0;
-        loaders.forEach((moduleLoader, i) => {
-          loadModule(moduleLoader, pendingLoads, (routeModule) => mods[i] = routeModule, cacheModules);
-        });
-        loadModule(menuLoader, pendingLoads, (menuModule) => menu = menuModule?.default, cacheModules);
-        if (pendingLoads.length > 0)
-          await Promise.all(pendingLoads);
-        return [
-          params,
-          mods,
-          menu,
-          routeBundleNames
-        ];
-      }
-    }
-  return null;
-};
-const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules) => {
-  if (typeof moduleLoader === "function") {
-    const loadedModule = MODULE_CACHE.get(moduleLoader);
-    if (loadedModule)
-      moduleSetter(loadedModule);
-    else {
-      const l = moduleLoader();
-      if (typeof l.then === "function")
-        pendingLoads.push(l.then((loadedModule2) => {
-          if (cacheModules !== false)
-            MODULE_CACHE.set(moduleLoader, loadedModule2);
-          moduleSetter(loadedModule2);
-        }));
-      else if (l)
-        moduleSetter(l);
-    }
-  }
-};
-const getMenuLoader = (menus, pathname) => {
-  if (menus) {
-    pathname = pathname.endsWith("/") ? pathname : pathname + "/";
-    const menu = menus.find((m) => m[0] === pathname || pathname.startsWith(m[0] + (pathname.endsWith("/") ? "" : "/")));
-    if (menu)
-      return menu[1];
-  }
-};
-const getPathParams = (paramNames, match) => {
-  const params = {};
-  if (paramNames)
-    for (let i = 0; i < paramNames.length; i++) {
-      const param = match?.[i + 1] ?? "";
-      const v = param.endsWith("/") ? param.slice(0, -1) : param;
-      params[paramNames[i]] = decodeURIComponent(v);
-    }
-  return params;
-};
-const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
-  const head = createDocumentHead();
-  const getData = (loaderOrAction) => {
-    const id = loaderOrAction.__id;
-    if (loaderOrAction.__brand === "server_loader") {
-      if (!(id in endpoint.loaders))
-        throw new Error("You can not get the returned data of a loader that has not been executed for this request.");
-    }
-    const data = endpoint.loaders[id];
-    if (data instanceof Promise)
-      throw new Error("Loaders returning a function can not be refered to in the head function.");
-    return data;
-  };
-  const headProps = {
-    head,
-    withLocale: (fn) => withLocale(locale, fn),
-    resolveValue: getData,
-    ...routeLocation
-  };
-  for (let i = contentModules.length - 1; i >= 0; i--) {
-    const contentModuleHead = contentModules[i] && contentModules[i].head;
-    if (contentModuleHead) {
-      if (typeof contentModuleHead === "function")
-        resolveDocumentHead(head, withLocale(locale, () => contentModuleHead(headProps)));
-      else if (typeof contentModuleHead === "object")
-        resolveDocumentHead(head, contentModuleHead);
-    }
-  }
-  return headProps.head;
-};
-const resolveDocumentHead = (resolvedHead, updatedHead) => {
-  if (typeof updatedHead.title === "string")
-    resolvedHead.title = updatedHead.title;
-  mergeArray(resolvedHead.meta, updatedHead.meta);
-  mergeArray(resolvedHead.links, updatedHead.links);
-  mergeArray(resolvedHead.styles, updatedHead.styles);
-  Object.assign(resolvedHead.frontmatter, updatedHead.frontmatter);
-};
-const mergeArray = (existingArr, newArr) => {
-  if (Array.isArray(newArr))
-    for (const newItem of newArr) {
-      if (typeof newItem.key === "string") {
-        const existingIndex = existingArr.findIndex((i) => i.key === newItem.key);
-        if (existingIndex > -1) {
-          existingArr[existingIndex] = newItem;
-          continue;
-        }
-      }
-      existingArr.push(newItem);
-    }
-};
-const createDocumentHead = () => ({
-  title: "",
-  meta: [],
-  links: [],
-  styles: [],
-  frontmatter: {}
-});
-const useContent = () => useContext(ContentContext);
-const useDocumentHead = () => useContext(DocumentHeadContext);
-const useLocation = () => useContext(RouteLocationContext);
-const useNavigate = () => useContext(RouteNavigateContext);
-const useAction = () => useContext(RouteActionContext);
-const useQwikCityEnv = () => noSerialize(useEnvData("qwikcity"));
 const toPath = (url) => url.pathname + url.search + url.hash;
 const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
 const isSameOrigin = (a, b) => a.origin === b.origin;
@@ -193,6 +65,8 @@ const getClientNavPath = (props, baseUrl) => {
     } catch (e) {
       console.error(e);
     }
+  else if (props.reload)
+    return toPath(toUrl("", baseUrl));
   return null;
 };
 const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
@@ -259,6 +133,128 @@ const dispatchPrefetchEvent = (prefetchData) => {
     document.dispatchEvent(new CustomEvent("qprefetch", {
       detail: prefetchData
     }));
+};
+const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
+  const head = createDocumentHead();
+  const getData = (loaderOrAction) => {
+    const id = loaderOrAction.__id;
+    if (loaderOrAction.__brand === "server_loader") {
+      if (!(id in endpoint.loaders))
+        throw new Error("You can not get the returned data of a loader that has not been executed for this request.");
+    }
+    const data = endpoint.loaders[id];
+    if (data instanceof Promise)
+      throw new Error("Loaders returning a function can not be refered to in the head function.");
+    return data;
+  };
+  const headProps = {
+    head,
+    withLocale: (fn) => withLocale(locale, fn),
+    resolveValue: getData,
+    ...routeLocation
+  };
+  for (let i = contentModules.length - 1; i >= 0; i--) {
+    const contentModuleHead = contentModules[i] && contentModules[i].head;
+    if (contentModuleHead) {
+      if (typeof contentModuleHead === "function")
+        resolveDocumentHead(head, withLocale(locale, () => contentModuleHead(headProps)));
+      else if (typeof contentModuleHead === "object")
+        resolveDocumentHead(head, contentModuleHead);
+    }
+  }
+  return headProps.head;
+};
+const resolveDocumentHead = (resolvedHead, updatedHead) => {
+  if (typeof updatedHead.title === "string")
+    resolvedHead.title = updatedHead.title;
+  mergeArray(resolvedHead.meta, updatedHead.meta);
+  mergeArray(resolvedHead.links, updatedHead.links);
+  mergeArray(resolvedHead.styles, updatedHead.styles);
+  Object.assign(resolvedHead.frontmatter, updatedHead.frontmatter);
+};
+const mergeArray = (existingArr, newArr) => {
+  if (Array.isArray(newArr))
+    for (const newItem of newArr) {
+      if (typeof newItem.key === "string") {
+        const existingIndex = existingArr.findIndex((i) => i.key === newItem.key);
+        if (existingIndex > -1) {
+          existingArr[existingIndex] = newItem;
+          continue;
+        }
+      }
+      existingArr.push(newItem);
+    }
+};
+const createDocumentHead = () => ({
+  title: "",
+  meta: [],
+  links: [],
+  styles: [],
+  frontmatter: {}
+});
+const loadRoute = async (routes, menus, cacheModules, pathname) => {
+  if (Array.isArray(routes))
+    for (const route of routes) {
+      const match = route[0].exec(pathname);
+      if (match) {
+        const loaders = route[1];
+        const params = getPathParams(route[2], match);
+        const routeBundleNames = route[4];
+        const mods = new Array(loaders.length);
+        const pendingLoads = [];
+        const menuLoader = getMenuLoader(menus, pathname);
+        let menu = void 0;
+        loaders.forEach((moduleLoader, i) => {
+          loadModule(moduleLoader, pendingLoads, (routeModule) => mods[i] = routeModule, cacheModules);
+        });
+        loadModule(menuLoader, pendingLoads, (menuModule) => menu = menuModule?.default, cacheModules);
+        if (pendingLoads.length > 0)
+          await Promise.all(pendingLoads);
+        return [
+          params,
+          mods,
+          menu,
+          routeBundleNames
+        ];
+      }
+    }
+  return null;
+};
+const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules) => {
+  if (typeof moduleLoader === "function") {
+    const loadedModule = MODULE_CACHE.get(moduleLoader);
+    if (loadedModule)
+      moduleSetter(loadedModule);
+    else {
+      const l = moduleLoader();
+      if (typeof l.then === "function")
+        pendingLoads.push(l.then((loadedModule2) => {
+          if (cacheModules !== false)
+            MODULE_CACHE.set(moduleLoader, loadedModule2);
+          moduleSetter(loadedModule2);
+        }));
+      else if (l)
+        moduleSetter(l);
+    }
+  }
+};
+const getMenuLoader = (menus, pathname) => {
+  if (menus) {
+    pathname = pathname.endsWith("/") ? pathname : pathname + "/";
+    const menu = menus.find((m) => m[0] === pathname || pathname.startsWith(m[0] + (pathname.endsWith("/") ? "" : "/")));
+    if (menu)
+      return menu[1];
+  }
+};
+const getPathParams = (paramNames, match) => {
+  const params = {};
+  if (paramNames)
+    for (let i = 0; i < paramNames.length; i++) {
+      const param = match?.[i + 1] ?? "";
+      const v = param.endsWith("/") ? param.slice(0, -1) : param;
+      params[paramNames[i]] = decodeURIComponent(v);
+    }
+  return params;
 };
 const loadClientData = async (url, element, clearCache, action) => {
   const pagePathname = url.pathname;
@@ -337,6 +333,12 @@ const getFetchOptions = (action) => {
 const isQDataJson = (pathname) => {
   return pathname.endsWith("/q-data.json");
 };
+const useContent = () => useContext(ContentContext);
+const useDocumentHead = () => useContext(DocumentHeadContext);
+const useLocation = () => useContext(RouteLocationContext);
+const useNavigate = () => useContext(RouteNavigateContext);
+const useAction = () => useContext(RouteActionContext);
+const useQwikCityEnv = () => noSerialize(useEnvData("qwikcity"));
 const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   const env = useQwikCityEnv();
   if (!env?.params)
@@ -371,19 +373,18 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       status: env.response.status
     }
   } : void 0);
-  const goto = /* @__PURE__ */ inlinedQrl(async (path) => {
+  const goto = /* @__PURE__ */ inlinedQrl(async (path, forceReload) => {
     const [actionState2, navPath2, routeLocation2] = useLexicalScope();
-    const value = navPath2.value;
-    if (path) {
-      if (value === path)
-        return;
-      navPath2.value = path;
-    } else {
+    if (path === void 0) {
+      path = navPath2.value;
       navPath2.value = "";
-      navPath2.value = value;
-    }
+    } else if (forceReload)
+      navPath2.value = "";
+    else if (navPath2.value === path)
+      return;
+    navPath2.value = path;
     if (isBrowser) {
-      const prefetchURL = new URL(navPath2.value, routeLocation2.url);
+      const prefetchURL = new URL(path, routeLocation2.url);
       loadClientData(prefetchURL, _getContextElement());
       loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, prefetchURL.pathname);
     }
@@ -530,7 +531,7 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     onClick$: /* @__PURE__ */ inlinedQrl(() => {
       const [clientNavPath2, linkProps2, nav2] = useLexicalScope();
       if (clientNavPath2)
-        nav2(linkProps2.href);
+        nav2(linkProps2.href, linkProps2.reload);
     }, "Link_component_a_onClick_kzjavhDI3L0", [
       clientNavPath,
       linkProps,

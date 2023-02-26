@@ -512,6 +512,7 @@ export declare const Link: Component<LinkProps>;
  */
 export declare interface LinkProps extends AnchorAttributes {
     prefetch?: boolean;
+    reload?: boolean;
 }
 
 /**
@@ -863,7 +864,7 @@ declare interface RouteModule<BODY = unknown> {
 /**
  * @alpha
  */
-export declare type RouteNavigate = QRL<(path?: string) => Promise<void>>;
+export declare type RouteNavigate = QRL<(path?: string, forceReload?: boolean) => Promise<void>>;
 
 /**
  * @alpha
