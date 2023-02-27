@@ -9,6 +9,7 @@ import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
 import type { RequestHandler as RequestHandler_2 } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ResolveSyncValue as ResolveSyncValue_2 } from '@builder.io/qwik-city/middleware/request-handler';
 import type { _serializeData } from '@builder.io/qwik';
+import type { ValueOrPromise } from '@builder.io/qwik';
 import type { _verifySerializable } from '@builder.io/qwik';
 
 declare class AbortMessage {
@@ -478,7 +479,7 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> {
 }
 
 declare interface RequestEventInternal extends RequestEvent, RequestEventLoader {
-    [RequestEvLoaders]: Record<string, Promise<any> | undefined>;
+    [RequestEvLoaders]: Record<string, ValueOrPromise<unknown> | undefined>;
     [RequestEvMode]: ServerRequestMode;
     [RequestEvTrailingSlash]: boolean;
     [RequestEvRoute]: LoadedRoute | null;

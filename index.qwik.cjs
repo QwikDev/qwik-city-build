@@ -691,6 +691,14 @@ const routeLoaderQrl = (loaderQrl2, ...rest) => {
   return loader;
 };
 const routeLoader$ = /* @__PURE__ */ qwik.implicit$FirstArg(routeLoaderQrl);
+const validatorQrl = (validator) => {
+  if (build.isServer)
+    return {
+      validate: validator
+    };
+  return void 0;
+};
+const validator$ = /* @__PURE__ */ qwik.implicit$FirstArg(validatorQrl);
 const zodQrl = (qrl) => {
   if (build.isServer) {
     const schema = qrl.resolve().then((obj) => {
@@ -768,10 +776,6 @@ const serverQrl = (qrl) => {
   return client();
 };
 const server$ = /* @__PURE__ */ qwik.implicit$FirstArg(serverQrl);
-const actionQrl = globalActionQrl;
-const action$ = globalAction$;
-const loaderQrl = routeLoaderQrl;
-const loader$ = routeLoader$;
 const getValidators = (rest, qrl) => {
   let id;
   const validators = [];
@@ -801,6 +805,10 @@ const getValidators = (rest, qrl) => {
     id
   };
 };
+const actionQrl = globalActionQrl;
+const action$ = globalAction$;
+const loaderQrl = routeLoaderQrl;
+const loader$ = routeLoader$;
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return qwik.jsx("form", {
     ...rest,
@@ -843,5 +851,7 @@ exports.useContent = useContent;
 exports.useDocumentHead = useDocumentHead;
 exports.useLocation = useLocation;
 exports.useNavigate = useNavigate;
+exports.validator$ = validator$;
+exports.validatorQrl = validatorQrl;
 exports.zod$ = zod$;
 exports.zodQrl = zodQrl;

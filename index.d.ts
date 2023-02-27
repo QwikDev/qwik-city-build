@@ -1,14 +1,11 @@
 /// <reference path="./modules.d.ts" />
 
-import type { Action as Action_2 } from '@builder.io/qwik-city';
 import { Component } from '@builder.io/qwik';
 import { Cookie } from '@builder.io/qwik-city/middleware/request-handler';
 import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler';
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
-import type { FailReturn as FailReturn_2 } from '@builder.io/qwik-city';
 import { JSXNode } from '@builder.io/qwik';
-import type { Loader as Loader_2 } from '@builder.io/qwik-city';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -21,9 +18,6 @@ import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-
 import type { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
-
-declare class AbortMessage {
-}
 
 /**
  * @alpha
@@ -50,17 +44,20 @@ export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL ex
  * @alpha
  */
 export declare interface ActionConstructor {
+    <O, B extends TypedDataValidator>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B | ActionOptionsWithValidation<B>): Action<StrictUnion<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>>, GetValidatorType<B>, false>;
+    <O, B extends TypedDataValidator, REST extends DataValidator[]>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B, ...rest: REST): Action<StrictUnion<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>> | FailOfRest<REST>>, GetValidatorType<B>, false>;
     <O>(actionQrl: (form: JSONObject, event: RequestEventAction, options: ActionOptions) => ValueOrPromise<O>, options?: ActionOptions): Action<O>;
-    <O, B extends TypedDataValidator>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B | ActionOptionsWithValidation<B>): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>, false>;
-    <O, B extends TypedDataValidator>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B, ...rest: DataValidator[]): Action<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>, GetValidatorType<B>, false>;
+    <O, REST extends DataValidator[]>(actionQrl: (form: JSONObject, event: RequestEventAction) => ValueOrPromise<O>, ...rest: REST): Action<StrictUnion<O | FailReturn<FailOfRest<REST>>>>;
 }
 
-declare interface ActionInternal extends Action<any, any> {
-    readonly __brand: 'server_action';
-    __id: string;
-    __qrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<any>>;
-    __validators: ValidatorInternal[] | undefined;
-    (): ActionStore<any, any>;
+/**
+ * @alpha
+ */
+declare interface ActionConstructorQRL {
+    <O, B extends TypedDataValidator>(actionQrl: QRL<(data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>>, options: B | ActionOptionsWithValidation<B>): Action<StrictUnion<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>>, GetValidatorType<B>, false>;
+    <O, B extends TypedDataValidator, REST extends DataValidator[]>(actionQrl: QRL<(data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>>, options: B, ...rest: REST): Action<StrictUnion<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>> | FailOfRest<REST>>, GetValidatorType<B>, false>;
+    <O>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction, options: ActionOptions) => ValueOrPromise<O>>, options?: ActionOptions): Action<O>;
+    <O, REST extends DataValidator[]>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<O>>, ...rest: REST): Action<StrictUnion<O | FailReturn<FailOfRest<REST>>>>;
 }
 
 /**
@@ -68,12 +65,13 @@ declare interface ActionInternal extends Action<any, any> {
  */
 export declare interface ActionOptions {
     readonly id?: string;
+    readonly validation?: DataValidator[];
 }
 
 /**
  * @alpha
  */
-export declare interface ActionOptionsWithValidation<B extends TypedDataValidator = TypedDataValidator> extends ActionOptions {
+export declare interface ActionOptionsWithValidation<B extends TypedDataValidator = TypedDataValidator> {
     readonly id?: string;
     readonly validation: [val: B, ...a: DataValidator[]];
 }
@@ -82,14 +80,14 @@ export declare interface ActionOptionsWithValidation<B extends TypedDataValidato
  * @alpha
  * @deprecated - use `globalAction$()` instead
  */
-export declare const actionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<B>>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => Action<B, A, true>;
+export declare const actionQrl: ActionConstructorQRL;
 
 /**
  * @alpha
  */
 declare interface ActionReturn<RETURN> {
     readonly status?: number;
-    readonly value: GetValueReturn<RETURN>;
+    readonly value: RETURN;
 }
 
 /**
@@ -146,7 +144,7 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      *
      * It's `undefined` before the action is first called.
      */
-    readonly value: GetValueReturn<RETURN> | undefined;
+    readonly value: RETURN | undefined;
     /**
      * Method to execute the action programatically from the browser. Ie, instead of using a `<form>`, a 'click' handle can call the `run()` method of the action
      * in order to execute the action in the server.
@@ -155,14 +153,6 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
 }
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
-
-/**
- * @alpha
- */
-declare interface CommonLoaderActionOptions {
-    readonly id?: string;
-    readonly validation?: DataValidator[];
-}
 
 /**
  * @deprecated Please use `RouterOutlet` instead.
@@ -204,107 +194,18 @@ declare interface ContentState {
 
 export { Cookie }
 
-/**
- * @alpha
- */
-declare interface Cookie_2 {
-    /**
-     * Gets a `Request` cookie header value by name.
-     */
-    get(name: string): CookieValue_2 | null;
-    /**
-     * Gets all `Request` cookie headers.
-     */
-    getAll(): Record<string, CookieValue_2>;
-    /**
-     * Checks if the `Request` cookie header name exists.
-     */
-    has(name: string): boolean;
-    /**
-     * Sets a `Response` cookie header using the `Set-Cookie` header.
-     */
-    set(name: string, value: string | number | Record<string, any>, options?: CookieOptions_2): void;
-    /**
-     * Deletes cookie value by name using the `Response` cookie header.
-     */
-    delete(name: string, options?: Pick<CookieOptions_2, 'path' | 'domain'>): void;
-    /**
-     * Returns an array of all the set `Response` `Set-Cookie` header values.
-     */
-    headers(): string[];
-}
-
 export { CookieOptions }
-
-/**
- * @alpha
- */
-/**
- * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
- * @alpha
- */
-declare interface CookieOptions_2 {
-    /**
-     * Defines the host to which the cookie will be sent. If omitted, this attribute defaults
-     * to the host of the current document URL, not including subdomains.
-     */
-    domain?: string;
-    /**
-     * Indicates the maximum lifetime of the cookie as an HTTP-date timestamp.
-     * If both `expires` and `maxAge` are set, `maxAge` has precedence.
-     */
-    expires?: Date | string;
-    /**
-     * Forbids JavaScript from accessing the cookie, for example, through the `document.cookie` property.
-     */
-    httpOnly?: boolean;
-    /**
-     * Indicates the number of seconds until the cookie expires. A zero or negative number will
-     * expire the cookie immediately. If both `expires` and `maxAge` are set, `maxAge` has precedence.
-     * You can also use the array syntax to set the max-age using minutes, hours, days or weeks.
-     * For example, `{ maxAge: [3, "days"] }` would set the cookie to expire in 3 days.
-     */
-    maxAge?: number | [number, 'seconds' | 'minutes' | 'hours' | 'days' | 'weeks'];
-    /**
-     * Indicates the path that must exist in the requested URL for the browser to send the Cookie header.
-     */
-    path?: string;
-    /**
-     * Controls whether or not a cookie is sent with cross-site requests, providing some protection
-     * against cross-site request forgery attacks (CSRF).
-     */
-    sameSite?: 'strict' | 'lax' | 'none';
-    /**
-     * Indicates that the cookie is sent to the server only when a request is made with
-     * the `https:` scheme (except on localhost)
-     */
-    secure?: boolean;
-}
 
 export { CookieValue }
 
 /**
  * @alpha
  */
-declare interface CookieValue_2 {
-    value: string;
-    json: <T = unknown>() => T;
-    number: () => number;
-}
-
-/**
- * @alpha
- */
-declare interface DataValidator {
-    validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn>;
+declare interface DataValidator<T extends Record<string, any> = {}> {
+    validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn<T>>;
 }
 
 export { DeferReturn }
-
-/**
- * @alpha
- */
-declare type DeferReturn_2<T> = () => Promise<T>;
 
 /**
  * @alpha
@@ -404,16 +305,7 @@ export declare type EndpointHandler<BODY = unknown> = RequestHandler<BODY>;
 
 declare type EndpointModuleLoader = () => Promise<RouteModule>;
 
-declare interface EnvGetter {
-    get(key: string): string | undefined;
-}
-
-declare class ErrorResponse extends Error {
-    status: number;
-    constructor(status: number, message?: string);
-}
-
-declare type F<T> = T extends FailReturn<any> ? T : never;
+declare type FailOfRest<REST extends readonly DataValidator[]> = REST extends readonly DataValidator<infer ERROR>[] ? ERROR : never;
 
 /**
  * @alpha
@@ -465,8 +357,6 @@ export declare interface FormSubmitSuccessDetail<T> {
 
 declare type GetValidatorType<B extends TypedDataValidator> = B extends TypedDataValidator<infer TYPE> ? z.infer<TYPE> : never;
 
-declare type GetValueReturn<T> = (V<T> & Record<keyof F<T>, undefined>) | (F<T> & Record<keyof V<T>, undefined>);
-
 /**
  * @alpha
  */
@@ -475,7 +365,7 @@ export declare const globalAction$: ActionConstructor;
 /**
  * @alpha
  */
-export declare const globalActionQrl: <B, A>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<B>>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => Action<B, A, true>;
+export declare const globalActionQrl: ActionConstructorQRL;
 
 /**
  * @alpha
@@ -519,7 +409,7 @@ export declare interface LinkProps extends AnchorAttributes {
  * @alpha
  * @deprecated - use `routeLoader$()` instead
  */
-export declare const loader$: <RETURN>(first: (event: RequestEventLoader_2) => RETURN, ...rest: (DataValidator | CommonLoaderActionOptions)[]) => Loader<RETURN>;
+export declare const loader$: LoaderConstructor;
 
 /**
  * @alpha
@@ -538,14 +428,37 @@ export declare interface Loader<RETURN> {
 
 /**
  * @alpha
- * @deprecated - use `routeLoader$()` instead
  */
-export declare const loaderQrl: <RETURN>(loaderQrl: QRL<(event: RequestEventLoader_2) => RETURN>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => Loader<RETURN>;
+declare interface LoaderConstructor {
+    <O>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<O>, options?: LoaderOptions): Loader<O>;
+    <O, REST extends readonly DataValidator[]>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<O>, ...rest: REST): Loader<StrictUnion<O | FailReturn<FailOfRest<REST>>>>;
+}
 
 /**
  * @alpha
  */
-export declare type LoaderSignal<T> = Awaited<T> extends () => ValueOrPromise<infer B> ? Readonly<Signal<ValueOrPromise<B>>> : Readonly<Signal<Awaited<T>>>;
+declare interface LoaderConstructorQRL {
+    <O>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<O>>, options?: LoaderOptions): Loader<O>;
+    <O, REST extends readonly DataValidator[]>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<O>>, ...rest: REST): Loader<StrictUnion<O | FailReturn<FailOfRest<REST>>>>;
+}
+
+/**
+ * @alpha
+ */
+declare interface LoaderOptions {
+    id?: string;
+}
+
+/**
+ * @alpha
+ * @deprecated - use `routeLoader$()` instead
+ */
+export declare const loaderQrl: LoaderConstructorQRL;
+
+/**
+ * @alpha
+ */
+export declare type LoaderSignal<T> = T extends () => ValueOrPromise<infer B> ? Readonly<Signal<ValueOrPromise<B>>> : Readonly<Signal<T>>;
 
 /**
  * @alpha
@@ -574,6 +487,10 @@ export declare interface PageModule extends RouteModule {
  * @alpha
  */
 export declare type PathParams = Record<string, string>;
+
+declare type Prettify<T> = {
+    [K in keyof T]?: T[K];
+} & 
 
 /**
  * @alpha
@@ -630,158 +547,13 @@ declare interface QwikCityProps {
  */
 export declare const QwikCityProvider: Component<QwikCityProps>;
 
-declare type RedirectCode = 301 | 302 | 303 | 307 | 308;
-
-declare class RedirectMessage extends AbortMessage {
-}
-
 export { RequestEvent }
 
 export { RequestEventAction }
 
-/**
- * @alpha
- */
-declare interface RequestEventAction_2<PLATFORM = QwikCityPlatform> extends RequestEventCommon_2<PLATFORM> {
-    fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn_2<T>;
-}
-
 export { RequestEventCommon }
 
-/**
- * @alpha
- */
-declare interface RequestEventCommon_2<PLATFORM = QwikCityPlatform> {
-    /**
-     * HTTP response status code. Sets the status code when called with an
-     * argument. Always returns the status code, so calling `status()` without
-     * an argument will can be used to return the current status code.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-     */
-    readonly status: (statusCode?: number) => number;
-    /**
-     * Which locale the content is in.
-     *
-     * The locale value can be retrieved from selected methods using `getLocale()`:
-     */
-    readonly locale: (local?: string) => string;
-    /**
-     * URL to redirect to. When called, the response will immediately
-     * end with the correct redirect status and headers.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections
-     */
-    readonly redirect: (statusCode: RedirectCode, url: string) => RedirectMessage;
-    /**
-     * When called, the response will immediately end with the given
-     * status code. This could be useful to end a response with `404`,
-     * and use the 404 handler in the routes directory.
-     * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-     * for which status code should be used.
-     */
-    readonly error: (statusCode: number, message: string) => ErrorResponse;
-    /**
-     * Convenience method to send an text body response. The response will be automatically
-     * set the `Content-Type` header to`text/plain; charset=utf-8`.
-     *  An `text()` response can only be called once.
-     */
-    readonly text: (statusCode: number, text: string) => AbortMessage;
-    /**
-     * Convenience method to send an HTML body response. The response will be automatically
-     * set the `Content-Type` header to`text/html; charset=utf-8`.
-     *  An `html()` response can only be called once.
-     */
-    readonly html: (statusCode: number, html: string) => AbortMessage;
-    /**
-     * Convenience method to JSON stringify the data and send it in the response.
-     * The response will be automatically set the `Content-Type` header to
-     * `application/json; charset=utf-8`. A `json()` response can only be called once.
-     */
-    readonly json: (statusCode: number, data: any) => AbortMessage;
-    /**
-     * Send a body response. The `Content-Type` response header is not automatically set
-     * when using `send()` and must be set manually. A `send()` response can only be called once.
-     */
-    readonly send: SendMethod;
-    readonly exit: () => AbortMessage;
-    /**
-     * HTTP response headers.
-     *
-     * https://developer.mozilla.org/en-US/docs/Glossary/Response_header
-     */
-    readonly headers: Headers;
-    /**
-     * HTTP request and response cookie. Use the `get()` method to retrieve a request cookie value.
-     * Use the `set()` method to set a response cookie value.
-     */
-    readonly cookie: Cookie_2;
-    /**
-     * HTTP request method.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
-     */
-    readonly method: string;
-    /**
-     * URL pathname. Does not include the protocol, domain, query string (search params) or hash.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/API/URL/pathname
-     */
-    readonly pathname: string;
-    /**
-     * URL path params which have been parsed from the current url pathname segments.
-     * Use `query` to instead retrieve the query string search params.
-     */
-    readonly params: Readonly<Record<string, string>>;
-    /**
-     * URL Query Strings (URL Search Params).
-     * Use `params` to instead retrieve the route params found in the url pathname.
-     */
-    readonly query: URLSearchParams;
-    /**
-     * HTTP request URL.
-     */
-    readonly url: URL;
-    /**
-     * The base pathname of the request, which can be configured at build time.
-     * Defaults to `/`.
-     */
-    readonly basePathname: string;
-    /**
-     * HTTP request information.
-     */
-    readonly request: Request;
-    /**
-     * Platform specific data and functions
-     */
-    readonly platform: PLATFORM;
-    /**
-     * Platform provided environment variables.
-     */
-    readonly env: EnvGetter;
-    /**
-     * Shared Map across all the request handlers. Every HTTP request will get a new instance of
-     * the shared map. The shared map is useful for sharing data between request handlers.
-     */
-    readonly sharedMap: Map<string, any>;
-    /**
-     * This method will check the request headers for a `Content-Type` header and parse the body accordingly.
-     * It supports `application/json`, `application/x-www-form-urlencoded`, and `multipart/form-data` content types.
-     *
-     * If the `Content-Type` header is not set, it will return `null`.
-     */
-    readonly parseBody: () => Promise<unknown>;
-}
-
 export { RequestEventLoader }
-
-/**
- * @alpha
- */
-declare interface RequestEventLoader_2<PLATFORM = QwikCityPlatform> extends RequestEventAction_2<PLATFORM> {
-    resolveValue: ResolveValue;
-    defer: <T>(returnData: Promise<T> | (() => Promise<T>)) => DeferReturn_2<T>;
-}
 
 export { RequestHandler }
 
@@ -793,20 +565,12 @@ export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
 /**
  * @alpha
  */
-declare interface ResolveValue {
-    <T>(loader: Loader_2<T>): Awaited<T> extends () => any ? never : Promise<T>;
-    <T>(action: Action_2<T>): Promise<T | undefined>;
-}
-
-/**
- * @alpha
- */
 export declare const routeAction$: ActionConstructor;
 
 /**
  * @alpha
  */
-export declare const routeActionQrl: <B>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<B>>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => ActionInternal;
+export declare const routeActionQrl: ActionConstructorQRL;
 
 /**
  * @alpha
@@ -822,12 +586,12 @@ routeBundleNames: string[]
 /**
  * @alpha
  */
-export declare const routeLoader$: <RETURN>(first: (event: RequestEventLoader_2) => RETURN, ...rest: (DataValidator | CommonLoaderActionOptions)[]) => Loader<RETURN>;
+export declare const routeLoader$: LoaderConstructor;
 
 /**
  * @alpha
  */
-export declare const routeLoaderQrl: <RETURN>(loaderQrl: QRL<(event: RequestEventLoader_2) => RETURN>, ...rest: (CommonLoaderActionOptions | DataValidator)[]) => Loader<RETURN>;
+export declare const routeLoaderQrl: LoaderConstructorQRL;
 
 /**
  * @alpha
@@ -880,18 +644,10 @@ export declare const RouterOutlet: Component<    {}>;
 /**
  * @alpha
  */
-declare interface SendMethod {
-    (statusCode: number, data: any): AbortMessage;
-    (response: Response): AbortMessage;
-}
+export declare const server$: <T extends ServerFunction>(first: T) => QRL<T>;
 
-/**
- * @alpha
- */
-export declare const server$: Server;
-
-declare interface Server {
-    <T extends ServerFunction>(fn: T): QRL<T>;
+declare interface ServerConstructorQRL {
+    <T extends ServerFunction>(fnQrl: QRL<T>): QRL<T>;
 }
 
 declare interface ServerFunction {
@@ -901,7 +657,7 @@ declare interface ServerFunction {
 /**
  * @alpha
  */
-export declare const serverQrl: <T extends (...args: any[]) => any>(qrl: QRL<T>) => QRL<T>;
+export declare const serverQrl: ServerConstructorQRL;
 
 /**
  * @alpha
@@ -922,6 +678,10 @@ export declare interface StaticGenerate {
  */
 export declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
 
+declare type StrictUnion<T> = Prettify<StrictUnionHelper<T, T>>;
+
+declare type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never;
+
 /**
  * @alpha
  */
@@ -929,6 +689,8 @@ declare interface TypedDataValidator<T extends z.ZodType = any> {
     __zod: z.ZodSchema<T>;
     validate(ev: RequestEvent, data: unknown): Promise<z.SafeParseReturnType<T, T>>;
 }
+
+declare type UnionKeys<T> = T extends T ? keyof T : never;
 
 /**
  * @alpha
@@ -953,22 +715,32 @@ export declare const useNavigate: () => RouteNavigate;
 /**
  * @alpha
  */
-declare type V<T> = T extends FailReturn<any> ? never : T;
+export declare const validator$: ValidatorConstructor;
 
-declare type ValidatorFromShape<T extends z.ZodRawShape> = TypedDataValidator<z.ZodObject<T>>;
+declare interface ValidatorConstructor {
+    <T extends ValidatorReturn>(validator: (ev: RequestEvent, data: unknown) => ValueOrPromise<T>): T extends ValidatorReturnFail<infer ERROR> ? DataValidator<ERROR> : DataValidator<never>;
+}
+
+declare interface ValidatorConstructorQRL {
+    <T extends ValidatorReturn>(validator: QRL<(ev: RequestEvent, data: unknown) => ValueOrPromise<T>>): T extends ValidatorReturnFail<infer ERROR> ? DataValidator<ERROR> : DataValidator<never>;
+}
 
 /**
  * @alpha
  */
-declare interface ValidatorInternal {
-    validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn>;
+export declare const validatorQrl: ValidatorConstructorQRL;
+
+declare type ValidatorReturn<T extends Record<string, any> = {}> = ValidatorReturnSuccess | ValidatorReturnFail<T>;
+
+declare interface ValidatorReturnFail<T extends Record<string, any> = {}> {
+    readonly success: false;
+    readonly error: T;
+    readonly status?: number;
 }
 
-declare interface ValidatorReturn {
-    success: boolean;
-    status?: number;
-    data?: any;
-    error?: any;
+declare interface ValidatorReturnSuccess {
+    readonly success: true;
+    readonly data?: any;
 }
 
 export { z }
@@ -982,8 +754,8 @@ export declare const zod$: Zod;
  * @alpha
  */
 export declare interface Zod {
-    <T extends z.ZodRawShape>(schema: T): ValidatorFromShape<T>;
-    <T extends z.ZodRawShape>(schema: (z: z) => T): ValidatorFromShape<T>;
+    <T extends z.ZodRawShape>(schema: T): TypedDataValidator<z.ZodObject<T>>;
+    <T extends z.ZodRawShape>(schema: (z: z) => T): TypedDataValidator<z.ZodObject<T>>;
     <T extends z.Schema>(schema: T): TypedDataValidator<T>;
     <T extends z.Schema>(schema: (z: z) => T): TypedDataValidator<T>;
 }
@@ -991,6 +763,16 @@ export declare interface Zod {
 /**
  * @alpha
  */
-export declare const zodQrl: (qrl: QRL<z.ZodType<any, z.ZodTypeDef, any> | z.ZodRawShape | ((z: z) => z.ZodRawShape)>) => ValidatorInternal;
+declare interface ZodConstructorQRL {
+    <T extends z.ZodRawShape>(schema: QRL<T>): TypedDataValidator<z.ZodObject<T>>;
+    <T extends z.ZodRawShape>(schema: QRL<(z: z) => T>): TypedDataValidator<z.ZodObject<T>>;
+    <T extends z.Schema>(schema: QRL<T>): TypedDataValidator<T>;
+    <T extends z.Schema>(schema: QRL<(z: z) => T>): TypedDataValidator<T>;
+}
+
+/**
+ * @alpha
+ */
+export declare const zodQrl: ZodConstructorQRL;
 
 export { }

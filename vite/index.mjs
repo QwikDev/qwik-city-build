@@ -23660,7 +23660,13 @@ function actionsMiddleware(routeLoaders, routeActions) {
               );
             }
           }
-          return loaders[loaderId] = Promise.resolve().then(() => loader.__qrl(requestEv)).then((loaderResolved) => {
+          return loaders[loaderId] = runValidators(requestEv, loader.__validators, void 0).then((res) => {
+            if (res.success) {
+              return loader.__qrl(requestEv);
+            } else {
+              return requestEv.fail(res.status ?? 500, res.error);
+            }
+          }).then((loaderResolved) => {
             if (typeof loaderResolved === "function") {
               loaders[loaderId] = loaderResolved();
             } else {

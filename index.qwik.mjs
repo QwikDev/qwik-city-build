@@ -673,6 +673,14 @@ const routeLoaderQrl = (loaderQrl2, ...rest) => {
   return loader;
 };
 const routeLoader$ = /* @__PURE__ */ implicit$FirstArg(routeLoaderQrl);
+const validatorQrl = (validator) => {
+  if (isServer)
+    return {
+      validate: validator
+    };
+  return void 0;
+};
+const validator$ = /* @__PURE__ */ implicit$FirstArg(validatorQrl);
 const zodQrl = (qrl) => {
   if (isServer) {
     const schema = qrl.resolve().then((obj) => {
@@ -750,10 +758,6 @@ const serverQrl = (qrl) => {
   return client();
 };
 const server$ = /* @__PURE__ */ implicit$FirstArg(serverQrl);
-const actionQrl = globalActionQrl;
-const action$ = globalAction$;
-const loaderQrl = routeLoaderQrl;
-const loader$ = routeLoader$;
 const getValidators = (rest, qrl) => {
   let id;
   const validators = [];
@@ -783,6 +787,10 @@ const getValidators = (rest, qrl) => {
     id
   };
 };
+const actionQrl = globalActionQrl;
+const action$ = globalAction$;
+const loaderQrl = routeLoaderQrl;
+const loader$ = routeLoader$;
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
   return jsx("form", {
     ...rest,
@@ -822,6 +830,8 @@ export {
   useDocumentHead,
   useLocation,
   useNavigate,
+  validator$,
+  validatorQrl,
   z2 as z,
   zod$,
   zodQrl
