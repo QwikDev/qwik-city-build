@@ -488,9 +488,9 @@ export declare interface PageModule extends RouteModule {
  */
 export declare type PathParams = Record<string, string>;
 
-declare type Prettify<T> = {
+declare type Prettify<T> = {} & {
     [K in keyof T]?: T[K];
-} & 
+};
 
 /**
  * @alpha
