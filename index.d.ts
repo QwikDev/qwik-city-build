@@ -18,6 +18,7 @@ import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-
 import type { Signal } from '@builder.io/qwik';
 import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
+import type * as zod from 'zod';
 
 /**
  * @alpha
@@ -44,8 +45,8 @@ export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL ex
  * @alpha
  */
 export declare interface ActionConstructor {
-    <O, B extends TypedDataValidator>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B | ActionOptionsWithValidation<B>): Action<StrictUnion<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>>, GetValidatorType<B>, false>;
-    <O, B extends TypedDataValidator, REST extends DataValidator[]>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B, ...rest: REST): Action<StrictUnion<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>> | FailOfRest<REST>>, GetValidatorType<B>, false>;
+    <O, B extends TypedDataValidator>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B | ActionOptionsWithValidation<B>): Action<StrictUnion<O | FailReturn<zod.typeToFlattenedError<GetValidatorType<B>>>>, GetValidatorType<B>, false>;
+    <O, B extends TypedDataValidator, REST extends DataValidator[]>(actionQrl: (data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>, options: B, ...rest: REST): Action<StrictUnion<O | FailReturn<zod.typeToFlattenedError<GetValidatorType<B>>> | FailOfRest<REST>>, GetValidatorType<B>, false>;
     <O>(actionQrl: (form: JSONObject, event: RequestEventAction, options: ActionOptions) => ValueOrPromise<O>, options?: ActionOptions): Action<O>;
     <O, REST extends DataValidator[]>(actionQrl: (form: JSONObject, event: RequestEventAction) => ValueOrPromise<O>, ...rest: REST): Action<StrictUnion<O | FailReturn<FailOfRest<REST>>>>;
 }
@@ -54,8 +55,8 @@ export declare interface ActionConstructor {
  * @alpha
  */
 declare interface ActionConstructorQRL {
-    <O, B extends TypedDataValidator>(actionQrl: QRL<(data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>>, options: B | ActionOptionsWithValidation<B>): Action<StrictUnion<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>>>, GetValidatorType<B>, false>;
-    <O, B extends TypedDataValidator, REST extends DataValidator[]>(actionQrl: QRL<(data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>>, options: B, ...rest: REST): Action<StrictUnion<O | FailReturn<z.typeToFlattenedError<GetValidatorType<B>>> | FailOfRest<REST>>, GetValidatorType<B>, false>;
+    <O, B extends TypedDataValidator>(actionQrl: QRL<(data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>>, options: B | ActionOptionsWithValidation<B>): Action<StrictUnion<O | FailReturn<zod.typeToFlattenedError<GetValidatorType<B>>>>, GetValidatorType<B>, false>;
+    <O, B extends TypedDataValidator, REST extends DataValidator[]>(actionQrl: QRL<(data: GetValidatorType<B>, event: RequestEventAction) => ValueOrPromise<O>>, options: B, ...rest: REST): Action<StrictUnion<O | FailReturn<zod.typeToFlattenedError<GetValidatorType<B>>> | FailOfRest<REST>>, GetValidatorType<B>, false>;
     <O>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction, options: ActionOptions) => ValueOrPromise<O>>, options?: ActionOptions): Action<O>;
     <O, REST extends DataValidator[]>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<O>>, ...rest: REST): Action<StrictUnion<O | FailReturn<FailOfRest<REST>>>>;
 }
@@ -355,7 +356,7 @@ export declare interface FormSubmitSuccessDetail<T> {
     value: T;
 }
 
-declare type GetValidatorType<B extends TypedDataValidator> = B extends TypedDataValidator<infer TYPE> ? z.infer<TYPE> : never;
+declare type GetValidatorType<B extends TypedDataValidator> = B extends TypedDataValidator<infer TYPE> ? zod.infer<TYPE> : never;
 
 /**
  * @alpha
@@ -685,9 +686,9 @@ declare type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exc
 /**
  * @alpha
  */
-declare interface TypedDataValidator<T extends z.ZodType = any> {
-    __zod: z.ZodSchema<T>;
-    validate(ev: RequestEvent, data: unknown): Promise<z.SafeParseReturnType<T, T>>;
+declare interface TypedDataValidator<T extends zod.ZodType = any> {
+    __zod: zod.ZodSchema<T>;
+    validate(ev: RequestEvent, data: unknown): Promise<zod.SafeParseReturnType<T, T>>;
 }
 
 declare type UnionKeys<T> = T extends T ? keyof T : never;
@@ -748,26 +749,26 @@ export { z }
 /**
  * @alpha
  */
-export declare const zod$: Zod;
+export declare const zod$: ZodConstructor;
 
 /**
  * @alpha
  */
-export declare interface Zod {
-    <T extends z.ZodRawShape>(schema: T): TypedDataValidator<z.ZodObject<T>>;
-    <T extends z.ZodRawShape>(schema: (z: z) => T): TypedDataValidator<z.ZodObject<T>>;
-    <T extends z.Schema>(schema: T): TypedDataValidator<T>;
-    <T extends z.Schema>(schema: (z: z) => T): TypedDataValidator<T>;
+export declare interface ZodConstructor {
+    <T extends zod.ZodRawShape>(schema: T): TypedDataValidator<zod.ZodObject<T>>;
+    <T extends zod.ZodRawShape>(schema: (z: typeof zod) => T): TypedDataValidator<zod.ZodObject<T>>;
+    <T extends zod.Schema>(schema: T): TypedDataValidator<T>;
+    <T extends zod.Schema>(schema: (z: typeof zod) => T): TypedDataValidator<T>;
 }
 
 /**
  * @alpha
  */
 declare interface ZodConstructorQRL {
-    <T extends z.ZodRawShape>(schema: QRL<T>): TypedDataValidator<z.ZodObject<T>>;
-    <T extends z.ZodRawShape>(schema: QRL<(z: z) => T>): TypedDataValidator<z.ZodObject<T>>;
-    <T extends z.Schema>(schema: QRL<T>): TypedDataValidator<T>;
-    <T extends z.Schema>(schema: QRL<(z: z) => T>): TypedDataValidator<T>;
+    <T extends zod.ZodRawShape>(schema: QRL<T>): TypedDataValidator<zod.ZodObject<T>>;
+    <T extends zod.ZodRawShape>(schema: QRL<(zs: typeof zod) => T>): TypedDataValidator<zod.ZodObject<T>>;
+    <T extends zod.Schema>(schema: QRL<T>): TypedDataValidator<T>;
+    <T extends zod.Schema>(schema: QRL<(z: typeof zod) => T>): TypedDataValidator<T>;
 }
 
 /**
