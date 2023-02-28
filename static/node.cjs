@@ -726,7 +726,7 @@ async function generateNotFoundPages(sys, opts, routes) {
 var import_node_url2 = require("url");
 var import_node_path4 = require("path");
 
-// node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/index.mjs
+// node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/colors.mjs
 var FORCE_COLOR;
 var NODE_DISABLE_COLORS;
 var NO_COLOR;
@@ -737,94 +737,43 @@ if (typeof process !== "undefined") {
   isTTY = process.stdout && process.stdout.isTTY;
 }
 var $ = {
-  enabled: !NODE_DISABLE_COLORS && NO_COLOR == null && TERM !== "dumb" && (FORCE_COLOR != null && FORCE_COLOR !== "0" || isTTY),
-  // modifiers
-  reset: init(0, 0),
-  bold: init(1, 22),
-  dim: init(2, 22),
-  italic: init(3, 23),
-  underline: init(4, 24),
-  inverse: init(7, 27),
-  hidden: init(8, 28),
-  strikethrough: init(9, 29),
-  // colors
-  black: init(30, 39),
-  red: init(31, 39),
-  green: init(32, 39),
-  yellow: init(33, 39),
-  blue: init(34, 39),
-  magenta: init(35, 39),
-  cyan: init(36, 39),
-  white: init(37, 39),
-  gray: init(90, 39),
-  grey: init(90, 39),
-  // background colors
-  bgBlack: init(40, 49),
-  bgRed: init(41, 49),
-  bgGreen: init(42, 49),
-  bgYellow: init(43, 49),
-  bgBlue: init(44, 49),
-  bgMagenta: init(45, 49),
-  bgCyan: init(46, 49),
-  bgWhite: init(47, 49)
+  enabled: !NODE_DISABLE_COLORS && NO_COLOR == null && TERM !== "dumb" && (FORCE_COLOR != null && FORCE_COLOR !== "0" || isTTY)
 };
-function run(arr, str) {
-  let i = 0, tmp, beg = "", end = "";
-  for (; i < arr.length; i++) {
-    tmp = arr[i];
-    beg += tmp.open;
-    end += tmp.close;
-    if (!!~str.indexOf(tmp.close)) {
-      str = str.replace(tmp.rgx, tmp.close + tmp.open);
-    }
-  }
-  return beg + str + end;
-}
-function chain(has, keys) {
-  let ctx = { has, keys };
-  ctx.reset = $.reset.bind(ctx);
-  ctx.bold = $.bold.bind(ctx);
-  ctx.dim = $.dim.bind(ctx);
-  ctx.italic = $.italic.bind(ctx);
-  ctx.underline = $.underline.bind(ctx);
-  ctx.inverse = $.inverse.bind(ctx);
-  ctx.hidden = $.hidden.bind(ctx);
-  ctx.strikethrough = $.strikethrough.bind(ctx);
-  ctx.black = $.black.bind(ctx);
-  ctx.red = $.red.bind(ctx);
-  ctx.green = $.green.bind(ctx);
-  ctx.yellow = $.yellow.bind(ctx);
-  ctx.blue = $.blue.bind(ctx);
-  ctx.magenta = $.magenta.bind(ctx);
-  ctx.cyan = $.cyan.bind(ctx);
-  ctx.white = $.white.bind(ctx);
-  ctx.gray = $.gray.bind(ctx);
-  ctx.grey = $.grey.bind(ctx);
-  ctx.bgBlack = $.bgBlack.bind(ctx);
-  ctx.bgRed = $.bgRed.bind(ctx);
-  ctx.bgGreen = $.bgGreen.bind(ctx);
-  ctx.bgYellow = $.bgYellow.bind(ctx);
-  ctx.bgBlue = $.bgBlue.bind(ctx);
-  ctx.bgMagenta = $.bgMagenta.bind(ctx);
-  ctx.bgCyan = $.bgCyan.bind(ctx);
-  ctx.bgWhite = $.bgWhite.bind(ctx);
-  return ctx;
-}
-function init(open, close) {
-  let blk = {
-    open: `\x1B[${open}m`,
-    close: `\x1B[${close}m`,
-    rgx: new RegExp(`\\x1b\\[${close}m`, "g")
-  };
+function init(x, y) {
+  let rgx = new RegExp(`\\x1b\\[${y}m`, "g");
+  let open = `\x1B[${x}m`, close = `\x1B[${y}m`;
   return function(txt) {
-    if (this !== void 0 && this.has !== void 0) {
-      !!~this.has.indexOf(open) || (this.has.push(open), this.keys.push(blk));
-      return txt === void 0 ? this : $.enabled ? run(this.keys, txt + "") : txt + "";
-    }
-    return txt === void 0 ? chain([open], [blk]) : $.enabled ? run([blk], txt + "") : txt + "";
+    if (!$.enabled || txt == null)
+      return txt;
+    return open + (!!~("" + txt).indexOf(close) ? txt.replace(rgx, close + open) : txt) + close;
   };
 }
-var kleur_default = $;
+var reset = init(0, 0);
+var bold = init(1, 22);
+var dim = init(2, 22);
+var italic = init(3, 23);
+var underline = init(4, 24);
+var inverse = init(7, 27);
+var hidden = init(8, 28);
+var strikethrough = init(9, 29);
+var black = init(30, 39);
+var red = init(31, 39);
+var green = init(32, 39);
+var yellow = init(33, 39);
+var blue = init(34, 39);
+var magenta = init(35, 39);
+var cyan = init(36, 39);
+var white = init(37, 39);
+var gray = init(90, 39);
+var grey = init(90, 39);
+var bgBlack = init(40, 49);
+var bgRed = init(41, 49);
+var bgGreen = init(42, 49);
+var bgYellow = init(43, 49);
+var bgBlue = init(44, 49);
+var bgMagenta = init(45, 49);
+var bgCyan = init(46, 49);
+var bgWhite = init(47, 49);
 
 // packages/qwik/src/optimizer/src/plugins/vite-utils.ts
 var findLocation = (e) => {
@@ -956,7 +905,7 @@ async function mainThread(sys) {
   validateOptions(opts);
   const main = await sys.createMainProcess();
   const log = await sys.createLogger();
-  log.info("\n" + kleur_default.bold().green("Starting Qwik City SSG..."));
+  log.info("\n" + bold(green("Starting Qwik City SSG...")));
   const qwikCityPlan = (await import((0, import_node_url2.pathToFileURL)(opts.qwikCityPlanModulePath).href)).default;
   const queue = [];
   const active = /* @__PURE__ */ new Set();
@@ -980,19 +929,19 @@ async function mainThread(sys) {
         generatorResult.duration = timer();
         if (generatorResult.errors === 0) {
           log.info(`
-${kleur_default.green("SSG results")}`);
+${green("SSG results")}`);
           if (generatorResult.rendered > 0) {
             log.info(
-              `- Generated: ${kleur_default.dim(
+              `- Generated: ${dim(
                 `${generatorResult.rendered} page${generatorResult.rendered === 1 ? "" : "s"}`
               )}`
             );
           }
-          log.info(`- Duration: ${kleur_default.dim(msToString(generatorResult.duration))}`);
+          log.info(`- Duration: ${dim(msToString(generatorResult.duration))}`);
           const total = generatorResult.rendered + generatorResult.errors;
           if (total > 0) {
             log.info(
-              `- Average: ${kleur_default.dim(msToString(generatorResult.duration / total) + " per page")}`
+              `- Average: ${dim(msToString(generatorResult.duration / total) + " per page")}`
             );
           }
           log.info(``);
@@ -1032,9 +981,9 @@ ${kleur_default.green("SSG results")}`);
             const err = new Error(result.error.message);
             err.stack = result.error.stack;
             log.error(`
-${kleur_default.bold().red("Error during SSG")}`);
-            log.error(kleur_default.red(err.message));
-            log.error(`  Pathname: ${kleur_default.magenta(staticRoute.pathname)}`);
+${bold(red("Error during SSG"))}`);
+            log.error(red(err.message));
+            log.error(`  Pathname: ${magenta(staticRoute.pathname)}`);
             Object.assign(formatError(err), {
               plugin: "qwik-ssg"
             });
@@ -1047,7 +996,7 @@ ${kleur_default.bold().red("Error during SSG")}`);
             const base = opts.rootDir ?? opts.outDir;
             const path = (0, import_node_path4.relative)(base, result.filePath);
             const lastSlash = path.lastIndexOf("/");
-            log.info(`${kleur_default.dim(path.slice(0, lastSlash + 1))}${path.slice(lastSlash + 1)}`);
+            log.info(`${dim(path.slice(0, lastSlash + 1))}${path.slice(lastSlash + 1)}`);
           }
           flushQueue();
         } catch (e) {
