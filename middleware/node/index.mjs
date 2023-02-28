@@ -1,5 +1,6 @@
 // packages/qwik-city/middleware/node/index.ts
 import { requestHandler } from "../request-handler/index.mjs";
+import { setServerPlatform } from "@builder.io/qwik/server";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import qwikCityPlan from "@qwik-city-plan";
 import { isStaticPath } from "@qwik-city-static-paths";
@@ -174,6 +175,9 @@ function createQwikCity(opts) {
     _serializeData,
     _verifySerializable
   };
+  if (opts.manifest) {
+    setServerPlatform(opts.manifest);
+  }
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? join(fileURLToPath(import.meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {

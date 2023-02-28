@@ -6,6 +6,7 @@ import {
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
+import { setServerPlatform } from "@builder.io/qwik/server";
 function createQwikCity(opts) {
   globalThis.TextEncoderStream = TextEncoderStream;
   const qwikSerializer = {
@@ -13,6 +14,9 @@ function createQwikCity(opts) {
     _serializeData,
     _verifySerializable
   };
+  if (opts.manifest) {
+    setServerPlatform(opts.manifest);
+  }
   async function onCloudflarePagesRequest({ request, env, waitUntil, next }) {
     try {
       const url = new URL(request.url);

@@ -35,6 +35,7 @@ __export(node_exports, {
 });
 module.exports = __toCommonJS(node_exports);
 var import_request_handler = require("../request-handler/index.cjs");
+var import_server = require("@builder.io/qwik/server");
 var import_qwik_city_not_found_paths = require("@qwik-city-not-found-paths");
 var import_qwik_city_plan = __toESM(require("@qwik-city-plan"), 1);
 var import_qwik_city_static_paths = require("@qwik-city-static-paths");
@@ -205,6 +206,9 @@ function createQwikCity(opts) {
     _serializeData: import_qwik._serializeData,
     _verifySerializable: import_qwik._verifySerializable
   };
+  if (opts.manifest) {
+    (0, import_server.setServerPlatform)(opts.manifest);
+  }
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? (0, import_node_path.join)((0, import_node_url.fileURLToPath)(import_meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {

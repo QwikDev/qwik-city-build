@@ -1,4 +1,5 @@
 // packages/qwik-city/middleware/azure-swa/index.ts
+import { setServerPlatform } from "@builder.io/qwik/server";
 import qwikCityPlan from "@qwik-city-plan";
 import {
   mergeHeadersCookies,
@@ -12,6 +13,9 @@ function createQwikCity(opts) {
     _serializeData,
     _verifySerializable
   };
+  if (opts.manifest) {
+    setServerPlatform(opts.manifest);
+  }
   async function onAzureSwaRequest(context, req) {
     try {
       const url = new URL(req.headers["x-ms-original-url"]);
