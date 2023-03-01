@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnWindow, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
 import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -14,7 +14,7 @@ const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   _jsxBranch();
-  useOnWindow("qinit", /* @__PURE__ */ inlinedQrl(() => {
+  useOnDocument("qinit", /* @__PURE__ */ inlinedQrl(() => {
     const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
     if (!window["_qCityPopstateFallback"]) {
       window[POPSTATE_FALLBACK_INITIALIZED] = () => {
@@ -25,7 +25,7 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
         addEventListener("popstate", window["_qCityPopstateFallback"]);
       }, 0);
     }
-  }, "RouterOutlet_component_useOnWindow_P9EdGkxN8cs"));
+  }, "RouterOutlet_component_useOnDocument_sKCu0TvdkZI"));
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;

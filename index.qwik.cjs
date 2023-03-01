@@ -32,7 +32,7 @@ const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   qwik._jsxBranch();
-  qwik.useOnWindow("qinit", /* @__PURE__ */ qwik.inlinedQrl(() => {
+  qwik.useOnDocument("qinit", /* @__PURE__ */ qwik.inlinedQrl(() => {
     const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
     if (!window["_qCityPopstateFallback"]) {
       window[POPSTATE_FALLBACK_INITIALIZED] = () => {
@@ -43,7 +43,7 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
         addEventListener("popstate", window["_qCityPopstateFallback"]);
       }, 0);
     }
-  }, "RouterOutlet_component_useOnWindow_P9EdGkxN8cs"));
+  }, "RouterOutlet_component_useOnDocument_sKCu0TvdkZI"));
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
