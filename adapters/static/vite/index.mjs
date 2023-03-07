@@ -207,7 +207,7 @@ function viteAdapter(opts) {
     closeBundle: {
       sequential: true,
       async handler() {
-        var _a;
+        var _a, _b;
         if (isSsrBuild && opts.ssg !== null && serverOutDir && (qwikCityPlugin == null ? void 0 : qwikCityPlugin.api) && (qwikVitePlugin == null ? void 0 : qwikVitePlugin.api)) {
           const staticPaths = opts.staticPaths || [];
           const routes = qwikCityPlugin.api.getRoutes();
@@ -228,7 +228,7 @@ function viteAdapter(opts) {
               }
             }
             if (Array.isArray((_a = opts.ssg) == null ? void 0 : _a.include) && opts.ssg.include.length > 0) {
-              let ssgOrigin = opts.origin;
+              let ssgOrigin = ((_b = opts.ssg) == null ? void 0 : _b.origin) || opts.origin;
               if (!ssgOrigin) {
                 ssgOrigin = `https://yoursite.qwik.builder.io`;
               }
