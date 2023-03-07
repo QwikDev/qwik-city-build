@@ -24494,6 +24494,10 @@ function ssrDevMiddleware(ctx, server) {
             requestEv.headers.forEach((value2, key) => {
               res.setHeader(key, value2);
             });
+            const cookieHeaders = requestEv.cookie.headers();
+            if (cookieHeaders.length > 0) {
+              res.setHeader("Set-Cookie", cookieHeaders);
+            }
             res._qwikEnvData = {
               ...res._qwikEnvData,
               ...serverData
