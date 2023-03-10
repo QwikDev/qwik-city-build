@@ -110,7 +110,7 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      * export const useAddUser = action$(() => { ... });
      *
      * export default component$(() => {
-     *   const action = useAddUser()l
+     *   const action = useAddUser();
      *   return (
      *     <Form action={action}/>
      *   );
