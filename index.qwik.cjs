@@ -1,7 +1,6 @@
 "use strict";
 Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
 const qwik = require("@builder.io/qwik");
-const jsxRuntime = require("@builder.io/qwik/jsx-runtime");
 const build = require("@builder.io/qwik/build");
 const qwikCity = require("@qwik-city-plan");
 const swRegister = require("@qwik-city-sw-register");
@@ -500,7 +499,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
     navPath,
     routeLocation
   ]));
-  return /* @__PURE__ */ jsxRuntime.jsx(qwik.Slot, {}, "qY_0");
+  return /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
 const QwikCity = QwikCityProvider;
 const Html = QwikCityProvider;
@@ -531,7 +530,7 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ q
   qwik.useContextProvider(RouteLocationContext, routeLocation);
   qwik.useContextProvider(RouteNavigateContext, goto);
   qwik.useContextProvider(RouteStateContext, loaderState);
-  return /* @__PURE__ */ jsxRuntime.jsx(qwik.Slot, {}, "qY_1");
+  return /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "qY_1");
 }, "QwikCityMockProvider_component_WmYC5H00wtI"));
 const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const nav = useNavigate();
@@ -544,8 +543,9 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
   const prefetchDataset = getPrefetchDataset(props, clientNavPath, loc);
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || originalHref;
-  return /* @__PURE__ */ jsxRuntime.jsx("a", {
+  return /* @__PURE__ */ qwik._jsxQ("a", {
     ...linkProps,
+    "data-prefetch": prefetchDataset,
     onClick$: /* @__PURE__ */ qwik.inlinedQrl(() => {
       const [clientNavPath2, linkProps2, nav2] = qwik.useLexicalScope();
       if (clientNavPath2)
@@ -555,12 +555,10 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
       linkProps,
       nav
     ]),
-    "data-prefetch": prefetchDataset,
     onMouseOver$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onMouseOver_yiXwCC0m3jY"),
     onFocus$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
-    onQVisible$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4"),
-    children: /* @__PURE__ */ jsxRuntime.jsx(qwik.Slot, {}, "AD_0")
-  }, "AD_1");
+    onQVisible$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4")
+  }, null, /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"), 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
 const prefetchLinkResources = (elm, isOnVisible) => {
   if (elm && elm.href && elm.hasAttribute("data-prefetch")) {

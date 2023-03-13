@@ -1,5 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
-import { jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, _jsxC, Slot, _getContextElement, getLocale, _jsxQ, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
@@ -482,7 +481,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     navPath,
     routeLocation
   ]));
-  return /* @__PURE__ */ jsx$1(Slot, {}, "qY_0");
+  return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
 const QwikCity = QwikCityProvider;
 const Html = QwikCityProvider;
@@ -513,7 +512,7 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
   useContextProvider(RouteLocationContext, routeLocation);
   useContextProvider(RouteNavigateContext, goto);
   useContextProvider(RouteStateContext, loaderState);
-  return /* @__PURE__ */ jsx$1(Slot, {}, "qY_1");
+  return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_1");
 }, "QwikCityMockProvider_component_WmYC5H00wtI"));
 const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const nav = useNavigate();
@@ -526,8 +525,9 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   const prefetchDataset = getPrefetchDataset(props, clientNavPath, loc);
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || originalHref;
-  return /* @__PURE__ */ jsx$1("a", {
+  return /* @__PURE__ */ _jsxQ("a", {
     ...linkProps,
+    "data-prefetch": prefetchDataset,
     onClick$: /* @__PURE__ */ inlinedQrl(() => {
       const [clientNavPath2, linkProps2, nav2] = useLexicalScope();
       if (clientNavPath2)
@@ -537,12 +537,10 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
       linkProps,
       nav
     ]),
-    "data-prefetch": prefetchDataset,
     onMouseOver$: /* @__PURE__ */ inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onMouseOver_yiXwCC0m3jY"),
     onFocus$: /* @__PURE__ */ inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
-    onQVisible$: /* @__PURE__ */ inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4"),
-    children: /* @__PURE__ */ jsx$1(Slot, {}, "AD_0")
-  }, "AD_1");
+    onQVisible$: /* @__PURE__ */ inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4")
+  }, null, /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"), 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
 const prefetchLinkResources = (elm, isOnVisible) => {
   if (elm && elm.href && elm.hasAttribute("data-prefetch")) {
