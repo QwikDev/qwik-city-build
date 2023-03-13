@@ -752,7 +752,7 @@ var findLocation = (e) => {
       const line = lines[i].replace("file:///", "/");
       if (/^\s+at/.test(line)) {
         const start = line.indexOf("/");
-        const end = line.indexOf(")", start);
+        const end = line.lastIndexOf(")", start);
         if (start > 0) {
           const path = line.slice(start, end);
           const parts = path.split(":");
