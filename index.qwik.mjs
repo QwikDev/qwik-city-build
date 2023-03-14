@@ -716,7 +716,7 @@ const serverQrl = (qrl) => {
     if (captured && captured.length > 0 && !_getContextElement())
       throw new Error("For security reasons, we cannot serialize QRLs that capture lexical scope.");
   }
-  function client() {
+  function stuff() {
     return /* @__PURE__ */ inlinedQrl(async (...args) => {
       const [qrl2] = useLexicalScope();
       if (isServer)
@@ -749,11 +749,11 @@ const serverQrl = (qrl) => {
         const obj = await _deserializeData(str);
         return obj;
       }
-    }, "serverQrl_client_b0uBOzEpu7U", [
+    }, "serverQrl_stuff_wOIPfiQ04l4", [
       qrl
     ]);
   }
-  return client();
+  return stuff();
 };
 const server$ = /* @__PURE__ */ implicit$FirstArg(serverQrl);
 const getValidators = (rest, qrl) => {
