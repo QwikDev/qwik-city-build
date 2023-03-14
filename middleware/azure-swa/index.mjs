@@ -20,10 +20,9 @@ function createQwikCity(opts) {
     try {
       const url = new URL(req.headers["x-ms-original-url"]);
       const options = {
-        method: req.method,
+        method: req.method || "GET",
         headers: req.headers,
-        body: req.body,
-        duplex: "half"
+        body: req.bufferBody || req.rawBody || req.body
       };
       const serverRequestEv = {
         mode: "server",
