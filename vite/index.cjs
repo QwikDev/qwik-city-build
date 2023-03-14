@@ -24008,7 +24008,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
       return status;
     },
     locale: (_locale) => {
-      if (typeof locale === "string") {
+      if (typeof _locale === "string") {
         locale = _locale;
       }
       return locale || "";
