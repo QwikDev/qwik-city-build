@@ -480,7 +480,13 @@ function getPathname(url, trailingSlash) {
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
 function securityMiddleware({ url, request, error }) {
-  const forbidden = request.headers.get("origin") !== url.origin;
+  let inputOrigin = request.headers.get("origin");
+  let origin = url.origin;
+  if (import_build.isDev) {
+    inputOrigin = inputOrigin ? new URL(inputOrigin).host : null;
+    origin = url.host;
+  }
+  const forbidden = inputOrigin !== origin;
   if (forbidden) {
     throw error(403, `Cross-site ${request.method} form submissions are forbidden`);
   }
