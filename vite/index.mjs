@@ -13613,7 +13613,7 @@ function isGroupedLayoutName(dirName, warn = true) {
       console.warn(
         `Grouped (pathless) layout "${dirName}" should use the "(${dirName.slice(
           2
-        )})" directory name instead. Prefixing a directory with "__" has been deprecated and will be removed in future verions.`
+        )})" directory name instead. Prefixing a directory with "__" has been deprecated and will be removed in future versions.`
       );
     }
     return true;
@@ -24823,8 +24823,8 @@ function generateLinkBundles(ctx, appBundles, manifest) {
         if (bundle.origins) {
           for (const bundleOrigin of bundle.origins) {
             const srcPath = removeExtension(filePath);
-            const bundleOrginPath = removeExtension(bundleOrigin);
-            if (srcPath.endsWith(bundleOrginPath)) {
+            const bundleOriginPath = removeExtension(bundleOrigin);
+            if (srcPath.endsWith(bundleOriginPath)) {
               if (!linkBundleNames.includes(bundleName)) {
                 linkBundleNames.push(bundleName);
               }
@@ -24867,11 +24867,11 @@ navigator.serviceWorker?.getRegistrations().then((regs) => {
 import fs6 from "fs";
 import { join as join5 } from "path";
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
-  const ingorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
+  const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
   const staticPaths = new Set(userStaticPaths);
   const notFounds = [];
   const loadItem = async (fsDir, fsName, pathname) => {
-    if (ingorePathnames.has(pathname)) {
+    if (ignorePathnames.has(pathname)) {
       return;
     }
     const fsPath = join5(fsDir, fsName);

@@ -120,7 +120,7 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      */
     readonly actionPath: string;
     /**
-     * Reactive property that becomes `true` only in the browser, when a form is submited and switched back to false when the action finish, ie, it describes if the action is actively running.
+     * Reactive property that becomes `true` only in the browser, when a form is submitted and switched back to false when the action finish, ie, it describes if the action is actively running.
      *
      * This property is specially useful to disable the submit button while the action is processing, to prevent multiple submissions, and to inform visually to the user that the action is actively running.
      *
@@ -142,13 +142,13 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      */
     readonly formData: FormData | undefined;
     /**
-     * Returned succesful data of the action. This reactive property will contain the data returned inside the `action$` function.
+     * Returned successful data of the action. This reactive property will contain the data returned inside the `action$` function.
      *
      * It's `undefined` before the action is first called.
      */
     readonly value: RETURN | undefined;
     /**
-     * Method to execute the action programatically from the browser. Ie, instead of using a `<form>`, a 'click' handle can call the `run()` method of the action
+     * Method to execute the action programmatically from the browser. Ie, instead of using a `<form>`, a 'click' handle can call the `run()` method of the action
      * in order to execute the action in the server.
      */
     readonly run: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
@@ -344,7 +344,7 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
      */
     onSubmit$?: (event: Event, form: HTMLFormElement) => ValueOrPromise<void>;
     /**
-     * Event handler executed right after the action is executed sucesfully and returns some data.
+     * Event handler executed right after the action is executed successfully and returns some data.
      */
     onSubmitCompleted$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
 }

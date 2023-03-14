@@ -7,7 +7,7 @@ import { join } from "path";
 var basePathname = "/";
 
 // packages/qwik-city/adapters/netlify-edge/vite/index.ts
-function netifyEdgeAdapter(opts = {}) {
+function netlifyEdgeAdapter(opts = {}) {
   var _a;
   return viteAdapter({
     name: "netlify-edge",
@@ -72,8 +72,10 @@ function netifyEdgeAdapter(opts = {}) {
     }
   });
 }
-var netifyEdgeAdaptor = netifyEdgeAdapter;
+var netifyEdgeAdapter = netlifyEdgeAdapter;
+var netifyEdgeAdaptor = netlifyEdgeAdapter;
 export {
   netifyEdgeAdapter,
-  netifyEdgeAdaptor
+  netifyEdgeAdaptor,
+  netlifyEdgeAdapter
 };

@@ -47,11 +47,11 @@ var import_node_fs = __toESM(require("fs"), 1);
 var import_node_path = require("path");
 var import_request_handler = require("../../../middleware/request-handler/index.cjs");
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
-  const ingorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
+  const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
   const staticPaths = new Set(userStaticPaths);
   const notFounds = [];
   const loadItem = async (fsDir, fsName, pathname) => {
-    if (ingorePathnames.has(pathname)) {
+    if (ignorePathnames.has(pathname)) {
       return;
     }
     const fsPath = (0, import_node_path.join)(fsDir, fsName);
@@ -297,7 +297,7 @@ function viteAdapter(opts) {
               const staticGenerateResult = await staticGenerate.generate(generateOpts);
               if (staticGenerateResult.errors > 0) {
                 const err = new Error(
-                  `Error while runnning SSG from "${opts.name}" adapter. At least one path failed to render.`
+                  `Error while running SSG from "${opts.name}" adapter. At least one path failed to render.`
                 );
                 err.stack = void 0;
                 this.error(err);
