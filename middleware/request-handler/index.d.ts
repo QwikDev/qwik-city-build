@@ -337,7 +337,6 @@ declare class RedirectMessage extends AbortMessage {
 export declare interface RequestEvent<PLATFORM = QwikCityPlatform> extends RequestEventCommon<PLATFORM> {
     readonly headersSent: boolean;
     readonly exited: boolean;
-    readonly cacheControl: (cacheControl: CacheControl) => void;
     /**
      * Low-level access to write to the HTTP response stream. Once `getWritableStream()` is called,
      * the status and headers can no longer be modified and will be sent over the network.
@@ -356,60 +355,7 @@ export declare interface RequestEventAction<PLATFORM = QwikCityPlatform> extends
 /**
  * @alpha
  */
-export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> {
-    /**
-     * HTTP response status code. Sets the status code when called with an
-     * argument. Always returns the status code, so calling `status()` without
-     * an argument will can be used to return the current status code.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-     */
-    readonly status: (statusCode?: number) => number;
-    /**
-     * Which locale the content is in.
-     *
-     * The locale value can be retrieved from selected methods using `getLocale()`:
-     */
-    readonly locale: (local?: string) => string;
-    /**
-     * URL to redirect to. When called, the response will immediately
-     * end with the correct redirect status and headers.
-     *
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections
-     */
-    readonly redirect: (statusCode: RedirectCode, url: string) => RedirectMessage;
-    /**
-     * When called, the response will immediately end with the given
-     * status code. This could be useful to end a response with `404`,
-     * and use the 404 handler in the routes directory.
-     * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
-     * for which status code should be used.
-     */
-    readonly error: (statusCode: number, message: string) => ErrorResponse;
-    /**
-     * Convenience method to send an text body response. The response will be automatically
-     * set the `Content-Type` header to`text/plain; charset=utf-8`.
-     *  An `text()` response can only be called once.
-     */
-    readonly text: (statusCode: number, text: string) => AbortMessage;
-    /**
-     * Convenience method to send an HTML body response. The response will be automatically
-     * set the `Content-Type` header to`text/html; charset=utf-8`.
-     *  An `html()` response can only be called once.
-     */
-    readonly html: (statusCode: number, html: string) => AbortMessage;
-    /**
-     * Convenience method to JSON stringify the data and send it in the response.
-     * The response will be automatically set the `Content-Type` header to
-     * `application/json; charset=utf-8`. A `json()` response can only be called once.
-     */
-    readonly json: (statusCode: number, data: any) => AbortMessage;
-    /**
-     * Send a body response. The `Content-Type` response header is not automatically set
-     * when using `send()` and must be set manually. A `send()` response can only be called once.
-     */
-    readonly send: SendMethod;
-    readonly exit: () => AbortMessage;
+export declare interface RequestEventBase<PLATFORM = QwikCityPlatform> {
     /**
      * HTTP response headers.
      *
@@ -476,6 +422,69 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> {
      * If the `Content-Type` header is not set, it will return `null`.
      */
     readonly parseBody: () => Promise<unknown>;
+    /**
+     * Convenience method to set the Cache-Control header.
+     */
+    readonly cacheControl: (cacheControl: CacheControl) => void;
+}
+
+/**
+ * @alpha
+ */
+export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends RequestEventBase<PLATFORM> {
+    /**
+     * HTTP response status code. Sets the status code when called with an
+     * argument. Always returns the status code, so calling `status()` without
+     * an argument will can be used to return the current status code.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+     */
+    readonly status: (statusCode?: number) => number;
+    /**
+     * Which locale the content is in.
+     *
+     * The locale value can be retrieved from selected methods using `getLocale()`:
+     */
+    readonly locale: (local?: string) => string;
+    /**
+     * URL to redirect to. When called, the response will immediately
+     * end with the correct redirect status and headers.
+     *
+     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections
+     */
+    readonly redirect: (statusCode: RedirectCode, url: string) => RedirectMessage;
+    /**
+     * When called, the response will immediately end with the given
+     * status code. This could be useful to end a response with `404`,
+     * and use the 404 handler in the routes directory.
+     * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
+     * for which status code should be used.
+     */
+    readonly error: (statusCode: number, message: string) => ErrorResponse;
+    /**
+     * Convenience method to send an text body response. The response will be automatically
+     * set the `Content-Type` header to`text/plain; charset=utf-8`.
+     *  An `text()` response can only be called once.
+     */
+    readonly text: (statusCode: number, text: string) => AbortMessage;
+    /**
+     * Convenience method to send an HTML body response. The response will be automatically
+     * set the `Content-Type` header to`text/html; charset=utf-8`.
+     *  An `html()` response can only be called once.
+     */
+    readonly html: (statusCode: number, html: string) => AbortMessage;
+    /**
+     * Convenience method to JSON stringify the data and send it in the response.
+     * The response will be automatically set the `Content-Type` header to
+     * `application/json; charset=utf-8`. A `json()` response can only be called once.
+     */
+    readonly json: (statusCode: number, data: any) => AbortMessage;
+    /**
+     * Send a body response. The `Content-Type` response header is not automatically set
+     * when using `send()` and must be set manually. A `send()` response can only be called once.
+     */
+    readonly send: SendMethod;
+    readonly exit: () => AbortMessage;
 }
 
 declare interface RequestEventInternal extends RequestEvent, RequestEventLoader {
