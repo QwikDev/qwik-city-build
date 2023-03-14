@@ -13885,7 +13885,7 @@ function hasProperty(node, propName) {
 // packages/qwik-city/buildtime/markdown/syntax-highlight.ts
 init_unist_util_visit();
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/clike.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/clike.js
 clike.displayName = "clike";
 clike.aliases = [];
 function clike(Prism2) {
@@ -13922,7 +13922,7 @@ function clike(Prism2) {
   };
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/c.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/c.js
 c.displayName = "c";
 c.aliases = [];
 function c(Prism2) {
@@ -14005,7 +14005,7 @@ function c(Prism2) {
   delete Prism2.languages.c["boolean"];
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/cpp.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/cpp.js
 cpp.displayName = "cpp";
 cpp.aliases = [];
 function cpp(Prism2) {
@@ -14119,7 +14119,7 @@ function cpp(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/arduino.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/arduino.js
 arduino.displayName = "arduino";
 arduino.aliases = ["ino"];
 function arduino(Prism2) {
@@ -14132,7 +14132,7 @@ function arduino(Prism2) {
   Prism2.languages.ino = Prism2.languages.arduino;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/bash.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/bash.js
 bash.displayName = "bash";
 bash.aliases = ["sh", "shell"];
 function bash(Prism2) {
@@ -14365,7 +14365,7 @@ function bash(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/csharp.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/csharp.js
 csharp.displayName = "csharp";
 csharp.aliases = ["cs", "dotnet"];
 function csharp(Prism2) {
@@ -14779,7 +14779,7 @@ function csharp(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/markup.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/markup.js
 markup.displayName = "markup";
 markup.aliases = ["atom", "html", "mathml", "rss", "ssml", "svg", "xml"];
 function markup(Prism2) {
@@ -14968,7 +14968,7 @@ function markup(Prism2) {
   Prism2.languages.rss = Prism2.languages.xml;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/css.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/css.js
 css.displayName = "css";
 css.aliases = [];
 function css(Prism2) {
@@ -15041,7 +15041,7 @@ function css(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/diff.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/diff.js
 diff.displayName = "diff";
 diff.aliases = [];
 function diff(Prism2) {
@@ -15099,7 +15099,7 @@ function diff(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/go.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/go.js
 go.displayName = "go";
 go.aliases = [];
 function go(Prism2) {
@@ -15132,7 +15132,7 @@ function go(Prism2) {
   delete Prism2.languages.go["class-name"];
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/ini.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/ini.js
 ini.displayName = "ini";
 ini.aliases = [];
 function ini(Prism2) {
@@ -15178,7 +15178,7 @@ function ini(Prism2) {
   };
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/java.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/java.js
 java.displayName = "java";
 java.aliases = [];
 function java(Prism2) {
@@ -15316,7 +15316,7 @@ function java(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/regex.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/regex.js
 regex2.displayName = "regex";
 regex2.aliases = [];
 function regex2(Prism2) {
@@ -15420,7 +15420,7 @@ function regex2(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/javascript.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/javascript.js
 javascript.displayName = "javascript";
 javascript.aliases = ["js"];
 function javascript(Prism2) {
@@ -15566,7 +15566,7 @@ function javascript(Prism2) {
   Prism2.languages.js = Prism2.languages.javascript;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/json.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/json.js
 json.displayName = "json";
 json.aliases = ["webmanifest"];
 function json(Prism2) {
@@ -15597,7 +15597,7 @@ function json(Prism2) {
   Prism2.languages.webmanifest = Prism2.languages.json;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/kotlin.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/kotlin.js
 kotlin.displayName = "kotlin";
 kotlin.aliases = ["kt", "kts"];
 function kotlin(Prism2) {
@@ -15685,7 +15685,7 @@ function kotlin(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/less.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/less.js
 less.displayName = "less";
 less.aliases = [];
 function less(Prism2) {
@@ -15735,7 +15735,7 @@ function less(Prism2) {
   });
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/lua.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/lua.js
 lua.displayName = "lua";
 lua.aliases = [];
 function lua(Prism2) {
@@ -15761,7 +15761,7 @@ function lua(Prism2) {
   };
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/makefile.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/makefile.js
 makefile.displayName = "makefile";
 makefile.aliases = [];
 function makefile(Prism2) {
@@ -15797,7 +15797,7 @@ function makefile(Prism2) {
   };
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/yaml.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/yaml.js
 yaml.displayName = "yaml";
 yaml.aliases = ["yml"];
 function yaml(Prism2) {
@@ -15890,7 +15890,7 @@ function yaml(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/markdown.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/markdown.js
 markdown.displayName = "markdown";
 markdown.aliases = ["md"];
 function markdown(Prism2) {
@@ -16218,11 +16218,7 @@ function markdown(Prism2) {
           });
         }
       } else {
-        env.content = Prism3.highlight(
-          textContent(env.content.value),
-          grammar,
-          codeLang
-        );
+        env.content = Prism3.highlight(env.content.value, grammar, codeLang);
       }
     });
     var tagPattern = RegExp(Prism3.languages.markup.tag.pattern.source, "gi");
@@ -16259,7 +16255,7 @@ function markdown(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/objectivec.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/objectivec.js
 objectivec.displayName = "objectivec";
 objectivec.aliases = ["objc"];
 function objectivec(Prism2) {
@@ -16276,7 +16272,7 @@ function objectivec(Prism2) {
   Prism2.languages.objc = Prism2.languages.objectivec;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/perl.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/perl.js
 perl.displayName = "perl";
 perl.aliases = [];
 function perl(Prism2) {
@@ -16414,7 +16410,7 @@ function perl(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/markup-templating.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/markup-templating.js
 markupTemplating.displayName = "markup-templating";
 markupTemplating.aliases = [];
 function markupTemplating(Prism2) {
@@ -16519,7 +16515,7 @@ function markupTemplating(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/php.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/php.js
 php.displayName = "php";
 php.aliases = [];
 function php(Prism2) {
@@ -16854,7 +16850,7 @@ function php(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/python.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/python.js
 python.displayName = "python";
 python.aliases = ["py"];
 function python(Prism2) {
@@ -16923,7 +16919,7 @@ function python(Prism2) {
   Prism2.languages.py = Prism2.languages.python;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/r.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/r.js
 r.displayName = "r";
 r.aliases = [];
 function r(Prism2) {
@@ -16951,7 +16947,7 @@ function r(Prism2) {
   };
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/ruby.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/ruby.js
 ruby.displayName = "ruby";
 ruby.aliases = ["rb"];
 function ruby(Prism2) {
@@ -17135,7 +17131,7 @@ function ruby(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/rust.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/rust.js
 rust.displayName = "rust";
 rust.aliases = [];
 function rust(Prism2) {
@@ -17263,7 +17259,7 @@ function rust(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/sass.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/sass.js
 sass.displayName = "sass";
 sass.aliases = [];
 function sass(Prism2) {
@@ -17339,7 +17335,7 @@ function sass(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/scss.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/scss.js
 scss.displayName = "scss";
 scss.aliases = [];
 function scss(Prism2) {
@@ -17423,7 +17419,7 @@ function scss(Prism2) {
   Prism2.languages.scss["atrule"].inside.rest = Prism2.languages.scss;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/sql.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/sql.js
 sql.displayName = "sql";
 sql.aliases = [];
 function sql(Prism2) {
@@ -17462,7 +17458,7 @@ function sql(Prism2) {
   };
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/swift.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/swift.js
 swift.displayName = "swift";
 swift.aliases = [];
 function swift(Prism2) {
@@ -17588,7 +17584,7 @@ function swift(Prism2) {
   });
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/typescript.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/typescript.js
 typescript.displayName = "typescript";
 typescript.aliases = ["ts"];
 function typescript(Prism2) {
@@ -17646,7 +17642,7 @@ function typescript(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/basic.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/basic.js
 basic.displayName = "basic";
 basic.aliases = [];
 function basic(Prism2) {
@@ -17669,7 +17665,7 @@ function basic(Prism2) {
   };
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/vbnet.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/vbnet.js
 vbnet.displayName = "vbnet";
 vbnet.aliases = [];
 function vbnet(Prism2) {
@@ -17698,7 +17694,7 @@ function vbnet(Prism2) {
   });
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/schema.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/util/schema.js
 var Schema = class {
   /**
    * @constructor
@@ -17718,7 +17714,7 @@ Schema.prototype.property = {};
 Schema.prototype.normal = {};
 Schema.prototype.space = null;
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/merge.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/util/merge.js
 function merge(definitions, space) {
   const property = {};
   const normal = {};
@@ -17730,12 +17726,12 @@ function merge(definitions, space) {
   return new Schema(property, normal, space);
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/normalize.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/normalize.js
 function normalize2(value2) {
   return value2.toLowerCase();
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/info.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/util/info.js
 var Info = class {
   /**
    * @constructor
@@ -17758,7 +17754,7 @@ Info.prototype.commaOrSpaceSeparated = false;
 Info.prototype.mustUseProperty = false;
 Info.prototype.defined = false;
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/types.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/util/types.js
 var types_exports = {};
 __export(types_exports, {
   boolean: () => boolean,
@@ -17781,7 +17777,7 @@ function increment() {
   return 2 ** ++powers;
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/defined-info.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/util/defined-info.js
 var checks = Object.keys(types_exports);
 var DefinedInfo = class extends Info {
   /**
@@ -17810,7 +17806,7 @@ function mark(values, key, value2) {
   }
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/create.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/util/create.js
 var own3 = {}.hasOwnProperty;
 function create(definition) {
   const property = {};
@@ -17836,7 +17832,7 @@ function create(definition) {
   return new Schema(property, normal, definition.space);
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/xlink.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/xlink.js
 var xlink = create({
   space: "xlink",
   transform(_2, prop) {
@@ -17853,7 +17849,7 @@ var xlink = create({
   }
 });
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/xml.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/xml.js
 var xml = create({
   space: "xml",
   transform(_2, prop) {
@@ -17862,17 +17858,17 @@ var xml = create({
   properties: { xmlLang: null, xmlBase: null, xmlSpace: null }
 });
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/case-sensitive-transform.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/util/case-sensitive-transform.js
 function caseSensitiveTransform(attributes2, attribute) {
   return attribute in attributes2 ? attributes2[attribute] : attribute;
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/util/case-insensitive-transform.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/util/case-insensitive-transform.js
 function caseInsensitiveTransform(attributes2, property) {
   return caseSensitiveTransform(attributes2, property.toLowerCase());
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/xmlns.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/xmlns.js
 var xmlns = create({
   space: "xmlns",
   attributes: { xmlnsxlink: "xmlns:xlink" },
@@ -17880,7 +17876,7 @@ var xmlns = create({
   properties: { xmlns: null, xmlnsXLink: null }
 });
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/aria.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/aria.js
 var aria = create({
   transform(_2, prop) {
     return prop === "role" ? prop : "aria-" + prop.slice(4).toLowerCase();
@@ -17938,7 +17934,7 @@ var aria = create({
   }
 });
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/html.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/html.js
 var html = create({
   space: "html",
   attributes: {
@@ -18042,6 +18038,7 @@ var html = create({
     onAbort: null,
     onAfterPrint: null,
     onAuxClick: null,
+    onBeforeMatch: null,
     onBeforePrint: null,
     onBeforeUnload: null,
     onBlur: null,
@@ -18108,6 +18105,7 @@ var html = create({
     onReset: null,
     onResize: null,
     onScroll: null,
+    onScrollEnd: null,
     onSecurityPolicyViolation: null,
     onSeeked: null,
     onSeeking: null,
@@ -18289,7 +18287,7 @@ var html = create({
   }
 });
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/svg.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/svg.js
 var svg = create({
   space: "svg",
   attributes: {
@@ -18849,7 +18847,7 @@ var svg = create({
   }
 });
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/lib/find.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/lib/find.js
 var valid = /^data[-\w.:]+$/i;
 var dash = /-[a-z]/g;
 var cap = /[A-Z]/g;
@@ -18885,75 +18883,67 @@ function camelcase($0) {
   return $0.charAt(1).toUpperCase();
 }
 
-// node_modules/.pnpm/property-information@6.1.1/node_modules/property-information/index.js
+// node_modules/.pnpm/property-information@6.2.0/node_modules/property-information/index.js
 var html2 = merge([xml, xlink, xmlns, aria, html], "html");
 var svg2 = merge([xml, xlink, xmlns, aria, svg], "svg");
 
-// node_modules/.pnpm/hast-util-parse-selector@3.1.0/node_modules/hast-util-parse-selector/index.js
+// node_modules/.pnpm/hast-util-parse-selector@3.1.1/node_modules/hast-util-parse-selector/lib/index.js
 var search = /[#.]/g;
-var parseSelector = (
-  /**
-   * @param {string} [selector]
-   * @param {string} [defaultTagName='div']
-   * @returns {Element}
-   */
-  function(selector, defaultTagName = "div") {
-    var value2 = selector || "";
-    var props = {};
-    var start = 0;
-    var subvalue;
-    var previous2;
-    var match;
-    while (start < value2.length) {
-      search.lastIndex = start;
-      match = search.exec(value2);
-      subvalue = value2.slice(start, match ? match.index : value2.length);
-      if (subvalue) {
-        if (!previous2) {
-          defaultTagName = subvalue;
-        } else if (previous2 === "#") {
-          props.id = subvalue;
-        } else if (Array.isArray(props.className)) {
-          props.className.push(subvalue);
-        } else {
-          props.className = [subvalue];
-        }
-        start += subvalue.length;
+function parseSelector(selector, defaultTagName) {
+  const value2 = selector || "";
+  const props = {};
+  let start = 0;
+  let previous2;
+  let tagName;
+  while (start < value2.length) {
+    search.lastIndex = start;
+    const match = search.exec(value2);
+    const subvalue = value2.slice(start, match ? match.index : value2.length);
+    if (subvalue) {
+      if (!previous2) {
+        tagName = subvalue;
+      } else if (previous2 === "#") {
+        props.id = subvalue;
+      } else if (Array.isArray(props.className)) {
+        props.className.push(subvalue);
+      } else {
+        props.className = [subvalue];
       }
-      if (match) {
-        previous2 = match[0];
-        start++;
-      }
+      start += subvalue.length;
     }
-    return {
-      type: "element",
-      tagName: defaultTagName,
-      properties: props,
-      children: []
-    };
+    if (match) {
+      previous2 = match[0];
+      start++;
+    }
   }
-);
+  return {
+    type: "element",
+    // @ts-expect-error: fine.
+    tagName: tagName || defaultTagName || "div",
+    properties: props,
+    children: []
+  };
+}
 
-// node_modules/.pnpm/space-separated-tokens@2.0.1/node_modules/space-separated-tokens/index.js
+// node_modules/.pnpm/space-separated-tokens@2.0.2/node_modules/space-separated-tokens/index.js
 function parse(value2) {
   const input = String(value2 || "").trim();
   return input ? input.split(/[ \t\n\r\f]+/g) : [];
 }
 
-// node_modules/.pnpm/comma-separated-tokens@2.0.2/node_modules/comma-separated-tokens/index.js
+// node_modules/.pnpm/comma-separated-tokens@2.0.3/node_modules/comma-separated-tokens/index.js
 function parse2(value2) {
-  var tokens = [];
-  var input = String(value2 || "");
-  var index = input.indexOf(",");
-  var start = 0;
-  var end;
-  var token;
+  const tokens = [];
+  const input = String(value2 || "");
+  let index = input.indexOf(",");
+  let start = 0;
+  let end = false;
   while (!end) {
     if (index === -1) {
       index = input.length;
       end = true;
     }
-    token = input.slice(start, index).trim();
+    const token = input.slice(start, index).trim();
     if (token || !end) {
       tokens.push(token);
     }
@@ -18963,7 +18953,7 @@ function parse2(value2) {
   return tokens;
 }
 
-// node_modules/.pnpm/hastscript@7.1.0/node_modules/hastscript/lib/core.js
+// node_modules/.pnpm/hastscript@7.2.0/node_modules/hastscript/lib/core.js
 var buttonTypes = /* @__PURE__ */ new Set(["menu", "submit", "reset", "button"]);
 var own4 = {}.hasOwnProperty;
 function core(schema, defaultTagName, caseSensitive) {
@@ -18972,8 +18962,8 @@ function core(schema, defaultTagName, caseSensitive) {
     /**
      * Hyperscript compatible DSL for creating virtual hast trees.
      *
-     * @param {string|null} [selector]
-     * @param {HProperties|HChild} [properties]
+     * @param {string | null} [selector]
+     * @param {HProperties | HChild} [properties]
      * @param {Array<HChild>} children
      * @returns {HResult}
      */
@@ -19115,7 +19105,7 @@ function createAdjustMap(values) {
   return result;
 }
 
-// node_modules/.pnpm/hastscript@7.1.0/node_modules/hastscript/lib/html.js
+// node_modules/.pnpm/hastscript@7.2.0/node_modules/hastscript/lib/html.js
 var h = core(html2, "div");
 
 // node_modules/.pnpm/character-entities-legacy@3.0.0/node_modules/character-entities-legacy/index.js
@@ -19283,7 +19273,7 @@ function isAlphanumerical(character) {
   return isAlphabetical(character) || isDecimal(character);
 }
 
-// node_modules/.pnpm/parse-entities@4.0.0/node_modules/parse-entities/lib/index.js
+// node_modules/.pnpm/parse-entities@4.0.1/node_modules/parse-entities/lib/index.js
 init_decode_named_character_reference();
 var fromCharCode = String.fromCharCode;
 var messages = [
@@ -19520,7 +19510,7 @@ function disallowed(code2) {
   return code2 >= 1 && code2 <= 8 || code2 === 11 || code2 >= 13 && code2 <= 31 || code2 >= 127 && code2 <= 159 || code2 >= 64976 && code2 <= 65007 || (code2 & 65535) === 65535 || (code2 & 65535) === 65534;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lib/prism-core.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lib/prism-core.js
 var uniqueId = 0;
 var plainTextGrammar = {};
 var _ = {
@@ -20060,7 +20050,7 @@ function toArray(list) {
 }
 var Prism = _;
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lib/core.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lib/core.js
 var own6 = {}.hasOwnProperty;
 function Refractor() {
 }
@@ -20194,7 +20184,7 @@ function attributes(attrs) {
   return attrs;
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lib/common.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lib/common.js
 refractor.register(clike);
 refractor.register(c);
 refractor.register(cpp);
@@ -20232,7 +20222,7 @@ refractor.register(typescript);
 refractor.register(basic);
 refractor.register(vbnet);
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/jsx.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/jsx.js
 jsx.displayName = "jsx";
 jsx.aliases = [];
 function jsx(Prism2) {
@@ -20366,7 +20356,7 @@ function jsx(Prism2) {
   })(Prism2);
 }
 
-// node_modules/.pnpm/refractor@4.8.0/node_modules/refractor/lang/tsx.js
+// node_modules/.pnpm/refractor@4.8.1/node_modules/refractor/lang/tsx.js
 tsx.displayName = "tsx";
 tsx.aliases = [];
 function tsx(Prism2) {
