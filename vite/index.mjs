@@ -13661,6 +13661,7 @@ var metaNames = {
   viewport: true
 };
 function frontmatterAttrsToDocumentHead(attrs) {
+  var _a2;
   if (attrs != null && typeof attrs === "object") {
     const attrNames = Object.keys(attrs);
     if (attrNames.length > 0) {
@@ -13676,6 +13677,28 @@ function frontmatterAttrsToDocumentHead(attrs) {
         if (attrValue != null) {
           if (attrName === "title") {
             head.title = attrValue.toString();
+          } else if (attrName === "og" || attrName === "opengraph") {
+            if (typeof attrValue === "object") {
+              for (const opengraph of Array.isArray(attrValue) ? attrValue : [attrValue]) {
+                if (opengraph != null && typeof opengraph === "object" && !Array.isArray(opengraph)) {
+                  for (const [property, content] of Object.entries(opengraph)) {
+                    if ((property === "title" || property === "description") && content === true) {
+                      if (attrNames.includes(property)) {
+                        head.meta.push({
+                          property: `og:${property}`,
+                          content: (_a2 = attrs[property]) == null ? void 0 : _a2.toString()
+                        });
+                      }
+                    } else {
+                      head.meta.push({
+                        property: `og:${property}`,
+                        content: content == null ? void 0 : content.toString()
+                      });
+                    }
+                  }
+                }
+              }
+            }
           } else if (metaNames[attrName]) {
             head.meta.push({
               name: attrName,
