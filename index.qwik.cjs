@@ -29,9 +29,13 @@ const DocumentHeadContext = /* @__PURE__ */ qwik.createContextId("qc-h");
 const RouteLocationContext = /* @__PURE__ */ qwik.createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
+const clientQrl = (qrl) => {
+  return qrl;
+};
+qwik.implicit$FirstArg(clientQrl);
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   qwik._jsxBranch();
-  qwik.useOnDocument("qinit", /* @__PURE__ */ qwik.inlinedQrl(() => {
+  qwik.useOnDocument("qinit", clientQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
     const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
     if (!window["_qCityPopstateFallback"]) {
       window[POPSTATE_FALLBACK_INITIALIZED] = () => {
@@ -42,7 +46,7 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
         addEventListener("popstate", window["_qCityPopstateFallback"]);
       }, 0);
     }
-  }, "RouterOutlet_component_useOnDocument_sKCu0TvdkZI"));
+  }, "RouterOutlet_component_useOnDocument_client_xEi06O8vOjU")));
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -657,6 +661,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
   action.__qrl = actionQrl2;
   action.__id = id;
   action.use = action;
+  Object.freeze(action);
   return action;
 };
 const globalActionQrl = (actionQrl2, ...rest) => {
@@ -686,6 +691,7 @@ const routeLoaderQrl = (loaderQrl2, ...rest) => {
   loader.__validators = validators;
   loader.__id = id;
   loader.use = loader;
+  Object.freeze(loader);
   return loader;
 };
 const routeLoader$ = /* @__PURE__ */ qwik.implicit$FirstArg(routeLoaderQrl);

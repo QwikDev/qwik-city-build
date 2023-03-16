@@ -23673,9 +23673,9 @@ function actionsMiddleware(routeLoaders, routeActions) {
     const qwikSerializer = requestEv[RequestEvQwikSerializer];
     if (method === "POST") {
       const selectedAction = requestEv.query.get(QACTION_KEY);
-      const serverActionsMap = globalThis._qwikActionsMap;
-      if (selectedAction && serverActionsMap) {
-        const action = routeActions.find((action2) => action2.__id === selectedAction) ?? serverActionsMap.get(selectedAction);
+      if (selectedAction) {
+        const serverActionsMap = globalThis._qwikActionsMap;
+        const action = routeActions.find((action2) => action2.__id === selectedAction) ?? (serverActionsMap == null ? void 0 : serverActionsMap.get(selectedAction));
         if (action) {
           requestEv.sharedMap.set(RequestEvSharedActionId, selectedAction);
           const data = await requestEv.parseBody();

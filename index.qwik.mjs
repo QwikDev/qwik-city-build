@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, _jsxC, Slot, _getContextElement, getLocale, _jsxQ, implicit$FirstArg, _wrapSignal, _serializeData } from "@builder.io/qwik";
+import { createContextId, implicit$FirstArg, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, _jsxC, Slot, _getContextElement, getLocale, _jsxQ, _wrapSignal, _serializeData } from "@builder.io/qwik";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
@@ -11,9 +11,13 @@ const DocumentHeadContext = /* @__PURE__ */ createContextId("qc-h");
 const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
+const clientQrl = (qrl) => {
+  return qrl;
+};
+implicit$FirstArg(clientQrl);
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   _jsxBranch();
-  useOnDocument("qinit", /* @__PURE__ */ inlinedQrl(() => {
+  useOnDocument("qinit", clientQrl(/* @__PURE__ */ inlinedQrl(() => {
     const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
     if (!window["_qCityPopstateFallback"]) {
       window[POPSTATE_FALLBACK_INITIALIZED] = () => {
@@ -24,7 +28,7 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
         addEventListener("popstate", window["_qCityPopstateFallback"]);
       }, 0);
     }
-  }, "RouterOutlet_component_useOnDocument_sKCu0TvdkZI"));
+  }, "RouterOutlet_component_useOnDocument_client_xEi06O8vOjU")));
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -639,6 +643,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
   action.__qrl = actionQrl2;
   action.__id = id;
   action.use = action;
+  Object.freeze(action);
   return action;
 };
 const globalActionQrl = (actionQrl2, ...rest) => {
@@ -668,6 +673,7 @@ const routeLoaderQrl = (loaderQrl2, ...rest) => {
   loader.__validators = validators;
   loader.__id = id;
   loader.use = loader;
+  Object.freeze(loader);
   return loader;
 };
 const routeLoader$ = /* @__PURE__ */ implicit$FirstArg(routeLoaderQrl);
