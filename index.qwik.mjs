@@ -1,4 +1,4 @@
-import { createContextId, implicit$FirstArg, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, _jsxC, Slot, _getContextElement, getLocale, _jsxQ, _wrapSignal, _serializeData } from "@builder.io/qwik";
+import { createContextId, implicit$FirstArg, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useEnvData, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, _jsxC, Slot, _getContextElement, getLocale, _jsxQ, _wrapSignal, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
@@ -383,13 +383,14 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       navPath2.value = "";
     } else if (forceReload)
       navPath2.value = "";
-    else if (navPath2.value === path)
+    const resolvedURL = new URL(path, routeLocation2.url);
+    path = toPath(resolvedURL);
+    if (!forceReload && navPath2.value === path)
       return;
     navPath2.value = path;
     if (isBrowser) {
-      const prefetchURL = new URL(path, routeLocation2.url);
-      loadClientData(prefetchURL, _getContextElement());
-      loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, prefetchURL.pathname);
+      loadClientData(resolvedURL, _getContextElement());
+      loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, resolvedURL.pathname);
     }
     actionState2.value = void 0;
     routeLocation2.isNavigating = true;
@@ -585,7 +586,7 @@ const routeActionQrl = (actionQrl2, ...rest) => {
       }
       return initialState;
     });
-    initialState.run = /* @__PURE__ */ inlinedQrl((input = {}) => {
+    const submit = /* @__PURE__ */ inlinedQrl((input = {}) => {
       const [currentAction2, id2, loc2, state2] = useLexicalScope();
       if (isServer)
         throw new Error(`Actions can not be invoked within the server during SSR.
@@ -630,12 +631,14 @@ Action.run() can only be called on the browser, for example when a user clicks a
           value: result
         };
       });
-    }, "routeActionQrl_action_X5cKKrhH8rs", [
+    }, "routeActionQrl_action_submit_A5bZC7WO00A", [
       currentAction,
       id,
       loc,
       state
     ]);
+    initialState.submit = submit;
+    initialState.run = submit;
     return state;
   }
   action.__brand = "server_action";
@@ -795,19 +798,71 @@ const actionQrl = globalActionQrl;
 const action$ = globalAction$;
 const loaderQrl = routeLoaderQrl;
 const loader$ = routeLoader$;
-const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
-  return jsx("form", {
-    ...rest,
-    action: action.actionPath,
-    "preventdefault:submit": !reloadDocument,
-    onSubmit$: [
-      !reloadDocument ? action.run : void 0,
-      onSubmit$
-    ],
-    method: "post",
-    ["data-spa-reset"]: spaReset ? "true" : void 0
-  });
+const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
+  _jsxBranch();
+  if (action)
+    return jsx("form", {
+      ...rest,
+      action: action.actionPath,
+      "preventdefault:submit": !reloadDocument,
+      onSubmit$: [
+        !reloadDocument ? action.run : void 0,
+        onSubmit$
+      ],
+      method: "post",
+      ["data-spa-reset"]: spaReset ? "true" : void 0
+    }, key);
+  else
+    return /* @__PURE__ */ _jsxC(GetForm, {
+      spaReset,
+      reloadDocument,
+      onSubmit$,
+      ...rest
+    }, 2, key);
 };
+const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
+  const rest = _restProps(props, [
+    "action",
+    "spaReset",
+    "reloadDocument",
+    "onSubmit$"
+  ]);
+  const nav = useNavigate();
+  return /* @__PURE__ */ _jsxQ("form", {
+    ...rest
+  }, {
+    action: "get",
+    "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
+      props
+    ], "!p0.reloadDocument"),
+    "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
+      props
+    ], 'p0.spaReset?"true":undefined'),
+    onSubmit$: /* @__PURE__ */ inlinedQrl(async (_, form) => {
+      const [nav2] = useLexicalScope();
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+      formData.forEach((value, key) => {
+        if (typeof value === "string")
+          params.append(key, value);
+      });
+      nav2("?" + params.toString(), true).then(() => {
+        if (form.getAttribute("data-spa-reset") === "true")
+          form.reset();
+        form.dispatchEvent(new CustomEvent("submitcompleted", {
+          bubbles: false,
+          cancelable: false,
+          composed: false,
+          detail: {
+            status: 200
+          }
+        }));
+      });
+    }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
+      nav
+    ])
+  }, /* @__PURE__ */ _jsxC(Slot, null, 3, "BC_0"), 1, "BC_1");
+}, "GetForm_component_Nk9PlpjQm9Y"));
 export {
   Content,
   Form,

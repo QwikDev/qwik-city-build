@@ -401,13 +401,14 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
       navPath2.value = "";
     } else if (forceReload)
       navPath2.value = "";
-    else if (navPath2.value === path)
+    const resolvedURL = new URL(path, routeLocation2.url);
+    path = toPath(resolvedURL);
+    if (!forceReload && navPath2.value === path)
       return;
     navPath2.value = path;
     if (build.isBrowser) {
-      const prefetchURL = new URL(path, routeLocation2.url);
-      loadClientData(prefetchURL, qwik._getContextElement());
-      loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, prefetchURL.pathname);
+      loadClientData(resolvedURL, qwik._getContextElement());
+      loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, resolvedURL.pathname);
     }
     actionState2.value = void 0;
     routeLocation2.isNavigating = true;
@@ -603,7 +604,7 @@ const routeActionQrl = (actionQrl2, ...rest) => {
       }
       return initialState;
     });
-    initialState.run = /* @__PURE__ */ qwik.inlinedQrl((input = {}) => {
+    const submit = /* @__PURE__ */ qwik.inlinedQrl((input = {}) => {
       const [currentAction2, id2, loc2, state2] = qwik.useLexicalScope();
       if (build.isServer)
         throw new Error(`Actions can not be invoked within the server during SSR.
@@ -648,12 +649,14 @@ Action.run() can only be called on the browser, for example when a user clicks a
           value: result
         };
       });
-    }, "routeActionQrl_action_X5cKKrhH8rs", [
+    }, "routeActionQrl_action_submit_A5bZC7WO00A", [
       currentAction,
       id,
       loc,
       state
     ]);
+    initialState.submit = submit;
+    initialState.run = submit;
     return state;
   }
   action.__brand = "server_action";
@@ -813,19 +816,71 @@ const actionQrl = globalActionQrl;
 const action$ = globalAction$;
 const loaderQrl = routeLoaderQrl;
 const loader$ = routeLoader$;
-const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }) => {
-  return qwik.jsx("form", {
-    ...rest,
-    action: action.actionPath,
-    "preventdefault:submit": !reloadDocument,
-    onSubmit$: [
-      !reloadDocument ? action.run : void 0,
-      onSubmit$
-    ],
-    method: "post",
-    ["data-spa-reset"]: spaReset ? "true" : void 0
-  });
+const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
+  qwik._jsxBranch();
+  if (action)
+    return qwik.jsx("form", {
+      ...rest,
+      action: action.actionPath,
+      "preventdefault:submit": !reloadDocument,
+      onSubmit$: [
+        !reloadDocument ? action.run : void 0,
+        onSubmit$
+      ],
+      method: "post",
+      ["data-spa-reset"]: spaReset ? "true" : void 0
+    }, key);
+  else
+    return /* @__PURE__ */ qwik._jsxC(GetForm, {
+      spaReset,
+      reloadDocument,
+      onSubmit$,
+      ...rest
+    }, 2, key);
 };
+const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
+  const rest = qwik._restProps(props, [
+    "action",
+    "spaReset",
+    "reloadDocument",
+    "onSubmit$"
+  ]);
+  const nav = useNavigate();
+  return /* @__PURE__ */ qwik._jsxQ("form", {
+    ...rest
+  }, {
+    action: "get",
+    "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
+      props
+    ], "!p0.reloadDocument"),
+    "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
+      props
+    ], 'p0.spaReset?"true":undefined'),
+    onSubmit$: /* @__PURE__ */ qwik.inlinedQrl(async (_, form) => {
+      const [nav2] = qwik.useLexicalScope();
+      const formData = new FormData(form);
+      const params = new URLSearchParams();
+      formData.forEach((value, key) => {
+        if (typeof value === "string")
+          params.append(key, value);
+      });
+      nav2("?" + params.toString(), true).then(() => {
+        if (form.getAttribute("data-spa-reset") === "true")
+          form.reset();
+        form.dispatchEvent(new CustomEvent("submitcompleted", {
+          bubbles: false,
+          cancelable: false,
+          composed: false,
+          detail: {
+            status: 200
+          }
+        }));
+      });
+    }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
+      nav
+    ])
+  }, /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "BC_0"), 1, "BC_1");
+}, "GetForm_component_Nk9PlpjQm9Y"));
 Object.defineProperty(exports, "z", {
   enumerable: true,
   get: () => zod.z

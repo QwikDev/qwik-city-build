@@ -151,6 +151,10 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      * Method to execute the action programmatically from the browser. Ie, instead of using a `<form>`, a 'click' handle can call the `run()` method of the action
      * in order to execute the action in the server.
      */
+    readonly submit: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
+    /**
+     * @deprecated - use `submit` instead
+     */
     readonly run: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
 }
 
@@ -319,7 +323,7 @@ export declare type FailReturn<T> = T & {
 /**
  * @alpha
  */
-export declare const Form: <O, I>({ action, spaReset, reloadDocument, onSubmit$, ...rest }: FormProps<O, I>) => JSXNode<"form">;
+export declare const Form: <O, I>({ action, spaReset, reloadDocument, onSubmit$, ...rest }: FormProps<O, I>, key: string | null) => QwikJSX.Element;
 
 /**
  * @alpha
@@ -328,7 +332,7 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
     /**
      * Reference to the action returned by `action()`.
      */
-    action: ActionStore<O, I, true | false>;
+    action?: ActionStore<O, I, true | false>;
     /**
      * When `true` the form submission will cause a full page reload, even if SPA mode is enabled and JS is available.
      */
@@ -347,6 +351,7 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
      * Event handler executed right after the action is executed successfully and returns some data.
      */
     onSubmitCompleted$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
+    key?: string | number | null;
 }
 
 /**
