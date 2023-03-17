@@ -13819,19 +13819,6 @@ function rehypePage(ctx) {
     exportContentHeadings(mdast);
   };
 }
-function renameClassname() {
-  return (ast) => {
-    const mdast = ast;
-    visit(mdast, "element", (node) => {
-      if (node.properties) {
-        if (node.properties.className) {
-          node.properties.class = node.properties.className;
-          node.properties.className = void 0;
-        }
-      }
-    });
-  };
-}
 function updateContentLinks(mdast, opts, sourcePath) {
   visit(mdast, "element", (node) => {
     const tagName = node && node.type === "element" && node.tagName.toLowerCase();
@@ -20476,19 +20463,14 @@ async function createMdxTransformer(ctx) {
     SourceMapGenerator,
     jsxImportSource: "@builder.io/qwik",
     ...userMdxOpts,
+    elementAttributeNameCase: "html",
     remarkPlugins: [
       ...userRemarkPlugins,
       ...coreRemarkPlugins,
       remarkFrontmatter2,
       [parseFrontmatter, ctx]
     ],
-    rehypePlugins: [
-      rehypeSlug,
-      ...userRehypePlugins,
-      ...coreRehypePlugins,
-      [rehypePage, ctx],
-      renameClassname
-    ]
+    rehypePlugins: [rehypeSlug, ...userRehypePlugins, ...coreRehypePlugins, [rehypePage, ctx]]
   };
   const { extnames, process: process2 } = createFormatAwareProcessors(mdxOpts);
   return async function(code2, id) {
@@ -23671,6 +23653,13 @@ function actionsMiddleware(routeLoaders, routeActions) {
     const { method } = requestEv;
     const loaders = getRequestLoaders(requestEv);
     const qwikSerializer = requestEv[RequestEvQwikSerializer];
+    if (isDev && method === "GET") {
+      if (requestEv.query.has(QACTION_KEY)) {
+        console.warn(
+          'Seems like you are submitting a Qwik Action via GET request. Qwik Actions should be submitted via POST request.\nMake sure you <form> has method="POST" attribute, like this: <form method="POST">'
+        );
+      }
+    }
     if (method === "POST") {
       const selectedAction = requestEv.query.get(QACTION_KEY);
       if (selectedAction) {
