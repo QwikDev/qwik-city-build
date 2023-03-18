@@ -3,10 +3,10 @@ import { viteAdapter } from "../../shared/vite/index.mjs";
 import fs from "fs";
 import { join } from "path";
 function cloudflarePagesAdapter(opts = {}) {
-  var _a;
+  const env = process == null ? void 0 : process.env;
   return viteAdapter({
     name: "cloudflare-pages",
-    origin: ((_a = process == null ? void 0 : process.env) == null ? void 0 : _a.CF_PAGES_URL) || "https://your.cloudflare.pages.dev",
+    origin: (env == null ? void 0 : env.CF_PAGES_URL) ?? (env == null ? void 0 : env.ORIGIN) ?? "https://your.cloudflare.pages.dev",
     staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     staticPaths: opts.staticPaths,

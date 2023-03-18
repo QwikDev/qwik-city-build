@@ -8,17 +8,17 @@ var basePathname = "/";
 
 // packages/qwik-city/adapters/netlify-edge/vite/index.ts
 function netlifyEdgeAdapter(opts = {}) {
-  var _a;
+  const env = process == null ? void 0 : process.env;
   return viteAdapter({
     name: "netlify-edge",
-    origin: ((_a = process == null ? void 0 : process.env) == null ? void 0 : _a.URL) || "https://yoursitename.netlify.app",
+    origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.netlify.app",
     staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     staticPaths: opts.staticPaths,
     cleanStaticGenerated: true,
     config(config) {
-      var _a2;
-      const outDir = ((_a2 = config.build) == null ? void 0 : _a2.outDir) || ".netlify/edge-functions/entry.netlify-edge";
+      var _a;
+      const outDir = ((_a = config.build) == null ? void 0 : _a.outDir) || ".netlify/edge-functions/entry.netlify-edge";
       return {
         resolve: {
           conditions: ["webworker", "worker"]

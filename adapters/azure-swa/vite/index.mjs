@@ -3,10 +3,10 @@ import { viteAdapter } from "../../shared/vite/index.mjs";
 import { join } from "path";
 import fs from "fs";
 function azureSwaAdapter(opts = {}) {
-  var _a;
+  const env = process == null ? void 0 : process.env;
   return viteAdapter({
     name: "azure-swa",
-    origin: ((_a = process == null ? void 0 : process.env) == null ? void 0 : _a.URL) || "https://yoursitename.region.2.azurestaticapps.net",
+    origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.region.2.azurestaticapps.net",
     staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     cleanStaticGenerated: true,
