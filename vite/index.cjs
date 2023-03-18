@@ -24125,6 +24125,9 @@ function getRequestTrailingSlash(requestEv) {
 function getRequestRoute(requestEv) {
   return requestEv[RequestEvRoute];
 }
+function getRequestMode(requestEv) {
+  return requestEv[RequestEvMode];
+}
 var ABORT_INDEX = 999999999;
 var parseRequest = async (request, sharedMap, qwikSerializer) => {
   var _a2;
@@ -24198,20 +24201,22 @@ async function runNext(requestEv, resolve4) {
         requestEv.html(e.status, html3);
       }
     } else if (!(e instanceof AbortMessage)) {
-      try {
-        if (!requestEv.headersSent) {
-          requestEv.headers.set("content-type", "text/html; charset=utf-8");
-          requestEv.cacheControl({ noCache: true });
-          requestEv.status(500);
+      if (getRequestMode(requestEv) !== "dev") {
+        try {
+          if (!requestEv.headersSent) {
+            requestEv.headers.set("content-type", "text/html; charset=utf-8");
+            requestEv.cacheControl({ noCache: true });
+            requestEv.status(500);
+          }
+          const stream = requestEv.getWritableStream();
+          if (!stream.locked) {
+            const writer = stream.getWriter();
+            await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
+            await writer.close();
+          }
+        } catch {
+          console.error("Unable to render error page");
         }
-        const stream = requestEv.getWritableStream();
-        if (!stream.locked) {
-          const writer = stream.getWriter();
-          await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
-          await writer.close();
-        }
-      } catch {
-        console.error("Unable to render error page");
       }
       return e;
     }
@@ -24503,15 +24508,11 @@ function ssrDevMiddleware(ctx, server) {
       }
       const routeModulePaths = /* @__PURE__ */ new WeakMap();
       try {
-        const { _deserializeData, _serializeData, _verifySerializable } = await server.ssrLoadModule("@qwik-serializer", {
-          fixStacktrace: false
-        });
+        const { _deserializeData, _serializeData, _verifySerializable } = await server.ssrLoadModule("@qwik-serializer");
         const qwikSerializer = { _deserializeData, _serializeData, _verifySerializable };
         const serverPlugins = [];
         for (const file of ctx.serverPlugins) {
-          const layoutModule = await server.ssrLoadModule(file.filePath, {
-            fixStacktrace: false
-          });
+          const layoutModule = await server.ssrLoadModule(file.filePath);
           serverPlugins.push(layoutModule);
           routeModulePaths.set(layoutModule, file.filePath);
         }
@@ -24523,15 +24524,11 @@ function ssrDevMiddleware(ctx, server) {
           const route = routeResult.route;
           params = routeResult.params;
           for (const layout of route.layouts) {
-            const layoutModule = await server.ssrLoadModule(layout.filePath, {
-              fixStacktrace: false
-            });
+            const layoutModule = await server.ssrLoadModule(layout.filePath);
             routeModules.push(layoutModule);
             routeModulePaths.set(layoutModule, layout.filePath);
           }
-          const endpointModule = await server.ssrLoadModule(route.filePath, {
-            fixStacktrace: false
-          });
+          const endpointModule = await server.ssrLoadModule(route.filePath);
           routeModules.push(endpointModule);
           routeModulePaths.set(endpointModule, route.filePath);
         }
@@ -24561,9 +24558,7 @@ function ssrDevMiddleware(ctx, server) {
         let menu = void 0;
         const menus = ctx.menus.map((buildMenu) => {
           const menuLoader2 = async () => {
-            const m = await server.ssrLoadModule(buildMenu.filePath, {
-              fixStacktrace: false
-            });
+            const m = await server.ssrLoadModule(buildMenu.filePath);
             const menuModule = {
               default: m.default
             };
