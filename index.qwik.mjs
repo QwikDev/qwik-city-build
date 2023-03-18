@@ -596,6 +596,8 @@ Action.run() can only be called on the browser, for example when a user clicks a
       if (input instanceof SubmitEvent) {
         form = input.target;
         data = new FormData(form);
+        if (input.submitter instanceof HTMLInputElement || input.submitter instanceof HTMLButtonElement)
+          data.append(input.submitter.name, input.submitter.value);
       } else
         data = input;
       return new Promise((resolve) => {
@@ -733,7 +735,9 @@ const serverQrl = (qrl) => {
       else {
         const ctxElm = _getContextElement();
         const filtered = args.map((arg) => {
-          if (arg instanceof Event)
+          if (arg instanceof SubmitEvent && arg.target instanceof HTMLFormElement)
+            return new FormData(arg.target);
+          else if (arg instanceof Event)
             return null;
           else if (arg instanceof Node)
             return null;

@@ -25060,7 +25060,6 @@ function qwikCity(userOpts) {
         base: userOpts == null ? void 0 : userOpts.basePathname,
         // TODO: Remove
         optimizeDeps: {
-          include: ["zod"],
           exclude: [QWIK_CITY, QWIK_CITY_PLAN_ID, QWIK_CITY_ENTRIES_ID, QWIK_CITY_SW_REGISTER]
         },
         ssr: {
