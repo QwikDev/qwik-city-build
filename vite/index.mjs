@@ -13819,6 +13819,19 @@ function rehypePage(ctx) {
     exportContentHeadings(mdast);
   };
 }
+function renameClassname() {
+  return (ast) => {
+    const mdast = ast;
+    visit(mdast, "element", (node) => {
+      if (node.properties) {
+        if (node.properties.className) {
+          node.properties.class = node.properties.className;
+          node.properties.className = void 0;
+        }
+      }
+    });
+  };
+}
 function updateContentLinks(mdast, opts, sourcePath) {
   visit(mdast, "element", (node) => {
     const tagName = node && node.type === "element" && node.tagName.toLowerCase();
@@ -20470,7 +20483,13 @@ async function createMdxTransformer(ctx) {
       remarkFrontmatter2,
       [parseFrontmatter, ctx]
     ],
-    rehypePlugins: [rehypeSlug, ...userRehypePlugins, ...coreRehypePlugins, [rehypePage, ctx]]
+    rehypePlugins: [
+      rehypeSlug,
+      ...userRehypePlugins,
+      ...coreRehypePlugins,
+      [rehypePage, ctx],
+      renameClassname
+    ]
   };
   const { extnames, process: process2 } = createFormatAwareProcessors(mdxOpts);
   return async function(code2, id) {
