@@ -20509,7 +20509,7 @@ async function createMdxTransformer(ctx) {
       const compiled = await process2(file);
       const output = String(compiled.value);
       const hasher = (0, import_node_crypto.createHash)("sha256");
-      const key = hasher.update(output).digest("base64url").slice(0, 8);
+      const key = hasher.update(output).digest("base64").slice(0, 8).replace("+", "-").replace("/", "_");
       const addImport = `import { _jsxC, RenderOnce } from '@builder.io/qwik';
 `;
       const newDefault = `
@@ -25176,6 +25176,7 @@ function qwikCity(userOpts) {
       return null;
     },
     async transform(code2, id) {
+      var _a2, _b;
       if (ctx) {
         const fileName = (0, import_node_path10.basename)(id);
         if (isMenuFileName(fileName)) {
@@ -25188,18 +25189,24 @@ function qwikCity(userOpts) {
             const mdxResult = await mdxTransform(code2, id);
             return mdxResult;
           } catch (e) {
-            const column = e.position.start.column;
-            const line = e.position.start.line;
-            const err = Object.assign(new Error(e.reason), {
-              id,
-              plugin: "qwik-city-mdx",
-              loc: {
-                column,
-                line
-              },
-              stack: ""
-            });
-            this.error(err);
+            if (e && typeof e == "object" && "position" in e && "reason" in e) {
+              const column = (_a2 = e.position) == null ? void 0 : _a2.start.column;
+              const line = (_b = e.position) == null ? void 0 : _b.start.line;
+              const err = Object.assign(new Error(e.reason), {
+                id,
+                plugin: "qwik-city-mdx",
+                loc: {
+                  column,
+                  line
+                },
+                stack: ""
+              });
+              this.error(err);
+            } else if (e instanceof Error) {
+              this.error(e);
+            } else {
+              this.error(String(e));
+            }
           }
         }
       }
