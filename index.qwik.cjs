@@ -540,14 +540,13 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ q
 const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
-  const originalHref = props.href;
   const linkProps = {
     ...props
   };
   const clientNavPath = getClientNavPath(linkProps, loc);
   const prefetchDataset = getPrefetchDataset(props, clientNavPath, loc);
   linkProps["preventdefault:click"] = !!clientNavPath;
-  linkProps.href = clientNavPath || originalHref;
+  linkProps.href = clientNavPath || props.href;
   return /* @__PURE__ */ qwik._jsxQ("a", {
     ...linkProps,
     "data-prefetch": prefetchDataset,
