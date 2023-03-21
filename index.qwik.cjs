@@ -29,13 +29,9 @@ const DocumentHeadContext = /* @__PURE__ */ qwik.createContextId("qc-h");
 const RouteLocationContext = /* @__PURE__ */ qwik.createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
-const clientQrl = (qrl) => {
-  return qrl;
-};
-qwik.implicit$FirstArg(clientQrl);
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   qwik._jsxBranch();
-  qwik.useOnDocument("qinit", clientQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
+  qwik.useOnDocument("qinit", qwik.eventQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
     const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
     if (!window["_qCityPopstateFallback"]) {
       window[POPSTATE_FALLBACK_INITIALIZED] = () => {
@@ -46,7 +42,7 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
         addEventListener("popstate", window["_qCityPopstateFallback"]);
       }, 0);
     }
-  }, "RouterOutlet_component_useOnDocument_client_xEi06O8vOjU")));
+  }, "RouterOutlet_component_useOnDocument_event_KnNE9eL0qfc")));
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -537,31 +533,59 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ q
   qwik.useContextProvider(RouteStateContext, loaderState);
   return /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "qY_1");
 }, "QwikCityMockProvider_component_WmYC5H00wtI"));
+const seal = (obj) => {
+  {
+    Object.seal(obj);
+  }
+};
+const RenderEvent = "qRender";
+const newInvokeContext = (locale, hostElement, element, event, url) => {
+  const ctx = {
+    $seq$: 0,
+    $hostElement$: hostElement,
+    $element$: element,
+    $event$: event,
+    $url$: url,
+    $qrl$: void 0,
+    $props$: void 0,
+    $renderCtx$: void 0,
+    $subscriber$: void 0,
+    $waitOn$: void 0,
+    $locale$: locale
+  };
+  seal(ctx);
+  return ctx;
+};
+newInvokeContext(void 0, void 0, void 0, RenderEvent);
+const eventQrl = (qrl) => {
+  return qrl;
+};
 const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
   const linkProps = {
     ...props
   };
-  const clientNavPath = getClientNavPath(linkProps, loc);
-  const prefetchDataset = getPrefetchDataset(props, clientNavPath, loc);
+  const clientNavPath = qwik.untrack(() => getClientNavPath(linkProps, loc));
+  const prefetchDataset = qwik.untrack(() => getPrefetchDataset(props, clientNavPath, loc));
+  const reload = !!linkProps.reload;
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
+  const event = eventQrl(/* @__PURE__ */ qwik.inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_event_event_5g4B0Gd1Wck"));
   return /* @__PURE__ */ qwik._jsxQ("a", {
     ...linkProps,
     "data-prefetch": prefetchDataset,
-    onClick$: /* @__PURE__ */ qwik.inlinedQrl(() => {
-      const [clientNavPath2, linkProps2, nav2] = qwik.useLexicalScope();
-      if (clientNavPath2)
-        nav2(linkProps2.href, linkProps2.reload);
+    onClick$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => {
+      const [nav2, reload2] = qwik.useLexicalScope();
+      if (elm.href)
+        nav2(elm.href, reload2);
     }, "Link_component_a_onClick_kzjavhDI3L0", [
-      clientNavPath,
-      linkProps,
-      nav
+      nav,
+      reload
     ]),
-    onMouseOver$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onMouseOver_yiXwCC0m3jY"),
-    onFocus$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm), "Link_component_a_onFocus_PrXIxv2vNXY"),
-    onQVisible$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => prefetchLinkResources(elm, true), "Link_component_a_onQVisible_EpaZ5qQ4Lg4")
+    onMouseOver$: event,
+    onFocus$: event,
+    onQVisible$: event
   }, null, /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"), 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
 const prefetchLinkResources = (elm, isOnVisible) => {
