@@ -1,5 +1,5 @@
 /**
- * @alpha
+ * @public
  */
 export declare const setupServiceWorker: () => void;
 

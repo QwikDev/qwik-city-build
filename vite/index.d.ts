@@ -34,12 +34,12 @@ declare interface BuildRoute extends ParsedPathname {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare function extendConfig(baseConfigExport: UserConfigExport, serverConfigExport: UserConfigExport): (env: ConfigEnv) => Promise<Record<string, any>>;
 
 /**
- * @alpha
+ * @public
  */
 export declare type MdxOptions = CompileOptions;
 
@@ -64,7 +64,7 @@ declare interface PathnameSegmentPart {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface PluginOptions {
     /**
@@ -97,12 +97,12 @@ declare interface PluginOptions {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare function qwikCity(userOpts?: QwikCityVitePluginOptions): any;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface QwikCityPlugin {
     name: 'vite-plugin-qwik-city';
@@ -110,7 +110,7 @@ export declare interface QwikCityPlugin {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface QwikCityPluginApi {
     getBasePathname: () => string;
@@ -119,7 +119,7 @@ declare interface QwikCityPluginApi {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface QwikCityVitePluginOptions extends Omit<PluginOptions, 'basePathname'> {
     mdxPlugins?: MdxPlugins;

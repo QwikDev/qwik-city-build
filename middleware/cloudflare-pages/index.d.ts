@@ -1,12 +1,12 @@
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
 /**
- * @alpha
+ * @public
  */
 export declare function createQwikCity(opts: QwikCityCloudflarePagesOptions): ({ request, env, waitUntil, next }: EventPluginContext) => Promise<Response>;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface EventPluginContext {
     request: Request;
@@ -16,14 +16,14 @@ export declare interface EventPluginContext {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface PlatformCloudflarePages {
     env?: EventPluginContext['env'];
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface QwikCityCloudflarePagesOptions extends ServerRenderOptions {
 }

@@ -2,24 +2,24 @@ import { ServerAdapterOptions } from '../../shared/vite';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
 /**
- * @alpha
+ * @public
  */
 export declare function expressAdapter(opts?: ExpressAdapterOptions): any;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface ExpressAdapterOptions extends ServerAdapterOptions {
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Use `expressAdapter` exported from `@builder.io/qwik-city/adapters/express/vite` instead.
  */
 export declare const expressAdaptor: typeof expressAdapter;
 
 /**
- * @alpha
+ * @public
  * @deprecated Use `ExpressAdapterOptions` instead.
  */
 export declare type ExpressAdaptorOptions = ExpressAdapterOptions;

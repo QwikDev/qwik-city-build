@@ -16,12 +16,12 @@ declare class AbortMessage {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare type CacheControl = CacheControlOptions | number | 'day' | 'week' | 'month' | 'year' | 'no-cache' | 'immutable' | 'private';
 
 /**
- * @alpha
+ * @public
  */
 declare interface CacheControlOptions {
     /**
@@ -65,7 +65,7 @@ declare interface CacheControlOptions {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface ContentHeading {
     readonly text: string;
@@ -74,7 +74,7 @@ declare interface ContentHeading {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface ContentMenu {
     readonly text: string;
@@ -87,7 +87,7 @@ declare type ContentModule = PageModule | LayoutModule;
 declare type ContentModuleHead = DocumentHead | ResolvedDocumentHead;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface Cookie {
     /**
@@ -117,11 +117,11 @@ export declare interface Cookie {
 }
 
 /**
- * @alpha
+ * @public
  */
 /**
  * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Set-Cookie
- * @alpha
+ * @public
  */
 export declare interface CookieOptions {
     /**
@@ -162,7 +162,7 @@ export declare interface CookieOptions {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface CookieValue {
     value: string;
@@ -171,17 +171,17 @@ export declare interface CookieValue {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare type DeferReturn<T> = () => Promise<T>;
 
 /**
- * @alpha
+ * @public
  */
 declare type DocumentHead = DocumentHeadValue | ((props: DocumentHeadProps) => DocumentHeadValue);
 
 /**
- * @alpha
+ * @public
  */
 declare interface DocumentHeadProps extends RouteLocation {
     readonly head: ResolvedDocumentHead;
@@ -190,7 +190,7 @@ declare interface DocumentHeadProps extends RouteLocation {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface DocumentHeadValue {
     /**
@@ -220,7 +220,7 @@ declare interface DocumentHeadValue {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface DocumentLink {
     as?: string;
@@ -243,7 +243,7 @@ declare interface DocumentLink {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface DocumentMeta {
     readonly content?: string;
@@ -255,7 +255,7 @@ declare interface DocumentMeta {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface DocumentStyle {
     readonly style: string;
@@ -275,7 +275,7 @@ declare class ErrorResponse extends Error {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare function getErrorHtml(status: number, e: any): string;
 
@@ -292,12 +292,12 @@ routeBundleNames: string[] | undefined
 ];
 
 /**
- * @alpha
+ * @public
  */
 export declare const mergeHeadersCookies: (headers: Headers, cookies: Cookie) => Headers;
 
 /**
- * @alpha
+ * @public
  */
 declare interface PageModule extends RouteModule {
     readonly default: any;
@@ -307,7 +307,7 @@ declare interface PageModule extends RouteModule {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare type PathParams = Record<string, string>;
 
@@ -318,7 +318,7 @@ declare interface QwikCityRun<T> {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface QwikSerializer {
     _deserializeData: typeof _deserializeData;
@@ -332,7 +332,7 @@ declare class RedirectMessage extends AbortMessage {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface RequestEvent<PLATFORM = QwikCityPlatform> extends RequestEventCommon<PLATFORM> {
     readonly headersSent: boolean;
@@ -346,14 +346,14 @@ export declare interface RequestEvent<PLATFORM = QwikCityPlatform> extends Reque
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface RequestEventAction<PLATFORM = QwikCityPlatform> extends RequestEventCommon<PLATFORM> {
     fail: <T extends Record<string, any>>(status: number, returnData: T) => FailReturn<T>;
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface RequestEventBase<PLATFORM = QwikCityPlatform> {
     /**
@@ -435,7 +435,7 @@ export declare interface RequestEventBase<PLATFORM = QwikCityPlatform> {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends RequestEventBase<PLATFORM> {
     /**
@@ -508,7 +508,7 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface RequestEventLoader<PLATFORM = QwikCityPlatform> extends RequestEventAction<PLATFORM> {
     resolveValue: ResolveValue;
@@ -526,22 +526,22 @@ declare const RequestEvRoute: unique symbol;
 declare const RequestEvTrailingSlash: unique symbol;
 
 /**
- * @alpha
+ * @public
  */
 export declare type RequestHandler<PLATFORM = QwikCityPlatform> = (ev: RequestEvent<PLATFORM>) => Promise<void> | void;
 
 /**
- * @alpha
+ * @public
  */
 export declare function requestHandler<T = unknown>(serverRequestEv: ServerRequestEvent<T>, opts: ServerRenderOptions, qwikSerializer: QwikSerializer): Promise<QwikCityRun<T> | null>;
 
 /**
- * @alpha
+ * @public
  */
 declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface ResolveSyncValue {
     <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Awaited<T>;
@@ -549,7 +549,7 @@ export declare interface ResolveSyncValue {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface ResolveValue {
     <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Promise<T>;
@@ -557,7 +557,7 @@ export declare interface ResolveValue {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface RouteLocation {
     readonly params: Readonly<Record<string, string>>;
@@ -589,7 +589,7 @@ declare interface RouteModule<BODY = unknown> {
 }
 
 /**
- * @alpha
+ * @public
  */
 declare interface SendMethod {
     (statusCode: number, data: any): AbortMessage;
@@ -597,7 +597,7 @@ declare interface SendMethod {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface ServerRenderOptions extends RenderOptions {
     render: Render;
@@ -605,7 +605,7 @@ export declare interface ServerRenderOptions extends RenderOptions {
 }
 
 /**
- * @alpha
+ * @public
  * Request event created by the server.
  */
 export declare interface ServerRequestEvent<T = any> {
@@ -619,24 +619,24 @@ export declare interface ServerRequestEvent<T = any> {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare type ServerRequestMode = 'dev' | 'static' | 'server';
 
 /**
- * @alpha
+ * @public
  */
 export declare type ServerResponseHandler<T = any> = (status: number, headers: Headers, cookies: Cookie, resolve: (response: T) => void, requestEv: RequestEventInternal) => WritableStream<Uint8Array>;
 
 /**
- * @alpha
+ * @public
  */
 declare interface StaticGenerate {
     params?: PathParams[];
 }
 
 /**
- * @alpha
+ * @public
  */
 declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
 

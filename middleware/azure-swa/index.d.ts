@@ -5,18 +5,18 @@ import type { RenderOptions } from '@builder.io/qwik';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
 /**
- * @alpha
+ * @public
  */
 export declare function createQwikCity(opts: QwikCityAzureOptions): AzureFunction;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface PlatformAzure extends Partial<Context> {
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Please use `createQwikCity()` instead.
  *
  * Example:
@@ -32,7 +32,7 @@ export declare interface PlatformAzure extends Partial<Context> {
 export declare function qwikCity(render: Render, opts?: RenderOptions): AzureFunction;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface QwikCityAzureOptions extends ServerRenderOptions {
 }

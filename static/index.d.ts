@@ -5,12 +5,12 @@ import type { RenderOptions } from '@builder.io/qwik/server';
 /**
  * Use this function when SSG should be generated from another module, such as a Vite plugin.
  * This function's should be passed the paths of the entry module and Qwik City Plan.
- * @alpha
+ * @public
  */
 export declare function generate(opts: StaticGenerateOptions): Promise<StaticGenerateResult>;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface StaticGenerateOptions extends StaticGenerateRenderOptions {
     /**
@@ -30,7 +30,7 @@ export declare interface StaticGenerateOptions extends StaticGenerateRenderOptio
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface StaticGenerateRenderOptions extends RenderOptions {
     /**
@@ -102,7 +102,7 @@ export declare interface StaticGenerateRenderOptions extends RenderOptions {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface StaticGenerateResult {
     duration: number;

@@ -3,7 +3,7 @@ import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 import type { UserConfig } from 'vite';
 
 /**
- * @alpha
+ * @public
  */
 export declare interface AdapterSSGOptions extends Omit<StaticGenerateRenderOptions, 'outDir' | 'origin'> {
     /**
@@ -32,7 +32,7 @@ export declare interface AdapterSSGOptions extends Omit<StaticGenerateRenderOpti
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Please use `AdapterSSGOptions` instead.
  */
 export declare type AdaptorSSGOptions = AdapterSSGOptions;
@@ -63,12 +63,12 @@ declare interface BuildRoute extends ParsedPathname {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare function getParentDir(startDir: string, dirName: string): string;
 
 /**
- * @alpha
+ * @public
  */
 export declare const NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
 
@@ -87,17 +87,17 @@ declare interface PathnameSegmentPart {
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare const RESOLVED_NOT_FOUND_PATHS_ID: string;
 
 /**
- * @alpha
+ * @public
  */
 export declare const RESOLVED_STATIC_PATHS_ID: string;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface ServerAdapterOptions {
     /**
@@ -115,23 +115,23 @@ export declare interface ServerAdapterOptions {
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Please use `ServerAdapterOptions` instead.
  */
 export declare type ServerAdaptorOptions = ServerAdapterOptions;
 
 /**
- * @alpha
+ * @public
  */
 export declare const STATIC_PATHS_ID = "@qwik-city-static-paths";
 
 /**
- * @alpha
+ * @public
  */
 export declare function viteAdapter(opts: ViteAdapterPluginOptions): Plugin_2;
 
 /**
- * @alpha
+ * @public
  */
 declare interface ViteAdapterPluginOptions {
     name: string;
@@ -157,7 +157,7 @@ declare interface ViteAdapterPluginOptions {
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Please use `viteAdapter` instead.
  */
 export declare const viteAdaptor: typeof viteAdapter;

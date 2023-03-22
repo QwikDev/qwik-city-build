@@ -2,12 +2,12 @@ import { ServerAdapterOptions } from '../../shared/vite';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
 /**
- * @alpha
+ * @public
  */
 export declare function cloudflarePagesAdapter(opts?: CloudflarePagesAdapterOptions): any;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface CloudflarePagesAdapterOptions extends ServerAdapterOptions {
     /**
@@ -27,13 +27,13 @@ export declare interface CloudflarePagesAdapterOptions extends ServerAdapterOpti
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Use `cloudflarePagesAdapter` exported from `@builder.io/qwik-city/adapters/cloudflare-pages/vite` instead.
  */
 export declare const cloudflarePagesAdaptor: typeof cloudflarePagesAdapter;
 
 /**
- * @alpha
+ * @public
  * @deprecated Use `CloudflarePagesAdapterOptions` instead.
  */
 export declare type CloudflarePagesAdaptorOptions = CloudflarePagesAdapterOptions;

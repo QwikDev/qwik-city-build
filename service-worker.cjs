@@ -241,7 +241,7 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
 };
 
 /**
- * @alpha
+ * @public
  */
 const setupServiceWorker = () => {
     if (typeof self !== 'undefined' && typeof appBundles !== 'undefined') {

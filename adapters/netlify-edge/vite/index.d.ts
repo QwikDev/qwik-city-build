@@ -2,24 +2,24 @@ import { ServerAdapterOptions } from '../../shared/vite';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
 /**
- * @alpha
+ * @public
  * @deprecated Use `netlifyEdgeAdapter` exported from `@builder.io/qwik-city/adapters/netlify-edge/vite` instead.
  */
 export declare const netifyEdgeAdapter: typeof netlifyEdgeAdapter;
 
 /**
- * @alpha
+ * @public
  * @deprecated Use `netlifyEdgeAdapter` exported from `@builder.io/qwik-city/adapters/netlify-edge/vite` instead.
  */
 export declare const netifyEdgeAdaptor: typeof netlifyEdgeAdapter;
 
 /**
- * @alpha
+ * @public
  */
 export declare function netlifyEdgeAdapter(opts?: NetlifyEdgeAdapterOptions): any;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface NetlifyEdgeAdapterOptions extends ServerAdapterOptions {
     /**
@@ -39,7 +39,7 @@ export declare interface NetlifyEdgeAdapterOptions extends ServerAdapterOptions 
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Use `NetlifyEdgeAdapterOptions` instead.
  */
 export declare type NetlifyEdgeAdaptorOptions = NetlifyEdgeAdapterOptions;

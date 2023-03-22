@@ -7,7 +7,7 @@ import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/reque
 import type { ServerResponse } from 'node:http';
 
 /**
- * @alpha
+ * @public
  */
 export declare function createQwikCity(opts: QwikCityNodeRequestOptions): {
     router: (req: IncomingMessage, res: ServerResponse, next: NodeRequestNextFunction) => Promise<void>;
@@ -16,13 +16,13 @@ export declare function createQwikCity(opts: QwikCityNodeRequestOptions): {
 };
 
 /**
- * @alpha
+ * @public
  */ export declare interface NodeRequestNextFunction {
     (err?: any): void;
 }
 
 /**
- * @alpha
+ * @public
  */
 export declare interface PlatformNode {
     ssr?: true;
@@ -31,7 +31,7 @@ export declare interface PlatformNode {
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Please use `createQwikCity()` instead.
  *
  * Example:
@@ -51,7 +51,7 @@ export declare function qwikCity(render: Render, opts?: RenderOptions): {
 };
 
 /**
- * @alpha
+ * @public
  */
 export declare interface QwikCityNodeRequestOptions extends ServerRenderOptions {
     /** Options for serving static files */

@@ -4,12 +4,12 @@ import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 export { StaticGenerateRenderOptions }
 
 /**
- * @alpha
+ * @public
  */
 export declare function vercelEdgeAdapter(opts?: VercelEdgeAdapterOptions): any;
 
 /**
- * @alpha
+ * @public
  */
 export declare interface VercelEdgeAdapterOptions extends ServerAdapterOptions {
     /**
@@ -41,13 +41,13 @@ export declare interface VercelEdgeAdapterOptions extends ServerAdapterOptions {
 }
 
 /**
- * @alpha
+ * @public
  * @deprecated Use `vercelEdgeAdapter` exported from `@builder.io/qwik-city/adapters/vercel-edge/vite` instead.
  */
 export declare const vercelEdgeAdaptor: typeof vercelEdgeAdapter;
 
 /**
- * @alpha
+ * @public
  * @deprecated Please use `VercelEdgeAdapterOptions` instead.
  */
 export declare type VercelEdgeAdaptorOptions = VercelEdgeAdapterOptions;
