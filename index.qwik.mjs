@@ -859,15 +859,7 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
   ]);
   const nav = useNavigate();
   return /* @__PURE__ */ _jsxQ("form", {
-    ...rest
-  }, {
-    action: "get",
-    "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
-      props
-    ], "!p0.reloadDocument"),
-    "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
-      props
-    ], 'p0.spaReset?"true":undefined'),
+    ...rest,
     onSubmit$: /* @__PURE__ */ inlinedQrl(async (_, form) => {
       const [nav2] = useLexicalScope();
       const formData = new FormData(form);
@@ -891,7 +883,15 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
     }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
       nav
     ])
-  }, /* @__PURE__ */ _jsxC(Slot, null, 3, "BC_0"), 1, "BC_1");
+  }, {
+    action: "get",
+    "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
+      props
+    ], "!p0.reloadDocument"),
+    "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
+      props
+    ], 'p0.spaReset?"true":undefined')
+  }, /* @__PURE__ */ _jsxC(Slot, null, 3, "BC_0"), 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 export {
   Content,

@@ -877,15 +877,7 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
   ]);
   const nav = useNavigate();
   return /* @__PURE__ */ qwik._jsxQ("form", {
-    ...rest
-  }, {
-    action: "get",
-    "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
-      props
-    ], "!p0.reloadDocument"),
-    "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
-      props
-    ], 'p0.spaReset?"true":undefined'),
+    ...rest,
     onSubmit$: /* @__PURE__ */ qwik.inlinedQrl(async (_, form) => {
       const [nav2] = qwik.useLexicalScope();
       const formData = new FormData(form);
@@ -909,7 +901,15 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
     }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
       nav
     ])
-  }, /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "BC_0"), 1, "BC_1");
+  }, {
+    action: "get",
+    "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
+      props
+    ], "!p0.reloadDocument"),
+    "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
+      props
+    ], 'p0.spaReset?"true":undefined')
+  }, /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "BC_0"), 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 Object.defineProperty(exports, "z", {
   enumerable: true,
