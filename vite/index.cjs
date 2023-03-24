@@ -24413,10 +24413,12 @@ var safeParseInt = (nu) => {
 var splitRE = /\r?\n/;
 var range = 2;
 function posToNumber(source, pos) {
-  if (typeof pos === "number")
+  if (typeof pos === "number") {
     return pos;
-  if (pos.lo != null)
+  }
+  if (pos.lo != null) {
     return pos.lo;
+  }
   const lines = source.split(splitRE);
   const { line, column } = pos;
   let start = 0;
@@ -24435,8 +24437,9 @@ function generateCodeFrame(source, start = 0, end) {
     count += lines[i].length + 1;
     if (count >= start) {
       for (let j = i - range; j <= i + range || end > count; j++) {
-        if (j < 0 || j >= lines.length)
+        if (j < 0 || j >= lines.length) {
           continue;
+        }
         const line = j + 1;
         res.push(`${line}${" ".repeat(Math.max(3 - String(line).length, 0))}|  ${lines[j]}`);
         const lineLength = lines[j].length;
@@ -24971,14 +24974,18 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
 }
 function createNotFoundPathsModule(basePathname, notFounds, format) {
   notFounds.sort((a, b) => {
-    if (a[0].length > b[0].length)
+    if (a[0].length > b[0].length) {
       return -1;
-    if (a[0].length < b[0].length)
+    }
+    if (a[0].length < b[0].length) {
       return 1;
-    if (a[0] < b[0])
+    }
+    if (a[0] < b[0]) {
       return -1;
-    if (a[0] > b[0])
+    }
+    if (a[0] > b[0]) {
       return 1;
+    }
     return 0;
   });
   if (!notFounds.some((r2) => r2[0] === basePathname)) {

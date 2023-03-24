@@ -795,10 +795,12 @@ var safeParseInt = (nu) => {
 var splitRE = /\r?\n/;
 var range = 2;
 function posToNumber(source, pos) {
-  if (typeof pos === "number")
+  if (typeof pos === "number") {
     return pos;
-  if (pos.lo != null)
+  }
+  if (pos.lo != null) {
     return pos.lo;
+  }
   const lines = source.split(splitRE);
   const { line, column } = pos;
   let start = 0;
@@ -817,8 +819,9 @@ function generateCodeFrame(source, start = 0, end) {
     count += lines[i].length + 1;
     if (count >= start) {
       for (let j = i - range; j <= i + range || end > count; j++) {
-        if (j < 0 || j >= lines.length)
+        if (j < 0 || j >= lines.length) {
           continue;
+        }
         const line = j + 1;
         res.push(`${line}${" ".repeat(Math.max(3 - String(line).length, 0))}|  ${lines[j]}`);
         const lineLength = lines[j].length;

@@ -86,14 +86,18 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
 }
 function createNotFoundPathsModule(basePathname, notFounds, format) {
   notFounds.sort((a, b) => {
-    if (a[0].length > b[0].length)
+    if (a[0].length > b[0].length) {
       return -1;
-    if (a[0].length < b[0].length)
+    }
+    if (a[0].length < b[0].length) {
       return 1;
-    if (a[0] < b[0])
+    }
+    if (a[0] < b[0]) {
       return -1;
-    if (a[0] > b[0])
+    }
+    if (a[0] > b[0]) {
       return 1;
+    }
     return 0;
   });
   if (!notFounds.some((r) => r[0] === basePathname)) {
