@@ -23059,18 +23059,16 @@ function parseRoutePathname(basePathname, pathname) {
   pathname = pathname.slice(1);
   const segments = pathname.split("/");
   const paramNames = [];
-  let addTrailingSlash = true;
   const pattern = new RegExp(
-    `^${segments.filter((segment) => segment.length > 0).map((s2, i, segments2) => {
+    `^${segments.filter((segment) => segment.length > 0).map((s2) => {
       const segment = decodeURIComponent(s2);
       const catchAll = /^\[\.\.\.(\w+)?\]$/.exec(segment);
       if (catchAll) {
         paramNames.push(catchAll[1]);
         return "(?:/(.*))?";
       }
-      const isLast = i === segments2.length - 1;
-      return "/" + segment.split(DYNAMIC_SEGMENT).map((content, i2) => {
-        if (i2 % 2) {
+      return "/" + segment.split(DYNAMIC_SEGMENT).map((content, i) => {
+        if (i % 2) {
           const rg = PARAM_PATTERN.exec(content);
           if (rg) {
             const [, rest, name] = rg;
@@ -23078,12 +23076,10 @@ function parseRoutePathname(basePathname, pathname) {
             return rest ? "(.*?)" : "([^/]+?)";
           }
         }
-        if (isLast && content.includes(".")) {
-          addTrailingSlash = false;
-        }
         return content.normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }).join("");
-    }).join("")}${addTrailingSlash ? "/?" : ""}$`
+    }).join("")}/?$`
+    // always match with and without a trailing slash
   );
   return {
     pattern,
