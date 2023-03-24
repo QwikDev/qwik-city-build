@@ -32,6 +32,11 @@
       "import": "./adapters/express/vite/index.mjs",
       "require": "./adapters/express/vite/index.cjs"
     },
+    "./adapters/node-server/vite": {
+      "types": "./adapters/node-server/vite/index.d.ts",
+      "import": "./adapters/node-server/vite/index.mjs",
+      "require": "./adapters/node-server/vite/index.cjs"
+    },
     "./adapters/netlify-edge/vite": {
       "types": "./adapters/netlify-edge/vite/index.d.ts",
       "import": "./adapters/netlify-edge/vite/index.mjs",
