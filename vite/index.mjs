@@ -24170,7 +24170,7 @@ var formToObj = (formData) => {
           current[k] = value2;
         }
       } else {
-        current = current[k] = {};
+        current = current[k] = { ...current[k] };
       }
     }
   });

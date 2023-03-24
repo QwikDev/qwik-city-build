@@ -868,7 +868,7 @@ var formToObj = (formData) => {
           current[k] = value;
         }
       } else {
-        current = current[k] = {};
+        current = current[k] = { ...current[k] };
       }
     }
   });
