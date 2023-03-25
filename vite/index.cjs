@@ -5,6 +5,7 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
 };
@@ -32,6 +33,10 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+var __publicField = (obj, key, value2) => {
+  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value2);
+  return value2;
+};
 
 // node_modules/.pnpm/hast-util-heading-rank@2.1.1/node_modules/hast-util-heading-rank/lib/index.js
 function headingRank(node) {
@@ -543,7 +548,7 @@ var require_directives = __commonJS({
        * @param onError - May be called even if the action was successful
        * @returns `true` on success
        */
-      add(line, onError) {
+      add(line, onError2) {
         if (this.atNextDocument) {
           this.yaml = { explicit: Directives.defaultYaml.explicit, version: "1.1" };
           this.tags = Object.assign({}, Directives.defaultTags);
@@ -554,7 +559,7 @@ var require_directives = __commonJS({
         switch (name) {
           case "%TAG": {
             if (parts.length !== 2) {
-              onError(0, "%TAG directive should contain exactly two parts");
+              onError2(0, "%TAG directive should contain exactly two parts");
               if (parts.length < 2)
                 return false;
             }
@@ -565,7 +570,7 @@ var require_directives = __commonJS({
           case "%YAML": {
             this.yaml.explicit = true;
             if (parts.length !== 1) {
-              onError(0, "%YAML directive should contain exactly one part");
+              onError2(0, "%YAML directive should contain exactly one part");
               return false;
             }
             const [version] = parts;
@@ -574,12 +579,12 @@ var require_directives = __commonJS({
               return true;
             } else {
               const isValid = /^\d+\.\d+$/.test(version);
-              onError(6, `Unsupported YAML version ${version}`, isValid);
+              onError2(6, `Unsupported YAML version ${version}`, isValid);
               return false;
             }
           }
           default:
-            onError(0, `Unknown directive ${name}`, true);
+            onError2(0, `Unknown directive ${name}`, true);
             return false;
         }
       }
@@ -589,32 +594,32 @@ var require_directives = __commonJS({
        * @returns Resolved tag, which may also be the non-specific tag `'!'` or a
        *   `'!local'` tag, or `null` if unresolvable.
        */
-      tagName(source, onError) {
+      tagName(source, onError2) {
         if (source === "!")
           return "!";
         if (source[0] !== "!") {
-          onError(`Not a valid tag: ${source}`);
+          onError2(`Not a valid tag: ${source}`);
           return null;
         }
         if (source[1] === "<") {
           const verbatim = source.slice(2, -1);
           if (verbatim === "!" || verbatim === "!!") {
-            onError(`Verbatim tags aren't resolved, so ${source} is invalid.`);
+            onError2(`Verbatim tags aren't resolved, so ${source} is invalid.`);
             return null;
           }
           if (source[source.length - 1] !== ">")
-            onError("Verbatim tags must end with a >");
+            onError2("Verbatim tags must end with a >");
           return verbatim;
         }
         const [, handle, suffix] = source.match(/^(.*!)([^!]*)$/);
         if (!suffix)
-          onError(`The ${source} tag has no suffix`);
+          onError2(`The ${source} tag has no suffix`);
         const prefix = this.tags[handle];
         if (prefix)
           return prefix + decodeURIComponent(suffix);
         if (handle === "!")
           return source;
-        onError(`Could not resolve tag: ${source}`);
+        onError2(`Could not resolve tag: ${source}`);
         return null;
       }
       /**
@@ -2236,9 +2241,9 @@ var require_map = __commonJS({
       default: true,
       nodeClass: YAMLMap.YAMLMap,
       tag: "tag:yaml.org,2002:map",
-      resolve(map2, onError) {
+      resolve(map2, onError2) {
         if (!Node.isMap(map2))
-          onError("Expected a mapping for this tag");
+          onError2("Expected a mapping for this tag");
         return map2;
       }
     };
@@ -2374,9 +2379,9 @@ var require_seq = __commonJS({
       default: true,
       nodeClass: YAMLSeq.YAMLSeq,
       tag: "tag:yaml.org,2002:seq",
-      resolve(seq2, onError) {
+      resolve(seq2, onError2) {
         if (!Node.isSeq(seq2))
-          onError("Expected a sequence for this tag");
+          onError2("Expected a sequence for this tag");
         return seq2;
       }
     };
@@ -2648,8 +2653,8 @@ var require_schema2 = __commonJS({
       default: true,
       tag: "",
       test: /^/,
-      resolve(str, onError) {
-        onError(`Unresolved plain scalar ${JSON.stringify(str)}`);
+      resolve(str, onError2) {
+        onError2(`Unresolved plain scalar ${JSON.stringify(str)}`);
         return str;
       }
     };
@@ -2676,7 +2681,7 @@ var require_binary = __commonJS({
        *   const blob = new Blob([buffer], { type: 'image/jpeg' })
        *   document.querySelector('#photo').src = URL.createObjectURL(blob)
        */
-      resolve(src, onError) {
+      resolve(src, onError2) {
         if (typeof Buffer === "function") {
           return Buffer.from(src, "base64");
         } else if (typeof atob === "function") {
@@ -2686,7 +2691,7 @@ var require_binary = __commonJS({
             buffer[i] = str.charCodeAt(i);
           return buffer;
         } else {
-          onError("This environment does not support reading binary tags; either Buffer or atob is required");
+          onError2("This environment does not support reading binary tags; either Buffer or atob is required");
           return src;
         }
       },
@@ -2729,7 +2734,7 @@ var require_pairs = __commonJS({
     var Pair = require_Pair();
     var Scalar = require_Scalar();
     var YAMLSeq = require_YAMLSeq();
-    function resolvePairs(seq, onError) {
+    function resolvePairs(seq, onError2) {
       if (Node.isSeq(seq)) {
         for (let i = 0; i < seq.items.length; ++i) {
           let item = seq.items[i];
@@ -2737,7 +2742,7 @@ var require_pairs = __commonJS({
             continue;
           else if (Node.isMap(item)) {
             if (item.items.length > 1)
-              onError("Each pair must have its own sequence indicator");
+              onError2("Each pair must have its own sequence indicator");
             const pair = item.items[0] || new Pair.Pair(new Scalar.Scalar(null));
             if (item.commentBefore)
               pair.key.commentBefore = pair.key.commentBefore ? `${item.commentBefore}
@@ -2752,7 +2757,7 @@ ${cn.comment}` : item.comment;
           seq.items[i] = Node.isPair(item) ? item : new Pair.Pair(item);
         }
       } else
-        onError("Expected a sequence for this tag");
+        onError2("Expected a sequence for this tag");
       return seq;
     }
     function createPairs(schema, iterable, ctx) {
@@ -2849,13 +2854,13 @@ var require_omap = __commonJS({
       nodeClass: YAMLOMap,
       default: false,
       tag: "tag:yaml.org,2002:omap",
-      resolve(seq, onError) {
-        const pairs$1 = pairs.resolvePairs(seq, onError);
+      resolve(seq, onError2) {
+        const pairs$1 = pairs.resolvePairs(seq, onError2);
         const seenKeys = [];
         for (const { key } of pairs$1.items) {
           if (Node.isScalar(key)) {
             if (seenKeys.includes(key.value)) {
-              onError(`Ordered maps must not include duplicate keys: ${key.value}`);
+              onError2(`Ordered maps must not include duplicate keys: ${key.value}`);
             } else {
               seenKeys.push(key.value);
             }
@@ -3096,14 +3101,14 @@ var require_set = __commonJS({
       nodeClass: YAMLSet,
       default: false,
       tag: "tag:yaml.org,2002:set",
-      resolve(map, onError) {
+      resolve(map, onError2) {
         if (Node.isMap(map)) {
           if (map.hasAllNullValues(true))
             return Object.assign(new YAMLSet(), map);
           else
-            onError("Set items must all have null values");
+            onError2("Set items must all have null values");
         } else
-          onError("Expected a mapping for this tag");
+          onError2("Expected a mapping for this tag");
         return map;
       },
       createNode(schema, iterable, ctx) {
@@ -3347,9 +3352,9 @@ var require_Schema = __commonJS({
     var tags = require_tags();
     var sortMapEntriesByKey = (a, b) => a.key < b.key ? -1 : a.key > b.key ? 1 : 0;
     var Schema2 = class {
-      constructor({ compat, customTags, merge: merge3, resolveKnownTags, schema, sortMapEntries, toStringDefaults }) {
+      constructor({ compat, customTags, merge: merge2, resolveKnownTags, schema, sortMapEntries, toStringDefaults }) {
         this.compat = Array.isArray(compat) ? tags.getTags(compat, "compat") : compat ? tags.getTags(null, compat) : null;
-        this.merge = !!merge3;
+        this.merge = !!merge2;
         this.name = typeof schema === "string" && schema || "core";
         this.knownTags = resolveKnownTags ? tags.coreKnownTags : {};
         this.tags = tags.getTags(customTags, this.name);
@@ -3883,7 +3888,7 @@ ${pointer}
 var require_resolve_props = __commonJS({
   "node_modules/.pnpm/yaml@2.2.1/node_modules/yaml/dist/compose/resolve-props.js"(exports) {
     "use strict";
-    function resolveProps(tokens, { flow, indicator, next, offset, onError, startOnNewline }) {
+    function resolveProps(tokens, { flow, indicator, next, offset, onError: onError2, startOnNewline }) {
       let spaceBefore = false;
       let atNewline = startOnNewline;
       let hasSpace = startOnNewline;
@@ -3900,18 +3905,18 @@ var require_resolve_props = __commonJS({
       for (const token of tokens) {
         if (reqSpace) {
           if (token.type !== "space" && token.type !== "newline" && token.type !== "comma")
-            onError(token.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
+            onError2(token.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
           reqSpace = false;
         }
         switch (token.type) {
           case "space":
             if (!flow && atNewline && indicator !== "doc-start" && token.source[0] === "	")
-              onError(token, "TAB_AS_INDENT", "Tabs are not allowed as indentation");
+              onError2(token, "TAB_AS_INDENT", "Tabs are not allowed as indentation");
             hasSpace = true;
             break;
           case "comment": {
             if (!hasSpace)
-              onError(token, "MISSING_CHAR", "Comments must be separated from other tokens by white space characters");
+              onError2(token, "MISSING_CHAR", "Comments must be separated from other tokens by white space characters");
             const cb = token.source.substring(1) || " ";
             if (!comment)
               comment = cb;
@@ -3937,9 +3942,9 @@ var require_resolve_props = __commonJS({
             break;
           case "anchor":
             if (anchor)
-              onError(token, "MULTIPLE_ANCHORS", "A node can have at most one anchor");
+              onError2(token, "MULTIPLE_ANCHORS", "A node can have at most one anchor");
             if (token.source.endsWith(":"))
-              onError(token.offset + token.source.length - 1, "BAD_ALIAS", "Anchor ending in : is ambiguous", true);
+              onError2(token.offset + token.source.length - 1, "BAD_ALIAS", "Anchor ending in : is ambiguous", true);
             anchor = token;
             if (start === null)
               start = token.offset;
@@ -3949,7 +3954,7 @@ var require_resolve_props = __commonJS({
             break;
           case "tag": {
             if (tag)
-              onError(token, "MULTIPLE_TAGS", "A node can have at most one tag");
+              onError2(token, "MULTIPLE_TAGS", "A node can have at most one tag");
             tag = token;
             if (start === null)
               start = token.offset;
@@ -3960,9 +3965,9 @@ var require_resolve_props = __commonJS({
           }
           case indicator:
             if (anchor || tag)
-              onError(token, "BAD_PROP_ORDER", `Anchors and tags must be after the ${token.source} indicator`);
+              onError2(token, "BAD_PROP_ORDER", `Anchors and tags must be after the ${token.source} indicator`);
             if (found)
-              onError(token, "UNEXPECTED_TOKEN", `Unexpected ${token.source} in ${flow ?? "collection"}`);
+              onError2(token, "UNEXPECTED_TOKEN", `Unexpected ${token.source} in ${flow ?? "collection"}`);
             found = token;
             atNewline = false;
             hasSpace = false;
@@ -3970,14 +3975,14 @@ var require_resolve_props = __commonJS({
           case "comma":
             if (flow) {
               if (comma)
-                onError(token, "UNEXPECTED_TOKEN", `Unexpected , in ${flow}`);
+                onError2(token, "UNEXPECTED_TOKEN", `Unexpected , in ${flow}`);
               comma = token;
               atNewline = false;
               hasSpace = false;
               break;
             }
           default:
-            onError(token, "UNEXPECTED_TOKEN", `Unexpected ${token.type} token`);
+            onError2(token, "UNEXPECTED_TOKEN", `Unexpected ${token.type} token`);
             atNewline = false;
             hasSpace = false;
         }
@@ -3985,7 +3990,7 @@ var require_resolve_props = __commonJS({
       const last = tokens[tokens.length - 1];
       const end = last ? last.offset + last.source.length : offset;
       if (reqSpace && next && next.type !== "space" && next.type !== "newline" && next.type !== "comma" && (next.type !== "scalar" || next.source !== ""))
-        onError(next.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
+        onError2(next.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
       return {
         comma,
         found,
@@ -4050,12 +4055,12 @@ var require_util_flow_indent_check = __commonJS({
   "node_modules/.pnpm/yaml@2.2.1/node_modules/yaml/dist/compose/util-flow-indent-check.js"(exports) {
     "use strict";
     var utilContainsNewline = require_util_contains_newline();
-    function flowIndentCheck(indent2, fc, onError) {
+    function flowIndentCheck(indent2, fc, onError2) {
       if ((fc == null ? void 0 : fc.type) === "flow-collection") {
         const end = fc.end[0];
         if (end.indent === indent2 && (end.source === "]" || end.source === "}") && utilContainsNewline.containsNewline(fc)) {
           const msg = "Flow end indicator should be more indented than parent";
-          onError(end, "BAD_INDENT", msg, true);
+          onError2(end, "BAD_INDENT", msg, true);
         }
       }
     }
@@ -4090,7 +4095,7 @@ var require_resolve_block_map = __commonJS({
     var utilFlowIndentCheck = require_util_flow_indent_check();
     var utilMapIncludes = require_util_map_includes();
     var startColMsg = "All mapping items must start at the same column";
-    function resolveBlockMap({ composeNode, composeEmptyNode }, ctx, bm, onError) {
+    function resolveBlockMap({ composeNode, composeEmptyNode }, ctx, bm, onError2) {
       var _a2;
       const map = new YAMLMap.YAMLMap(ctx.schema);
       if (ctx.atRoot)
@@ -4103,16 +4108,16 @@ var require_resolve_block_map = __commonJS({
           indicator: "explicit-key-ind",
           next: key ?? (sep == null ? void 0 : sep[0]),
           offset,
-          onError,
+          onError: onError2,
           startOnNewline: true
         });
         const implicitKey = !keyProps.found;
         if (implicitKey) {
           if (key) {
             if (key.type === "block-seq")
-              onError(offset, "BLOCK_AS_IMPLICIT_KEY", "A block sequence may not be used as an implicit map key");
+              onError2(offset, "BLOCK_AS_IMPLICIT_KEY", "A block sequence may not be used as an implicit map key");
             else if ("indent" in key && key.indent !== bm.indent)
-              onError(offset, "BAD_INDENT", startColMsg);
+              onError2(offset, "BAD_INDENT", startColMsg);
           }
           if (!keyProps.anchor && !keyProps.tag && !sep) {
             commentEnd = keyProps.end;
@@ -4125,35 +4130,35 @@ var require_resolve_block_map = __commonJS({
             continue;
           }
           if (keyProps.hasNewlineAfterProp || utilContainsNewline.containsNewline(key)) {
-            onError(key ?? start[start.length - 1], "MULTILINE_IMPLICIT_KEY", "Implicit keys need to be on a single line");
+            onError2(key ?? start[start.length - 1], "MULTILINE_IMPLICIT_KEY", "Implicit keys need to be on a single line");
           }
         } else if (((_a2 = keyProps.found) == null ? void 0 : _a2.indent) !== bm.indent) {
-          onError(offset, "BAD_INDENT", startColMsg);
+          onError2(offset, "BAD_INDENT", startColMsg);
         }
         const keyStart = keyProps.end;
-        const keyNode = key ? composeNode(ctx, key, keyProps, onError) : composeEmptyNode(ctx, keyStart, start, null, keyProps, onError);
+        const keyNode = key ? composeNode(ctx, key, keyProps, onError2) : composeEmptyNode(ctx, keyStart, start, null, keyProps, onError2);
         if (ctx.schema.compat)
-          utilFlowIndentCheck.flowIndentCheck(bm.indent, key, onError);
+          utilFlowIndentCheck.flowIndentCheck(bm.indent, key, onError2);
         if (utilMapIncludes.mapIncludes(ctx, map.items, keyNode))
-          onError(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
+          onError2(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
         const valueProps = resolveProps.resolveProps(sep ?? [], {
           indicator: "map-value-ind",
           next: value2,
           offset: keyNode.range[2],
-          onError,
+          onError: onError2,
           startOnNewline: !key || key.type === "block-scalar"
         });
         offset = valueProps.end;
         if (valueProps.found) {
           if (implicitKey) {
             if ((value2 == null ? void 0 : value2.type) === "block-map" && !valueProps.hasNewline)
-              onError(offset, "BLOCK_AS_IMPLICIT_KEY", "Nested mappings are not allowed in compact mappings");
+              onError2(offset, "BLOCK_AS_IMPLICIT_KEY", "Nested mappings are not allowed in compact mappings");
             if (ctx.options.strict && keyProps.start < valueProps.found.offset - 1024)
-              onError(keyNode.range, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit block mapping key");
+              onError2(keyNode.range, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit block mapping key");
           }
-          const valueNode = value2 ? composeNode(ctx, value2, valueProps, onError) : composeEmptyNode(ctx, offset, sep, null, valueProps, onError);
+          const valueNode = value2 ? composeNode(ctx, value2, valueProps, onError2) : composeEmptyNode(ctx, offset, sep, null, valueProps, onError2);
           if (ctx.schema.compat)
-            utilFlowIndentCheck.flowIndentCheck(bm.indent, value2, onError);
+            utilFlowIndentCheck.flowIndentCheck(bm.indent, value2, onError2);
           offset = valueNode.range[2];
           const pair = new Pair.Pair(keyNode, valueNode);
           if (ctx.options.keepSourceTokens)
@@ -4161,7 +4166,7 @@ var require_resolve_block_map = __commonJS({
           map.items.push(pair);
         } else {
           if (implicitKey)
-            onError(keyNode.range, "MISSING_CHAR", "Implicit map keys need to be followed by map values");
+            onError2(keyNode.range, "MISSING_CHAR", "Implicit map keys need to be followed by map values");
           if (valueProps.comment) {
             if (keyNode.comment)
               keyNode.comment += "\n" + valueProps.comment;
@@ -4175,7 +4180,7 @@ var require_resolve_block_map = __commonJS({
         }
       }
       if (commentEnd && commentEnd < offset)
-        onError(commentEnd, "IMPOSSIBLE", "Map comment with trailing content");
+        onError2(commentEnd, "IMPOSSIBLE", "Map comment with trailing content");
       map.range = [bm.offset, offset, commentEnd ?? offset];
       return map;
     }
@@ -4190,7 +4195,7 @@ var require_resolve_block_seq = __commonJS({
     var YAMLSeq = require_YAMLSeq();
     var resolveProps = require_resolve_props();
     var utilFlowIndentCheck = require_util_flow_indent_check();
-    function resolveBlockSeq({ composeNode, composeEmptyNode }, ctx, bs, onError) {
+    function resolveBlockSeq({ composeNode, composeEmptyNode }, ctx, bs, onError2) {
       const seq = new YAMLSeq.YAMLSeq(ctx.schema);
       if (ctx.atRoot)
         ctx.atRoot = false;
@@ -4201,15 +4206,15 @@ var require_resolve_block_seq = __commonJS({
           indicator: "seq-item-ind",
           next: value2,
           offset,
-          onError,
+          onError: onError2,
           startOnNewline: true
         });
         if (!props.found) {
           if (props.anchor || props.tag || value2) {
             if (value2 && value2.type === "block-seq")
-              onError(props.end, "BAD_INDENT", "All sequence items must start at the same column");
+              onError2(props.end, "BAD_INDENT", "All sequence items must start at the same column");
             else
-              onError(offset, "MISSING_CHAR", "Sequence item without - indicator");
+              onError2(offset, "MISSING_CHAR", "Sequence item without - indicator");
           } else {
             commentEnd = props.end;
             if (props.comment)
@@ -4217,9 +4222,9 @@ var require_resolve_block_seq = __commonJS({
             continue;
           }
         }
-        const node = value2 ? composeNode(ctx, value2, props, onError) : composeEmptyNode(ctx, props.end, start, null, props, onError);
+        const node = value2 ? composeNode(ctx, value2, props, onError2) : composeEmptyNode(ctx, props.end, start, null, props, onError2);
         if (ctx.schema.compat)
-          utilFlowIndentCheck.flowIndentCheck(bs.indent, value2, onError);
+          utilFlowIndentCheck.flowIndentCheck(bs.indent, value2, onError2);
         offset = node.range[2];
         seq.items.push(node);
       }
@@ -4234,7 +4239,7 @@ var require_resolve_block_seq = __commonJS({
 var require_resolve_end = __commonJS({
   "node_modules/.pnpm/yaml@2.2.1/node_modules/yaml/dist/compose/resolve-end.js"(exports) {
     "use strict";
-    function resolveEnd(end, offset, reqSpace, onError) {
+    function resolveEnd(end, offset, reqSpace, onError2) {
       let comment = "";
       if (end) {
         let hasSpace = false;
@@ -4247,7 +4252,7 @@ var require_resolve_end = __commonJS({
               break;
             case "comment": {
               if (reqSpace && !hasSpace)
-                onError(token, "MISSING_CHAR", "Comments must be separated from other tokens by white space characters");
+                onError2(token, "MISSING_CHAR", "Comments must be separated from other tokens by white space characters");
               const cb = source.substring(1) || " ";
               if (!comment)
                 comment = cb;
@@ -4262,7 +4267,7 @@ var require_resolve_end = __commonJS({
               hasSpace = true;
               break;
             default:
-              onError(token, "UNEXPECTED_TOKEN", `Unexpected ${type} at node end`);
+              onError2(token, "UNEXPECTED_TOKEN", `Unexpected ${type} at node end`);
           }
           offset += source.length;
         }
@@ -4287,7 +4292,7 @@ var require_resolve_flow_collection = __commonJS({
     var utilMapIncludes = require_util_map_includes();
     var blockMsg = "Block collections are not allowed within flow collections";
     var isBlock = (token) => token && (token.type === "block-map" || token.type === "block-seq");
-    function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onError) {
+    function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onError2) {
       const isMap = fc.start.source === "{";
       const fcName = isMap ? "flow map" : "flow sequence";
       const coll = isMap ? new YAMLMap.YAMLMap(ctx.schema) : new YAMLSeq.YAMLSeq(ctx.schema);
@@ -4304,15 +4309,15 @@ var require_resolve_flow_collection = __commonJS({
           indicator: "explicit-key-ind",
           next: key ?? (sep == null ? void 0 : sep[0]),
           offset,
-          onError,
+          onError: onError2,
           startOnNewline: false
         });
         if (!props.found) {
           if (!props.anchor && !props.tag && !sep && !value2) {
             if (i === 0 && props.comma)
-              onError(props.comma, "UNEXPECTED_TOKEN", `Unexpected , in ${fcName}`);
+              onError2(props.comma, "UNEXPECTED_TOKEN", `Unexpected , in ${fcName}`);
             else if (i < fc.items.length - 1)
-              onError(props.start, "UNEXPECTED_TOKEN", `Unexpected empty item in ${fcName}`);
+              onError2(props.start, "UNEXPECTED_TOKEN", `Unexpected empty item in ${fcName}`);
             if (props.comment) {
               if (coll.comment)
                 coll.comment += "\n" + props.comment;
@@ -4323,7 +4328,7 @@ var require_resolve_flow_collection = __commonJS({
             continue;
           }
           if (!isMap && ctx.options.strict && utilContainsNewline.containsNewline(key))
-            onError(
+            onError2(
               key,
               // checked by containsNewline()
               "MULTILINE_IMPLICIT_KEY",
@@ -4332,10 +4337,10 @@ var require_resolve_flow_collection = __commonJS({
         }
         if (i === 0) {
           if (props.comma)
-            onError(props.comma, "UNEXPECTED_TOKEN", `Unexpected , in ${fcName}`);
+            onError2(props.comma, "UNEXPECTED_TOKEN", `Unexpected , in ${fcName}`);
         } else {
           if (!props.comma)
-            onError(props.start, "MISSING_CHAR", `Missing , between ${fcName} items`);
+            onError2(props.start, "MISSING_CHAR", `Missing , between ${fcName} items`);
           if (props.comment) {
             let prevItemComment = "";
             loop:
@@ -4364,22 +4369,22 @@ var require_resolve_flow_collection = __commonJS({
           }
         }
         if (!isMap && !sep && !props.found) {
-          const valueNode = value2 ? composeNode(ctx, value2, props, onError) : composeEmptyNode(ctx, props.end, sep, null, props, onError);
+          const valueNode = value2 ? composeNode(ctx, value2, props, onError2) : composeEmptyNode(ctx, props.end, sep, null, props, onError2);
           coll.items.push(valueNode);
           offset = valueNode.range[2];
           if (isBlock(value2))
-            onError(valueNode.range, "BLOCK_IN_FLOW", blockMsg);
+            onError2(valueNode.range, "BLOCK_IN_FLOW", blockMsg);
         } else {
           const keyStart = props.end;
-          const keyNode = key ? composeNode(ctx, key, props, onError) : composeEmptyNode(ctx, keyStart, start, null, props, onError);
+          const keyNode = key ? composeNode(ctx, key, props, onError2) : composeEmptyNode(ctx, keyStart, start, null, props, onError2);
           if (isBlock(key))
-            onError(keyNode.range, "BLOCK_IN_FLOW", blockMsg);
+            onError2(keyNode.range, "BLOCK_IN_FLOW", blockMsg);
           const valueProps = resolveProps.resolveProps(sep ?? [], {
             flow: fcName,
             indicator: "map-value-ind",
             next: value2,
             offset: keyNode.range[2],
-            onError,
+            onError: onError2,
             startOnNewline: false
           });
           if (valueProps.found) {
@@ -4389,23 +4394,23 @@ var require_resolve_flow_collection = __commonJS({
                   if (st === valueProps.found)
                     break;
                   if (st.type === "newline") {
-                    onError(st, "MULTILINE_IMPLICIT_KEY", "Implicit keys of flow sequence pairs need to be on a single line");
+                    onError2(st, "MULTILINE_IMPLICIT_KEY", "Implicit keys of flow sequence pairs need to be on a single line");
                     break;
                   }
                 }
               if (props.start < valueProps.found.offset - 1024)
-                onError(valueProps.found, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit flow sequence key");
+                onError2(valueProps.found, "KEY_OVER_1024_CHARS", "The : indicator must be at most 1024 chars after the start of an implicit flow sequence key");
             }
           } else if (value2) {
             if ("source" in value2 && value2.source && value2.source[0] === ":")
-              onError(value2, "MISSING_CHAR", `Missing space after : in ${fcName}`);
+              onError2(value2, "MISSING_CHAR", `Missing space after : in ${fcName}`);
             else
-              onError(valueProps.start, "MISSING_CHAR", `Missing , or : between ${fcName} items`);
+              onError2(valueProps.start, "MISSING_CHAR", `Missing , or : between ${fcName} items`);
           }
-          const valueNode = value2 ? composeNode(ctx, value2, valueProps, onError) : valueProps.found ? composeEmptyNode(ctx, valueProps.end, sep, null, valueProps, onError) : null;
+          const valueNode = value2 ? composeNode(ctx, value2, valueProps, onError2) : valueProps.found ? composeEmptyNode(ctx, valueProps.end, sep, null, valueProps, onError2) : null;
           if (valueNode) {
             if (isBlock(value2))
-              onError(valueNode.range, "BLOCK_IN_FLOW", blockMsg);
+              onError2(valueNode.range, "BLOCK_IN_FLOW", blockMsg);
           } else if (valueProps.comment) {
             if (keyNode.comment)
               keyNode.comment += "\n" + valueProps.comment;
@@ -4418,7 +4423,7 @@ var require_resolve_flow_collection = __commonJS({
           if (isMap) {
             const map = coll;
             if (utilMapIncludes.mapIncludes(ctx, map.items, keyNode))
-              onError(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
+              onError2(keyStart, "DUPLICATE_KEY", "Map keys must be unique");
             map.items.push(pair);
           } else {
             const map = new YAMLMap.YAMLMap(ctx.schema);
@@ -4437,12 +4442,12 @@ var require_resolve_flow_collection = __commonJS({
       else {
         const name = fcName[0].toUpperCase() + fcName.substring(1);
         const msg = atRoot ? `${name} must end with a ${expectedEnd}` : `${name} in block collection must be sufficiently indented and end with a ${expectedEnd}`;
-        onError(offset, atRoot ? "MISSING_CHAR" : "BAD_INDENT", msg);
+        onError2(offset, atRoot ? "MISSING_CHAR" : "BAD_INDENT", msg);
         if (ce && ce.source.length !== 1)
           ee.unshift(ce);
       }
       if (ee.length > 0) {
-        const end = resolveEnd.resolveEnd(ee, cePos, ctx.options.strict, onError);
+        const end = resolveEnd.resolveEnd(ee, cePos, ctx.options.strict, onError2);
         if (end.comment) {
           if (coll.comment)
             coll.comment += "\n" + end.comment;
@@ -4468,25 +4473,25 @@ var require_compose_collection = __commonJS({
     var resolveBlockMap = require_resolve_block_map();
     var resolveBlockSeq = require_resolve_block_seq();
     var resolveFlowCollection = require_resolve_flow_collection();
-    function composeCollection(CN, ctx, token, tagToken, onError) {
+    function composeCollection(CN, ctx, token, tagToken, onError2) {
       let coll;
       switch (token.type) {
         case "block-map": {
-          coll = resolveBlockMap.resolveBlockMap(CN, ctx, token, onError);
+          coll = resolveBlockMap.resolveBlockMap(CN, ctx, token, onError2);
           break;
         }
         case "block-seq": {
-          coll = resolveBlockSeq.resolveBlockSeq(CN, ctx, token, onError);
+          coll = resolveBlockSeq.resolveBlockSeq(CN, ctx, token, onError2);
           break;
         }
         case "flow-collection": {
-          coll = resolveFlowCollection.resolveFlowCollection(CN, ctx, token, onError);
+          coll = resolveFlowCollection.resolveFlowCollection(CN, ctx, token, onError2);
           break;
         }
       }
       if (!tagToken)
         return coll;
-      const tagName = ctx.directives.tagName(tagToken.source, (msg) => onError(tagToken, "TAG_RESOLVE_FAILED", msg));
+      const tagName = ctx.directives.tagName(tagToken.source, (msg) => onError2(tagToken, "TAG_RESOLVE_FAILED", msg));
       if (!tagName)
         return coll;
       const Coll = coll.constructor;
@@ -4502,12 +4507,12 @@ var require_compose_collection = __commonJS({
           ctx.schema.tags.push(Object.assign({}, kt, { default: false }));
           tag = kt;
         } else {
-          onError(tagToken, "TAG_RESOLVE_FAILED", `Unresolved tag: ${tagName}`, true);
+          onError2(tagToken, "TAG_RESOLVE_FAILED", `Unresolved tag: ${tagName}`, true);
           coll.tag = tagName;
           return coll;
         }
       }
-      const res = tag.resolve(coll, (msg) => onError(tagToken, "TAG_RESOLVE_FAILED", msg), ctx.options);
+      const res = tag.resolve(coll, (msg) => onError2(tagToken, "TAG_RESOLVE_FAILED", msg), ctx.options);
       const node = Node.isNode(res) ? res : new Scalar.Scalar(res);
       node.range = coll.range;
       node.tag = tagName;
@@ -4524,9 +4529,9 @@ var require_resolve_block_scalar = __commonJS({
   "node_modules/.pnpm/yaml@2.2.1/node_modules/yaml/dist/compose/resolve-block-scalar.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
-    function resolveBlockScalar(scalar, strict, onError) {
+    function resolveBlockScalar(scalar, strict, onError2) {
       const start = scalar.offset;
-      const header = parseBlockScalarHeader(scalar, strict, onError);
+      const header = parseBlockScalarHeader(scalar, strict, onError2);
       if (!header)
         return { value: "", type: null, comment: "", range: [start, start, start] };
       const type = header.mode === ">" ? Scalar.Scalar.BLOCK_FOLDED : Scalar.Scalar.BLOCK_LITERAL;
@@ -4557,7 +4562,7 @@ var require_resolve_block_scalar = __commonJS({
         } else {
           if (indent2.length < trimIndent) {
             const message = "Block scalars with more-indented leading empty lines must use an explicit indentation indicator";
-            onError(offset + indent2.length, "MISSING_CHAR", message);
+            onError2(offset + indent2.length, "MISSING_CHAR", message);
           }
           if (header.indent === 0)
             trimIndent = indent2.length;
@@ -4584,7 +4589,7 @@ var require_resolve_block_scalar = __commonJS({
         if (content && indent2.length < trimIndent) {
           const src = header.indent ? "explicit indentation indicator" : "first line";
           const message = `Block scalar lines must not be less indented than their ${src}`;
-          onError(offset - content.length - (crlf ? 2 : 1), "BAD_INDENT", message);
+          onError2(offset - content.length - (crlf ? 2 : 1), "BAD_INDENT", message);
           indent2 = "";
         }
         if (type === Scalar.Scalar.BLOCK_LITERAL) {
@@ -4624,9 +4629,9 @@ var require_resolve_block_scalar = __commonJS({
       const end = start + header.length + scalar.source.length;
       return { value: value2, type, comment: header.comment, range: [start, end, end] };
     }
-    function parseBlockScalarHeader({ offset, props }, strict, onError) {
+    function parseBlockScalarHeader({ offset, props }, strict, onError2) {
       if (props[0].type !== "block-scalar-header") {
-        onError(props[0], "IMPOSSIBLE", "Block scalar header not found");
+        onError2(props[0], "IMPOSSIBLE", "Block scalar header not found");
         return null;
       }
       const { source } = props[0];
@@ -4647,7 +4652,7 @@ var require_resolve_block_scalar = __commonJS({
         }
       }
       if (error !== -1)
-        onError(error, "UNEXPECTED_TOKEN", `Block scalar header includes extra characters: ${source}`);
+        onError2(error, "UNEXPECTED_TOKEN", `Block scalar header includes extra characters: ${source}`);
       let hasSpace = false;
       let comment = "";
       let length = source.length;
@@ -4662,18 +4667,18 @@ var require_resolve_block_scalar = __commonJS({
           case "comment":
             if (strict && !hasSpace) {
               const message = "Comments must be separated from other tokens by white space characters";
-              onError(token, "MISSING_CHAR", message);
+              onError2(token, "MISSING_CHAR", message);
             }
             length += token.source.length;
             comment = token.source.substring(1);
             break;
           case "error":
-            onError(token, "UNEXPECTED_TOKEN", token.message);
+            onError2(token, "UNEXPECTED_TOKEN", token.message);
             length += token.source.length;
             break;
           default: {
             const message = `Unexpected token in block scalar header: ${token.type}`;
-            onError(token, "UNEXPECTED_TOKEN", message);
+            onError2(token, "UNEXPECTED_TOKEN", message);
             const ts = token.source;
             if (ts && typeof ts === "string")
               length += ts.length;
@@ -4702,11 +4707,11 @@ var require_resolve_flow_scalar = __commonJS({
     "use strict";
     var Scalar = require_Scalar();
     var resolveEnd = require_resolve_end();
-    function resolveFlowScalar(scalar, strict, onError) {
+    function resolveFlowScalar(scalar, strict, onError2) {
       const { offset, type, source, end } = scalar;
       let _type;
       let value2;
-      const _onError = (rel, code2, msg) => onError(offset + rel, code2, msg);
+      const _onError = (rel, code2, msg) => onError2(offset + rel, code2, msg);
       switch (type) {
         case "scalar":
           _type = Scalar.Scalar.PLAIN;
@@ -4721,7 +4726,7 @@ var require_resolve_flow_scalar = __commonJS({
           value2 = doubleQuotedValue(source, _onError);
           break;
         default:
-          onError(scalar, "UNEXPECTED_TOKEN", `Expected a flow scalar value, but found: ${type}`);
+          onError2(scalar, "UNEXPECTED_TOKEN", `Expected a flow scalar value, but found: ${type}`);
           return {
             value: "",
             type: null,
@@ -4730,7 +4735,7 @@ var require_resolve_flow_scalar = __commonJS({
           };
       }
       const valueEnd = offset + source.length;
-      const re = resolveEnd.resolveEnd(end, valueEnd, strict, onError);
+      const re = resolveEnd.resolveEnd(end, valueEnd, strict, onError2);
       return {
         value: value2,
         type: _type,
@@ -4738,7 +4743,7 @@ var require_resolve_flow_scalar = __commonJS({
         range: [offset, valueEnd, re.offset]
       };
     }
-    function plainValue(source, onError) {
+    function plainValue(source, onError2) {
       let badChar = "";
       switch (source[0]) {
         case "	":
@@ -4762,12 +4767,12 @@ var require_resolve_flow_scalar = __commonJS({
         }
       }
       if (badChar)
-        onError(0, "BAD_SCALAR_START", `Plain value cannot start with ${badChar}`);
+        onError2(0, "BAD_SCALAR_START", `Plain value cannot start with ${badChar}`);
       return foldLines(source);
     }
-    function singleQuotedValue(source, onError) {
+    function singleQuotedValue(source, onError2) {
       if (source[source.length - 1] !== "'" || source.length === 1)
-        onError(source.length, "MISSING_CHAR", "Missing closing 'quote");
+        onError2(source.length, "MISSING_CHAR", "Missing closing 'quote");
       return foldLines(source.slice(1, -1)).replace(/''/g, "'");
     }
     function foldLines(source) {
@@ -4803,7 +4808,7 @@ var require_resolve_flow_scalar = __commonJS({
       match = last.exec(source);
       return res + sep + ((match == null ? void 0 : match[1]) ?? "");
     }
-    function doubleQuotedValue(source, onError) {
+    function doubleQuotedValue(source, onError2) {
       let res = "";
       for (let i = 1; i < source.length - 1; ++i) {
         const ch = source[i];
@@ -4828,11 +4833,11 @@ var require_resolve_flow_scalar = __commonJS({
               next = source[++i + 1];
           } else if (next === "x" || next === "u" || next === "U") {
             const length = { x: 2, u: 4, U: 8 }[next];
-            res += parseCharCode(source, i + 1, length, onError);
+            res += parseCharCode(source, i + 1, length, onError2);
             i += length;
           } else {
             const raw = source.substr(i - 1, 2);
-            onError(i - 1, "BAD_DQ_ESCAPE", `Invalid escape sequence ${raw}`);
+            onError2(i - 1, "BAD_DQ_ESCAPE", `Invalid escape sequence ${raw}`);
             res += raw;
           }
         } else if (ch === " " || ch === "	") {
@@ -4847,7 +4852,7 @@ var require_resolve_flow_scalar = __commonJS({
         }
       }
       if (source[source.length - 1] !== '"' || source.length === 1)
-        onError(source.length, "MISSING_CHAR", 'Missing closing "quote');
+        onError2(source.length, "MISSING_CHAR", 'Missing closing "quote');
       return res;
     }
     function foldNewline(source, offset) {
@@ -4885,13 +4890,13 @@ var require_resolve_flow_scalar = __commonJS({
       "\\": "\\",
       "	": "	"
     };
-    function parseCharCode(source, offset, length, onError) {
+    function parseCharCode(source, offset, length, onError2) {
       const cc = source.substr(offset, length);
       const ok2 = cc.length === length && /^[0-9a-fA-F]+$/.test(cc);
       const code2 = ok2 ? parseInt(cc, 16) : NaN;
       if (isNaN(code2)) {
         const raw = source.substr(offset - 2, length + 2);
-        onError(offset - 2, "BAD_DQ_ESCAPE", `Invalid escape sequence ${raw}`);
+        onError2(offset - 2, "BAD_DQ_ESCAPE", `Invalid escape sequence ${raw}`);
         return raw;
       }
       return String.fromCodePoint(code2);
@@ -4908,17 +4913,17 @@ var require_compose_scalar = __commonJS({
     var Scalar = require_Scalar();
     var resolveBlockScalar = require_resolve_block_scalar();
     var resolveFlowScalar = require_resolve_flow_scalar();
-    function composeScalar(ctx, token, tagToken, onError) {
-      const { value: value2, type, comment, range: range2 } = token.type === "block-scalar" ? resolveBlockScalar.resolveBlockScalar(token, ctx.options.strict, onError) : resolveFlowScalar.resolveFlowScalar(token, ctx.options.strict, onError);
-      const tagName = tagToken ? ctx.directives.tagName(tagToken.source, (msg) => onError(tagToken, "TAG_RESOLVE_FAILED", msg)) : null;
-      const tag = tagToken && tagName ? findScalarTagByName(ctx.schema, value2, tagName, tagToken, onError) : token.type === "scalar" ? findScalarTagByTest(ctx, value2, token, onError) : ctx.schema[Node.SCALAR];
+    function composeScalar(ctx, token, tagToken, onError2) {
+      const { value: value2, type, comment, range: range2 } = token.type === "block-scalar" ? resolveBlockScalar.resolveBlockScalar(token, ctx.options.strict, onError2) : resolveFlowScalar.resolveFlowScalar(token, ctx.options.strict, onError2);
+      const tagName = tagToken ? ctx.directives.tagName(tagToken.source, (msg) => onError2(tagToken, "TAG_RESOLVE_FAILED", msg)) : null;
+      const tag = tagToken && tagName ? findScalarTagByName(ctx.schema, value2, tagName, tagToken, onError2) : token.type === "scalar" ? findScalarTagByTest(ctx, value2, token, onError2) : ctx.schema[Node.SCALAR];
       let scalar;
       try {
-        const res = tag.resolve(value2, (msg) => onError(tagToken ?? token, "TAG_RESOLVE_FAILED", msg), ctx.options);
+        const res = tag.resolve(value2, (msg) => onError2(tagToken ?? token, "TAG_RESOLVE_FAILED", msg), ctx.options);
         scalar = Node.isScalar(res) ? res : new Scalar.Scalar(res);
       } catch (error) {
         const msg = error instanceof Error ? error.message : String(error);
-        onError(tagToken ?? token, "TAG_RESOLVE_FAILED", msg);
+        onError2(tagToken ?? token, "TAG_RESOLVE_FAILED", msg);
         scalar = new Scalar.Scalar(value2);
       }
       scalar.range = range2;
@@ -4933,7 +4938,7 @@ var require_compose_scalar = __commonJS({
         scalar.comment = comment;
       return scalar;
     }
-    function findScalarTagByName(schema, value2, tagName, tagToken, onError) {
+    function findScalarTagByName(schema, value2, tagName, tagToken, onError2) {
       var _a2;
       if (tagName === "!")
         return schema[Node.SCALAR];
@@ -4954,10 +4959,10 @@ var require_compose_scalar = __commonJS({
         schema.tags.push(Object.assign({}, kt, { default: false, test: void 0 }));
         return kt;
       }
-      onError(tagToken, "TAG_RESOLVE_FAILED", `Unresolved tag: ${tagName}`, tagName !== "tag:yaml.org,2002:str");
+      onError2(tagToken, "TAG_RESOLVE_FAILED", `Unresolved tag: ${tagName}`, tagName !== "tag:yaml.org,2002:str");
       return schema[Node.SCALAR];
     }
-    function findScalarTagByTest({ directives, schema }, value2, token, onError) {
+    function findScalarTagByTest({ directives, schema }, value2, token, onError2) {
       const tag = schema.tags.find((tag2) => {
         var _a2;
         return tag2.default && ((_a2 = tag2.test) == null ? void 0 : _a2.test(value2));
@@ -4971,7 +4976,7 @@ var require_compose_scalar = __commonJS({
           const ts = directives.tagString(tag.tag);
           const cs = directives.tagString(compat.tag);
           const msg = `Value may be parsed as either ${ts} or ${cs}`;
-          onError(token, "TAG_RESOLVE_FAILED", msg, true);
+          onError2(token, "TAG_RESOLVE_FAILED", msg, true);
         }
       }
       return tag;
@@ -5021,40 +5026,40 @@ var require_compose_node = __commonJS({
     var resolveEnd = require_resolve_end();
     var utilEmptyScalarPosition = require_util_empty_scalar_position();
     var CN = { composeNode, composeEmptyNode };
-    function composeNode(ctx, token, props, onError) {
+    function composeNode(ctx, token, props, onError2) {
       const { spaceBefore, comment, anchor, tag } = props;
       let node;
       let isSrcToken = true;
       switch (token.type) {
         case "alias":
-          node = composeAlias(ctx, token, onError);
+          node = composeAlias(ctx, token, onError2);
           if (anchor || tag)
-            onError(token, "ALIAS_PROPS", "An alias node must not specify any properties");
+            onError2(token, "ALIAS_PROPS", "An alias node must not specify any properties");
           break;
         case "scalar":
         case "single-quoted-scalar":
         case "double-quoted-scalar":
         case "block-scalar":
-          node = composeScalar.composeScalar(ctx, token, tag, onError);
+          node = composeScalar.composeScalar(ctx, token, tag, onError2);
           if (anchor)
             node.anchor = anchor.source.substring(1);
           break;
         case "block-map":
         case "block-seq":
         case "flow-collection":
-          node = composeCollection.composeCollection(CN, ctx, token, tag, onError);
+          node = composeCollection.composeCollection(CN, ctx, token, tag, onError2);
           if (anchor)
             node.anchor = anchor.source.substring(1);
           break;
         default: {
           const message = token.type === "error" ? token.message : `Unsupported token (type: ${token.type})`;
-          onError(token, "UNEXPECTED_TOKEN", message);
-          node = composeEmptyNode(ctx, token.offset, void 0, null, props, onError);
+          onError2(token, "UNEXPECTED_TOKEN", message);
+          node = composeEmptyNode(ctx, token.offset, void 0, null, props, onError2);
           isSrcToken = false;
         }
       }
       if (anchor && node.anchor === "")
-        onError(anchor, "BAD_ALIAS", "Anchor cannot be an empty string");
+        onError2(anchor, "BAD_ALIAS", "Anchor cannot be an empty string");
       if (spaceBefore)
         node.spaceBefore = true;
       if (comment) {
@@ -5067,18 +5072,18 @@ var require_compose_node = __commonJS({
         node.srcToken = token;
       return node;
     }
-    function composeEmptyNode(ctx, offset, before, pos, { spaceBefore, comment, anchor, tag, end }, onError) {
+    function composeEmptyNode(ctx, offset, before, pos, { spaceBefore, comment, anchor, tag, end }, onError2) {
       const token = {
         type: "scalar",
         offset: utilEmptyScalarPosition.emptyScalarPosition(offset, before, pos),
         indent: -1,
         source: ""
       };
-      const node = composeScalar.composeScalar(ctx, token, tag, onError);
+      const node = composeScalar.composeScalar(ctx, token, tag, onError2);
       if (anchor) {
         node.anchor = anchor.source.substring(1);
         if (node.anchor === "")
-          onError(anchor, "BAD_ALIAS", "Anchor cannot be an empty string");
+          onError2(anchor, "BAD_ALIAS", "Anchor cannot be an empty string");
       }
       if (spaceBefore)
         node.spaceBefore = true;
@@ -5088,14 +5093,14 @@ var require_compose_node = __commonJS({
       }
       return node;
     }
-    function composeAlias({ options: options2 }, { offset, source, end }, onError) {
+    function composeAlias({ options: options2 }, { offset, source, end }, onError2) {
       const alias2 = new Alias.Alias(source.substring(1));
       if (alias2.source === "")
-        onError(offset, "BAD_ALIAS", "Alias cannot be an empty string");
+        onError2(offset, "BAD_ALIAS", "Alias cannot be an empty string");
       if (alias2.source.endsWith(":"))
-        onError(offset + source.length - 1, "BAD_ALIAS", "Alias ending in : is ambiguous", true);
+        onError2(offset + source.length - 1, "BAD_ALIAS", "Alias ending in : is ambiguous", true);
       const valueEnd = offset + source.length;
-      const re = resolveEnd.resolveEnd(end, valueEnd, options2.strict, onError);
+      const re = resolveEnd.resolveEnd(end, valueEnd, options2.strict, onError2);
       alias2.range = [offset, valueEnd, re.offset];
       if (re.comment)
         alias2.comment = re.comment;
@@ -5114,7 +5119,7 @@ var require_compose_doc = __commonJS({
     var composeNode = require_compose_node();
     var resolveEnd = require_resolve_end();
     var resolveProps = require_resolve_props();
-    function composeDoc(options2, directives, { offset, start, value: value2, end }, onError) {
+    function composeDoc(options2, directives, { offset, start, value: value2, end }, onError2) {
       const opts = Object.assign({ _directives: directives }, options2);
       const doc = new Document.Document(void 0, opts);
       const ctx = {
@@ -5127,17 +5132,17 @@ var require_compose_doc = __commonJS({
         indicator: "doc-start",
         next: value2 ?? (end == null ? void 0 : end[0]),
         offset,
-        onError,
+        onError: onError2,
         startOnNewline: true
       });
       if (props.found) {
         doc.directives.docStart = true;
         if (value2 && (value2.type === "block-map" || value2.type === "block-seq") && !props.hasNewline)
-          onError(props.end, "MISSING_CHAR", "Block collection cannot start on same line with directives-end marker");
+          onError2(props.end, "MISSING_CHAR", "Block collection cannot start on same line with directives-end marker");
       }
-      doc.contents = value2 ? composeNode.composeNode(ctx, value2, props, onError) : composeNode.composeEmptyNode(ctx, props.end, start, null, props, onError);
+      doc.contents = value2 ? composeNode.composeNode(ctx, value2, props, onError2) : composeNode.composeEmptyNode(ctx, props.end, start, null, props, onError2);
       const contentEnd = doc.contents.range[2];
-      const re = resolveEnd.resolveEnd(end, contentEnd, false, onError);
+      const re = resolveEnd.resolveEnd(end, contentEnd, false, onError2);
       if (re.comment)
         doc.comment = re.comment;
       doc.range = [offset, contentEnd, re.offset];
@@ -5361,12 +5366,12 @@ var require_cst_scalar = __commonJS({
     var resolveFlowScalar = require_resolve_flow_scalar();
     var errors = require_errors();
     var stringifyString = require_stringifyString();
-    function resolveAsScalar(token, strict = true, onError) {
+    function resolveAsScalar(token, strict = true, onError2) {
       if (token) {
         const _onError = (pos, code2, message) => {
           const offset = typeof pos === "number" ? pos : Array.isArray(pos) ? pos[0] : pos.offset;
-          if (onError)
-            onError(offset, code2, message);
+          if (onError2)
+            onError2(offset, code2, message);
           else
             throw new errors.YAMLParseError([offset, offset + 1], code2, message);
         };
@@ -20836,7 +20841,7 @@ async function walkRouteDir(sourceFiles, dirPath, dirName) {
 // packages/qwik-city/buildtime/routing/resolve-source-file.ts
 var import_node_path6 = require("path");
 
-// node_modules/.pnpm/marked@4.2.12/node_modules/marked/lib/marked.esm.js
+// node_modules/.pnpm/marked@4.3.0/node_modules/marked/lib/marked.esm.js
 function getDefaults() {
   return {
     async: false,
@@ -20847,6 +20852,7 @@ function getDefaults() {
     headerIds: true,
     headerPrefix: "",
     highlight: null,
+    hooks: null,
     langPrefix: "language-",
     mangle: true,
     pedantic: false,
@@ -20971,18 +20977,6 @@ function resolveUrl(base, href) {
 }
 var noopTest = { exec: function noopTest2() {
 } };
-function merge2(obj) {
-  let i = 1, target, key;
-  for (; i < arguments.length; i++) {
-    target = arguments[i];
-    for (key in target) {
-      if (Object.prototype.hasOwnProperty.call(target, key)) {
-        obj[key] = target[key];
-      }
-    }
-  }
-  return obj;
-}
 function splitCells(tableRow, count) {
   const row = tableRow.replace(/\|/g, (match, offset, str) => {
     let escaped = false, curr = offset;
@@ -21717,7 +21711,7 @@ var Tokenizer = class {
 var block = {
   newline: /^(?: *(?:\n|$))+/,
   code: /^( {4}[^\n]+(?:\n(?: *(?:\n|$))*)?)+/,
-  fences: /^ {0,3}(`{3,}(?=[^`\n]*\n)|~{3,})([^\n]*)\n(?:|([\s\S]*?)\n)(?: {0,3}\1[~`]* *(?=\n|$)|$)/,
+  fences: /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/,
   hr: /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/,
   heading: /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/,
   blockquote: /^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/,
@@ -21742,14 +21736,16 @@ block._comment = /<!--(?!-?>)[\s\S]*?(?:-->|$)/;
 block.html = edit(block.html, "i").replace("comment", block._comment).replace("tag", block._tag).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex();
 block.paragraph = edit(block._paragraph).replace("hr", block.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", block._tag).getRegex();
 block.blockquote = edit(block.blockquote).replace("paragraph", block.paragraph).getRegex();
-block.normal = merge2({}, block);
-block.gfm = merge2({}, block.normal, {
+block.normal = { ...block };
+block.gfm = {
+  ...block.normal,
   table: "^ *([^\\n ].*\\|.*)\\n {0,3}(?:\\| *)?(:?-+:? *(?:\\| *:?-+:? *)*)(?:\\| *)?(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)"
   // Cells
-});
+};
 block.gfm.table = edit(block.gfm.table).replace("hr", block.hr).replace("heading", " {0,3}#{1,6} ").replace("blockquote", " {0,3}>").replace("code", " {4}[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", block._tag).getRegex();
 block.gfm.paragraph = edit(block._paragraph).replace("hr", block.hr).replace("heading", " {0,3}#{1,6} ").replace("|lheading", "").replace("table", block.gfm.table).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", block._tag).getRegex();
-block.pedantic = merge2({}, block.normal, {
+block.pedantic = {
+  ...block.normal,
   html: edit(
     `^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`
   ).replace("comment", block._comment).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),
@@ -21759,7 +21755,7 @@ block.pedantic = merge2({}, block.normal, {
   // fences not supported
   lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/,
   paragraph: edit(block.normal._paragraph).replace("hr", block.hr).replace("heading", " *#{1,6} *[^\n]").replace("lheading", block.lheading).replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").getRegex()
-});
+};
 var inline = {
   escape: /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/,
   autolink: /^<(scheme:[^\s\x00-\x1f<>]*|email)>/,
@@ -21805,8 +21801,9 @@ inline.link = edit(inline.link).replace("label", inline._label).replace("href", 
 inline.reflink = edit(inline.reflink).replace("label", inline._label).replace("ref", block._label).getRegex();
 inline.nolink = edit(inline.nolink).replace("ref", block._label).getRegex();
 inline.reflinkSearch = edit(inline.reflinkSearch, "g").replace("reflink", inline.reflink).replace("nolink", inline.nolink).getRegex();
-inline.normal = merge2({}, inline);
-inline.pedantic = merge2({}, inline.normal, {
+inline.normal = { ...inline };
+inline.pedantic = {
+  ...inline.normal,
   strong: {
     start: /^__|\*\*/,
     middle: /^__(?=\S)([\s\S]*?\S)__(?!_)|^\*\*(?=\S)([\s\S]*?\S)\*\*(?!\*)/,
@@ -21821,20 +21818,22 @@ inline.pedantic = merge2({}, inline.normal, {
   },
   link: edit(/^!?\[(label)\]\((.*?)\)/).replace("label", inline._label).getRegex(),
   reflink: edit(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", inline._label).getRegex()
-});
-inline.gfm = merge2({}, inline.normal, {
+};
+inline.gfm = {
+  ...inline.normal,
   escape: edit(inline.escape).replace("])", "~|])").getRegex(),
   _extended_email: /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/,
   url: /^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/,
   _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/,
   del: /^(~~?)(?=[^\s~])([\s\S]*?[^\s~])\1(?=[^~]|$)/,
   text: /^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/
-});
+};
 inline.gfm.url = edit(inline.gfm.url, "i").replace("email", inline.gfm._extended_email).getRegex();
-inline.breaks = merge2({}, inline.gfm, {
+inline.breaks = {
+  ...inline.gfm,
   br: edit(inline.br).replace("{2,}", "*").getRegex(),
   text: edit(inline.gfm.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex()
-});
+};
 function smartypants(text2) {
   return text2.replace(/---/g, "\u2014").replace(/--/g, "\u2013").replace(/(^|[-\u2014/(\[{"\s])'/g, "$1\u2018").replace(/'/g, "\u2019").replace(/(^|[-\u2014/(\[{\u2018\s])"/g, "$1\u201C").replace(/"/g, "\u201D").replace(/\.{3}/g, "\u2026");
 }
@@ -22682,98 +22681,157 @@ var Parser = class {
     return out;
   }
 };
-function marked(src, opt, callback) {
-  if (typeof src === "undefined" || src === null) {
-    throw new Error("marked(): input parameter is undefined or null");
+var Hooks = class {
+  constructor(options2) {
+    this.options = options2 || defaults;
   }
-  if (typeof src !== "string") {
-    throw new Error("marked(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected");
+  /**
+   * Process markdown before marked
+   */
+  preprocess(markdown2) {
+    return markdown2;
   }
-  if (typeof opt === "function") {
-    callback = opt;
-    opt = null;
+  /**
+   * Process HTML after marked is finished
+   */
+  postprocess(html3) {
+    return html3;
   }
-  opt = merge2({}, marked.defaults, opt || {});
-  checkSanitizeDeprecation(opt);
-  if (callback) {
-    const highlight2 = opt.highlight;
-    let tokens;
-    try {
-      tokens = Lexer.lex(src, opt);
-    } catch (e) {
-      return callback(e);
-    }
-    const done = function(err) {
-      let out;
-      if (!err) {
-        try {
-          if (opt.walkTokens) {
-            marked.walkTokens(tokens, opt.walkTokens);
-          }
-          out = Parser.parse(tokens, opt);
-        } catch (e) {
-          err = e;
-        }
-      }
-      opt.highlight = highlight2;
-      return err ? callback(err) : callback(null, out);
-    };
-    if (!highlight2 || highlight2.length < 3) {
-      return done();
-    }
-    delete opt.highlight;
-    if (!tokens.length)
-      return done();
-    let pending = 0;
-    marked.walkTokens(tokens, function(token) {
-      if (token.type === "code") {
-        pending++;
-        setTimeout(() => {
-          highlight2(token.text, token.lang, function(err, code2) {
-            if (err) {
-              return done(err);
-            }
-            if (code2 != null && code2 !== token.text) {
-              token.text = code2;
-              token.escaped = true;
-            }
-            pending--;
-            if (pending === 0) {
-              done();
-            }
-          });
-        }, 0);
-      }
-    });
-    if (pending === 0) {
-      done();
-    }
-    return;
-  }
-  function onError(e) {
+};
+__publicField(Hooks, "passThroughHooks", /* @__PURE__ */ new Set([
+  "preprocess",
+  "postprocess"
+]));
+function onError(silent, async, callback) {
+  return (e) => {
     e.message += "\nPlease report this to https://github.com/markedjs/marked.";
-    if (opt.silent) {
-      return "<p>An error occurred:</p><pre>" + escape(e.message + "", true) + "</pre>";
+    if (silent) {
+      const msg = "<p>An error occurred:</p><pre>" + escape(e.message + "", true) + "</pre>";
+      if (async) {
+        return Promise.resolve(msg);
+      }
+      if (callback) {
+        callback(null, msg);
+        return;
+      }
+      return msg;
+    }
+    if (async) {
+      return Promise.reject(e);
+    }
+    if (callback) {
+      callback(e);
+      return;
     }
     throw e;
-  }
-  try {
-    const tokens = Lexer.lex(src, opt);
-    if (opt.walkTokens) {
-      if (opt.async) {
-        return Promise.all(marked.walkTokens(tokens, opt.walkTokens)).then(() => {
-          return Parser.parse(tokens, opt);
-        }).catch(onError);
-      }
-      marked.walkTokens(tokens, opt.walkTokens);
+  };
+}
+function parseMarkdown(lexer2, parser2) {
+  return (src, opt, callback) => {
+    if (typeof opt === "function") {
+      callback = opt;
+      opt = null;
     }
-    return Parser.parse(tokens, opt);
-  } catch (e) {
-    onError(e);
-  }
+    const origOpt = { ...opt };
+    opt = { ...marked.defaults, ...origOpt };
+    const throwError = onError(opt.silent, opt.async, callback);
+    if (typeof src === "undefined" || src === null) {
+      return throwError(new Error("marked(): input parameter is undefined or null"));
+    }
+    if (typeof src !== "string") {
+      return throwError(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected"));
+    }
+    checkSanitizeDeprecation(opt);
+    if (opt.hooks) {
+      opt.hooks.options = opt;
+    }
+    if (callback) {
+      const highlight2 = opt.highlight;
+      let tokens;
+      try {
+        if (opt.hooks) {
+          src = opt.hooks.preprocess(src);
+        }
+        tokens = lexer2(src, opt);
+      } catch (e) {
+        return throwError(e);
+      }
+      const done = function(err) {
+        let out;
+        if (!err) {
+          try {
+            if (opt.walkTokens) {
+              marked.walkTokens(tokens, opt.walkTokens);
+            }
+            out = parser2(tokens, opt);
+            if (opt.hooks) {
+              out = opt.hooks.postprocess(out);
+            }
+          } catch (e) {
+            err = e;
+          }
+        }
+        opt.highlight = highlight2;
+        return err ? throwError(err) : callback(null, out);
+      };
+      if (!highlight2 || highlight2.length < 3) {
+        return done();
+      }
+      delete opt.highlight;
+      if (!tokens.length)
+        return done();
+      let pending = 0;
+      marked.walkTokens(tokens, function(token) {
+        if (token.type === "code") {
+          pending++;
+          setTimeout(() => {
+            highlight2(token.text, token.lang, function(err, code2) {
+              if (err) {
+                return done(err);
+              }
+              if (code2 != null && code2 !== token.text) {
+                token.text = code2;
+                token.escaped = true;
+              }
+              pending--;
+              if (pending === 0) {
+                done();
+              }
+            });
+          }, 0);
+        }
+      });
+      if (pending === 0) {
+        done();
+      }
+      return;
+    }
+    if (opt.async) {
+      return Promise.resolve(opt.hooks ? opt.hooks.preprocess(src) : src).then((src2) => lexer2(src2, opt)).then((tokens) => opt.walkTokens ? Promise.all(marked.walkTokens(tokens, opt.walkTokens)).then(() => tokens) : tokens).then((tokens) => parser2(tokens, opt)).then((html3) => opt.hooks ? opt.hooks.postprocess(html3) : html3).catch(throwError);
+    }
+    try {
+      if (opt.hooks) {
+        src = opt.hooks.preprocess(src);
+      }
+      const tokens = lexer2(src, opt);
+      if (opt.walkTokens) {
+        marked.walkTokens(tokens, opt.walkTokens);
+      }
+      let html3 = parser2(tokens, opt);
+      if (opt.hooks) {
+        html3 = opt.hooks.postprocess(html3);
+      }
+      return html3;
+    } catch (e) {
+      return throwError(e);
+    }
+  };
+}
+function marked(src, opt, callback) {
+  return parseMarkdown(Lexer.lex, Parser.parse)(src, opt, callback);
 }
 marked.options = marked.setOptions = function(opt) {
-  merge2(marked.defaults, opt);
+  marked.defaults = { ...marked.defaults, ...opt };
   changeDefaults(marked.defaults);
   return marked;
 };
@@ -22782,8 +22840,8 @@ marked.defaults = defaults;
 marked.use = function(...args) {
   const extensions = marked.defaults.extensions || { renderers: {}, childTokens: {} };
   args.forEach((pack) => {
-    const opts = merge2({}, pack);
-    opts.async = marked.defaults.async || opts.async;
+    const opts = { ...pack };
+    opts.async = marked.defaults.async || opts.async || false;
     if (pack.extensions) {
       pack.extensions.forEach((ext) => {
         if (!ext.name) {
@@ -22862,6 +22920,32 @@ marked.use = function(...args) {
       }
       opts.tokenizer = tokenizer;
     }
+    if (pack.hooks) {
+      const hooks = marked.defaults.hooks || new Hooks();
+      for (const prop in pack.hooks) {
+        const prevHook = hooks[prop];
+        if (Hooks.passThroughHooks.has(prop)) {
+          hooks[prop] = (arg) => {
+            if (marked.defaults.async) {
+              return Promise.resolve(pack.hooks[prop].call(hooks, arg)).then((ret2) => {
+                return prevHook.call(hooks, ret2);
+              });
+            }
+            const ret = pack.hooks[prop].call(hooks, arg);
+            return prevHook.call(hooks, ret);
+          };
+        } else {
+          hooks[prop] = (...args2) => {
+            let ret = pack.hooks[prop].apply(hooks, args2);
+            if (ret === false) {
+              ret = prevHook.apply(hooks, args2);
+            }
+            return ret;
+          };
+        }
+      }
+      opts.hooks = hooks;
+    }
     if (pack.walkTokens) {
       const walkTokens2 = marked.defaults.walkTokens;
       opts.walkTokens = function(token) {
@@ -22909,29 +22993,7 @@ marked.walkTokens = function(tokens, callback) {
   }
   return values;
 };
-marked.parseInline = function(src, opt) {
-  if (typeof src === "undefined" || src === null) {
-    throw new Error("marked.parseInline(): input parameter is undefined or null");
-  }
-  if (typeof src !== "string") {
-    throw new Error("marked.parseInline(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected");
-  }
-  opt = merge2({}, marked.defaults, opt || {});
-  checkSanitizeDeprecation(opt);
-  try {
-    const tokens = Lexer.lexInline(src, opt);
-    if (opt.walkTokens) {
-      marked.walkTokens(tokens, opt.walkTokens);
-    }
-    return Parser.parseInline(tokens, opt);
-  } catch (e) {
-    e.message += "\nPlease report this to https://github.com/markedjs/marked.";
-    if (opt.silent) {
-      return "<p>An error occurred:</p><pre>" + escape(e.message + "", true) + "</pre>";
-    }
-    throw e;
-  }
-};
+marked.parseInline = parseMarkdown(Lexer.lexInline, Parser.parseInline);
 marked.Parser = Parser;
 marked.parser = Parser.parse;
 marked.Renderer = Renderer;
@@ -22940,6 +23002,7 @@ marked.Lexer = Lexer;
 marked.lexer = Lexer.lex;
 marked.Tokenizer = Tokenizer;
 marked.Slugger = Slugger;
+marked.Hooks = Hooks;
 marked.parse = marked;
 var options = marked.options;
 var setOptions = marked.setOptions;
