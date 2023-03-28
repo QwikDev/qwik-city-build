@@ -13682,6 +13682,7 @@ function frontmatterAttrsToDocumentHead(attrs) {
         if (attrValue != null) {
           if (attrName === "title") {
             head.title = attrValue.toString();
+            head.title = head.title.replace(/\\@/g, "@");
           } else if (attrName === "og" || attrName === "opengraph") {
             if (typeof attrValue === "object") {
               for (const opengraph of Array.isArray(attrValue) ? attrValue : [attrValue]) {
