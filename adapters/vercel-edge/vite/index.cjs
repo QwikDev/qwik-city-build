@@ -30,8 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/adapters/vercel-edge/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
-  vercelEdgeAdapter: () => vercelEdgeAdapter,
-  vercelEdgeAdaptor: () => vercelEdgeAdaptor
+  vercelEdgeAdapter: () => vercelEdgeAdapter
 });
 module.exports = __toCommonJS(vite_exports);
 var import_vite = require("../../shared/vite/index.cjs");
@@ -42,7 +41,6 @@ function vercelEdgeAdapter(opts = {}) {
   return (0, import_vite.viteAdapter)({
     name: "vercel-edge",
     origin: ((_a = process == null ? void 0 : process.env) == null ? void 0 : _a.VERCEL_URL) || "https://yoursitename.vercel.app",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     staticPaths: opts.staticPaths,
     cleanStaticGenerated: true,
@@ -114,9 +112,7 @@ function vercelEdgeAdapter(opts = {}) {
     }
   });
 }
-var vercelEdgeAdaptor = vercelEdgeAdapter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  vercelEdgeAdapter,
-  vercelEdgeAdaptor
+  vercelEdgeAdapter
 });

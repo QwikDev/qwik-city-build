@@ -7,7 +7,6 @@ function azureSwaAdapter(opts = {}) {
   return viteAdapter({
     name: "azure-swa",
     origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.region.2.azurestaticapps.net",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     cleanStaticGenerated: true,
     async generate({ outputEntries, serverOutDir, clientOutDir }) {
@@ -57,8 +56,6 @@ function azureSwaAdapter(opts = {}) {
     }
   });
 }
-var azureSwaAdaptor = azureSwaAdapter;
 export {
-  azureSwaAdapter,
-  azureSwaAdaptor
+  azureSwaAdapter
 };

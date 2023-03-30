@@ -3,18 +3,6 @@ import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
 /**
  * @public
- * @deprecated Use `netlifyEdgeAdapter` exported from `@builder.io/qwik-city/adapters/netlify-edge/vite` instead.
- */
-export declare const netifyEdgeAdapter: typeof netlifyEdgeAdapter;
-
-/**
- * @public
- * @deprecated Use `netlifyEdgeAdapter` exported from `@builder.io/qwik-city/adapters/netlify-edge/vite` instead.
- */
-export declare const netifyEdgeAdaptor: typeof netlifyEdgeAdapter;
-
-/**
- * @public
  */
 export declare function netlifyEdgeAdapter(opts?: NetlifyEdgeAdapterOptions): any;
 
@@ -37,12 +25,6 @@ export declare interface NetlifyEdgeAdapterOptions extends ServerAdapterOptions 
      */
     staticPaths?: string[];
 }
-
-/**
- * @public
- * @deprecated Use `NetlifyEdgeAdapterOptions` instead.
- */
-export declare type NetlifyEdgeAdaptorOptions = NetlifyEdgeAdapterOptions;
 
 export { StaticGenerateRenderOptions }
 

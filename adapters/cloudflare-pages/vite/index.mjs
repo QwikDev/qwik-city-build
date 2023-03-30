@@ -7,7 +7,6 @@ function cloudflarePagesAdapter(opts = {}) {
   return viteAdapter({
     name: "cloudflare-pages",
     origin: (env == null ? void 0 : env.CF_PAGES_URL) ?? (env == null ? void 0 : env.ORIGIN) ?? "https://your.cloudflare.pages.dev",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     staticPaths: opts.staticPaths,
     cleanStaticGenerated: true,
@@ -46,8 +45,6 @@ function cloudflarePagesAdapter(opts = {}) {
     }
   });
 }
-var cloudflarePagesAdaptor = cloudflarePagesAdapter;
 export {
-  cloudflarePagesAdapter,
-  cloudflarePagesAdaptor
+  cloudflarePagesAdapter
 };

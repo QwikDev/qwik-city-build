@@ -7,7 +7,6 @@ function vercelEdgeAdapter(opts = {}) {
   return viteAdapter({
     name: "vercel-edge",
     origin: ((_a = process == null ? void 0 : process.env) == null ? void 0 : _a.VERCEL_URL) || "https://yoursitename.vercel.app",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     staticPaths: opts.staticPaths,
     cleanStaticGenerated: true,
@@ -79,8 +78,6 @@ function vercelEdgeAdapter(opts = {}) {
     }
   });
 }
-var vercelEdgeAdaptor = vercelEdgeAdapter;
 export {
-  vercelEdgeAdapter,
-  vercelEdgeAdaptor
+  vercelEdgeAdapter
 };

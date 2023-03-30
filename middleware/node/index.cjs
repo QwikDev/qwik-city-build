@@ -30,14 +30,12 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/middleware/node/index.ts
 var node_exports = {};
 __export(node_exports, {
-  createQwikCity: () => createQwikCity,
-  qwikCity: () => qwikCity
+  createQwikCity: () => createQwikCity
 });
 module.exports = __toCommonJS(node_exports);
 var import_request_handler = require("../request-handler/index.cjs");
 var import_server = require("@builder.io/qwik/server");
 var import_qwik_city_not_found_paths = require("@qwik-city-not-found-paths");
-var import_qwik_city_plan = __toESM(require("@qwik-city-plan"), 1);
 var import_qwik_city_static_paths = require("@qwik-city-static-paths");
 var import_node_fs = require("fs");
 var import_node_path = require("path");
@@ -276,11 +274,7 @@ function createQwikCity(opts) {
     staticFile
   };
 }
-function qwikCity(render, opts) {
-  return createQwikCity({ render, qwikCityPlan: import_qwik_city_plan.default, ...opts });
-}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  createQwikCity,
-  qwikCity
+  createQwikCity
 });

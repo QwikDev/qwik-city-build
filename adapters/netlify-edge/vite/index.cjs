@@ -30,8 +30,6 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/adapters/netlify-edge/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
-  netifyEdgeAdapter: () => netifyEdgeAdapter,
-  netifyEdgeAdaptor: () => netifyEdgeAdaptor,
   netlifyEdgeAdapter: () => netlifyEdgeAdapter
 });
 module.exports = __toCommonJS(vite_exports);
@@ -48,7 +46,6 @@ function netlifyEdgeAdapter(opts = {}) {
   return (0, import_vite.viteAdapter)({
     name: "netlify-edge",
     origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.netlify.app",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     staticPaths: opts.staticPaths,
     cleanStaticGenerated: true,
@@ -108,11 +105,7 @@ function netlifyEdgeAdapter(opts = {}) {
     }
   });
 }
-var netifyEdgeAdapter = netlifyEdgeAdapter;
-var netifyEdgeAdaptor = netlifyEdgeAdapter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  netifyEdgeAdapter,
-  netifyEdgeAdaptor,
   netlifyEdgeAdapter
 });

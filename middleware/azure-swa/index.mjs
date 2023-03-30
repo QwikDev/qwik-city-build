@@ -1,6 +1,5 @@
 // packages/qwik-city/middleware/azure-swa/index.ts
 import { setServerPlatform } from "@builder.io/qwik/server";
-import qwikCityPlan from "@qwik-city-plan";
 import {
   mergeHeadersCookies,
   requestHandler
@@ -87,10 +86,6 @@ function createQwikCity(opts) {
   }
   return onAzureSwaRequest;
 }
-function qwikCity(render, opts) {
-  return createQwikCity({ render, qwikCityPlan, ...opts });
-}
 export {
-  createQwikCity,
-  qwikCity
+  createQwikCity
 };

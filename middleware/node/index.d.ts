@@ -1,8 +1,6 @@
 /// <reference types="node" />
 
 import type { IncomingMessage } from 'node:http';
-import { Render } from '@builder.io/qwik/server';
-import type { RenderOptions } from '@builder.io/qwik';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ServerResponse } from 'node:http';
 
@@ -29,26 +27,6 @@ export declare interface PlatformNode {
     incomingMessage?: IncomingMessage;
     node?: string;
 }
-
-/**
- * @public
- * @deprecated Please use `createQwikCity()` instead.
- *
- * Example:
- *
- * ```ts
- * import { createQwikCity } from '@builder.io/qwik-city/middleware/node';
- * import qwikCityPlan from '@qwik-city-plan';
- * import render from './entry.ssr';
- *
- * const { router, notFound } = createQwikCity({ render, qwikCityPlan });
- * ```
- */
-export declare function qwikCity(render: Render, opts?: RenderOptions): {
-    router: (req: IncomingMessage, res: ServerResponse<IncomingMessage>, next: NodeRequestNextFunction) => Promise<void>;
-    notFound: (req: IncomingMessage, res: ServerResponse<IncomingMessage>, next: (e: any) => void) => Promise<void>;
-    staticFile: (req: IncomingMessage, res: ServerResponse<IncomingMessage>, next: (e?: any) => void) => Promise<void>;
-};
 
 /**
  * @public

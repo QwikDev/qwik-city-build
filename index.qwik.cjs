@@ -55,7 +55,6 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
   }
   return qwik.SkipRender;
 }, "RouterOutlet_component_AKetNByE5TM"));
-const Content = RouterOutlet;
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
@@ -75,21 +74,21 @@ const getClientNavPath = (props, baseUrl) => {
   const href = props.href;
   if (typeof href === "string" && href.trim() !== "" && typeof props.target !== "string")
     try {
-      const linkUrl = toUrl(href, baseUrl);
-      const currentUrl = toUrl("", baseUrl);
+      const linkUrl = toUrl(href, baseUrl.url);
+      const currentUrl = toUrl("", baseUrl.url);
       if (isSameOrigin(linkUrl, currentUrl))
         return toPath(linkUrl);
     } catch (e) {
       console.error(e);
     }
   else if (props.reload)
-    return toPath(toUrl("", baseUrl));
+    return toPath(toUrl("", baseUrl.url));
   return null;
 };
 const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
   if (props.prefetch === true && clientNavPath) {
-    const prefetchUrl = toUrl(clientNavPath, currentLoc);
-    if (!isSamePathname(prefetchUrl, toUrl("", currentLoc)))
+    const prefetchUrl = toUrl(clientNavPath, currentLoc.url);
+    if (!isSamePathname(prefetchUrl, toUrl("", currentLoc.url)))
       return "";
   }
   return null;
@@ -107,7 +106,7 @@ const clientNavigate = (win, newUrl, routeNavigate) => {
       const previousUrl = toUrl(routeNavigate.value, currentUrl2);
       if (isSameOriginDifferentPathname(currentUrl2, previousUrl)) {
         handleScroll(win, previousUrl, currentUrl2);
-        routeNavigate.value = toPath(currentUrl2);
+        routeNavigate.value = toPath(new URL(currentUrl2.href));
       }
     });
     win.removeEventListener("popstate", win._qCityPopstateFallback);
@@ -355,7 +354,7 @@ const useDocumentHead = () => qwik.useContext(DocumentHeadContext);
 const useLocation = () => qwik.useContext(RouteLocationContext);
 const useNavigate = () => qwik.useContext(RouteNavigateContext);
 const useAction = () => qwik.useContext(RouteActionContext);
-const useQwikCityEnv = () => qwik.noSerialize(qwik.useEnvData("qwikcity"));
+const useQwikCityEnv = () => qwik.noSerialize(qwik.useServerData("qwikcity"));
 const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   const env = useQwikCityEnv();
   if (!env?.params)
@@ -366,9 +365,6 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
   const url = new URL(urlEnv);
   const routeLocation = qwik.useStore({
     url,
-    href: url.href,
-    pathname: url.pathname,
-    query: url.searchParams,
     params: env.params,
     isNavigating: false
   });
@@ -459,12 +455,9 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
         const [params, mods, menu] = loadedRoute;
         const pageModule = mods[mods.length - 1];
         routeLocation2.url = url2;
-        routeLocation2.href = url2.href;
-        routeLocation2.pathname = url2.pathname;
         routeLocation2.params = {
           ...params
         };
-        routeLocation2.query = url2.searchParams;
         navPath2.untrackedValue = toPath(url2);
         const resolvedHead = resolveHead(clientPageData, routeLocation2, mods, locale);
         content2.headings = pageModule.headings;
@@ -502,16 +495,11 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
   ]));
   return /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
-const QwikCity = QwikCityProvider;
-const Html = QwikCityProvider;
 const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const urlEnv = props.url ?? "http://localhost/";
   const url = new URL(urlEnv);
   const routeLocation = qwik.useStore({
     url,
-    href: url.href,
-    pathname: url.pathname,
-    query: url.searchParams,
     params: props.params ?? {},
     isNavigating: false
   });
@@ -601,8 +589,8 @@ const ServiceWorkerRegister = (props) => qwik.jsx("script", {
   dangerouslySetInnerHTML: swRegister,
   nonce: props.nonce
 });
-const routeActionQrl = (actionQrl2, ...rest) => {
-  const { id, validators } = getValidators(rest, actionQrl2);
+const routeActionQrl = (actionQrl, ...rest) => {
+  const { id, validators } = getValidators(rest, actionQrl);
   function action() {
     const loc = useLocation();
     const currentAction = useAction();
@@ -683,19 +671,18 @@ Action.run() can only be called on the browser, for example when a user clicks a
       state
     ]);
     initialState.submit = submit;
-    initialState.run = submit;
     return state;
   }
   action.__brand = "server_action";
   action.__validators = validators;
-  action.__qrl = actionQrl2;
+  action.__qrl = actionQrl;
   action.__id = id;
   action.use = action;
   Object.freeze(action);
   return action;
 };
-const globalActionQrl = (actionQrl2, ...rest) => {
-  const action = routeActionQrl(actionQrl2, ...rest);
+const globalActionQrl = (actionQrl, ...rest) => {
+  const action = routeActionQrl(actionQrl, ...rest);
   if (build.isServer) {
     if (typeof globalThis._qwikActionsMap === "undefined")
       globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
@@ -705,8 +692,8 @@ const globalActionQrl = (actionQrl2, ...rest) => {
 };
 const routeAction$ = /* @__PURE__ */ qwik.implicit$FirstArg(routeActionQrl);
 const globalAction$ = /* @__PURE__ */ qwik.implicit$FirstArg(globalActionQrl);
-const routeLoaderQrl = (loaderQrl2, ...rest) => {
-  const { id, validators } = getValidators(rest, loaderQrl2);
+const routeLoaderQrl = (loaderQrl, ...rest) => {
+  const { id, validators } = getValidators(rest, loaderQrl);
   function loader() {
     return qwik.useContext(RouteStateContext, (state) => {
       if (!(id in state))
@@ -717,7 +704,7 @@ const routeLoaderQrl = (loaderQrl2, ...rest) => {
     });
   }
   loader.__brand = "server_loader";
-  loader.__qrl = loaderQrl2;
+  loader.__qrl = loaderQrl;
   loader.__validators = validators;
   loader.__id = id;
   loader.use = loader;
@@ -842,10 +829,6 @@ const getValidators = (rest, qrl) => {
     id
   };
 };
-const actionQrl = globalActionQrl;
-const action$ = globalAction$;
-const loaderQrl = routeLoaderQrl;
-const loader$ = routeLoader$;
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
   qwik._jsxBranch();
   if (action)
@@ -854,7 +837,7 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
       action: action.actionPath,
       "preventdefault:submit": !reloadDocument,
       onSubmit$: [
-        !reloadDocument ? action.run : void 0,
+        !reloadDocument ? action.submit : void 0,
         onSubmit$
       ],
       method: "post",
@@ -915,21 +898,14 @@ Object.defineProperty(exports, "z", {
   enumerable: true,
   get: () => zod.z
 });
-exports.Content = Content;
 exports.Form = Form;
-exports.Html = Html;
 exports.Link = Link;
-exports.QwikCity = QwikCity;
 exports.QwikCityMockProvider = QwikCityMockProvider;
 exports.QwikCityProvider = QwikCityProvider;
 exports.RouterOutlet = RouterOutlet;
 exports.ServiceWorkerRegister = ServiceWorkerRegister;
-exports.action$ = action$;
-exports.actionQrl = actionQrl;
 exports.globalAction$ = globalAction$;
 exports.globalActionQrl = globalActionQrl;
-exports.loader$ = loader$;
-exports.loaderQrl = loaderQrl;
 exports.routeAction$ = routeAction$;
 exports.routeActionQrl = routeActionQrl;
 exports.routeLoader$ = routeLoader$;

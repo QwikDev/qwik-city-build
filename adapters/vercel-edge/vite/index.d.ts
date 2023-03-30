@@ -40,16 +40,4 @@ export declare interface VercelEdgeAdapterOptions extends ServerAdapterOptions {
     staticPaths?: string[];
 }
 
-/**
- * @public
- * @deprecated Use `vercelEdgeAdapter` exported from `@builder.io/qwik-city/adapters/vercel-edge/vite` instead.
- */
-export declare const vercelEdgeAdaptor: typeof vercelEdgeAdapter;
-
-/**
- * @public
- * @deprecated Please use `VercelEdgeAdapterOptions` instead.
- */
-export declare type VercelEdgeAdaptorOptions = VercelEdgeAdapterOptions;
-
 export { }

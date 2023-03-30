@@ -20,8 +20,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/adapters/cloud-run/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
-  cloudRunAdapter: () => cloudRunAdapter,
-  cloudRunAdaptor: () => cloudRunAdaptor
+  cloudRunAdapter: () => cloudRunAdapter
 });
 module.exports = __toCommonJS(vite_exports);
 var import_vite = require("../../shared/vite/index.cjs");
@@ -30,7 +29,6 @@ function cloudRunAdapter(opts = {}) {
   return (0, import_vite.viteAdapter)({
     name: "cloud-run",
     origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://your-app-name.run.app",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     cleanStaticGenerated: true,
     config() {
@@ -43,9 +41,7 @@ function cloudRunAdapter(opts = {}) {
     }
   });
 }
-var cloudRunAdaptor = cloudRunAdapter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  cloudRunAdapter,
-  cloudRunAdaptor
+  cloudRunAdapter
 });

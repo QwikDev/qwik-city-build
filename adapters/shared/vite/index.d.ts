@@ -31,12 +31,6 @@ export declare interface AdapterSSGOptions extends Omit<StaticGenerateRenderOpti
     origin?: string;
 }
 
-/**
- * @public
- * @deprecated Please use `AdapterSSGOptions` instead.
- */
-export declare type AdaptorSSGOptions = AdapterSSGOptions;
-
 declare interface BuildLayout {
     filePath: string;
     dirPath: string;
@@ -108,17 +102,7 @@ export declare interface ServerAdapterOptions {
      * pages from being statically generated.
      */
     ssg?: AdapterSSGOptions | null;
-    /**
-     * @deprecated Please use `ssg` instead.
-     */
-    staticGenerate?: Omit<StaticGenerateRenderOptions, 'outDir'> | true;
 }
-
-/**
- * @public
- * @deprecated Please use `ServerAdapterOptions` instead.
- */
-export declare type ServerAdaptorOptions = ServerAdapterOptions;
 
 /**
  * @public
@@ -137,10 +121,6 @@ declare interface ViteAdapterPluginOptions {
     name: string;
     origin: string;
     staticPaths?: string[];
-    /**
-     * @deprecated Please use `ssg` instead.
-     */
-    staticGenerate?: true | Omit<StaticGenerateRenderOptions, 'outDir'> | undefined;
     ssg?: AdapterSSGOptions | null;
     cleanStaticGenerated?: boolean;
     maxWorkers?: number;
@@ -155,11 +135,5 @@ declare interface ViteAdapterPluginOptions {
         error: (message: string) => void;
     }) => Promise<void>;
 }
-
-/**
- * @public
- * @deprecated Please use `viteAdapter` instead.
- */
-export declare const viteAdaptor: typeof viteAdapter;
 
 export { }

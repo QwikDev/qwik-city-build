@@ -30,8 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
-  cloudflarePagesAdapter: () => cloudflarePagesAdapter,
-  cloudflarePagesAdaptor: () => cloudflarePagesAdaptor
+  cloudflarePagesAdapter: () => cloudflarePagesAdapter
 });
 module.exports = __toCommonJS(vite_exports);
 var import_vite = require("../../shared/vite/index.cjs");
@@ -42,7 +41,6 @@ function cloudflarePagesAdapter(opts = {}) {
   return (0, import_vite.viteAdapter)({
     name: "cloudflare-pages",
     origin: (env == null ? void 0 : env.CF_PAGES_URL) ?? (env == null ? void 0 : env.ORIGIN) ?? "https://your.cloudflare.pages.dev",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     staticPaths: opts.staticPaths,
     cleanStaticGenerated: true,
@@ -81,9 +79,7 @@ function cloudflarePagesAdapter(opts = {}) {
     }
   });
 }
-var cloudflarePagesAdaptor = cloudflarePagesAdapter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  cloudflarePagesAdapter,
-  cloudflarePagesAdaptor
+  cloudflarePagesAdapter
 });

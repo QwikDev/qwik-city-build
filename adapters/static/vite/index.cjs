@@ -30,8 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/adapters/static/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
-  staticAdapter: () => staticAdapter,
-  staticAdaptor: () => staticAdaptor
+  staticAdapter: () => staticAdapter
 });
 module.exports = __toCommonJS(vite_exports);
 
@@ -256,18 +255,6 @@ function viteAdapter(opts) {
           const clientOutDir = qwikVitePlugin.api.getClientOutDir();
           const rootDir = qwikVitePlugin.api.getRootDir() ?? void 0;
           if (renderModulePath && qwikCityPlanModulePath && clientOutDir) {
-            if (opts.staticGenerate) {
-              this.warn(`Option "staticGenerate" is deprecated. Please use "ssg" option instead.`);
-              opts.ssg = opts.ssg || {
-                include: []
-              };
-              if (typeof opts.staticGenerate === "object") {
-                opts.ssg = {
-                  ...opts.staticGenerate,
-                  ...opts.ssg
-                };
-              }
-            }
             if (Array.isArray((_a = opts.ssg) == null ? void 0 : _a.include) && opts.ssg.include.length > 0) {
               let ssgOrigin = ((_b = opts.ssg) == null ? void 0 : _b.origin) || opts.origin;
               if (!ssgOrigin) {
@@ -356,9 +343,7 @@ function staticAdapter(opts) {
     }
   });
 }
-var staticAdaptor = staticAdapter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  staticAdapter,
-  staticAdaptor
+  staticAdapter
 });

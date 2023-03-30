@@ -26,18 +26,6 @@ export declare interface CloudflarePagesAdapterOptions extends ServerAdapterOpti
     staticPaths?: string[];
 }
 
-/**
- * @public
- * @deprecated Use `cloudflarePagesAdapter` exported from `@builder.io/qwik-city/adapters/cloudflare-pages/vite` instead.
- */
-export declare const cloudflarePagesAdaptor: typeof cloudflarePagesAdapter;
-
-/**
- * @public
- * @deprecated Use `CloudflarePagesAdapterOptions` instead.
- */
-export declare type CloudflarePagesAdaptorOptions = CloudflarePagesAdapterOptions;
-
 export { StaticGenerateRenderOptions }
 
 export { }

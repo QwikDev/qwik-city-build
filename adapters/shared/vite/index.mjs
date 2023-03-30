@@ -219,18 +219,6 @@ function viteAdapter(opts) {
           const clientOutDir = qwikVitePlugin.api.getClientOutDir();
           const rootDir = qwikVitePlugin.api.getRootDir() ?? void 0;
           if (renderModulePath && qwikCityPlanModulePath && clientOutDir) {
-            if (opts.staticGenerate) {
-              this.warn(`Option "staticGenerate" is deprecated. Please use "ssg" option instead.`);
-              opts.ssg = opts.ssg || {
-                include: []
-              };
-              if (typeof opts.staticGenerate === "object") {
-                opts.ssg = {
-                  ...opts.staticGenerate,
-                  ...opts.ssg
-                };
-              }
-            }
             if (Array.isArray((_a = opts.ssg) == null ? void 0 : _a.include) && opts.ssg.include.length > 0) {
               let ssgOrigin = ((_b = opts.ssg) == null ? void 0 : _b.origin) || opts.origin;
               if (!ssgOrigin) {
@@ -303,7 +291,6 @@ function viteAdapter(opts) {
   };
   return plugin;
 }
-var viteAdaptor = viteAdapter;
 function getParentDir(startDir, dirName) {
   const root = resolve("/");
   let dir = startDir;
@@ -328,6 +315,5 @@ export {
   RESOLVED_STATIC_PATHS_ID,
   STATIC_PATHS_ID,
   getParentDir,
-  viteAdapter,
-  viteAdaptor
+  viteAdapter
 };

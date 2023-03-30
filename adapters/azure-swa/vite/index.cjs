@@ -30,8 +30,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // packages/qwik-city/adapters/azure-swa/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
-  azureSwaAdapter: () => azureSwaAdapter,
-  azureSwaAdaptor: () => azureSwaAdaptor
+  azureSwaAdapter: () => azureSwaAdapter
 });
 module.exports = __toCommonJS(vite_exports);
 var import_vite = require("../../shared/vite/index.cjs");
@@ -42,7 +41,6 @@ function azureSwaAdapter(opts = {}) {
   return (0, import_vite.viteAdapter)({
     name: "azure-swa",
     origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.region.2.azurestaticapps.net",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     cleanStaticGenerated: true,
     async generate({ outputEntries, serverOutDir, clientOutDir }) {
@@ -92,9 +90,7 @@ function azureSwaAdapter(opts = {}) {
     }
   });
 }
-var azureSwaAdaptor = azureSwaAdapter;
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  azureSwaAdapter,
-  azureSwaAdaptor
+  azureSwaAdapter
 });

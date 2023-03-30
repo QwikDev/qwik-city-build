@@ -12,7 +12,6 @@ function netlifyEdgeAdapter(opts = {}) {
   return viteAdapter({
     name: "netlify-edge",
     origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.netlify.app",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     staticPaths: opts.staticPaths,
     cleanStaticGenerated: true,
@@ -72,10 +71,6 @@ function netlifyEdgeAdapter(opts = {}) {
     }
   });
 }
-var netifyEdgeAdapter = netlifyEdgeAdapter;
-var netifyEdgeAdaptor = netlifyEdgeAdapter;
 export {
-  netifyEdgeAdapter,
-  netifyEdgeAdaptor,
   netlifyEdgeAdapter
 };

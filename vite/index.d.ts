@@ -124,10 +124,6 @@ declare interface QwikCityPluginApi {
 export declare interface QwikCityVitePluginOptions extends Omit<PluginOptions, 'basePathname'> {
     mdxPlugins?: MdxPlugins;
     mdx?: MdxOptions;
-    /**
-     * @deprecated Please use the "base" property in vite config file.
-     */
-    basePathname?: string;
 }
 
 export { }

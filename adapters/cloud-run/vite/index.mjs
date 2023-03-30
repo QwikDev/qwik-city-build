@@ -5,7 +5,6 @@ function cloudRunAdapter(opts = {}) {
   return viteAdapter({
     name: "cloud-run",
     origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://your-app-name.run.app",
-    staticGenerate: opts.staticGenerate,
     ssg: opts.ssg,
     cleanStaticGenerated: true,
     config() {
@@ -18,8 +17,6 @@ function cloudRunAdapter(opts = {}) {
     }
   });
 }
-var cloudRunAdaptor = cloudRunAdapter;
 export {
-  cloudRunAdapter,
-  cloudRunAdaptor
+  cloudRunAdapter
 };

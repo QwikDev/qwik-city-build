@@ -2,7 +2,6 @@
 import { requestHandler } from "../request-handler/index.mjs";
 import { setServerPlatform } from "@builder.io/qwik/server";
 import { getNotFound } from "@qwik-city-not-found-paths";
-import qwikCityPlan from "@qwik-city-plan";
 import { isStaticPath } from "@qwik-city-static-paths";
 import { createReadStream } from "fs";
 import { extname, join } from "path";
@@ -245,10 +244,6 @@ function createQwikCity(opts) {
     staticFile
   };
 }
-function qwikCity(render, opts) {
-  return createQwikCity({ render, qwikCityPlan, ...opts });
-}
 export {
-  createQwikCity,
-  qwikCity
+  createQwikCity
 };

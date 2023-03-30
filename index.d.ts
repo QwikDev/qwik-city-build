@@ -23,12 +23,6 @@ import type * as zod from 'zod';
 
 /**
  * @public
- * @deprecated - use `globalAction$()` instead
- */
-export declare const action$: ActionConstructor;
-
-/**
- * @public
  */
 export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL extends boolean = true> {
     /**
@@ -36,10 +30,6 @@ export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL ex
      * Like all `use-` functions and methods, it can only be invoked within a `component$()`.
      */
     (): ActionStore<RETURN, INPUT, OPTIONAL>;
-    /**
-     * @deprecated - call as a function instead
-     */
-    use(): ActionStore<RETURN, INPUT, OPTIONAL>;
 }
 
 /**
@@ -77,12 +67,6 @@ export declare interface ActionOptionsWithValidation<B extends TypedDataValidato
     readonly id?: string;
     readonly validation: [val: B, ...a: DataValidator[]];
 }
-
-/**
- * @public
- * @deprecated - use `globalAction$()` instead
- */
-export declare const actionQrl: ActionConstructorQRL;
 
 /**
  * @public
@@ -152,19 +136,9 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      * in order to execute the action in the server.
      */
     readonly submit: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
-    /**
-     * @deprecated - use `submit` instead
-     */
-    readonly run: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
 }
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
-
-/**
- * @deprecated Please use `RouterOutlet` instead.
- * @public
- */
-export declare const Content: Component<    {}>;
 
 /**
  * @public
@@ -303,12 +277,6 @@ export declare interface DocumentStyle {
     readonly key?: string;
 }
 
-/**
- * @public
- * @deprecated Please use `RequestHandler` instead.
- */
-export declare type EndpointHandler<BODY = unknown> = RequestHandler<BODY>;
-
 declare type EndpointModuleLoader = () => Promise<RouteModule>;
 
 declare type FailOfRest<REST extends readonly DataValidator[]> = REST extends readonly DataValidator<infer ERROR>[] ? ERROR : never;
@@ -376,12 +344,6 @@ export declare const globalActionQrl: ActionConstructorQRL;
 
 /**
  * @public
- * @deprecated - The "Html" component has been renamed to "QwikCityProvider".
- */
-export declare const Html: Component<QwikCityProps>;
-
-/**
- * @public
  */
 declare type JSONObject = {
     [x: string]: JSONValue;
@@ -414,12 +376,6 @@ export declare interface LinkProps extends AnchorAttributes {
 
 /**
  * @public
- * @deprecated - use `routeLoader$()` instead
- */
-export declare const loader$: LoaderConstructor;
-
-/**
- * @public
  */
 export declare interface Loader<RETURN> {
     /**
@@ -427,10 +383,6 @@ export declare interface Loader<RETURN> {
      * Like all `use-` functions and methods, it can only be invoked within a `component$()`.
      */
     (): LoaderSignal<RETURN>;
-    /**
-     * @deprecated - call as a function instead
-     */
-    use(): LoaderSignal<RETURN>;
 }
 
 /**
@@ -455,12 +407,6 @@ declare interface LoaderConstructorQRL {
 declare interface LoaderOptions {
     id?: string;
 }
-
-/**
- * @public
- * @deprecated - use `routeLoader$()` instead
- */
-export declare const loaderQrl: LoaderConstructorQRL;
 
 /**
  * @public
@@ -498,12 +444,6 @@ export declare type PathParams = Record<string, string>;
 declare type Prettify<T> = {} & {
     [K in keyof T]?: T[K];
 };
-
-/**
- * @public
- * @deprecated - The "QwikCity" component has been renamed to "QwikCityProvider".
- */
-export declare const QwikCity: Component<QwikCityProps>;
 
 /**
  * @public
@@ -608,18 +548,6 @@ export declare const routeLoaderQrl: LoaderConstructorQRL;
 export declare interface RouteLocation {
     readonly params: Readonly<Record<string, string>>;
     readonly url: URL;
-    /**
-     * @deprecated Please use `url` instead of href
-     */
-    readonly href: string;
-    /**
-     * @deprecated Please use `url` instead of pathname
-     */
-    readonly pathname: string;
-    /**
-     * @deprecated Please use `url` instead of query
-     */
-    readonly query: URLSearchParams;
     readonly isNavigating: boolean;
 }
 
@@ -638,12 +566,6 @@ declare interface RouteModule<BODY = unknown> {
  * @public
  */
 export declare type RouteNavigate = QRL<(path?: string, forceReload?: boolean) => Promise<void>>;
-
-/**
- * @public
- * @deprecated Please update to `PathParams` instead
- */
-export declare type RouteParams = Record<string, string>;
 
 /**
  * @public
