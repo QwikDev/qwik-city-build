@@ -889,7 +889,7 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
       reloadDocument,
       onSubmit$,
       ...rest
-    }, 2, key);
+    }, 0, key);
 };
 const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const rest = _restProps(props, [

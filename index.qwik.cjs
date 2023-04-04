@@ -907,7 +907,7 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
       reloadDocument,
       onSubmit$,
       ...rest
-    }, 2, key);
+    }, 0, key);
 };
 const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const rest = qwik._restProps(props, [
