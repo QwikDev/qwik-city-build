@@ -771,9 +771,15 @@ const serverQrl = (qrl) => {
         });
         if (!res.ok)
           throw new Error(`Server function failed: ${res.statusText}`);
-        const str = await res.text();
-        const obj = await _deserializeData(str, ctxElm ?? document.documentElement);
-        return obj;
+        if (res.headers.get("Content-Type") === "text/event-stream") {
+          const { writable, readable } = getSSETransformer();
+          res.body?.pipeTo(writable);
+          return streamAsyncIterator(readable, ctxElm ?? document.documentElement);
+        } else {
+          const str = await res.text();
+          const obj = await _deserializeData(str, ctxElm ?? document.documentElement);
+          return obj;
+        }
       }
     }, "serverQrl_stuff_wOIPfiQ04l4", [
       qrl
@@ -811,6 +817,58 @@ const getValidators = (rest, qrl) => {
     id
   };
 };
+const getSSETransformer = () => {
+  let currentLine = "";
+  const encoder = new TextDecoder();
+  const transformer = new TransformStream({
+    transform(chunk, controller) {
+      const lines = encoder.decode(chunk).split("\n\n");
+      for (let i = 0; i < lines.length - 1; i++) {
+        const line = currentLine + lines[i];
+        if (line.length === 0) {
+          controller.terminate();
+          break;
+        } else {
+          controller.enqueue(parseEvent(line));
+          currentLine = "";
+        }
+      }
+      currentLine += lines[lines.length - 1];
+    }
+  });
+  return transformer;
+};
+const parseEvent = (message) => {
+  const lines = message.split("\n");
+  const event = {
+    data: ""
+  };
+  let data = "";
+  for (const line of lines)
+    if (line.startsWith("data: "))
+      data += line.slice(6) + "\n";
+    else {
+      const [key, value] = line.split(":");
+      if (typeof key === "string" && typeof value === "string")
+        event[key] = value.trim();
+    }
+  event.data = data;
+  return event;
+};
+async function* streamAsyncIterator(stream, ctxElm) {
+  const reader = stream.getReader();
+  try {
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done)
+        return;
+      const obj = await _deserializeData(value.data, ctxElm);
+      yield obj;
+    }
+  } finally {
+    reader.releaseLock();
+  }
+}
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
   _jsxBranch();
   if (action)

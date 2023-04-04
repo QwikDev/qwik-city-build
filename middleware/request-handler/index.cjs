@@ -426,6 +426,9 @@ async function runValidators(requestEv, validators, data) {
   }
   return lastResult;
 }
+function isAsyncIterator(obj) {
+  return obj && typeof obj === "object" && Symbol.asyncIterator in obj;
+}
 async function pureServerFunction(ev) {
   const fn = ev.query.get(QFN_KEY);
   if (fn && ev.request.headers.get("X-QRL") === fn && ev.request.headers.get("Content-Type") === "application/qwik-json") {
@@ -436,9 +439,27 @@ async function pureServerFunction(ev) {
       const [qrl, ...args] = data;
       if (isQrl(qrl) && qrl.getHash() === fn) {
         const result = await qrl.apply(ev, args);
-        verifySerializable(qwikSerializer, result, qrl);
-        ev.headers.set("Content-Type", "application/qwik-json");
-        ev.send(200, await qwikSerializer._serializeData(result, true));
+        if (isAsyncIterator(result)) {
+          ev.headers.set("Content-Type", "text/event-stream");
+          const stream = ev.getWritableStream().getWriter();
+          try {
+            for await (const item of result) {
+              verifySerializable(qwikSerializer, item, qrl);
+              ev.headers.set("Content-Type", "application/qwik-json");
+              const message = await qwikSerializer._serializeData(item, true);
+              verifySerializable(qwikSerializer, result, qrl);
+              stream.write(encoder.encode(`event: qwik
+data: ${message}
+
+`));
+            }
+          } finally {
+            stream.close();
+          }
+        } else {
+          ev.headers.set("Content-Type", "application/qwik-json");
+          ev.send(200, await qwikSerializer._serializeData(result, true));
+        }
         return;
       }
     }

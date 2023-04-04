@@ -345,14 +345,14 @@ export declare const globalActionQrl: ActionConstructorQRL;
 /**
  * @public
  */
-declare type JSONObject = {
+export declare type JSONObject = {
     [x: string]: JSONValue;
 };
 
 /**
  * @public
  */
-declare type JSONValue = string | number | boolean | {
+export declare type JSONValue = string | number | boolean | {
     [x: string]: JSONValue;
 } | Array<JSONValue>;
 
@@ -474,19 +474,6 @@ export declare interface QwikCityPlan {
  * @public
  */
 declare interface QwikCityProps {
-    /**
-     * The QwikCity component must have only two direct children: `<head>` and `<body>`, like the following example:
-     *
-     * ```tsx
-     * <QwikCityProvider>
-     *   <head>
-     *     <meta charSet="utf-8" />
-     *   </head>
-     *   <body lang="en"></body>
-     * </QwikCityProvider>
-     * ```
-     */
-    children?: [JSXNode, JSXNode];
 }
 
 /**
