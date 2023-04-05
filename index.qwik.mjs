@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, eventQrl as eventQrl$1, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, _jsxC, Slot, _getContextElement, getLocale, untrack, _jsxQ, implicit$FirstArg, _wrapSignal, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, eventQrl as eventQrl$1, useContext, _jsxC, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, untrack, _jsxS, _jsxQ, _wrapSignal, implicit$FirstArg, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
@@ -30,9 +30,9 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
     const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
-      cmp = jsx(context.value[i].default, {
+      cmp = _jsxC(context.value[i].default, {
         children: cmp
-      });
+      }, 1, "k8_0");
     return cmp;
   }
   return SkipRender;
@@ -542,9 +542,10 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
   const event = eventQrl(/* @__PURE__ */ inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_event_event_5g4B0Gd1Wck"));
-  return /* @__PURE__ */ _jsxQ("a", {
+  return /* @__PURE__ */ _jsxS("a", {
     ...linkProps,
     "data-prefetch": prefetchDataset,
+    children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
     onClick$: /* @__PURE__ */ inlinedQrl((_, elm) => {
       const [nav2, reload2] = useLexicalScope();
       if (elm.href)
@@ -556,7 +557,7 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     onMouseOver$: event,
     onFocus$: event,
     onQVisible$: event
-  }, null, /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"), 0, "AD_1");
+  }, null, 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
 const prefetchLinkResources = (elm, isOnVisible) => {
   if (elm && elm.href && elm.hasAttribute("data-prefetch")) {
@@ -567,10 +568,11 @@ const prefetchLinkResources = (elm, isOnVisible) => {
   }
 };
 let windowInnerWidth = 0;
-const ServiceWorkerRegister = (props) => jsx("script", {
-  dangerouslySetInnerHTML: swRegister,
-  nonce: props.nonce
-});
+const ServiceWorkerRegister = (props) => _jsxQ("script", {
+  nonce: _wrapSignal(props, "nonce")
+}, {
+  dangerouslySetInnerHTML: swRegister
+}, null, 3, "1Z_0");
 const routeActionQrl = (actionQrl, ...rest) => {
   const { id, validators } = getValidators(rest, actionQrl);
   function action() {
@@ -872,17 +874,18 @@ async function* streamAsyncIterator(stream, ctxElm) {
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
   _jsxBranch();
   if (action)
-    return jsx("form", {
+    return _jsxS("form", {
       ...rest,
-      action: action.actionPath,
+      action: _wrapSignal(action, "actionPath"),
       "preventdefault:submit": !reloadDocument,
+      ["data-spa-reset"]: spaReset ? "true" : void 0,
       onSubmit$: [
         !reloadDocument ? action.submit : void 0,
         onSubmit$
-      ],
-      method: "post",
-      ["data-spa-reset"]: spaReset ? "true" : void 0
-    }, key);
+      ]
+    }, {
+      method: "post"
+    }, 0, key);
   else
     return /* @__PURE__ */ _jsxC(GetForm, {
       spaReset,
@@ -899,8 +902,9 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
     "onSubmit$"
   ]);
   const nav = useNavigate();
-  return /* @__PURE__ */ _jsxQ("form", {
+  return /* @__PURE__ */ _jsxS("form", {
     ...rest,
+    children: /* @__PURE__ */ _jsxC(Slot, null, 3, "BC_0"),
     onSubmit$: /* @__PURE__ */ inlinedQrl(async (_, form) => {
       const [nav2] = useLexicalScope();
       const formData = new FormData(form);
@@ -932,7 +936,7 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
     "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
       props
     ], 'p0.spaReset?"true":undefined')
-  }, /* @__PURE__ */ _jsxC(Slot, null, 3, "BC_0"), 0, "BC_1");
+  }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 export {
   Form,

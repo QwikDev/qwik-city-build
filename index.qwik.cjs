@@ -48,9 +48,9 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
     const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
-      cmp = qwik.jsx(context.value[i].default, {
+      cmp = qwik._jsxC(context.value[i].default, {
         children: cmp
-      });
+      }, 1, "k8_0");
     return cmp;
   }
   return qwik.SkipRender;
@@ -560,9 +560,10 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
   const event = eventQrl(/* @__PURE__ */ qwik.inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_event_event_5g4B0Gd1Wck"));
-  return /* @__PURE__ */ qwik._jsxQ("a", {
+  return /* @__PURE__ */ qwik._jsxS("a", {
     ...linkProps,
     "data-prefetch": prefetchDataset,
+    children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"),
     onClick$: /* @__PURE__ */ qwik.inlinedQrl((_, elm) => {
       const [nav2, reload2] = qwik.useLexicalScope();
       if (elm.href)
@@ -574,7 +575,7 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
     onMouseOver$: event,
     onFocus$: event,
     onQVisible$: event
-  }, null, /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"), 0, "AD_1");
+  }, null, 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
 const prefetchLinkResources = (elm, isOnVisible) => {
   if (elm && elm.href && elm.hasAttribute("data-prefetch")) {
@@ -585,10 +586,11 @@ const prefetchLinkResources = (elm, isOnVisible) => {
   }
 };
 let windowInnerWidth = 0;
-const ServiceWorkerRegister = (props) => qwik.jsx("script", {
-  dangerouslySetInnerHTML: swRegister,
-  nonce: props.nonce
-});
+const ServiceWorkerRegister = (props) => qwik._jsxQ("script", {
+  nonce: qwik._wrapSignal(props, "nonce")
+}, {
+  dangerouslySetInnerHTML: swRegister
+}, null, 3, "1Z_0");
 const routeActionQrl = (actionQrl, ...rest) => {
   const { id, validators } = getValidators(rest, actionQrl);
   function action() {
@@ -890,17 +892,18 @@ async function* streamAsyncIterator(stream, ctxElm) {
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
   qwik._jsxBranch();
   if (action)
-    return qwik.jsx("form", {
+    return qwik._jsxS("form", {
       ...rest,
-      action: action.actionPath,
+      action: qwik._wrapSignal(action, "actionPath"),
       "preventdefault:submit": !reloadDocument,
+      ["data-spa-reset"]: spaReset ? "true" : void 0,
       onSubmit$: [
         !reloadDocument ? action.submit : void 0,
         onSubmit$
-      ],
-      method: "post",
-      ["data-spa-reset"]: spaReset ? "true" : void 0
-    }, key);
+      ]
+    }, {
+      method: "post"
+    }, 0, key);
   else
     return /* @__PURE__ */ qwik._jsxC(GetForm, {
       spaReset,
@@ -917,8 +920,9 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
     "onSubmit$"
   ]);
   const nav = useNavigate();
-  return /* @__PURE__ */ qwik._jsxQ("form", {
+  return /* @__PURE__ */ qwik._jsxS("form", {
     ...rest,
+    children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "BC_0"),
     onSubmit$: /* @__PURE__ */ qwik.inlinedQrl(async (_, form) => {
       const [nav2] = qwik.useLexicalScope();
       const formData = new FormData(form);
@@ -950,7 +954,7 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
     "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
       props
     ], 'p0.spaReset?"true":undefined')
-  }, /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "BC_0"), 0, "BC_1");
+  }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 Object.defineProperty(exports, "z", {
   enumerable: true,
