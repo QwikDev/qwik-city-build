@@ -94,6 +94,10 @@ declare interface PluginOptions {
      * MDX Options https://mdxjs.com/
      */
     mdx?: any;
+    /**
+     * The platform object which can be used to mock the Cloudflare bindings.
+     */
+    platform?: Record<string, unknown>;
 }
 
 /**
@@ -124,6 +128,7 @@ declare interface QwikCityPluginApi {
 export declare interface QwikCityVitePluginOptions extends Omit<PluginOptions, 'basePathname'> {
     mdxPlugins?: MdxPlugins;
     mdx?: MdxOptions;
+    platform?: Record<string, unknown>;
 }
 
 export { }

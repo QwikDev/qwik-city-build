@@ -20772,6 +20772,7 @@ function normalizeOptions(rootDir, viteBasePath, userOpts) {
     opts.trailingSlash = true;
   }
   opts.mdx = opts.mdx || {};
+  opts.platform = opts.platform || {};
   return opts;
 }
 
@@ -24674,6 +24675,9 @@ function ssrDevMiddleware(ctx, server) {
         );
         if (requestHandlers.length > 0) {
           const serverRequestEv = await fromNodeHttp(url, req, res, "dev");
+          if (ctx.opts.platform) {
+            serverRequestEv.platform = ctx.opts.platform;
+          }
           const { completion, requestEv } = runQwikCity(
             serverRequestEv,
             loadedRoute,
