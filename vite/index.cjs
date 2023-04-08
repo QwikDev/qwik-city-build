@@ -20534,6 +20534,7 @@ export default WrappedMdxContent;
 
 // packages/qwik-city/buildtime/vite/plugin.ts
 var import_node_path10 = require("path");
+var import_vite2 = require("vite");
 
 // packages/qwik-city/buildtime/runtime-generation/generate-entries.ts
 function createEntries(ctx, c2) {
@@ -25179,6 +25180,7 @@ function qwikCity(userOpts) {
     },
     async configResolved(config) {
       var _a2, _b, _c;
+      Object.assign(process.env, (0, import_vite2.loadEnv)(config.mode, process.cwd(), ""));
       rootDir = (0, import_node_path10.resolve)(config.root);
       const target = ((_a2 = config.build) == null ? void 0 : _a2.ssr) || config.mode === "ssr" ? "ssr" : "client";
       ctx = createBuildContext(rootDir, config.base, userOpts, target);
