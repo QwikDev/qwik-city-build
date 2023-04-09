@@ -747,7 +747,7 @@ var bgWhite = init(47, 49);
 var findLocation = (e) => {
   const stack = e.stack;
   if (typeof stack === "string") {
-    const lines = stack.split("\n").filter((l) => !l.includes("/node_modules/@builder.io/qwik") && !l.includes("(node:"));
+    const lines = stack.split("\n").filter((l) => !l.includes("/node_modules/") && !l.includes("(node:"));
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].replace("file:///", "/");
       if (/^\s+at/.test(line)) {

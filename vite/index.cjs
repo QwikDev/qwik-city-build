@@ -23837,20 +23837,17 @@ async function pureServerFunction(ev) {
         if (isAsyncIterator(result)) {
           ev.headers.set("Content-Type", "text/event-stream");
           const stream = ev.getWritableStream().getWriter();
-          try {
-            for await (const item of result) {
-              verifySerializable(qwikSerializer, item, qrl);
-              ev.headers.set("Content-Type", "application/qwik-json");
-              const message = await qwikSerializer._serializeData(item, true);
-              verifySerializable(qwikSerializer, result, qrl);
-              stream.write(encoder.encode(`event: qwik
+          for await (const item of result) {
+            verifySerializable(qwikSerializer, item, qrl);
+            ev.headers.set("Content-Type", "application/qwik-json");
+            const message = await qwikSerializer._serializeData(item, true);
+            verifySerializable(qwikSerializer, result, qrl);
+            stream.write(encoder.encode(`event: qwik
 data: ${message}
 
 `));
-            }
-          } finally {
-            stream.close();
           }
+          stream.close();
         } else {
           ev.headers.set("Content-Type", "application/qwik-json");
           ev.send(200, await qwikSerializer._serializeData(result, true));
@@ -24448,7 +24445,7 @@ async function fromNodeHttp(url, req, res, mode) {
 var findLocation = (e) => {
   const stack = e.stack;
   if (typeof stack === "string") {
-    const lines = stack.split("\n").filter((l) => !l.includes("/node_modules/@builder.io/qwik") && !l.includes("(node:"));
+    const lines = stack.split("\n").filter((l) => !l.includes("/node_modules/") && !l.includes("(node:"));
     for (let i = 1; i < lines.length; i++) {
       const line = lines[i].replace("file:///", "/");
       if (/^\s+at/.test(line)) {
@@ -25269,14 +25266,14 @@ function qwikCity(userOpts) {
     },
     async transform(code2, id) {
       var _a2, _b;
-      if (ctx) {
+      const isMD = id.endsWith(".md") || id.endsWith(".mdx");
+      if (ctx && isMD) {
         const fileName = (0, import_node_path10.basename)(id);
         if (isMenuFileName(fileName)) {
           const menuCode = await transformMenu(ctx.opts, id, code2);
           return menuCode;
         }
-        const ext = getExtension(fileName);
-        if (isMarkdownExt(ext) && mdxTransform) {
+        if (mdxTransform) {
           try {
             const mdxResult = await mdxTransform(code2, id);
             return mdxResult;
