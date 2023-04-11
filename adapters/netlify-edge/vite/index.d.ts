@@ -24,6 +24,11 @@ export declare interface NetlifyEdgeAdapterOptions extends ServerAdapterOptions 
      * come from a static file, rather than a server-side rendered response.
      */
     staticPaths?: string[];
+    /**
+     * Manually add path pattern that should be excluded from the edge function routes
+     * that are created by the 'manifest.json' file.
+     */
+    excludedPath?: string;
 }
 
 export { StaticGenerateRenderOptions }

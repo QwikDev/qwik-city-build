@@ -80,7 +80,8 @@ function netlifyEdgeAdapter(opts = {}) {
             {
               path: basePathname + "*",
               function: "entry.netlify-edge",
-              cache: "manual"
+              cache: "manual",
+              excludedPath: opts.excludedPath || ""
             }
           ],
           version: 1
