@@ -521,30 +521,6 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ q
   qwik.useContextProvider(RouteStateContext, loaderState);
   return /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "qY_1");
 }, "QwikCityMockProvider_component_WmYC5H00wtI"));
-const seal = (obj) => {
-  {
-    Object.seal(obj);
-  }
-};
-const RenderEvent = "qRender";
-const newInvokeContext = (locale, hostElement, element, event, url) => {
-  const ctx = {
-    $seq$: 0,
-    $hostElement$: hostElement,
-    $element$: element,
-    $event$: event,
-    $url$: url,
-    $qrl$: void 0,
-    $props$: void 0,
-    $renderCtx$: void 0,
-    $subscriber$: void 0,
-    $waitOn$: void 0,
-    $locale$: locale
-  };
-  seal(ctx);
-  return ctx;
-};
-newInvokeContext(void 0, void 0, void 0, RenderEvent);
 const eventQrl = (qrl) => {
   return qrl;
 };
