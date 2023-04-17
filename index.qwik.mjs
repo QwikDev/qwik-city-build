@@ -408,30 +408,32 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         actionState2.value
       ]);
       const locale = getLocale("");
-      let url2 = new URL(path, routeLocation2.url);
+      let trackUrl;
       let clientPageData;
       let loadedRoute = null;
       if (isServer) {
+        trackUrl = new URL(path, routeLocation2.url);
         loadedRoute = env2.loadedRoute;
         clientPageData = env2.response;
       } else {
-        if (url2.pathname.endsWith("/")) {
+        trackUrl = new URL(path, location);
+        if (trackUrl.pathname.endsWith("/")) {
           if (!qwikCity.trailingSlash)
-            url2.pathname = url2.pathname.slice(0, -1);
+            trackUrl.pathname = trackUrl.pathname.slice(0, -1);
         } else if (qwikCity.trailingSlash)
-          url2.pathname += "/";
-        let loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, url2.pathname);
+          trackUrl.pathname += "/";
+        let loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
         const element = _getContextElement();
-        const pageData = clientPageData = await loadClientData(url2, element, true, action);
+        const pageData = clientPageData = await loadClientData(trackUrl, element, true, action);
         if (!pageData) {
-          navPath2.untrackedValue = toPath(url2);
+          navPath2.untrackedValue = toPath(trackUrl);
           return;
         }
         const newHref = pageData.href;
-        const newURL = new URL(newHref, url2.href);
-        if (newURL.pathname !== url2.pathname) {
-          url2 = newURL;
-          loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, url2.pathname);
+        const newURL = new URL(newHref, trackUrl.href);
+        if (newURL.pathname !== trackUrl.pathname) {
+          trackUrl = newURL;
+          loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
         }
         loadedRoute = await loadRoutePromise;
       }
@@ -439,11 +441,11 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         const [params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
-        routeLocation2.url = url2;
+        routeLocation2.url = trackUrl;
         routeLocation2.params = {
           ...params
         };
-        navPath2.untrackedValue = toPath(url2);
+        navPath2.untrackedValue = toPath(trackUrl);
         const resolvedHead = resolveHead(clientPageData, routeLocation2, contentModules, locale);
         content2.headings = pageModule.headings;
         content2.menu = menu;
@@ -458,7 +460,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
           if (loaders)
             Object.assign(loaderState2, loaders);
           CLIENT_DATA_CACHE.clear();
-          clientNavigate(window, url2, navPath2);
+          clientNavigate(window, trackUrl, navPath2);
           routeLocation2.isNavigating = false;
         }
       }
