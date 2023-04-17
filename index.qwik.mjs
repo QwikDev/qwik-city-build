@@ -15,13 +15,14 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
   _jsxBranch();
   useOnDocument("qinit", eventQrl$1(/* @__PURE__ */ inlinedQrl(() => {
     const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
-    if (!window["_qCityPopstateFallback"]) {
+    const CLIENT_HISTORY_INITIALIZED = "_qCityHistory";
+    if (!window[POPSTATE_FALLBACK_INITIALIZED]) {
       window[POPSTATE_FALLBACK_INITIALIZED] = () => {
-        if (!window["_qCityHistory"])
+        if (!window[CLIENT_HISTORY_INITIALIZED])
           location.reload();
       };
       setTimeout(() => {
-        addEventListener("popstate", window["_qCityPopstateFallback"]);
+        addEventListener("popstate", window[POPSTATE_FALLBACK_INITIALIZED]);
       }, 0);
     }
   }, "RouterOutlet_component_useOnDocument_event_KnNE9eL0qfc")));
@@ -329,8 +330,9 @@ const getFetchOptions = (action) => {
     };
 };
 const isQDataJson = (pathname) => {
-  return pathname.endsWith("/q-data.json");
+  return pathname.endsWith(QDATA_JSON);
 };
+const QDATA_JSON = "/q-data.json";
 const useContent = () => useContext(ContentContext);
 const useDocumentHead = () => useContext(DocumentHeadContext);
 const useLocation = () => useContext(RouteLocationContext);
@@ -435,16 +437,17 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       }
       if (loadedRoute) {
         const [params, mods, menu] = loadedRoute;
-        const pageModule = mods[mods.length - 1];
+        const contentModules = mods;
+        const pageModule = contentModules[contentModules.length - 1];
         routeLocation2.url = url2;
         routeLocation2.params = {
           ...params
         };
         navPath2.untrackedValue = toPath(url2);
-        const resolvedHead = resolveHead(clientPageData, routeLocation2, mods, locale);
+        const resolvedHead = resolveHead(clientPageData, routeLocation2, contentModules, locale);
         content2.headings = pageModule.headings;
         content2.menu = menu;
-        contentInternal2.value = noSerialize(mods);
+        contentInternal2.value = noSerialize(contentModules);
         documentHead2.links = resolvedHead.links;
         documentHead2.meta = resolvedHead.meta;
         documentHead2.styles = resolvedHead.styles;
