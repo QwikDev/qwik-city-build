@@ -751,16 +751,15 @@ const serverQrl = (qrl) => {
           },
           body
         });
-        const contentType = res.headers.get("Content-Type");
-        if (res.ok && contentType === "text/event-stream") {
+        if (!res.ok)
+          throw new Error(`Server function failed: ${res.statusText}`);
+        if (res.headers.get("Content-Type") === "text/event-stream") {
           const { writable, readable } = getSSETransformer();
           res.body?.pipeTo(writable);
           return streamAsyncIterator(readable, ctxElm ?? document.documentElement);
-        } else if (contentType === "application/qwik-json") {
+        } else {
           const str = await res.text();
           const obj = await _deserializeData(str, ctxElm ?? document.documentElement);
-          if (res.status === 500)
-            throw obj;
           return obj;
         }
       }
