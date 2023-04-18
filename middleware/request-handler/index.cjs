@@ -226,7 +226,7 @@ function getQwikCityServerData(requestEv) {
     locale: locale(),
     nonce,
     qwikcity: {
-      // mode: getRequestMode(requestEv),
+      ev: requestEv,
       params: { ...params },
       loadedRoute: getRequestRoute(requestEv),
       response: {

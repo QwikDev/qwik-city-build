@@ -723,9 +723,10 @@ const serverQrl = (qrl) => {
   function stuff() {
     return /* @__PURE__ */ inlinedQrl(async (...args) => {
       const [qrl2] = useLexicalScope();
-      if (isServer)
-        return qrl2(...args);
-      else {
+      if (isServer) {
+        const requestEvent = useQwikCityEnv()?.ev;
+        return qrl2.apply(requestEvent, args);
+      } else {
         const ctxElm = _getContextElement();
         const filtered = args.map((arg) => {
           if (arg instanceof SubmitEvent && arg.target instanceof HTMLFormElement)
