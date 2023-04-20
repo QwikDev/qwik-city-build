@@ -357,7 +357,7 @@ const useLocation = () => qwik.useContext(RouteLocationContext);
 const useNavigate = () => qwik.useContext(RouteNavigateContext);
 const useAction = () => qwik.useContext(RouteActionContext);
 const useQwikCityEnv = () => qwik.noSerialize(qwik.useServerData("qwikcity"));
-const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
+const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const env = useQwikCityEnv();
   if (!env?.params)
     throw new Error(`Missing Qwik City Env Data`);
@@ -419,7 +419,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
   qwik.useContextProvider(RouteStateContext, loaderState);
   qwik.useContextProvider(RouteActionContext, actionState);
   qwik.useTaskQrl(/* @__PURE__ */ qwik.inlinedQrl(({ track }) => {
-    const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, routeLocation2] = qwik.useLexicalScope();
+    const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, props2, routeLocation2, url2] = qwik.useLexicalScope();
     async function run() {
       const [path, action] = track(() => [
         navPath2.value,
@@ -474,6 +474,8 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
         documentHead2.title = resolvedHead.title;
         documentHead2.frontmatter = resolvedHead.frontmatter;
         if (build.isBrowser) {
+          if (props2.enableViewTransitionAPI && isSameOriginDifferentPathname(window.location, url2))
+            document.__q_view_transition__ = true;
           const loaders = clientPageData?.loaders;
           if (loaders)
             Object.assign(loaderState2, loaders);
@@ -496,7 +498,9 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
     env,
     loaderState,
     navPath,
-    routeLocation
+    props,
+    routeLocation,
+    url
   ]));
   return /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
