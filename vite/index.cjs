@@ -460,13 +460,13 @@ var require_visit = __commonJS({
       return visitor;
     }
     function callVisitor(key, node, visitor, path2) {
-      var _a2, _b, _c, _d, _e;
+      var _a2, _b2, _c, _d, _e;
       if (typeof visitor === "function")
         return visitor(key, node, path2);
       if (Node.isMap(node))
         return (_a2 = visitor.Map) == null ? void 0 : _a2.call(visitor, key, node, path2);
       if (Node.isSeq(node))
-        return (_b = visitor.Seq) == null ? void 0 : _b.call(visitor, key, node, path2);
+        return (_b2 = visitor.Seq) == null ? void 0 : _b2.call(visitor, key, node, path2);
       if (Node.isPair(node))
         return (_c = visitor.Pair) == null ? void 0 : _c.call(visitor, key, node, path2);
       if (Node.isScalar(node))
@@ -909,13 +909,13 @@ var require_createNode = __commonJS({
       });
     }
     function createNode(value2, tagName, ctx) {
-      var _a2, _b;
+      var _a2, _b2;
       if (Node.isDocument(value2))
         value2 = value2.contents;
       if (Node.isNode(value2))
         return value2;
       if (Node.isPair(value2)) {
-        const map = (_b = (_a2 = ctx.schema[Node.MAP]).createNode) == null ? void 0 : _b.call(_a2, ctx.schema, null, ctx);
+        const map = (_b2 = (_a2 = ctx.schema[Node.MAP]).createNode) == null ? void 0 : _b2.call(_a2, ctx.schema, null, ctx);
         map.items.push(value2);
         return map;
       }
@@ -23491,14 +23491,17 @@ var parseCookieString = (cookieString) => {
 };
 var REQ_COOKIE = Symbol("request-cookies");
 var RES_COOKIE = Symbol("response-cookies");
-var _a;
+var LIVE_COOKIE = Symbol("live-cookies");
+var _a, _b;
 var Cookie = class {
   constructor(cookieString) {
     this[_a] = {};
+    this[_b] = {};
     this[REQ_COOKIE] = parseCookieString(cookieString);
+    this[LIVE_COOKIE] = { ...this[REQ_COOKIE] };
   }
-  get(cookieName) {
-    const value2 = this[REQ_COOKIE][cookieName];
+  get(cookieName, live = true) {
+    const value2 = this[live ? LIVE_COOKIE : REQ_COOKIE][cookieName];
     if (!value2) {
       return null;
     }
@@ -23512,27 +23515,29 @@ var Cookie = class {
       }
     };
   }
-  getAll() {
-    return Object.keys(this[REQ_COOKIE]).reduce((cookies, cookieName) => {
+  getAll(live = true) {
+    return Object.keys(this[live ? LIVE_COOKIE : REQ_COOKIE]).reduce((cookies, cookieName) => {
       cookies[cookieName] = this.get(cookieName);
       return cookies;
     }, {});
   }
-  has(cookieName) {
-    return !!this[REQ_COOKIE][cookieName];
+  has(cookieName, live = true) {
+    return !!this[live ? LIVE_COOKIE : REQ_COOKIE][cookieName];
   }
   set(cookieName, cookieValue, options2 = {}) {
+    this[LIVE_COOKIE][cookieName] = typeof cookieValue === "string" ? cookieValue : JSON.stringify(cookieValue);
     const resolvedValue = typeof cookieValue === "string" ? cookieValue : encodeURIComponent(JSON.stringify(cookieValue));
     this[RES_COOKIE][cookieName] = createSetCookieValue(cookieName, resolvedValue, options2);
   }
   delete(name, options2) {
     this.set(name, "deleted", { ...options2, maxAge: 0 });
+    this[LIVE_COOKIE][name] = null;
   }
   headers() {
     return Object.values(this[RES_COOKIE]);
   }
 };
-REQ_COOKIE, _a = RES_COOKIE;
+REQ_COOKIE, _a = RES_COOKIE, _b = LIVE_COOKIE;
 
 // packages/qwik-city/middleware/request-handler/error-handler.ts
 var ErrorResponse = class extends Error {
@@ -25184,7 +25189,7 @@ function qwikCity(userOpts) {
       return updatedViteConfig;
     },
     async configResolved(config) {
-      var _a2, _b, _c;
+      var _a2, _b2, _c;
       Object.assign(process.env, (0, import_vite2.loadEnv)(config.mode, process.cwd(), ""));
       rootDir = (0, import_node_path10.resolve)(config.root);
       const target = ((_a2 = config.build) == null ? void 0 : _a2.ssr) || config.mode === "ssr" ? "ssr" : "client";
@@ -25197,7 +25202,7 @@ function qwikCity(userOpts) {
       if (!qwikPlugin) {
         throw new Error("Missing vite-plugin-qwik");
       }
-      if (((_b = config.ssr) == null ? void 0 : _b.format) === "cjs") {
+      if (((_b2 = config.ssr) == null ? void 0 : _b2.format) === "cjs") {
         ssrFormat = "cjs";
       }
       outDir = (_c = config.build) == null ? void 0 : _c.outDir;
@@ -25273,7 +25278,7 @@ function qwikCity(userOpts) {
       return null;
     },
     async transform(code2, id) {
-      var _a2, _b;
+      var _a2, _b2;
       const isMD = id.endsWith(".md") || id.endsWith(".mdx");
       if (ctx && isMD) {
         const fileName = (0, import_node_path10.basename)(id);
@@ -25288,7 +25293,7 @@ function qwikCity(userOpts) {
           } catch (e) {
             if (e && typeof e == "object" && "position" in e && "reason" in e) {
               const column = (_a2 = e.position) == null ? void 0 : _a2.start.column;
-              const line = (_b = e.position) == null ? void 0 : _b.start.line;
+              const line = (_b2 = e.position) == null ? void 0 : _b2.start.line;
               const err = Object.assign(new Error(e.reason), {
                 id,
                 plugin: "qwik-city-mdx",
