@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, eventQrl as eventQrl$1, useContext, _jsxC, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, untrack, _jsxS, _jsxQ, _wrapSignal, implicit$FirstArg, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, eventQrl as eventQrl$1, useContext, _jsxC, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, untrack, _jsxS, _jsxQ, _wrapSignal, implicit$FirstArg, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
@@ -340,6 +340,7 @@ const useNavigate = () => useContext(RouteNavigateContext);
 const useAction = () => useContext(RouteActionContext);
 const useQwikCityEnv = () => noSerialize(useServerData("qwikcity"));
 const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
+  useStylesQrl(/* @__PURE__ */ inlinedQrl(`:root{view-transition-name: none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
   const env = useQwikCityEnv();
   if (!env?.params)
     throw new Error(`Missing Qwik City Env Data`);
@@ -456,7 +457,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         documentHead2.title = resolvedHead.title;
         documentHead2.frontmatter = resolvedHead.frontmatter;
         if (isBrowser) {
-          if (props2.enableViewTransitionAPI && isSameOriginDifferentPathname(window.location, url2))
+          if ((props2.viewTransition ?? true) && isSameOriginDifferentPathname(window.location, url2))
             document.__q_view_transition__ = true;
           const loaders = clientPageData?.loaders;
           if (loaders)

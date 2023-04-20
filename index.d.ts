@@ -476,11 +476,13 @@ export declare interface QwikCityProps {
     /**
      * Enable the ViewTransition API
      *
+     * Default: `true`
+     *
      * @see https://github.com/WICG/view-transitions/blob/main/explainer.md
      * @see https://developer.mozilla.org/en-US/docs/Web/API/View_Transitions_API
      * @see https://caniuse.com/mdn-api_viewtransition
      */
-    enableViewTransitionAPI?: boolean;
+    viewTransition?: boolean;
 }
 
 /**

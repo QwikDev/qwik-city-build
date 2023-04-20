@@ -358,6 +358,7 @@ const useNavigate = () => qwik.useContext(RouteNavigateContext);
 const useAction = () => qwik.useContext(RouteActionContext);
 const useQwikCityEnv = () => qwik.noSerialize(qwik.useServerData("qwikcity"));
 const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
+  qwik.useStylesQrl(/* @__PURE__ */ qwik.inlinedQrl(`:root{view-transition-name: none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
   const env = useQwikCityEnv();
   if (!env?.params)
     throw new Error(`Missing Qwik City Env Data`);
@@ -474,7 +475,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
         documentHead2.title = resolvedHead.title;
         documentHead2.frontmatter = resolvedHead.frontmatter;
         if (build.isBrowser) {
-          if (props2.enableViewTransitionAPI && isSameOriginDifferentPathname(window.location, url2))
+          if ((props2.viewTransition ?? true) && isSameOriginDifferentPathname(window.location, url2))
             document.__q_view_transition__ = true;
           const loaders = clientPageData?.loaders;
           if (loaders)
