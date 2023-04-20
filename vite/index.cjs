@@ -24400,7 +24400,11 @@ function getOrigin(req) {
 }
 function getUrl(req) {
   const origin = ORIGIN ?? getOrigin(req);
-  return new URL(req.originalUrl || req.url || "/", origin);
+  return normalizeUrl(req.originalUrl || req.url || "/", origin);
+}
+var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
+function normalizeUrl(url, base) {
+  return new URL(url.replace(DOUBLE_SLASH_REG, "/"), base);
 }
 async function fromNodeHttp(url, req, res, mode) {
   const requestHeaders = new Headers();
