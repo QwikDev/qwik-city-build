@@ -352,8 +352,12 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     url,
     params: env.params,
     isNavigating: false
+  }, {
+    deep: false
   });
-  const loaderState = _weakSerialize(useStore(env.response.loaders));
+  const loaderState = _weakSerialize(useStore(env.response.loaders, {
+    deep: false
+  }));
   const navPath = useSignal(toPath(url));
   const documentHead = useStore(createDocumentHead);
   const content = useStore({
@@ -494,15 +498,21 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
     url,
     params: props.params ?? {},
     isNavigating: false
+  }, {
+    deep: false
   });
   const loaderState = useSignal({});
   const goto = /* @__PURE__ */ inlinedQrl(async (path) => {
     throw new Error("Not implemented");
   }, "QwikCityMockProvider_component_goto_BUbtvTyvVRE");
-  const documentHead = useStore(createDocumentHead);
+  const documentHead = useStore(createDocumentHead, {
+    deep: false
+  });
   const content = useStore({
     headings: void 0,
     menu: void 0
+  }, {
+    deep: false
   });
   const contentInternal = useSignal();
   useContextProvider(ContentContext, content);

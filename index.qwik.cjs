@@ -370,8 +370,12 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
     url,
     params: env.params,
     isNavigating: false
+  }, {
+    deep: false
   });
-  const loaderState = qwik._weakSerialize(qwik.useStore(env.response.loaders));
+  const loaderState = qwik._weakSerialize(qwik.useStore(env.response.loaders, {
+    deep: false
+  }));
   const navPath = qwik.useSignal(toPath(url));
   const documentHead = qwik.useStore(createDocumentHead);
   const content = qwik.useStore({
@@ -512,15 +516,21 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ q
     url,
     params: props.params ?? {},
     isNavigating: false
+  }, {
+    deep: false
   });
   const loaderState = qwik.useSignal({});
   const goto = /* @__PURE__ */ qwik.inlinedQrl(async (path) => {
     throw new Error("Not implemented");
   }, "QwikCityMockProvider_component_goto_BUbtvTyvVRE");
-  const documentHead = qwik.useStore(createDocumentHead);
+  const documentHead = qwik.useStore(createDocumentHead, {
+    deep: false
+  });
   const content = qwik.useStore({
     headings: void 0,
     menu: void 0
+  }, {
+    deep: false
   });
   const contentInternal = qwik.useSignal();
   qwik.useContextProvider(ContentContext, content);
