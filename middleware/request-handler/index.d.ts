@@ -153,7 +153,7 @@ export declare interface CookieOptions {
      * Controls whether or not a cookie is sent with cross-site requests, providing some protection
      * against cross-site request forgery attacks (CSRF).
      */
-    sameSite?: 'strict' | 'lax' | 'none';
+    sameSite?: 'strict' | 'lax' | 'none' | boolean;
     /**
      * Indicates that the cookie is sent to the server only when a request is made with
      * the `https:` scheme (except on localhost)

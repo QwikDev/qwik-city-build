@@ -23466,8 +23466,9 @@ var createSetCookieValue = (cookieName, cookieValue, options2) => {
   if (typeof options2.path === "string") {
     c2.push(`Path=${options2.path}`);
   }
-  if (options2.sameSite && SAMESITE[options2.sameSite]) {
-    c2.push(`SameSite=${SAMESITE[options2.sameSite]}`);
+  const sameSite = resolveSameSite(options2.sameSite);
+  if (sameSite) {
+    c2.push(`SameSite=${sameSite}`);
   }
   if (options2.secure) {
     c2.push("Secure");
@@ -23489,6 +23490,18 @@ var parseCookieString = (cookieString) => {
   }
   return cookie;
 };
+function resolveSameSite(sameSite) {
+  if (sameSite === true) {
+    return "Strict";
+  }
+  if (sameSite === false) {
+    return "None";
+  }
+  if (sameSite) {
+    return SAMESITE[sameSite];
+  }
+  return void 0;
+}
 var REQ_COOKIE = Symbol("request-cookies");
 var RES_COOKIE = Symbol("response-cookies");
 var LIVE_COOKIE = Symbol("live-cookies");
