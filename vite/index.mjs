@@ -13256,7 +13256,7 @@ function isPlainObject(value2) {
   return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in value2) && !(Symbol.iterator in value2);
 }
 
-// node_modules/.pnpm/estree-util-value-to-estree@2.1.0/node_modules/estree-util-value-to-estree/index.js
+// node_modules/.pnpm/estree-util-value-to-estree@3.0.1/node_modules/estree-util-value-to-estree/index.js
 function valueToEstree(value2, options2 = {}) {
   if (value2 === void 0 || value2 === Number.POSITIVE_INFINITY || Number.isNaN(value2)) {
     return { type: "Identifier", name: String(value2) };
@@ -13273,7 +13273,7 @@ function valueToEstree(value2, options2 = {}) {
     };
   }
   if (typeof value2 === "number") {
-    return value2 >= 0 ? { type: "Literal", value: value2 } : {
+    return value2 >= 0 && !Object.is(value2, -0) ? { type: "Literal", value: value2 } : {
       type: "UnaryExpression",
       operator: "-",
       prefix: true,
@@ -13354,17 +13354,29 @@ function valueToEstree(value2, options2 = {}) {
     };
   }
   if (options2.instanceAsObject || isPlainObject(value2)) {
-    return {
-      type: "ObjectExpression",
-      properties: Reflect.ownKeys(value2).map((key) => ({
+    const properties = Reflect.ownKeys(value2).map((key) => ({
+      type: "Property",
+      method: false,
+      shorthand: false,
+      computed: typeof key !== "string",
+      kind: "init",
+      key: valueToEstree(key, options2),
+      value: valueToEstree(value2[key], options2)
+    }));
+    if (Object.getPrototypeOf(value2) == null) {
+      properties.unshift({
         type: "Property",
         method: false,
         shorthand: false,
-        computed: typeof key !== "string",
+        computed: false,
         kind: "init",
-        key: valueToEstree(key, options2),
-        value: valueToEstree(value2[key], options2)
-      }))
+        key: { type: "Identifier", name: "__proto__" },
+        value: { type: "Literal", value: null }
+      });
+    }
+    return {
+      type: "ObjectExpression",
+      properties
     };
   }
   throw new TypeError(`Unsupported value: ${String(value2)}`);
