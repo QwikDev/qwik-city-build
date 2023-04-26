@@ -17,8 +17,9 @@ function createQwikCity(opts) {
   if (opts.manifest) {
     setServerPlatform(opts.manifest);
   }
-  async function onCloudflarePagesRequest({ request, env, waitUntil, next }) {
+  async function onCloudflarePagesRequest(ctx) {
     try {
+      const { request, env, waitUntil, next } = ctx;
       const url = new URL(request.url);
       if (isStaticPath(request.method, url)) {
         return next();
@@ -51,7 +52,7 @@ function createQwikCity(opts) {
           resolve(response);
           return writable;
         },
-        platform: env
+        platform: ctx
       };
       const handledResponse = await requestHandler(serverRequestEv, opts, qwikSerializer);
       if (handledResponse) {
