@@ -493,9 +493,7 @@ export declare const QwikCityProvider: Component<QwikCityProps>;
 /**
  * @public
  */
-declare interface ReadonlySignal<T = any> {
-    readonly value: T;
-}
+declare type ReadonlySignal<T = any> = Readonly<Signal<T>>;
 
 export { RequestEvent }
 
@@ -599,6 +597,13 @@ export declare const serverQrl: ServerConstructorQRL;
 export declare const ServiceWorkerRegister: (props: {
     nonce?: string;
 }) => JSXNode<"script">;
+
+/**
+ * @public
+ */
+declare interface Signal<T = any> {
+    value: T;
+}
 
 /**
  * @public
