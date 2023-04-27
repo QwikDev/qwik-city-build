@@ -120,7 +120,7 @@ async function fromNodeHttp(url, req, res, mode) {
   return serverRequestEv;
 }
 
-// packages/qwik-city/middleware/node/mime-types.ts
+// packages/qwik-city/middleware/request-handler/mime-types.ts
 var MIME_TYPES = {
   "3gp": "video/3gpp",
   "3gpp": "video/3gpp",

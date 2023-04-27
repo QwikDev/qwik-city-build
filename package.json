@@ -27,6 +27,11 @@
       "import": "./adapters/cloud-run/vite/index.mjs",
       "require": "./adapters/cloud-run/vite/index.cjs"
     },
+    "./adapters/deno-server/vite": {
+      "types": "./adapters/deno-server/vite/index.d.ts",
+      "import": "./adapters/deno-server/vite/index.mjs",
+      "require": "./adapters/deno-server/vite/index.cjs"
+    },
     "./adapters/node-server/vite": {
       "types": "./adapters/node-server/vite/index.d.ts",
       "import": "./adapters/node-server/vite/index.mjs",
@@ -59,6 +64,10 @@
     "./middleware/cloudflare-pages": {
       "types": "./middleware/cloudflare-pages/index.d.ts",
       "import": "./middleware/cloudflare-pages/index.mjs"
+    },
+    "./middleware/deno": {
+      "types": "./middleware/deno/index.d.ts",
+      "import": "./middleware/deno/index.mjs"
     },
     "./middleware/netlify-edge": {
       "types": "./middleware/netlify-edge/index.d.ts",
