@@ -751,10 +751,10 @@ const serverQrl = (qrl) => {
       throw new Error("For security reasons, we cannot serialize QRLs that capture lexical scope.");
   }
   function stuff() {
-    return /* @__PURE__ */ qwik.inlinedQrl(async (...args) => {
+    return /* @__PURE__ */ qwik.inlinedQrl(async function(...args) {
       const [qrl2] = qwik.useLexicalScope();
       if (build.isServer) {
-        const requestEvent = useQwikCityEnv()?.ev;
+        const requestEvent = useQwikCityEnv()?.ev ?? this;
         return qrl2.apply(requestEvent, args);
       } else {
         const ctxElm = qwik._getContextElement();
