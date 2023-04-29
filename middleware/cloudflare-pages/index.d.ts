@@ -3,7 +3,7 @@ import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/reque
 /**
  * @public
  */
-export declare function createQwikCity(opts: QwikCityCloudflarePagesOptions): (ctx: EventPluginContext) => Promise<Response>;
+export declare function createQwikCity(opts: QwikCityCloudflarePagesOptions): (eventPluginContext: EventPluginContext) => Promise<Response>;
 
 /**
  * @public
@@ -19,8 +19,10 @@ export declare interface EventPluginContext {
  * @public
  */
 export declare interface PlatformCloudflarePages {
-    request: EventPluginContext['env'];
-    waitUntil: EventPluginContext['waitUntil'];
+    request: EventPluginContext['request'];
+    ctx: {
+        waitUntil: EventPluginContext['waitUntil'];
+    };
     env: EventPluginContext['env'];
 }
 
