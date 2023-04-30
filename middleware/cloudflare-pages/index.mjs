@@ -17,12 +17,11 @@ function createQwikCity(opts) {
   if (opts.manifest) {
     setServerPlatform(opts.manifest);
   }
-  async function onCloudflarePagesRequest(eventPluginContext) {
+  async function onCloudflarePagesFetch(request, env, ctx) {
     try {
-      const { request, env, waitUntil, next } = eventPluginContext;
       const url = new URL(request.url);
       if (isStaticPath(request.method, url)) {
-        return next();
+        return env.ASSETS.fetch(request);
       }
       const useCache = url.hostname !== "127.0.0.1" && url.hostname !== "localhost" && url.port === "" && request.method === "GET";
       const cacheKey = new Request(url.href, request);
@@ -55,8 +54,7 @@ function createQwikCity(opts) {
         platform: {
           request,
           env,
-          ctx: { waitUntil },
-          next
+          ctx
         }
       };
       const handledResponse = await requestHandler(serverRequestEv, opts, qwikSerializer);
@@ -69,7 +67,7 @@ function createQwikCity(opts) {
         const response = await handledResponse.response;
         if (response) {
           if (response.ok && cache && response.headers.has("Cache-Control")) {
-            waitUntil(cache.put(cacheKey, response.clone()));
+            ctx.waitUntil(cache.put(cacheKey, response.clone()));
           }
           return response;
         }
@@ -87,7 +85,7 @@ function createQwikCity(opts) {
       });
     }
   }
-  return onCloudflarePagesRequest;
+  return onCloudflarePagesFetch;
 }
 var resolved = Promise.resolve();
 var TextEncoderStream = class {

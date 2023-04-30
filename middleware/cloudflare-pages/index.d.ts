@@ -3,27 +3,21 @@ import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/reque
 /**
  * @public
  */
-export declare function createQwikCity(opts: QwikCityCloudflarePagesOptions): (eventPluginContext: EventPluginContext) => Promise<Response>;
-
-/**
- * @public
- */
-export declare interface EventPluginContext {
-    request: Request;
-    waitUntil: (promise: Promise<any>) => void;
-    next: (input?: Request | string, init?: RequestInit) => Promise<Response>;
-    env: Record<string, any>;
-}
+export declare function createQwikCity(opts: QwikCityCloudflarePagesOptions): (request: PlatformCloudflarePages['request'], env: Record<string, any> & {
+    ASSETS: {
+        fetch: (req: Request) => Response;
+    };
+}, ctx: PlatformCloudflarePages['ctx']) => Promise<Response>;
 
 /**
  * @public
  */
 export declare interface PlatformCloudflarePages {
-    request: EventPluginContext['request'];
+    request: Request;
+    env: Record<string, any>;
     ctx: {
-        waitUntil: EventPluginContext['waitUntil'];
+        waitUntil: (promise: Promise<any>) => void;
     };
-    env: EventPluginContext['env'];
 }
 
 /**
