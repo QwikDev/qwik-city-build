@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, eventQrl, useContext, _jsxC, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, untrack, _jsxS, _jsxQ, _wrapSignal, implicit$FirstArg, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, eventQrl, useContext, _jsxC, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _jsxS, _jsxQ, _wrapSignal, implicit$FirstArg, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
@@ -340,7 +340,7 @@ const useNavigate = () => useContext(RouteNavigateContext);
 const useAction = () => useContext(RouteActionContext);
 const useQwikCityEnv = () => noSerialize(useServerData("qwikcity"));
 const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
-  useStylesQrl(/* @__PURE__ */ inlinedQrl(`:root{view-transition-name: none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
+  useStylesQrl(/* @__PURE__ */ inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
   const env = useQwikCityEnv();
   if (!env?.params)
     throw new Error(`Missing Qwik City Env Data`);
@@ -351,10 +351,12 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
   const routeLocation = useStore({
     url,
     params: env.params,
-    isNavigating: false
+    isNavigating: false,
+    prevUrl: void 0
   }, {
     deep: false
   });
+  const navResolver = {};
   const loaderState = _weakSerialize(useStore(env.response.loaders, {
     deep: false
   }));
@@ -376,7 +378,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     }
   } : void 0);
   const goto = /* @__PURE__ */ inlinedQrl(async (path, forceReload) => {
-    const [actionState2, navPath2, routeLocation2] = useLexicalScope();
+    const [actionState2, navPath2, navResolver2, routeLocation2] = useLexicalScope();
     if (path === void 0) {
       path = navPath2.value;
       navPath2.value = "";
@@ -393,9 +395,13 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     }
     actionState2.value = void 0;
     routeLocation2.isNavigating = true;
+    return new Promise((resolve) => {
+      navResolver2.r = resolve;
+    });
   }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
     actionState,
     navPath,
+    navResolver,
     routeLocation
   ]);
   useContextProvider(ContentContext, content);
@@ -406,7 +412,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
   useContextProvider(RouteStateContext, loaderState);
   useContextProvider(RouteActionContext, actionState);
   useTaskQrl(/* @__PURE__ */ inlinedQrl(({ track }) => {
-    const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, props2, routeLocation2, url2] = useLexicalScope();
+    const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, navResolver2, props2, routeLocation2] = useLexicalScope();
     async function run() {
       const [path, action] = track(() => [
         navPath2.value,
@@ -416,6 +422,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       let trackUrl;
       let clientPageData;
       let loadedRoute = null;
+      let elm;
       if (isServer) {
         trackUrl = new URL(path, routeLocation2.url);
         loadedRoute = env2.loadedRoute;
@@ -428,8 +435,8 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         } else if (qwikCity.trailingSlash)
           trackUrl.pathname += "/";
         let loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
-        const element = _getContextElement();
-        const pageData = clientPageData = await loadClientData(trackUrl, element, true, action);
+        elm = _getContextElement();
+        const pageData = clientPageData = await loadClientData(trackUrl, elm, true, action);
         if (!pageData) {
           navPath2.untrackedValue = toPath(trackUrl);
           return;
@@ -446,6 +453,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         const [params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
+        routeLocation2.prevUrl = routeLocation2.url;
         routeLocation2.url = trackUrl;
         routeLocation2.params = {
           ...params
@@ -461,7 +469,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         documentHead2.title = resolvedHead.title;
         documentHead2.frontmatter = resolvedHead.frontmatter;
         if (isBrowser) {
-          if ((props2.viewTransition ?? true) && isSameOriginDifferentPathname(window.location, url2))
+          if (props2.viewTransition !== false)
             document.__q_view_transition__ = true;
           const loaders = clientPageData?.loaders;
           if (loaders)
@@ -469,6 +477,8 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
           CLIENT_DATA_CACHE.clear();
           clientNavigate(window, trackUrl, navPath2);
           routeLocation2.isNavigating = false;
+          if (navResolver2.r)
+            _waitUntilRendered(elm).then(navResolver2.r);
         }
       }
     }
@@ -485,9 +495,9 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     env,
     loaderState,
     navPath,
+    navResolver,
     props,
-    routeLocation,
-    url
+    routeLocation
   ]));
   return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
@@ -497,7 +507,8 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
   const routeLocation = useStore({
     url,
     params: props.params ?? {},
-    isNavigating: false
+    isNavigating: false,
+    prevUrl: void 0
   }, {
     deep: false
   });
@@ -526,30 +537,34 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
 const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
-  const linkProps = {
-    ...props
-  };
+  const { onClick$, reload, ...linkProps } = (() => props)();
   const clientNavPath = untrack(() => getClientNavPath(linkProps, loc));
   const prefetchDataset = untrack(() => getPrefetchDataset(props, clientNavPath, loc));
-  const reload = !!linkProps.reload;
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
-  const event = eventQrl(/* @__PURE__ */ inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_event_event_5g4B0Gd1Wck"));
+  const onPrefetch = prefetchDataset != null ? eventQrl(/* @__PURE__ */ inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_onPrefetch_event_eBQ0vFsFKsk")) : void 0;
+  const handleClick = eventQrl(/* @__PURE__ */ inlinedQrl(async (_, elm) => {
+    const [nav2, reload2] = useLexicalScope();
+    if (elm.href) {
+      elm.setAttribute("aria-pressed", "true");
+      await nav2(elm.href, reload2);
+      elm.removeAttribute("aria-pressed");
+    }
+  }, "Link_component_handleClick_event_i1Cv0pYJNR0", [
+    nav,
+    reload
+  ]));
   return /* @__PURE__ */ _jsxS("a", {
     ...linkProps,
     "data-prefetch": prefetchDataset,
     children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
-    onClick$: /* @__PURE__ */ inlinedQrl((_, elm) => {
-      const [nav2, reload2] = useLexicalScope();
-      if (elm.href)
-        nav2(elm.href, reload2);
-    }, "Link_component_a_onClick_kzjavhDI3L0", [
-      nav,
-      reload
-    ]),
-    onMouseOver$: event,
-    onFocus$: event,
-    onQVisible$: event
+    onClick$: [
+      onClick$,
+      handleClick
+    ],
+    onMouseOver$: onPrefetch,
+    onFocus$: onPrefetch,
+    onQVisible$: onPrefetch
   }, null, 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
 const prefetchLinkResources = (elm, isOnVisible) => {

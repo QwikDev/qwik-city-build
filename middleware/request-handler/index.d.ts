@@ -563,6 +563,7 @@ declare interface RouteLocation {
     readonly params: Readonly<Record<string, string>>;
     readonly url: URL;
     readonly isNavigating: boolean;
+    readonly prevUrl: URL | undefined;
 }
 
 declare interface RouteModule<BODY = unknown> {
