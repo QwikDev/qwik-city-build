@@ -68,7 +68,7 @@ function vercelEdgeAdapter(opts = {}) {
         publicDir: false
       };
     },
-    async generate({ clientOutDir, serverOutDir, basePathname, outputEntries }) {
+    async generate({ clientPublicOutDir, serverOutDir, basePathname, outputEntries }) {
       const vercelOutputDir = (0, import_vite.getParentDir)(serverOutDir, "output");
       if (opts.outputConfig !== false) {
         const vercelOutputConfig = {
@@ -108,7 +108,7 @@ function vercelEdgeAdapter(opts = {}) {
       }
       await import_node_fs.default.promises.rm(vercelStaticDir, { recursive: true, force: true });
       await import_node_fs.default.promises.mkdir((0, import_node_path.dirname)(vercelStaticDir), { recursive: true });
-      await import_node_fs.default.promises.rename(clientOutDir, vercelStaticDir);
+      await import_node_fs.default.promises.rename(clientPublicOutDir, vercelStaticDir);
     }
   });
 }
