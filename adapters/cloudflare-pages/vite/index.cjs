@@ -65,7 +65,7 @@ function cloudflarePagesAdapter(opts = {}) {
         publicDir: false
       };
     },
-    async generate({ clientOutDir, basePathname }) {
+    async generate({ clientOutDir, serverOutDir, basePathname }) {
       const routesJsonPath = (0, import_node_path.join)(clientOutDir, "_routes.json");
       const hasRoutesJson = import_node_fs.default.existsSync(routesJsonPath);
       if (!hasRoutesJson && opts.functionRoutes !== false) {
@@ -79,9 +79,10 @@ function cloudflarePagesAdapter(opts = {}) {
       const workerJsPath = (0, import_node_path.join)(clientOutDir, "_worker.js");
       const hasWorkerJs = import_node_fs.default.existsSync(workerJsPath);
       if (!hasWorkerJs) {
+        const importPath = (0, import_node_path.relative)(clientOutDir, (0, import_node_path.join)(serverOutDir, "entry.cloudflare-pages"));
         await import_node_fs.default.promises.writeFile(
           workerJsPath,
-          'import { fetch } from "../server/entry.cloudflare-pages"; export default { fetch };'
+          `import { fetch } from "${importPath}"; export default { fetch };`
         );
       }
     }

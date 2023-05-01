@@ -128,6 +128,7 @@ declare interface ViteAdapterPluginOptions {
     generate?: (generateOpts: {
         outputEntries: string[];
         clientOutDir: string;
+        clientPublicOutDir: string;
         serverOutDir: string;
         basePathname: string;
         routes: BuildRoute[];

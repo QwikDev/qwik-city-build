@@ -256,8 +256,9 @@ function viteAdapter(opts) {
           const routes = qwikCityPlugin.api.getRoutes();
           const basePathname = qwikCityPlugin.api.getBasePathname();
           const clientOutDir = qwikVitePlugin.api.getClientOutDir();
+          const clientPublicOutDir = qwikVitePlugin.api.getClientPublicOutDir();
           const rootDir = qwikVitePlugin.api.getRootDir() ?? void 0;
-          if (renderModulePath && qwikCityPlanModulePath && clientOutDir) {
+          if (renderModulePath && qwikCityPlanModulePath && clientOutDir && clientPublicOutDir) {
             let ssgOrigin = ((_a = opts.ssg) == null ? void 0 : _a.origin) ?? opts.origin;
             if (!ssgOrigin) {
               ssgOrigin = `https://yoursite.qwik.builder.io`;
@@ -277,7 +278,7 @@ function viteAdapter(opts) {
             const generateOpts = {
               maxWorkers: opts.maxWorkers,
               basePathname,
-              outDir: clientOutDir,
+              outDir: clientPublicOutDir,
               rootDir,
               ...opts.ssg,
               origin: ssgOrigin,
@@ -294,7 +295,7 @@ function viteAdapter(opts) {
             }
             staticPaths.push(...staticGenerateResult.staticPaths);
             const { staticPathsCode, notFoundPathsCode } = await postBuild(
-              clientOutDir,
+              clientPublicOutDir,
               basePathname,
               staticPaths,
               format,
@@ -312,6 +313,7 @@ function viteAdapter(opts) {
                 outputEntries,
                 serverOutDir,
                 clientOutDir,
+                clientPublicOutDir,
                 basePathname,
                 routes,
                 warn: (message) => this.warn(message),

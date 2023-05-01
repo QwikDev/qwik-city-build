@@ -1,7 +1,7 @@
 // packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
 import { viteAdapter } from "../../shared/vite/index.mjs";
 import fs from "fs";
-import { join } from "path";
+import { join, relative } from "path";
 function cloudflarePagesAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return viteAdapter({
@@ -31,7 +31,7 @@ function cloudflarePagesAdapter(opts = {}) {
         publicDir: false
       };
     },
-    async generate({ clientOutDir, basePathname }) {
+    async generate({ clientOutDir, serverOutDir, basePathname }) {
       const routesJsonPath = join(clientOutDir, "_routes.json");
       const hasRoutesJson = fs.existsSync(routesJsonPath);
       if (!hasRoutesJson && opts.functionRoutes !== false) {
@@ -45,9 +45,10 @@ function cloudflarePagesAdapter(opts = {}) {
       const workerJsPath = join(clientOutDir, "_worker.js");
       const hasWorkerJs = fs.existsSync(workerJsPath);
       if (!hasWorkerJs) {
+        const importPath = relative(clientOutDir, join(serverOutDir, "entry.cloudflare-pages"));
         await fs.promises.writeFile(
           workerJsPath,
-          'import { fetch } from "../server/entry.cloudflare-pages"; export default { fetch };'
+          `import { fetch } from "${importPath}"; export default { fetch };`
         );
       }
     }
