@@ -9,7 +9,7 @@ function azureSwaAdapter(opts = {}) {
     origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.region.2.azurestaticapps.net",
     ssg: opts.ssg,
     cleanStaticGenerated: true,
-    async generate({ outputEntries, serverOutDir, clientOutDir }) {
+    async generate({ outputEntries, serverOutDir, clientPublicOutDir }) {
       const serverPackageJsonPath = join(serverOutDir, "package.json");
       const serverPackageJsonCode = `{"type":"module"}`;
       await fs.promises.mkdir(serverOutDir, { recursive: true });
@@ -50,8 +50,8 @@ function azureSwaAdapter(opts = {}) {
         2
       );
       await fs.promises.writeFile(funcJsonPath, funcJson);
-      if (!fs.existsSync(join(clientOutDir, "index.html"))) {
-        await fs.promises.writeFile(join(clientOutDir, "index.html"), "");
+      if (!fs.existsSync(join(clientPublicOutDir, "index.html"))) {
+        await fs.promises.writeFile(join(clientPublicOutDir, "index.html"), "");
       }
     }
   });
