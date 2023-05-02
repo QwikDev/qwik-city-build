@@ -92,8 +92,7 @@ function createQwikCity(opts) {
           return writable;
         },
         platform: {
-          ssr: true,
-          deno: Deno.version.deno
+          ssr: true
         }
       };
       const handledResponse = await requestHandler(serverRequestEv, opts, qwikSerializer);
