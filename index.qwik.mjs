@@ -1,4 +1,5 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useOnDocument, eventQrl, useContext, _jsxC, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _jsxS, _jsxQ, _wrapSignal, implicit$FirstArg, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
@@ -11,21 +12,10 @@ const DocumentHeadContext = /* @__PURE__ */ createContextId("qc-h");
 const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
+const popStateScript = '(function(){\n  const t="_qCityPopstateFallback",o="_qCityHistory";window[t]||(window[t]=()=>{window[o]||location.reload()},setTimeout(()=>{addEventListener("popstate",window[t])},0))\n})();\n';
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   _jsxBranch();
-  useOnDocument("qinit", eventQrl(/* @__PURE__ */ inlinedQrl(() => {
-    const POPSTATE_FALLBACK_INITIALIZED = "_qCityPopstateFallback";
-    const CLIENT_HISTORY_INITIALIZED = "_qCityHistory";
-    if (!window[POPSTATE_FALLBACK_INITIALIZED]) {
-      window[POPSTATE_FALLBACK_INITIALIZED] = () => {
-        if (!window[CLIENT_HISTORY_INITIALIZED])
-          location.reload();
-      };
-      setTimeout(() => {
-        addEventListener("popstate", window[POPSTATE_FALLBACK_INITIALIZED]);
-      }, 0);
-    }
-  }, "RouterOutlet_component_useOnDocument_event_KnNE9eL0qfc")));
+  _jsxBranch();
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -33,11 +23,18 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
     for (let i = contentsLen - 1; i >= 0; i--)
       cmp = _jsxC(context.value[i].default, {
         children: cmp
-      }, 1, "k8_0");
-    return cmp;
+      }, 1, "zl_0");
+    return /* @__PURE__ */ _jsxC(Fragment, {
+      children: [
+        cmp,
+        /* @__PURE__ */ _jsxQ("script", null, {
+          dangerouslySetInnerHTML: popStateScript
+        }, null, 3, null)
+      ]
+    }, 1, "zl_1");
   }
   return SkipRender;
-}, "RouterOutlet_component_AKetNByE5TM"));
+}, "RouterOutlet_component_e0ssiDXoeAM"));
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
