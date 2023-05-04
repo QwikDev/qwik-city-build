@@ -103,7 +103,9 @@ function getPathnameForDynamicRoute(originalPathname, paramNames, params) {
 
 // packages/qwik-city/utils/fs.ts
 function normalizePath(path) {
-  path = (0, import_node_path.normalize)(path);
+  return normalizePathSlash((0, import_node_path.normalize)(path));
+}
+function normalizePathSlash(path) {
   const isExtendedLengthPath = /^\\\\\?\\/.test(path);
   const hasNonAscii = /[^\u0000-\u0080]+/.test(path);
   if (isExtendedLengthPath || hasNonAscii) {

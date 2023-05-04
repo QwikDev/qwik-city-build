@@ -13551,7 +13551,9 @@ function removeExtension(fileName) {
   return "";
 }
 function normalizePath(path2) {
-  path2 = (0, import_node_path.normalize)(path2);
+  return normalizePathSlash((0, import_node_path.normalize)(path2));
+}
+function normalizePathSlash(path2) {
   const isExtendedLengthPath = /^\\\\\?\\/.test(path2);
   const hasNonAscii = /[^\u0000-\u0080]+/.test(path2);
   if (isExtendedLengthPath || hasNonAscii) {

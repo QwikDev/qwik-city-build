@@ -36,6 +36,22 @@ module.exports = __toCommonJS(vite_exports);
 var import_vite = require("../../shared/vite/index.cjs");
 var import_node_fs = __toESM(require("fs"), 1);
 var import_node_path = require("path");
+
+// packages/qwik-city/utils/fs.ts
+function normalizePathSlash(path) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+  const hasNonAscii = /[^\u0000-\u0080]+/.test(path);
+  if (isExtendedLengthPath || hasNonAscii) {
+    return path;
+  }
+  path = path.replace(/\\/g, "/");
+  if (path.endsWith("/")) {
+    path = path.slice(0, path.length - 1);
+  }
+  return path;
+}
+
+// packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
 function cloudflarePagesAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return (0, import_vite.viteAdapter)({
@@ -82,7 +98,7 @@ function cloudflarePagesAdapter(opts = {}) {
         const importPath = (0, import_node_path.relative)(clientOutDir, (0, import_node_path.join)(serverOutDir, "entry.cloudflare-pages"));
         await import_node_fs.default.promises.writeFile(
           workerJsPath,
-          `import { fetch } from "${importPath}"; export default { fetch };`
+          `import { fetch } from "${normalizePathSlash(importPath)}"; export default { fetch };`
         );
       }
     }

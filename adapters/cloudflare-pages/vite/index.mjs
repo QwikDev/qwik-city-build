@@ -2,6 +2,22 @@
 import { viteAdapter } from "../../shared/vite/index.mjs";
 import fs from "fs";
 import { join, relative } from "path";
+
+// packages/qwik-city/utils/fs.ts
+function normalizePathSlash(path) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path);
+  const hasNonAscii = /[^\u0000-\u0080]+/.test(path);
+  if (isExtendedLengthPath || hasNonAscii) {
+    return path;
+  }
+  path = path.replace(/\\/g, "/");
+  if (path.endsWith("/")) {
+    path = path.slice(0, path.length - 1);
+  }
+  return path;
+}
+
+// packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
 function cloudflarePagesAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return viteAdapter({
@@ -48,7 +64,7 @@ function cloudflarePagesAdapter(opts = {}) {
         const importPath = relative(clientOutDir, join(serverOutDir, "entry.cloudflare-pages"));
         await fs.promises.writeFile(
           workerJsPath,
-          `import { fetch } from "${importPath}"; export default { fetch };`
+          `import { fetch } from "${normalizePathSlash(importPath)}"; export default { fetch };`
         );
       }
     }
