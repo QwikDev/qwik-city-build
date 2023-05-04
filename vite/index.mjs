@@ -25374,9 +25374,11 @@ function qwikCity(userOpts) {
           const manifest = qwikPlugin.api.getManifest();
           const clientOutDir = qwikPlugin.api.getClientOutDir();
           if (manifest && clientOutDir) {
+            const basePathRelDir = api.getBasePathname().replace(/^\/|\/$/, "");
+            const clientOutBaseDir = join6(clientOutDir, basePathRelDir);
             for (const swEntry of ctx.serviceWorkers) {
               try {
-                const swClientDistPath = join6(clientOutDir, swEntry.chunkFileName);
+                const swClientDistPath = join6(clientOutBaseDir, swEntry.chunkFileName);
                 const swCode = await fs7.promises.readFile(swClientDistPath, "utf-8");
                 try {
                   const swCodeUpdate = prependManifestToServiceWorker(ctx, manifest, swCode);
