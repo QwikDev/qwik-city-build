@@ -11872,10 +11872,10 @@ var init_association = __esm({
 // node_modules/.pnpm/mdast-util-to-markdown@1.3.0/node_modules/mdast-util-to-markdown/lib/util/track.js
 function track(options_) {
   const options2 = options_ || {};
-  const now = options2.now || {};
+  const now2 = options2.now || {};
   let lineShift = options2.lineShift || 0;
-  let line = now.line || 1;
-  let column = now.column || 1;
+  let line = now2.line || 1;
+  let column = now2.column || 1;
   return { move, current, shift };
   function current() {
     return { now: { line, column }, lineShift };
@@ -19367,7 +19367,7 @@ function parseEntities(value2, options2 = {}) {
   }
   let line = (point ? point.line : 0) || 1;
   let column = (point ? point.column : 0) || 1;
-  let previous2 = now();
+  let previous2 = now2();
   let character;
   index--;
   while (++index <= value2.length) {
@@ -19489,11 +19489,11 @@ function parseEntities(value2, options2 = {}) {
       }
       if (reference) {
         flush();
-        previous2 = now();
+        previous2 = now2();
         index = end - 1;
         column += end - start + 1;
         result.push(reference);
-        const next = now();
+        const next = now2();
         next.offset++;
         if (options2.reference) {
           options2.reference.call(
@@ -19525,7 +19525,7 @@ function parseEntities(value2, options2 = {}) {
     }
   }
   return result.join("");
-  function now() {
+  function now2() {
     return {
       line,
       column,
@@ -19535,7 +19535,7 @@ function parseEntities(value2, options2 = {}) {
   function warning(code2, offset) {
     let position;
     if (options2.warning) {
-      position = now();
+      position = now2();
       position.column += offset;
       position.offset += offset;
       options2.warning.call(
@@ -19552,7 +19552,7 @@ function parseEntities(value2, options2 = {}) {
       if (options2.text) {
         options2.text.call(options2.textContext, queue, {
           start: previous2,
-          end: now()
+          end: now2()
         });
       }
       queue = "";
@@ -23782,11 +23782,15 @@ function actionsMiddleware(routeLoaders, routeActions) {
           if (!data || typeof data !== "object") {
             throw new Error("Expected request data to be an object");
           }
-          const result = await runValidators(requestEv, action.__validators, data);
+          const result = await runValidators(requestEv, action.__validators, data, isDev);
           if (!result.success) {
             loaders[selectedAction] = requestEv.fail(result.status ?? 500, result.error);
           } else {
-            const actionResolved = await action.__qrl(result.data, requestEv);
+            const actionResolved = isDev ? await measure(
+              requestEv,
+              action.__qrl.getSymbol().split("_", 1)[0],
+              () => action.__qrl(result.data, requestEv)
+            ) : await action.__qrl(result.data, requestEv);
             if (isDev) {
               verifySerializable(qwikSerializer, actionResolved, action.__qrl);
             }
@@ -23806,9 +23810,22 @@ function actionsMiddleware(routeLoaders, routeActions) {
               );
             }
           }
-          return loaders[loaderId] = runValidators(requestEv, loader.__validators, void 0).then((res) => {
+          return loaders[loaderId] = runValidators(
+            requestEv,
+            loader.__validators,
+            void 0,
+            isDev
+          ).then((res) => {
             if (res.success) {
-              return loader.__qrl(requestEv);
+              if (isDev) {
+                return measure(
+                  requestEv,
+                  loader.__qrl.getSymbol().split("_", 1)[0],
+                  () => loader.__qrl(requestEv)
+                );
+              } else {
+                return loader.__qrl(requestEv);
+              }
             } else {
               return requestEv.fail(res.status ?? 500, res.error);
             }
@@ -23828,14 +23845,22 @@ function actionsMiddleware(routeLoaders, routeActions) {
     }
   };
 }
-async function runValidators(requestEv, validators, data) {
+async function runValidators(requestEv, validators, data, isDev) {
   let lastResult = {
     success: true,
     data
   };
   if (validators) {
     for (const validator of validators) {
-      lastResult = await validator.validate(requestEv, data);
+      if (isDev) {
+        lastResult = await measure(
+          requestEv,
+          `validator$`,
+          () => validator.validate(requestEv, data)
+        );
+      } else {
+        lastResult = await validator.validate(requestEv, data);
+      }
       if (!lastResult.success) {
         return lastResult;
       } else {
@@ -23860,7 +23885,11 @@ async function pureServerFunction(ev) {
       if (isQrl(qrl) && qrl.getHash() === fn) {
         let result;
         try {
-          result = await qrl.apply(ev, args);
+          if (isDev) {
+            result = measure(ev, `server_${qrl.getSymbol()}`, () => qrl.apply(ev, args));
+          } else {
+            result = await qrl.apply(ev, args);
+          }
         } catch (err) {
           ev.headers.set("Content-Type", "application/qwik-json");
           ev.send(500, await qwikSerializer._serializeData(err, true));
@@ -24002,6 +24031,22 @@ function makeQDataPath(href) {
     return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
   } else {
     return void 0;
+  }
+}
+function now() {
+  return typeof performance !== "undefined" ? performance.now() : 0;
+}
+async function measure(requestEv, name, fn) {
+  const start = now();
+  try {
+    return await fn();
+  } finally {
+    const duration = now() - start;
+    let measurements = requestEv.sharedMap.get("@serverTiming");
+    if (!measurements) {
+      requestEv.sharedMap.set("@serverTiming", measurements = []);
+    }
+    measurements.push([name, duration]);
   }
 }
 
@@ -24239,6 +24284,12 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
     },
     getWritableStream: () => {
       if (writableStream === null) {
+        if (serverRequestEv.mode === "dev") {
+          const serverTiming = sharedMap.get("@serverTiming");
+          if (serverTiming) {
+            headers.set("Server-Timing", serverTiming.map((a) => `${a[0]};dur=${a[1]}`).join(","));
+          }
+        }
         writableStream = serverRequestEv.getWritableStream(
           status,
           headers,
@@ -24686,6 +24737,13 @@ function ssrDevMiddleware(ctx, server) {
             const cookieHeaders = requestEv.cookie.headers();
             if (cookieHeaders.length > 0) {
               res.setHeader("Set-Cookie", cookieHeaders);
+            }
+            const serverTiming = requestEv.sharedMap.get("@serverTiming");
+            if (serverTiming) {
+              res.setHeader(
+                "Server-Timing",
+                serverTiming.map((a) => `${a[0]};dur=${a[1]}`).join(",")
+              );
             }
             res._qwikEnvData = {
               ...res._qwikEnvData,
