@@ -65,6 +65,12 @@ declare interface CacheControlOptions {
 }
 
 /**
+ * HTTP Client Error Status Codes
+ * Status codes in the 4xx range indicate that the client's request was malformed or invalid and could not be understood or processed by the server.
+ */
+declare type ClientErrorCode = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 421 | 422 | 423 | 424 | 425 | 426 | 428 | 429 | 431 | 451;
+
+/**
  * @public
  */
 declare interface ContentHeading {
@@ -269,6 +275,8 @@ declare interface EnvGetter {
     get(key: string): string | undefined;
 }
 
+declare type ErrorCodes = ClientErrorCode | ServerErrorCode;
+
 declare class ErrorResponse extends Error {
     status: number;
     constructor(status: number, message?: string);
@@ -278,6 +286,12 @@ declare class ErrorResponse extends Error {
  * @public
  */
 export declare function getErrorHtml(status: number, e: any): string;
+
+/**
+ * HTTP Informational Status Codes
+ * Status codes in the 1xx range indicate that the server has received and is processing the request, but no response is available yet.
+ */
+declare type InformationalCode = 100 | 101 | 102 | 103;
 
 declare interface LayoutModule extends RouteModule {
     readonly default: any;
@@ -326,7 +340,11 @@ declare interface QwikSerializer {
     _verifySerializable: typeof _verifySerializable;
 }
 
-declare type RedirectCode = 301 | 302 | 303 | 307 | 308;
+/**
+ * HTTP Redirect Status Codes
+ * Status codes in the 3xx range indicate that further action must be taken by the client to complete the request.
+ */
+declare type RedirectCode = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;
 
 declare class RedirectMessage extends AbortMessage {
 }
@@ -445,7 +463,7 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends
      *
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
      */
-    readonly status: (statusCode?: number) => number;
+    readonly status: (statusCode?: StatusCodes) => number;
     /**
      * Which locale the content is in.
      *
@@ -466,25 +484,25 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends
      * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Status
      * for which status code should be used.
      */
-    readonly error: (statusCode: number, message: string) => ErrorResponse;
+    readonly error: (statusCode: ErrorCodes, message: string) => ErrorResponse;
     /**
      * Convenience method to send an text body response. The response will be automatically
      * set the `Content-Type` header to`text/plain; charset=utf-8`.
      *  An `text()` response can only be called once.
      */
-    readonly text: (statusCode: number, text: string) => AbortMessage;
+    readonly text: (statusCode: StatusCodes, text: string) => AbortMessage;
     /**
      * Convenience method to send an HTML body response. The response will be automatically
      * set the `Content-Type` header to`text/html; charset=utf-8`.
      *  An `html()` response can only be called once.
      */
-    readonly html: (statusCode: number, html: string) => AbortMessage;
+    readonly html: (statusCode: StatusCodes, html: string) => AbortMessage;
     /**
      * Convenience method to JSON stringify the data and send it in the response.
      * The response will be automatically set the `Content-Type` header to
      * `application/json; charset=utf-8`. A `json()` response can only be called once.
      */
-    readonly json: (statusCode: number, data: any) => AbortMessage;
+    readonly json: (statusCode: StatusCodes, data: any) => AbortMessage;
     /**
      * Send a body response. The `Content-Type` response header is not automatically set
      * when using `send()` and must be set manually. A `send()` response can only be called once.
@@ -581,9 +599,15 @@ declare interface RouteModule<BODY = unknown> {
  * @public
  */
 declare interface SendMethod {
-    (statusCode: number, data: any): AbortMessage;
+    (statusCode: StatusCodes, data: any): AbortMessage;
     (response: Response): AbortMessage;
 }
+
+/**
+ * HTTP Server Error Status Codes
+ * Status codes in the 5xx range indicate that the server encountered an error or was unable to fulfill the request due to unexpected conditions.
+ */
+declare type ServerErrorCode = 500 | 501 | 502 | 503 | 504 | 505 | 506 | 507 | 508 | 510 | 511;
 
 /**
  * @public
@@ -628,5 +652,13 @@ declare interface StaticGenerate {
  * @public
  */
 declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
+
+declare type StatusCodes = InformationalCode | SuccessCode | ClientErrorCode | ServerErrorCode | RedirectCode;
+
+/**
+ * HTTP Success Status Codes
+ * Status codes in the 2xx range indicate that the client's request was successfully received, understood, and accepted by the server.
+ */
+declare type SuccessCode = 200 | 201 | 202 | 203 | 204 | 205 | 206 | 207 | 208 | 226;
 
 export { }

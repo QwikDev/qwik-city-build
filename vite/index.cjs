@@ -24395,7 +24395,8 @@ async function runNext(requestEv, resolve4) {
       console.error(e);
       if (!requestEv.headersSent) {
         const html3 = getErrorHtml(e.status, e);
-        requestEv.html(e.status, html3);
+        const status = e.status;
+        requestEv.html(status, html3);
       }
     } else if (!(e instanceof AbortMessage)) {
       if (getRequestMode(requestEv) !== "dev") {
