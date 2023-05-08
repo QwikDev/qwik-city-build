@@ -24131,7 +24131,7 @@ var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvSharedActionId = "@actionId";
 var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
-function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer, resolved) {
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
   const { request, platform, env } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
   const headers = new Headers();
@@ -24185,6 +24185,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   };
   const loaders = {};
   const sharedMap = /* @__PURE__ */ new Map();
+  sharedMap.set("@manifest", manifest);
   const requestEv = {
     [RequestEvLoaders]: loaders,
     [RequestEvMode]: serverRequestEv.mode,
@@ -24366,13 +24367,14 @@ var formToObj = (formData) => {
 };
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
-function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer) {
+function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash = true, basePathname = "/", qwikSerializer) {
   let resolve4;
   const responsePromise = new Promise((r2) => resolve4 = r2);
   const requestEv = createRequestEvent(
     serverRequestEv,
     loadedRoute,
     requestHandlers,
+    manifest,
     trailingSlash,
     basePathname,
     qwikSerializer,
@@ -24796,10 +24798,18 @@ function ssrDevMiddleware(ctx, server) {
           if (ctx.opts.platform) {
             serverRequestEv.platform = ctx.opts.platform;
           }
+          const manifest = {
+            symbols: {},
+            mapping: {},
+            bundles: {},
+            injections: [],
+            version: "1"
+          };
           const { completion, requestEv } = runQwikCity(
             serverRequestEv,
             loadedRoute,
             requestHandlers,
+            manifest,
             ctx.opts.trailingSlash,
             ctx.opts.basePathname,
             qwikSerializer

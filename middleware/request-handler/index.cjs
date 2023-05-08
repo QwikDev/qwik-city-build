@@ -771,7 +771,7 @@ var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
 var RequestEvSharedActionId = "@actionId";
 var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
-function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer, resolved) {
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
   const { request, platform, env } = serverRequestEv;
   const cookie = new Cookie(request.headers.get("cookie"));
   const headers = new Headers();
@@ -825,6 +825,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, trail
   };
   const loaders = {};
   const sharedMap = /* @__PURE__ */ new Map();
+  sharedMap.set("@manifest", manifest);
   const requestEv = {
     [RequestEvLoaders]: loaders,
     [RequestEvMode]: serverRequestEv.mode,
@@ -1006,13 +1007,14 @@ var formToObj = (formData) => {
 };
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
-function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, trailingSlash = true, basePathname = "/", qwikSerializer) {
+function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash = true, basePathname = "/", qwikSerializer) {
   let resolve;
   const responsePromise = new Promise((r) => resolve = r);
   const requestEv = createRequestEvent(
     serverRequestEv,
     loadedRoute,
     requestHandlers,
+    manifest,
     trailingSlash,
     basePathname,
     qwikSerializer,
@@ -1164,15 +1166,11 @@ var getPathParams = (paramNames, match) => {
 
 // packages/qwik-city/middleware/request-handler/request-handler.ts
 async function requestHandler(serverRequestEv, opts, qwikSerializer) {
-  const { render, qwikCityPlan } = opts;
-  const { routes, serverPlugins, menus, cacheModules, trailingSlash, basePathname } = qwikCityPlan;
+  const { render, qwikCityPlan, manifest } = opts;
   const pathname = serverRequestEv.url.pathname;
-  const matchPathname = getRouteMatchPathname(pathname, trailingSlash);
+  const matchPathname = getRouteMatchPathname(pathname, qwikCityPlan.trailingSlash);
   const route = await loadRequestHandlers(
-    serverPlugins,
-    routes,
-    menus,
-    cacheModules,
+    qwikCityPlan,
     matchPathname,
     serverRequestEv.request.method,
     render
@@ -1182,14 +1180,16 @@ async function requestHandler(serverRequestEv, opts, qwikSerializer) {
       serverRequestEv,
       route[0],
       route[1],
-      trailingSlash,
-      basePathname,
+      manifest,
+      qwikCityPlan.trailingSlash,
+      qwikCityPlan.basePathname,
       qwikSerializer
     );
   }
   return null;
 }
-async function loadRequestHandlers(serverPlugins, routes, menus, cacheModules, pathname, method, renderFn) {
+async function loadRequestHandlers(qwikCityPlan, pathname, method, renderFn) {
+  const { routes, serverPlugins, menus, cacheModules } = qwikCityPlan;
   const route = await loadRoute(routes, menus, cacheModules, pathname);
   const requestHandlers = resolveRequestHandlers(
     serverPlugins,
