@@ -12,7 +12,7 @@ const DocumentHeadContext = /* @__PURE__ */ createContextId("qc-h");
 const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
-const popStateScript = '(function(){\n  const t="_qCityPopstateFallback",o="_qCityHistory";window[t]||(window[t]=()=>{window[o]||location.reload()},setTimeout(()=>{addEventListener("popstate",window[t])},0))\n})();\n';
+const popStateScript = '(function(){\n  const l=location,c=l.pathname+l.search,t="_qCityPopstateFallback",o="_qCityHistory";window[t]||(window[t]=()=>{window[o]||c===(l.pathname+l.search)||l.reload()},setTimeout(()=>{addEventListener("popstate",window[t])},0))\n})();\n';
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   _jsxBranch();
   _jsxBranch();

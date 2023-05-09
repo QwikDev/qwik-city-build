@@ -659,7 +659,7 @@ declare interface StaticGenerate {
  */
 declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
 
-declare type StatusCodes = InformationalCode | SuccessCode | ClientErrorCode | ServerErrorCode | RedirectCode;
+declare type StatusCodes = InformationalCode | SuccessCode | ClientErrorCode | ServerErrorCode | RedirectCode | number;
 
 /**
  * HTTP Success Status Codes
