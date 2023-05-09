@@ -12,7 +12,10 @@ import type { _serializeData } from '@builder.io/qwik';
 import type { ValueOrPromise } from '@builder.io/qwik';
 import type { _verifySerializable } from '@builder.io/qwik';
 
-declare class AbortMessage {
+/**
+ * @public
+ */
+export declare class AbortMessage {
 }
 
 /**
@@ -346,7 +349,10 @@ declare interface QwikSerializer {
  */
 declare type RedirectCode = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;
 
-declare class RedirectMessage extends AbortMessage {
+/**
+ * @public
+ */
+export declare class RedirectMessage extends AbortMessage {
 }
 
 /**
