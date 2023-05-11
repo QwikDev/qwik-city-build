@@ -766,7 +766,7 @@ const serverQrl = (qrl) => {
     return /* @__PURE__ */ qwik.inlinedQrl(async function(...args) {
       const [qrl2] = qwik.useLexicalScope();
       if (build.isServer) {
-        const requestEvent = useQwikCityEnv()?.ev ?? this;
+        const requestEvent = useQwikCityEnv()?.ev ?? this ?? qwik._getContextEvent();
         return qrl2.apply(requestEvent, args);
       } else {
         const ctxElm = qwik._getContextElement();

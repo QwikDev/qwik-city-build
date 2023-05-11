@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -748,7 +748,7 @@ const serverQrl = (qrl) => {
     return /* @__PURE__ */ inlinedQrl(async function(...args) {
       const [qrl2] = useLexicalScope();
       if (isServer) {
-        const requestEvent = useQwikCityEnv()?.ev ?? this;
+        const requestEvent = useQwikCityEnv()?.ev ?? this ?? _getContextEvent();
         return qrl2.apply(requestEvent, args);
       } else {
         const ctxElm = _getContextElement();

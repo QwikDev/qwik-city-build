@@ -23799,8 +23799,8 @@ function actionsMiddleware(routeLoaders, routeActions) {
             const actionResolved = isDev ? await measure(
               requestEv,
               action.__qrl.getSymbol().split("_", 1)[0],
-              () => action.__qrl(result.data, requestEv)
-            ) : await action.__qrl(result.data, requestEv);
+              () => action.__qrl.call(requestEv, result.data, requestEv)
+            ) : await action.__qrl.call(requestEv, result.data, requestEv);
             if (isDev) {
               verifySerializable(qwikSerializer, actionResolved, action.__qrl);
             }
@@ -23831,10 +23831,10 @@ function actionsMiddleware(routeLoaders, routeActions) {
                 return measure(
                   requestEv,
                   loader.__qrl.getSymbol().split("_", 1)[0],
-                  () => loader.__qrl(requestEv)
+                  () => loader.__qrl.call(requestEv, requestEv)
                 );
               } else {
-                return loader.__qrl(requestEv);
+                return loader.__qrl.call(requestEv, requestEv);
               }
             } else {
               return requestEv.fail(res.status ?? 500, res.error);
