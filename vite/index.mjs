@@ -23886,7 +23886,7 @@ async function pureServerFunction(ev) {
         let result;
         try {
           if (isDev) {
-            result = measure(ev, `server_${qrl.getSymbol()}`, () => qrl.apply(ev, args));
+            result = await measure(ev, `server_${qrl.getSymbol()}`, () => qrl.apply(ev, args));
           } else {
             result = await qrl.apply(ev, args);
           }
