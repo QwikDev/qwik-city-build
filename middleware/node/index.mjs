@@ -9,16 +9,15 @@ import { fileURLToPath } from "url";
 
 // packages/qwik-city/middleware/node/http.ts
 import { Http2ServerRequest } from "http2";
-var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER } = process.env;
 function getOrigin(req) {
+  const { PROTOCOL_HEADER, HOST_HEADER } = process.env;
   const headers = req.headers;
   const protocol = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
   const hostHeader = HOST_HEADER ?? (req instanceof Http2ServerRequest ? ":authority" : "host");
   const host = headers[hostHeader];
   return `${protocol}://${host}`;
 }
-function getUrl(req) {
-  const origin = ORIGIN ?? getOrigin(req);
+function getUrl(req, origin = process.env.ORIGIN ?? getOrigin(req)) {
   return normalizeUrl(req.originalUrl || req.url || "/", origin);
 }
 var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
@@ -184,7 +183,7 @@ function createQwikCity(opts) {
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? join(fileURLToPath(import.meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {
-      const serverRequestEv = await fromNodeHttp(getUrl(req), req, res, "server");
+      const serverRequestEv = await fromNodeHttp(getUrl(req, opts.origin), req, res, "server");
       const handled = await requestHandler(serverRequestEv, opts, qwikSerializer);
       if (handled) {
         const err = await handled.completion;
@@ -204,7 +203,7 @@ function createQwikCity(opts) {
   const notFound = async (req, res, next) => {
     try {
       if (!res.headersSent) {
-        const url = getUrl(req);
+        const url = getUrl(req, opts.origin);
         const notFoundHtml = getNotFound(url.pathname);
         res.writeHead(404, {
           "Content-Type": "text/html; charset=utf-8",

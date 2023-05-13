@@ -23665,7 +23665,7 @@ function getQwikCityServerData(requestEv) {
 }
 
 // packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
-var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
+var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderHandler) => {
   const routeLoaders = [];
   const routeActions = [];
   const requestHandlers = [];
@@ -23681,9 +23681,11 @@ var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
     );
   }
   if (route) {
+    if (checkOrigin && (method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE")) {
+      requestHandlers.unshift(csrfCheckMiddleware);
+    }
     if (isPageRoute) {
       if (method === "POST") {
-        requestHandlers.unshift(securityMiddleware);
         requestHandlers.push(pureServerFunction);
       }
       requestHandlers.push(fixTrailingSlash);
@@ -23971,20 +23973,24 @@ function getPathname(url, trailingSlash) {
   return url.pathname;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
-function securityMiddleware(requestEv) {
-  const isDev = getRequestMode(requestEv) === "dev";
-  let inputOrigin = requestEv.request.headers.get("origin");
-  let origin = requestEv.url.origin;
-  if (isDev) {
-    inputOrigin = inputOrigin ? new URL(inputOrigin).host : null;
-    origin = requestEv.url.host;
-  }
-  const forbidden = inputOrigin !== origin;
-  if (forbidden) {
-    throw requestEv.error(
-      403,
-      `Cross-site ${requestEv.request.method} form submissions are forbidden`
-    );
+function csrfCheckMiddleware(requestEv) {
+  const isForm = isContentType(
+    requestEv.request.headers,
+    "application/x-www-form-urlencoded",
+    "multipart/form-data",
+    "text/plain"
+  );
+  if (isForm) {
+    const inputOrigin = requestEv.request.headers.get("origin");
+    const origin = requestEv.url.origin;
+    const forbidden = inputOrigin !== origin;
+    if (forbidden) {
+      throw requestEv.error(
+        403,
+        `CSRF check failed. Cross-site ${requestEv.method} form submissions are forbidden.
+The request origin "${inputOrigin}" does not match the server origin "${origin}".`
+      );
+    }
   }
 }
 async function renderQData(requestEv) {
@@ -24058,6 +24064,11 @@ async function measure(requestEv, name, fn) {
     }
     measurements.push([name, duration]);
   }
+}
+function isContentType(headers, ...types) {
+  var _a2;
+  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(/;,/, 1)[0].trim()) ?? "";
+  return types.includes(type);
 }
 
 // packages/qwik-city/middleware/request-handler/cache-control.ts
@@ -24469,16 +24480,15 @@ var getPathParams = (paramNames, match) => {
 
 // packages/qwik-city/middleware/node/http.ts
 var import_node_http2 = require("http2");
-var { ORIGIN, PROTOCOL_HEADER, HOST_HEADER } = process.env;
 function getOrigin(req) {
+  const { PROTOCOL_HEADER, HOST_HEADER } = process.env;
   const headers = req.headers;
   const protocol2 = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
   const hostHeader = HOST_HEADER ?? (req instanceof import_node_http2.Http2ServerRequest ? ":authority" : "host");
   const host = headers[hostHeader];
   return `${protocol2}://${host}`;
 }
-function getUrl(req) {
-  const origin = ORIGIN ?? getOrigin(req);
+function getUrl(req, origin = process.env.ORIGIN ?? getOrigin(req)) {
   return normalizeUrl(req.originalUrl || req.url || "/", origin);
 }
 var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
@@ -24791,6 +24801,7 @@ function ssrDevMiddleware(ctx, server) {
           serverPlugins,
           loadedRoute,
           req.method ?? "GET",
+          false,
           renderFn
         );
         if (requestHandlers.length > 0) {

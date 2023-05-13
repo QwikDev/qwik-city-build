@@ -258,7 +258,7 @@ function getQwikCityServerData(requestEv) {
 }
 
 // packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
-var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
+var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderHandler) => {
   const routeLoaders = [];
   const routeActions = [];
   const requestHandlers = [];
@@ -274,9 +274,11 @@ var resolveRequestHandlers = (serverPlugins, route, method, renderHandler) => {
     );
   }
   if (route) {
+    if (checkOrigin && (method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE")) {
+      requestHandlers.unshift(csrfCheckMiddleware);
+    }
     if (isPageRoute) {
       if (method === "POST") {
-        requestHandlers.unshift(securityMiddleware);
         requestHandlers.push(pureServerFunction);
       }
       requestHandlers.push(fixTrailingSlash);
@@ -564,20 +566,24 @@ function getPathname(url, trailingSlash) {
   return url.pathname;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
-function securityMiddleware(requestEv) {
-  const isDev = getRequestMode(requestEv) === "dev";
-  let inputOrigin = requestEv.request.headers.get("origin");
-  let origin = requestEv.url.origin;
-  if (isDev) {
-    inputOrigin = inputOrigin ? new URL(inputOrigin).host : null;
-    origin = requestEv.url.host;
-  }
-  const forbidden = inputOrigin !== origin;
-  if (forbidden) {
-    throw requestEv.error(
-      403,
-      `Cross-site ${requestEv.request.method} form submissions are forbidden`
-    );
+function csrfCheckMiddleware(requestEv) {
+  const isForm = isContentType(
+    requestEv.request.headers,
+    "application/x-www-form-urlencoded",
+    "multipart/form-data",
+    "text/plain"
+  );
+  if (isForm) {
+    const inputOrigin = requestEv.request.headers.get("origin");
+    const origin = requestEv.url.origin;
+    const forbidden = inputOrigin !== origin;
+    if (forbidden) {
+      throw requestEv.error(
+        403,
+        `CSRF check failed. Cross-site ${requestEv.method} form submissions are forbidden.
+The request origin "${inputOrigin}" does not match the server origin "${origin}".`
+      );
+    }
   }
 }
 function renderQwikMiddleware(render) {
@@ -700,6 +706,11 @@ async function measure(requestEv, name, fn) {
     }
     measurements.push([name, duration]);
   }
+}
+function isContentType(headers, ...types) {
+  var _a2;
+  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(/;,/, 1)[0].trim()) ?? "";
+  return types.includes(type);
 }
 
 // packages/qwik-city/middleware/request-handler/cache-control.ts
@@ -1168,13 +1179,14 @@ var getPathParams = (paramNames, match) => {
 
 // packages/qwik-city/middleware/request-handler/request-handler.ts
 async function requestHandler(serverRequestEv, opts, qwikSerializer) {
-  const { render, qwikCityPlan, manifest } = opts;
+  const { render, qwikCityPlan, manifest, checkOrigin } = opts;
   const pathname = serverRequestEv.url.pathname;
   const matchPathname = getRouteMatchPathname(pathname, qwikCityPlan.trailingSlash);
   const route = await loadRequestHandlers(
     qwikCityPlan,
     matchPathname,
     serverRequestEv.request.method,
+    checkOrigin ?? true,
     render
   );
   if (route) {
@@ -1190,13 +1202,14 @@ async function requestHandler(serverRequestEv, opts, qwikSerializer) {
   }
   return null;
 }
-async function loadRequestHandlers(qwikCityPlan, pathname, method, renderFn) {
+async function loadRequestHandlers(qwikCityPlan, pathname, method, checkOrigin, renderFn) {
   const { routes, serverPlugins, menus, cacheModules } = qwikCityPlan;
   const route = await loadRoute(routes, menus, cacheModules, pathname);
   const requestHandlers = resolveRequestHandlers(
     serverPlugins,
     route,
     method,
+    checkOrigin,
     renderQwikMiddleware(renderFn)
   );
   if (requestHandlers.length > 0) {
