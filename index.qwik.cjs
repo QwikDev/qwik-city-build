@@ -765,6 +765,7 @@ const serverQrl = (qrl) => {
   function stuff() {
     return /* @__PURE__ */ qwik.inlinedQrl(async function(...args) {
       const [qrl2] = qwik.useLexicalScope();
+      const signal = args.length > 0 && args[0] instanceof AbortSignal ? args.shift() : void 0;
       if (build.isServer) {
         const requestEvent = useQwikCityEnv()?.ev ?? this ?? qwik._getContextEvent();
         return qrl2.apply(requestEvent, args);
@@ -791,12 +792,15 @@ const serverQrl = (qrl) => {
             "Content-Type": "application/qwik-json",
             "X-QRL": hash
           },
+          signal,
           body
         });
         const contentType = res.headers.get("Content-Type");
         if (res.ok && contentType === "text/event-stream") {
           const { writable, readable } = getSSETransformer();
-          res.body?.pipeTo(writable);
+          res.body?.pipeTo(writable, {
+            signal
+          });
           return streamAsyncIterator(readable, ctxElm ?? document.documentElement);
         } else if (contentType === "application/qwik-json") {
           const str = await res.text();

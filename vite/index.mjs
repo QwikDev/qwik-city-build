@@ -23906,7 +23906,7 @@ async function pureServerFunction(ev) {
             }
             ev.headers.set("Content-Type", "application/qwik-json");
             const message = await qwikSerializer._serializeData(item, true);
-            stream.write(encoder.encode(`event: qwik
+            await stream.write(encoder.encode(`event: qwik
 data: ${message}
 
 `));
@@ -24526,15 +24526,25 @@ async function fromNodeHttp(url, req, res, mode) {
       if (cookieHeaders.length > 0) {
         res.setHeader("Set-Cookie", cookieHeaders);
       }
-      const stream = new WritableStream({
+      return new WritableStream({
+        start(controller) {
+          res.on("close", () => controller.error());
+        },
         write(chunk) {
-          res.write(chunk);
+          return new Promise(
+            (resolve4, reject) => res.write(chunk, (cb) => {
+              if (cb) {
+                reject(cb);
+              } else {
+                resolve4();
+              }
+            })
+          );
         },
         close() {
           res.end();
         }
       });
-      return stream;
     },
     platform: {
       ssr: true,
