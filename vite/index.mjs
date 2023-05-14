@@ -24858,7 +24858,7 @@ function ssrDevMiddleware(ctx, server) {
         return;
       }
       if (req.headers.accept && req.headers.accept.includes("text/html")) {
-        const html3 = getErrorHtml(404, new Error("not found"));
+        const html3 = getUnmatchedRouteHtml(url, ctx);
         res.statusCode = 404;
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         res.end(html3);
@@ -24869,6 +24869,36 @@ function ssrDevMiddleware(ctx, server) {
       next(e);
     }
   };
+}
+function getUnmatchedRouteHtml(url, ctx) {
+  const blue = "#006ce9";
+  return `
+  <html>
+    <head>
+      <meta charset="utf-8">
+      <meta http-equiv="Status" content="404">
+      <title>404 Not Found</title>
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <style>
+        body { color: ${blue}; background-color: #fafafa; padding: 30px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+        div, p { max-width: 70vw; margin: 60px auto 30px auto; background: white; border-radius: 4px; box-shadow: 0px 0px 50px -20px ${blue}; word-break: break-word; }
+        div { display: flex; flex-direction: column; }
+        strong { display: inline-block; padding: 15px; background: ${blue}; color: white; }
+        span { display: inline-block; padding: 15px; }
+        a { padding: 15px; }
+        a:hover { background-color: rgba(0, 108, 233, 0.125); }
+      </style>
+    </head>
+    <body>
+      <p><strong>404</strong> <span>${url.pathname} not found.</span></p>
+    
+      <div>
+        <strong>Available Routes</strong>
+        
+        ${ctx.routes.map((route) => `<a href="${route.pathname}">${route.pathname}</a>`).join("")}
+      </div>
+    </body>
+  </html>`;
 }
 function staticDistMiddleware({ config }) {
   const distDirs = new Set(
