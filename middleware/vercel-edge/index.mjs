@@ -26,6 +26,7 @@ function createQwikCity(opts) {
           }
         });
       }
+      const p = (() => globalThis.process)();
       const serverRequestEv = {
         mode: "server",
         locale: void 0,
@@ -33,7 +34,7 @@ function createQwikCity(opts) {
         request,
         env: {
           get(key) {
-            return process.env[key];
+            return p.env[key];
           }
         },
         getWritableStream: (status, headers, cookies, resolve) => {
