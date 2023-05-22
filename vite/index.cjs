@@ -13862,6 +13862,20 @@ function renameClassname() {
     });
   };
 }
+function wrapTableWithDiv() {
+  return (ast) => {
+    const mdast = ast;
+    visit(mdast, "element", (node) => {
+      if (node.tagName === "table" && !node.done) {
+        const table = { ...node };
+        table.done = true;
+        node.tagName = "div";
+        node.properties = { className: "table-wrapper" };
+        node.children = [table];
+      }
+    });
+  };
+}
 function updateContentLinks(mdast, opts, sourcePath) {
   visit(mdast, "element", (node) => {
     const tagName = node && node.type === "element" && node.tagName.toLowerCase();
@@ -20518,7 +20532,8 @@ async function createMdxTransformer(ctx) {
       ...userRehypePlugins,
       ...coreRehypePlugins,
       [rehypePage, ctx],
-      renameClassname
+      renameClassname,
+      wrapTableWithDiv
     ]
   };
   const { extnames, process: process2 } = createFormatAwareProcessors(mdxOpts);
