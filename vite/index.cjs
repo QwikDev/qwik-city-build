@@ -24145,6 +24145,9 @@ function createCacheControl(cacheControl) {
   if (cacheControl.staleWhileRevalidate) {
     controls.push(`stale-while-revalidate=${cacheControl.staleWhileRevalidate}`);
   }
+  if (cacheControl.staleIfError) {
+    controls.push(`stale-if-error=${cacheControl.staleIfError}`);
+  }
   return controls.join(", ");
 }
 
