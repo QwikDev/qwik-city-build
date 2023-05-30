@@ -145,7 +145,7 @@ function createQwikCity(opts) {
     }
     return {
       filePath,
-      content: await Deno.readTextFile(filePath)
+      content: await Deno.readFile(filePath)
     };
   };
   const staticFile = async (request) => {
