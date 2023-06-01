@@ -263,6 +263,7 @@ export declare interface DocumentMeta {
     readonly property?: string;
     readonly key?: string;
     readonly itemprop?: string;
+    readonly media?: string;
 }
 
 /**
