@@ -103,16 +103,11 @@ async function fromNodeHttp(url, req, res, mode) {
         start(controller) {
           res.on("close", () => controller.error());
         },
-        write(chunk) {
-          return new Promise(
-            (resolve, reject) => res.write(chunk, (cb) => {
-              if (cb) {
-                reject(cb);
-              } else {
-                resolve();
-              }
-            })
-          );
+        write(chunk, controller) {
+          res.write(chunk, (error) => {
+            if (error) {
+            }
+          });
         },
         close() {
           res.end();

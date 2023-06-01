@@ -23923,17 +23923,14 @@ async function pureServerFunction(ev) {
           return;
         }
         if (isAsyncIterator(result)) {
-          ev.headers.set("Content-Type", "text/event-stream");
+          ev.headers.set("Content-Type", "text/qwik-json-stream");
           const stream = ev.getWritableStream().getWriter();
           for await (const item of result) {
             if (isDev) {
               verifySerializable(qwikSerializer, item, qrl);
             }
-            ev.headers.set("Content-Type", "application/qwik-json");
             const message = await qwikSerializer._serializeData(item, true);
-            await stream.write(encoder.encode(`event: qwik
-data: ${message}
-
+            await stream.write(encoder.encode(`${message}
 `));
           }
           stream.close();
@@ -24558,16 +24555,11 @@ async function fromNodeHttp(url, req, res, mode) {
         start(controller) {
           res.on("close", () => controller.error());
         },
-        write(chunk) {
-          return new Promise(
-            (resolve4, reject) => res.write(chunk, (cb) => {
-              if (cb) {
-                reject(cb);
-              } else {
-                resolve4();
-              }
-            })
-          );
+        write(chunk, controller) {
+          res.write(chunk, (error) => {
+            if (error) {
+            }
+          });
         },
         close() {
           res.end();

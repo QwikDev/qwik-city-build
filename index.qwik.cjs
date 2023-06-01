@@ -781,28 +781,30 @@ const serverQrl = (qrl) => {
           return arg;
         });
         const hash = qrl2.getHash();
-        const path = `?qfunc=${qrl2.getHash()}`;
-        const body = await qwik._serializeData([
-          qrl2,
-          ...filtered
-        ], false);
-        const res = await fetch(path, {
+        const res = await fetch(`?qfunc=${hash}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/qwik-json",
             "X-QRL": hash
           },
           signal,
-          body
+          body: await qwik._serializeData([
+            qrl2,
+            ...filtered
+          ], false)
         });
         const contentType = res.headers.get("Content-Type");
-        if (res.ok && contentType === "text/event-stream") {
-          const { writable, readable } = getSSETransformer();
-          res.body?.pipeTo(writable, {
-            signal
-          });
-          return streamAsyncIterator(readable, ctxElm ?? document.documentElement);
-        } else if (contentType === "application/qwik-json") {
+        if (res.ok && contentType === "text/qwik-json-stream" && res.body)
+          return async function* () {
+            try {
+              for await (const result of deserializeStream(res.body, ctxElm ?? document.documentElement, signal))
+                yield result;
+            } finally {
+              if (!signal?.aborted)
+                await res.body.cancel();
+            }
+          }();
+        else if (contentType === "application/qwik-json") {
           const str = await res.text();
           const obj = await qwik._deserializeData(str, ctxElm ?? document.documentElement);
           if (res.status === 500)
@@ -846,58 +848,27 @@ const getValidators = (rest, qrl) => {
     id
   };
 };
-const getSSETransformer = () => {
-  let currentLine = "";
-  const encoder = new TextDecoder();
-  const transformer = new TransformStream({
-    transform(chunk, controller) {
-      const lines = encoder.decode(chunk).split("\n\n");
-      for (let i = 0; i < lines.length - 1; i++) {
-        const line = currentLine + lines[i];
-        if (line.length === 0) {
-          controller.terminate();
-          break;
-        } else {
-          controller.enqueue(parseEvent(line));
-          currentLine = "";
-        }
-      }
-      currentLine += lines[lines.length - 1];
-    }
-  });
-  return transformer;
-};
-const parseEvent = (message) => {
-  const lines = message.split("\n");
-  const event = {
-    data: ""
-  };
-  let data = "";
-  for (const line of lines)
-    if (line.startsWith("data: "))
-      data += line.slice(6) + "\n";
-    else {
-      const [key, value] = line.split(":");
-      if (typeof key === "string" && typeof value === "string")
-        event[key] = value.trim();
-    }
-  event.data = data;
-  return event;
-};
-async function* streamAsyncIterator(stream, ctxElm) {
+const deserializeStream = async function* (stream, ctxElm, signal) {
   const reader = stream.getReader();
   try {
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done)
-        return;
-      const obj = await qwik._deserializeData(value.data, ctxElm);
-      yield obj;
+    let buffer = "";
+    const decoder = new TextDecoder();
+    while (!signal?.aborted) {
+      const result = await reader.read();
+      if (result.done)
+        break;
+      buffer += decoder.decode(result.value, {
+        stream: true
+      });
+      const lines = buffer.split(/\n/);
+      buffer = lines.pop();
+      for (const line of lines)
+        yield await qwik._deserializeData(line, ctxElm);
     }
   } finally {
     reader.releaseLock();
   }
-}
+};
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
   qwik._jsxBranch();
   if (action)
