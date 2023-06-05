@@ -56,7 +56,7 @@ var init_hast_util_heading_rank = __esm({
   }
 });
 
-// node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/lib/index.js
+// node_modules/.pnpm/unist-util-is@5.2.1/node_modules/unist-util-is/lib/index.js
 function anyFactory(tests) {
   const checks2 = [];
   let index = -1;
@@ -104,7 +104,7 @@ function ok() {
 }
 var convert;
 var init_lib2 = __esm({
-  "node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/lib/index.js"() {
+  "node_modules/.pnpm/unist-util-is@5.2.1/node_modules/unist-util-is/lib/index.js"() {
     convert = /**
      * @param {Test} [test]
      * @returns {AssertAnything}
@@ -127,9 +127,9 @@ var init_lib2 = __esm({
   }
 });
 
-// node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/index.js
+// node_modules/.pnpm/unist-util-is@5.2.1/node_modules/unist-util-is/index.js
 var init_unist_util_is = __esm({
-  "node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/index.js"() {
+  "node_modules/.pnpm/unist-util-is@5.2.1/node_modules/unist-util-is/index.js"() {
     init_lib2();
   }
 });
@@ -174,7 +174,7 @@ var init_lib3 = __esm({
         visitor = test;
         test = null;
       }
-      const is2 = convert(test);
+      const is3 = convert(test);
       const step = reverse ? -1 : 1;
       factory(tree, void 0, [])();
       function factory(node, index, parents) {
@@ -197,7 +197,7 @@ var init_lib3 = __esm({
           let subresult;
           let offset;
           let grandparents;
-          if (!test || is2(node, index, parents[parents.length - 1] || null)) {
+          if (!test || is3(node, index, parents[parents.length - 1] || null)) {
             result = toResult(visitor(node, parents));
             if (result[0] === EXIT) {
               return result;
@@ -267,9 +267,9 @@ var init_unist_util_visit = __esm({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Node.js
-var require_Node = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Node.js"(exports) {
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/identity.js
+var require_identity = __commonJS({
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/identity.js"(exports) {
     "use strict";
     var ALIAS = Symbol.for("yaml.alias");
     var DOC = Symbol.for("yaml.document");
@@ -305,23 +305,10 @@ var require_Node = __commonJS({
       return false;
     }
     var hasAnchor = (node) => (isScalar(node) || isCollection(node)) && !!node.anchor;
-    var NodeBase = class {
-      constructor(type) {
-        Object.defineProperty(this, NODE_TYPE, { value: type });
-      }
-      /** Create a copy of this node.  */
-      clone() {
-        const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
-        if (this.range)
-          copy.range = this.range.slice();
-        return copy;
-      }
-    };
     exports.ALIAS = ALIAS;
     exports.DOC = DOC;
     exports.MAP = MAP;
     exports.NODE_TYPE = NODE_TYPE;
-    exports.NodeBase = NodeBase;
     exports.PAIR = PAIR;
     exports.SCALAR = SCALAR;
     exports.SEQ = SEQ;
@@ -337,17 +324,17 @@ var require_Node = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/visit.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/visit.js
 var require_visit = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/visit.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/visit.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var BREAK = Symbol("break visit");
     var SKIP2 = Symbol("skip children");
     var REMOVE = Symbol("remove node");
     function visit2(node, visitor) {
       const visitor_ = initVisitor(visitor);
-      if (Node.isDocument(node)) {
+      if (identity.isDocument(node)) {
         const cd = visit_(null, node.contents, visitor_, Object.freeze([node]));
         if (cd === REMOVE)
           node.contents = null;
@@ -359,12 +346,12 @@ var require_visit = __commonJS({
     visit2.REMOVE = REMOVE;
     function visit_(key, node, visitor, path2) {
       const ctrl = callVisitor(key, node, visitor, path2);
-      if (Node.isNode(ctrl) || Node.isPair(ctrl)) {
+      if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
         replaceNode(key, path2, ctrl);
         return visit_(key, ctrl, visitor, path2);
       }
       if (typeof ctrl !== "symbol") {
-        if (Node.isCollection(node)) {
+        if (identity.isCollection(node)) {
           path2 = Object.freeze(path2.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
             const ci = visit_(i, node.items[i], visitor, path2);
@@ -377,7 +364,7 @@ var require_visit = __commonJS({
               i -= 1;
             }
           }
-        } else if (Node.isPair(node)) {
+        } else if (identity.isPair(node)) {
           path2 = Object.freeze(path2.concat(node));
           const ck = visit_("key", node.key, visitor, path2);
           if (ck === BREAK)
@@ -395,7 +382,7 @@ var require_visit = __commonJS({
     }
     async function visitAsync(node, visitor) {
       const visitor_ = initVisitor(visitor);
-      if (Node.isDocument(node)) {
+      if (identity.isDocument(node)) {
         const cd = await visitAsync_(null, node.contents, visitor_, Object.freeze([node]));
         if (cd === REMOVE)
           node.contents = null;
@@ -407,12 +394,12 @@ var require_visit = __commonJS({
     visitAsync.REMOVE = REMOVE;
     async function visitAsync_(key, node, visitor, path2) {
       const ctrl = await callVisitor(key, node, visitor, path2);
-      if (Node.isNode(ctrl) || Node.isPair(ctrl)) {
+      if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
         replaceNode(key, path2, ctrl);
         return visitAsync_(key, ctrl, visitor, path2);
       }
       if (typeof ctrl !== "symbol") {
-        if (Node.isCollection(node)) {
+        if (identity.isCollection(node)) {
           path2 = Object.freeze(path2.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
             const ci = await visitAsync_(i, node.items[i], visitor, path2);
@@ -425,7 +412,7 @@ var require_visit = __commonJS({
               i -= 1;
             }
           }
-        } else if (Node.isPair(node)) {
+        } else if (identity.isPair(node)) {
           path2 = Object.freeze(path2.concat(node));
           const ck = await visitAsync_("key", node.key, visitor, path2);
           if (ck === BREAK)
@@ -463,31 +450,31 @@ var require_visit = __commonJS({
       var _a2, _b2, _c, _d, _e;
       if (typeof visitor === "function")
         return visitor(key, node, path2);
-      if (Node.isMap(node))
+      if (identity.isMap(node))
         return (_a2 = visitor.Map) == null ? void 0 : _a2.call(visitor, key, node, path2);
-      if (Node.isSeq(node))
+      if (identity.isSeq(node))
         return (_b2 = visitor.Seq) == null ? void 0 : _b2.call(visitor, key, node, path2);
-      if (Node.isPair(node))
+      if (identity.isPair(node))
         return (_c = visitor.Pair) == null ? void 0 : _c.call(visitor, key, node, path2);
-      if (Node.isScalar(node))
+      if (identity.isScalar(node))
         return (_d = visitor.Scalar) == null ? void 0 : _d.call(visitor, key, node, path2);
-      if (Node.isAlias(node))
+      if (identity.isAlias(node))
         return (_e = visitor.Alias) == null ? void 0 : _e.call(visitor, key, node, path2);
       return void 0;
     }
     function replaceNode(key, path2, node) {
       const parent = path2[path2.length - 1];
-      if (Node.isCollection(parent)) {
+      if (identity.isCollection(parent)) {
         parent.items[key] = node;
-      } else if (Node.isPair(parent)) {
+      } else if (identity.isPair(parent)) {
         if (key === "key")
           parent.key = node;
         else
           parent.value = node;
-      } else if (Node.isDocument(parent)) {
+      } else if (identity.isDocument(parent)) {
         parent.contents = node;
       } else {
-        const pt = Node.isAlias(parent) ? "alias" : "scalar";
+        const pt = identity.isAlias(parent) ? "alias" : "scalar";
         throw new Error(`Cannot replace node with ${pt} parent`);
       }
     }
@@ -496,11 +483,11 @@ var require_visit = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/directives.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/directives.js
 var require_directives = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/directives.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/directives.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var visit2 = require_visit();
     var escapeChars = {
       "!": "%21",
@@ -637,10 +624,10 @@ var require_directives = __commonJS({
         const lines = this.yaml.explicit ? [`%YAML ${this.yaml.version || "1.2"}`] : [];
         const tagEntries = Object.entries(this.tags);
         let tagNames;
-        if (doc && tagEntries.length > 0 && Node.isNode(doc.contents)) {
+        if (doc && tagEntries.length > 0 && identity.isNode(doc.contents)) {
           const tags = {};
           visit2.visit(doc.contents, (_key, node) => {
-            if (Node.isNode(node) && node.tag)
+            if (identity.isNode(node) && node.tag)
               tags[node.tag] = true;
           });
           tagNames = Object.keys(tags);
@@ -661,11 +648,11 @@ var require_directives = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/anchors.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/anchors.js
 var require_anchors = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/anchors.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/anchors.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var visit2 = require_visit();
     function anchorIsValid(anchor) {
       if (/[\x00-\x19\s,[\]{}]/.test(anchor)) {
@@ -713,7 +700,7 @@ var require_anchors = __commonJS({
         setAnchors: () => {
           for (const source of aliasObjects) {
             const ref = sourceObjects.get(source);
-            if (typeof ref === "object" && ref.anchor && (Node.isScalar(ref.node) || Node.isCollection(ref.node))) {
+            if (typeof ref === "object" && ref.anchor && (identity.isScalar(ref.node) || identity.isCollection(ref.node))) {
               ref.node.anchor = ref.anchor;
             } else {
               const error = new Error("Failed to resolve repeated object (this should not happen)");
@@ -732,16 +719,139 @@ var require_anchors = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Alias.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/applyReviver.js
+var require_applyReviver = __commonJS({
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/applyReviver.js"(exports) {
+    "use strict";
+    function applyReviver(reviver, obj, key, val) {
+      if (val && typeof val === "object") {
+        if (Array.isArray(val)) {
+          for (let i = 0, len = val.length; i < len; ++i) {
+            const v0 = val[i];
+            const v1 = applyReviver(reviver, val, String(i), v0);
+            if (v1 === void 0)
+              delete val[i];
+            else if (v1 !== v0)
+              val[i] = v1;
+          }
+        } else if (val instanceof Map) {
+          for (const k of Array.from(val.keys())) {
+            const v0 = val.get(k);
+            const v1 = applyReviver(reviver, val, k, v0);
+            if (v1 === void 0)
+              val.delete(k);
+            else if (v1 !== v0)
+              val.set(k, v1);
+          }
+        } else if (val instanceof Set) {
+          for (const v0 of Array.from(val)) {
+            const v1 = applyReviver(reviver, val, v0, v0);
+            if (v1 === void 0)
+              val.delete(v0);
+            else if (v1 !== v0) {
+              val.delete(v0);
+              val.add(v1);
+            }
+          }
+        } else {
+          for (const [k, v0] of Object.entries(val)) {
+            const v1 = applyReviver(reviver, val, k, v0);
+            if (v1 === void 0)
+              delete val[k];
+            else if (v1 !== v0)
+              val[k] = v1;
+          }
+        }
+      }
+      return reviver.call(obj, key, val);
+    }
+    exports.applyReviver = applyReviver;
+  }
+});
+
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/toJS.js
+var require_toJS = __commonJS({
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/toJS.js"(exports) {
+    "use strict";
+    var identity = require_identity();
+    function toJS(value2, arg, ctx) {
+      if (Array.isArray(value2))
+        return value2.map((v, i) => toJS(v, String(i), ctx));
+      if (value2 && typeof value2.toJSON === "function") {
+        if (!ctx || !identity.hasAnchor(value2))
+          return value2.toJSON(arg, ctx);
+        const data = { aliasCount: 0, count: 1, res: void 0 };
+        ctx.anchors.set(value2, data);
+        ctx.onCreate = (res2) => {
+          data.res = res2;
+          delete ctx.onCreate;
+        };
+        const res = value2.toJSON(arg, ctx);
+        if (ctx.onCreate)
+          ctx.onCreate(res);
+        return res;
+      }
+      if (typeof value2 === "bigint" && !(ctx == null ? void 0 : ctx.keep))
+        return Number(value2);
+      return value2;
+    }
+    exports.toJS = toJS;
+  }
+});
+
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Node.js
+var require_Node = __commonJS({
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Node.js"(exports) {
+    "use strict";
+    var applyReviver = require_applyReviver();
+    var identity = require_identity();
+    var toJS = require_toJS();
+    var NodeBase = class {
+      constructor(type) {
+        Object.defineProperty(this, identity.NODE_TYPE, { value: type });
+      }
+      /** Create a copy of this node.  */
+      clone() {
+        const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
+        if (this.range)
+          copy.range = this.range.slice();
+        return copy;
+      }
+      /** A plain JavaScript representation of this node. */
+      toJS(doc, { mapAsMap, maxAliasCount, onAnchor, reviver } = {}) {
+        if (!identity.isDocument(doc))
+          throw new TypeError("A document argument is required");
+        const ctx = {
+          anchors: /* @__PURE__ */ new Map(),
+          doc,
+          keep: true,
+          mapAsMap: mapAsMap === true,
+          mapKeyWarned: false,
+          maxAliasCount: typeof maxAliasCount === "number" ? maxAliasCount : 100
+        };
+        const res = toJS.toJS(this, "", ctx);
+        if (typeof onAnchor === "function")
+          for (const { count, res: res2 } of ctx.anchors.values())
+            onAnchor(res2, count);
+        return typeof reviver === "function" ? applyReviver.applyReviver(reviver, { "": res }, "", res) : res;
+      }
+    };
+    exports.NodeBase = NodeBase;
+  }
+});
+
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Alias.js
 var require_Alias = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Alias.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Alias.js"(exports) {
     "use strict";
     var anchors = require_anchors();
     var visit2 = require_visit();
+    var identity = require_identity();
     var Node = require_Node();
+    var toJS = require_toJS();
     var Alias = class extends Node.NodeBase {
       constructor(source) {
-        super(Node.ALIAS);
+        super(identity.ALIAS);
         this.source = source;
         Object.defineProperty(this, "tag", {
           set() {
@@ -774,7 +884,11 @@ var require_Alias = __commonJS({
           const msg = `Unresolved alias (the anchor must be set before the alias): ${this.source}`;
           throw new ReferenceError(msg);
         }
-        const data = anchors2.get(source);
+        let data = anchors2.get(source);
+        if (!data) {
+          toJS.toJS(source, null, ctx);
+          data = anchors2.get(source);
+        }
         if (!data || data.res === void 0) {
           const msg = "This should not happen: Alias anchor was not resolved?";
           throw new ReferenceError(msg);
@@ -805,11 +919,11 @@ var require_Alias = __commonJS({
       }
     };
     function getAliasCount(doc, node, anchors2) {
-      if (Node.isAlias(node)) {
+      if (identity.isAlias(node)) {
         const source = node.resolve(doc);
         const anchor = anchors2 && source && anchors2.get(source);
         return anchor ? anchor.count * anchor.aliasCount : 0;
-      } else if (Node.isCollection(node)) {
+      } else if (identity.isCollection(node)) {
         let count = 0;
         for (const item of node.items) {
           const c2 = getAliasCount(doc, item, anchors2);
@@ -817,7 +931,7 @@ var require_Alias = __commonJS({
             count = c2;
         }
         return count;
-      } else if (Node.isPair(node)) {
+      } else if (identity.isPair(node)) {
         const kc = getAliasCount(doc, node.key, anchors2);
         const vc = getAliasCount(doc, node.value, anchors2);
         return Math.max(kc, vc);
@@ -828,46 +942,17 @@ var require_Alias = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/toJS.js
-var require_toJS = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/toJS.js"(exports) {
-    "use strict";
-    var Node = require_Node();
-    function toJS(value2, arg, ctx) {
-      if (Array.isArray(value2))
-        return value2.map((v, i) => toJS(v, String(i), ctx));
-      if (value2 && typeof value2.toJSON === "function") {
-        if (!ctx || !Node.hasAnchor(value2))
-          return value2.toJSON(arg, ctx);
-        const data = { aliasCount: 0, count: 1, res: void 0 };
-        ctx.anchors.set(value2, data);
-        ctx.onCreate = (res2) => {
-          data.res = res2;
-          delete ctx.onCreate;
-        };
-        const res = value2.toJSON(arg, ctx);
-        if (ctx.onCreate)
-          ctx.onCreate(res);
-        return res;
-      }
-      if (typeof value2 === "bigint" && !(ctx == null ? void 0 : ctx.keep))
-        return Number(value2);
-      return value2;
-    }
-    exports.toJS = toJS;
-  }
-});
-
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Scalar.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Scalar.js
 var require_Scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Scalar.js"(exports) {
     "use strict";
+    var identity = require_identity();
     var Node = require_Node();
     var toJS = require_toJS();
     var isScalarValue = (value2) => !value2 || typeof value2 !== "function" && typeof value2 !== "object";
     var Scalar = class extends Node.NodeBase {
       constructor(value2) {
-        super(Node.SCALAR);
+        super(identity.SCALAR);
         this.value = value2;
       }
       toJSON(arg, ctx) {
@@ -887,12 +972,12 @@ var require_Scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/createNode.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/createNode.js
 var require_createNode = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/createNode.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/createNode.js"(exports) {
     "use strict";
     var Alias = require_Alias();
-    var Node = require_Node();
+    var identity = require_identity();
     var Scalar = require_Scalar();
     var defaultTagPrefix = "tag:yaml.org,2002:";
     function findTagObject(value2, tagName, tags) {
@@ -909,13 +994,13 @@ var require_createNode = __commonJS({
       });
     }
     function createNode(value2, tagName, ctx) {
-      var _a2, _b2;
-      if (Node.isDocument(value2))
+      var _a2, _b2, _c;
+      if (identity.isDocument(value2))
         value2 = value2.contents;
-      if (Node.isNode(value2))
+      if (identity.isNode(value2))
         return value2;
-      if (Node.isPair(value2)) {
-        const map = (_b2 = (_a2 = ctx.schema[Node.MAP]).createNode) == null ? void 0 : _b2.call(_a2, ctx.schema, null, ctx);
+      if (identity.isPair(value2)) {
+        const map = (_b2 = (_a2 = ctx.schema[identity.MAP]).createNode) == null ? void 0 : _b2.call(_a2, ctx.schema, null, ctx);
         map.items.push(value2);
         return map;
       }
@@ -948,15 +1033,17 @@ var require_createNode = __commonJS({
             ref.node = node2;
           return node2;
         }
-        tagObj = value2 instanceof Map ? schema[Node.MAP] : Symbol.iterator in Object(value2) ? schema[Node.SEQ] : schema[Node.MAP];
+        tagObj = value2 instanceof Map ? schema[identity.MAP] : Symbol.iterator in Object(value2) ? schema[identity.SEQ] : schema[identity.MAP];
       }
       if (onTagObj) {
         onTagObj(tagObj);
         delete ctx.onTagObj;
       }
-      const node = (tagObj == null ? void 0 : tagObj.createNode) ? tagObj.createNode(ctx.schema, value2, ctx) : new Scalar.Scalar(value2);
+      const node = (tagObj == null ? void 0 : tagObj.createNode) ? tagObj.createNode(ctx.schema, value2, ctx) : typeof ((_c = tagObj == null ? void 0 : tagObj.nodeClass) == null ? void 0 : _c.from) === "function" ? tagObj.nodeClass.from(ctx.schema, value2, ctx) : new Scalar.Scalar(value2);
       if (tagName)
         node.tag = tagName;
+      else if (!tagObj.default)
+        node.tag = tagObj.tag;
       if (ref)
         ref.node = node;
       return node;
@@ -965,11 +1052,12 @@ var require_createNode = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Collection.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Collection.js
 var require_Collection = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Collection.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Collection.js"(exports) {
     "use strict";
     var createNode = require_createNode();
+    var identity = require_identity();
     var Node = require_Node();
     function collectionFromPath(schema, path2, value2) {
       let v = value2;
@@ -1013,7 +1101,7 @@ var require_Collection = __commonJS({
         const copy = Object.create(Object.getPrototypeOf(this), Object.getOwnPropertyDescriptors(this));
         if (schema)
           copy.schema = schema;
-        copy.items = copy.items.map((it) => Node.isNode(it) || Node.isPair(it) ? it.clone(schema) : it);
+        copy.items = copy.items.map((it) => identity.isNode(it) || identity.isPair(it) ? it.clone(schema) : it);
         if (this.range)
           copy.range = this.range.slice();
         return copy;
@@ -1029,7 +1117,7 @@ var require_Collection = __commonJS({
         else {
           const [key, ...rest] = path2;
           const node = this.get(key, true);
-          if (Node.isCollection(node))
+          if (identity.isCollection(node))
             node.addIn(rest, value2);
           else if (node === void 0 && this.schema)
             this.set(key, collectionFromPath(this.schema, rest, value2));
@@ -1046,7 +1134,7 @@ var require_Collection = __commonJS({
         if (rest.length === 0)
           return this.delete(key);
         const node = this.get(key, true);
-        if (Node.isCollection(node))
+        if (identity.isCollection(node))
           return node.deleteIn(rest);
         else
           throw new Error(`Expected YAML collection at ${key}. Remaining path: ${rest}`);
@@ -1060,16 +1148,16 @@ var require_Collection = __commonJS({
         const [key, ...rest] = path2;
         const node = this.get(key, true);
         if (rest.length === 0)
-          return !keepScalar && Node.isScalar(node) ? node.value : node;
+          return !keepScalar && identity.isScalar(node) ? node.value : node;
         else
-          return Node.isCollection(node) ? node.getIn(rest, keepScalar) : void 0;
+          return identity.isCollection(node) ? node.getIn(rest, keepScalar) : void 0;
       }
       hasAllNullValues(allowScalar) {
         return this.items.every((node) => {
-          if (!Node.isPair(node))
+          if (!identity.isPair(node))
             return false;
           const n = node.value;
-          return n == null || allowScalar && Node.isScalar(n) && n.value == null && !n.commentBefore && !n.comment && !n.tag;
+          return n == null || allowScalar && identity.isScalar(n) && n.value == null && !n.commentBefore && !n.comment && !n.tag;
         });
       }
       /**
@@ -1080,7 +1168,7 @@ var require_Collection = __commonJS({
         if (rest.length === 0)
           return this.has(key);
         const node = this.get(key, true);
-        return Node.isCollection(node) ? node.hasIn(rest) : false;
+        return identity.isCollection(node) ? node.hasIn(rest) : false;
       }
       /**
        * Sets a value in this collection. For `!!set`, `value` needs to be a
@@ -1092,7 +1180,7 @@ var require_Collection = __commonJS({
           this.set(key, value2);
         } else {
           const node = this.get(key, true);
-          if (Node.isCollection(node))
+          if (identity.isCollection(node))
             node.setIn(rest, value2);
           else if (node === void 0 && this.schema)
             this.set(key, collectionFromPath(this.schema, rest, value2));
@@ -1108,9 +1196,9 @@ var require_Collection = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyComment.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyComment.js
 var require_stringifyComment = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyComment.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyComment.js"(exports) {
     "use strict";
     var stringifyComment = (str) => str.replace(/^(?!$)(?: $)?/gm, "#");
     function indentComment(comment, indent2) {
@@ -1125,9 +1213,9 @@ var require_stringifyComment = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/foldFlowLines.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/foldFlowLines.js
 var require_foldFlowLines = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/foldFlowLines.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/foldFlowLines.js"(exports) {
     "use strict";
     var FOLD_FLOW = "flow";
     var FOLD_BLOCK = "block";
@@ -1251,9 +1339,9 @@ ${indent2}${text2.slice(fold + 1, end2)}`;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyString.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyString.js
 var require_stringifyString = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyString.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyString.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var foldFlowLines = require_foldFlowLines();
@@ -1386,6 +1474,12 @@ ${indent2}`) + "'";
       }
       return qs(value2, ctx);
     }
+    var blockEndNewlines;
+    try {
+      blockEndNewlines = new RegExp("(^|(?<!\n))\n+(?!\n|$)", "g");
+    } catch {
+      blockEndNewlines = /\n+(?!\n|$)/g;
+    }
     function blockString({ comment, type, value: value2 }, ctx, onComment, onChompKeep) {
       const { blockQuote, commentString, lineWidth } = ctx.options;
       if (!blockQuote || /\n[\t ]+$/.test(value2) || /^\s*$/.test(value2)) {
@@ -1417,7 +1511,7 @@ ${indent2}`) + "'";
         value2 = value2.slice(0, -end.length);
         if (end[end.length - 1] === "\n")
           end = end.slice(0, -1);
-        end = end.replace(/\n+(?!\n|$)/g, `$&${indent2}`);
+        end = end.replace(blockEndNewlines, `$&${indent2}`);
       }
       let startWithSpace = false;
       let startEnd;
@@ -1523,12 +1617,12 @@ ${indent2}`);
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringify.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringify.js
 var require_stringify = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringify.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringify.js"(exports) {
     "use strict";
     var anchors = require_anchors();
-    var Node = require_Node();
+    var identity = require_identity();
     var stringifyComment = require_stringifyComment();
     var stringifyString = require_stringifyString();
     function createStringifyContext(doc, options2) {
@@ -1581,7 +1675,7 @@ var require_stringify = __commonJS({
       }
       let tagObj = void 0;
       let obj;
-      if (Node.isScalar(item)) {
+      if (identity.isScalar(item)) {
         obj = item.value;
         const match = tags.filter((t) => {
           var _a3;
@@ -1602,7 +1696,7 @@ var require_stringify = __commonJS({
       if (!doc.directives)
         return "";
       const props = [];
-      const anchor = (Node.isScalar(node) || Node.isCollection(node)) && node.anchor;
+      const anchor = (identity.isScalar(node) || identity.isCollection(node)) && node.anchor;
       if (anchor && anchors.anchorIsValid(anchor)) {
         anchors$1.add(anchor);
         props.push(`&${anchor}`);
@@ -1614,9 +1708,9 @@ var require_stringify = __commonJS({
     }
     function stringify2(item, ctx, onComment, onChompKeep) {
       var _a2;
-      if (Node.isPair(item))
+      if (identity.isPair(item))
         return item.toString(ctx, onComment, onChompKeep);
-      if (Node.isAlias(item)) {
+      if (identity.isAlias(item)) {
         if (ctx.doc.directives)
           return item.toString(ctx);
         if ((_a2 = ctx.resolvedAliases) == null ? void 0 : _a2.has(item)) {
@@ -1630,16 +1724,16 @@ var require_stringify = __commonJS({
         }
       }
       let tagObj = void 0;
-      const node = Node.isNode(item) ? item : ctx.doc.createNode(item, { onTagObj: (o) => tagObj = o });
+      const node = identity.isNode(item) ? item : ctx.doc.createNode(item, { onTagObj: (o) => tagObj = o });
       if (!tagObj)
         tagObj = getTagObject(ctx.doc.schema.tags, node);
       const props = stringifyProps(node, tagObj, ctx);
       if (props.length > 0)
         ctx.indentAtStart = (ctx.indentAtStart ?? 0) + props.length + 1;
-      const str = typeof tagObj.stringify === "function" ? tagObj.stringify(node, ctx, onComment, onChompKeep) : Node.isScalar(node) ? stringifyString.stringifyString(node, ctx, onComment, onChompKeep) : node.toString(ctx, onComment, onChompKeep);
+      const str = typeof tagObj.stringify === "function" ? tagObj.stringify(node, ctx, onComment, onChompKeep) : identity.isScalar(node) ? stringifyString.stringifyString(node, ctx, onComment, onChompKeep) : node.toString(ctx, onComment, onChompKeep);
       if (!props)
         return str;
-      return Node.isScalar(node) || str[0] === "{" || str[0] === "[" ? `${props} ${str}` : `${props}
+      return identity.isScalar(node) || str[0] === "{" || str[0] === "[" ? `${props} ${str}` : `${props}
 ${ctx.indent}${str}`;
     }
     exports.createStringifyContext = createStringifyContext;
@@ -1647,27 +1741,27 @@ ${ctx.indent}${str}`;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyPair.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyPair.js
 var require_stringifyPair = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyPair.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyPair.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var Scalar = require_Scalar();
     var stringify2 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyPair({ key, value: value2 }, ctx, onComment, onChompKeep) {
       const { allNullValues, doc, indent: indent2, indentStep, options: { commentString, indentSeq, simpleKeys } } = ctx;
-      let keyComment = Node.isNode(key) && key.comment || null;
+      let keyComment = identity.isNode(key) && key.comment || null;
       if (simpleKeys) {
         if (keyComment) {
           throw new Error("With simple keys, key nodes cannot have comments");
         }
-        if (Node.isCollection(key)) {
+        if (identity.isCollection(key)) {
           const msg = "With simple keys, collection cannot be used as a key value";
           throw new Error(msg);
         }
       }
-      let explicitKey = !simpleKeys && (!key || keyComment && value2 == null && !ctx.inFlow || Node.isCollection(key) || (Node.isScalar(key) ? key.type === Scalar.Scalar.BLOCK_FOLDED || key.type === Scalar.Scalar.BLOCK_LITERAL : typeof key === "object"));
+      let explicitKey = !simpleKeys && (!key || keyComment && value2 == null && !ctx.inFlow || identity.isCollection(key) || (identity.isScalar(key) ? key.type === Scalar.Scalar.BLOCK_FOLDED || key.type === Scalar.Scalar.BLOCK_LITERAL : typeof key === "object"));
       ctx = Object.assign({}, ctx, {
         allNullValues: false,
         implicitKey: !explicitKey && (simpleKeys || !allNullValues),
@@ -1708,7 +1802,7 @@ ${indent2}:`;
           str += stringifyComment.lineComment(str, ctx.indent, commentString(keyComment));
       }
       let vsb, vcb, valueComment;
-      if (Node.isNode(value2)) {
+      if (identity.isNode(value2)) {
         vsb = !!value2.spaceBefore;
         vcb = value2.commentBefore;
         valueComment = value2.comment;
@@ -1720,10 +1814,10 @@ ${indent2}:`;
           value2 = doc.createNode(value2);
       }
       ctx.implicitKey = false;
-      if (!explicitKey && !keyComment && Node.isScalar(value2))
+      if (!explicitKey && !keyComment && identity.isScalar(value2))
         ctx.indentAtStart = str.length + 1;
       chompKeep = false;
-      if (!indentSeq && indentStep.length >= 2 && !ctx.inFlow && !explicitKey && Node.isSeq(value2) && !value2.flow && !value2.tag && !value2.anchor) {
+      if (!indentSeq && indentStep.length >= 2 && !ctx.inFlow && !explicitKey && identity.isSeq(value2) && !value2.flow && !value2.tag && !value2.anchor) {
         ctx.indent = ctx.indent.substring(2);
       }
       let valueCommentDone = false;
@@ -1743,7 +1837,7 @@ ${stringifyComment.indentComment(cs, ctx.indent)}`;
           ws += `
 ${ctx.indent}`;
         }
-      } else if (!explicitKey && Node.isCollection(value2)) {
+      } else if (!explicitKey && identity.isCollection(value2)) {
         const vs0 = valueStr[0];
         const nl0 = valueStr.indexOf("\n");
         const hasNewline = nl0 !== -1;
@@ -1780,9 +1874,9 @@ ${ctx.indent}`;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/log.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/log.js
 var require_log = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/log.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/log.js"(exports) {
     "use strict";
     function debug(logLevel, ...messages2) {
       if (logLevel === "debug")
@@ -1801,20 +1895,20 @@ var require_log = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/addPairToJSMap.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/addPairToJSMap.js
 var require_addPairToJSMap = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/addPairToJSMap.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/addPairToJSMap.js"(exports) {
     "use strict";
     var log = require_log();
     var stringify2 = require_stringify();
-    var Node = require_Node();
+    var identity = require_identity();
     var Scalar = require_Scalar();
     var toJS = require_toJS();
     var MERGE_KEY = "<<";
     function addPairToJSMap(ctx, map, { key, value: value2 }) {
       if ((ctx == null ? void 0 : ctx.doc.schema.merge) && isMergeKey(key)) {
-        value2 = Node.isAlias(value2) ? value2.resolve(ctx.doc) : value2;
-        if (Node.isSeq(value2))
+        value2 = identity.isAlias(value2) ? value2.resolve(ctx.doc) : value2;
+        if (identity.isSeq(value2))
           for (const it of value2.items)
             mergeToJSMap(ctx, map, it);
         else if (Array.isArray(value2))
@@ -1844,10 +1938,10 @@ var require_addPairToJSMap = __commonJS({
       }
       return map;
     }
-    var isMergeKey = (key) => key === MERGE_KEY || Node.isScalar(key) && key.value === MERGE_KEY && (!key.type || key.type === Scalar.Scalar.PLAIN);
+    var isMergeKey = (key) => key === MERGE_KEY || identity.isScalar(key) && key.value === MERGE_KEY && (!key.type || key.type === Scalar.Scalar.PLAIN);
     function mergeToJSMap(ctx, map, value2) {
-      const source = ctx && Node.isAlias(value2) ? value2.resolve(ctx.doc) : value2;
-      if (!Node.isMap(source))
+      const source = ctx && identity.isAlias(value2) ? value2.resolve(ctx.doc) : value2;
+      if (!identity.isMap(source))
         throw new Error("Merge sources must be maps or map aliases");
       const srcMap = source.toJSON(null, ctx, Map);
       for (const [key, value3] of srcMap) {
@@ -1872,7 +1966,7 @@ var require_addPairToJSMap = __commonJS({
         return "";
       if (typeof jsKey !== "object")
         return String(jsKey);
-      if (Node.isNode(key) && ctx && ctx.doc) {
+      if (identity.isNode(key) && ctx && ctx.doc) {
         const strCtx = stringify2.createStringifyContext(ctx.doc, {});
         strCtx.anchors = /* @__PURE__ */ new Set();
         for (const node of ctx.anchors.keys())
@@ -1895,14 +1989,14 @@ var require_addPairToJSMap = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Pair.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Pair.js
 var require_Pair = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/Pair.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/Pair.js"(exports) {
     "use strict";
     var createNode = require_createNode();
     var stringifyPair = require_stringifyPair();
     var addPairToJSMap = require_addPairToJSMap();
-    var Node = require_Node();
+    var identity = require_identity();
     function createPair(key, value2, ctx) {
       const k = createNode.createNode(key, void 0, ctx);
       const v = createNode.createNode(value2, void 0, ctx);
@@ -1910,15 +2004,15 @@ var require_Pair = __commonJS({
     }
     var Pair = class {
       constructor(key, value2 = null) {
-        Object.defineProperty(this, Node.NODE_TYPE, { value: Node.PAIR });
+        Object.defineProperty(this, identity.NODE_TYPE, { value: identity.PAIR });
         this.key = key;
         this.value = value2;
       }
       clone(schema) {
         let { key, value: value2 } = this;
-        if (Node.isNode(key))
+        if (identity.isNode(key))
           key = key.clone(schema);
-        if (Node.isNode(value2))
+        if (identity.isNode(value2))
           value2 = value2.clone(schema);
         return new Pair(key, value2);
       }
@@ -1935,12 +2029,12 @@ var require_Pair = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyCollection.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyCollection.js
 var require_stringifyCollection = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyCollection.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyCollection.js"(exports) {
     "use strict";
     var Collection = require_Collection();
-    var Node = require_Node();
+    var identity = require_identity();
     var stringify2 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyCollection(collection, ctx, options2) {
@@ -1956,14 +2050,14 @@ var require_stringifyCollection = __commonJS({
       for (let i = 0; i < items.length; ++i) {
         const item = items[i];
         let comment2 = null;
-        if (Node.isNode(item)) {
+        if (identity.isNode(item)) {
           if (!chompKeep && item.spaceBefore)
             lines.push("");
           addCommentBefore(ctx, lines, item.commentBefore, chompKeep);
           if (item.comment)
             comment2 = item.comment;
-        } else if (Node.isPair(item)) {
-          const ik = Node.isNode(item.key) ? item.key : null;
+        } else if (identity.isPair(item)) {
+          const ik = identity.isNode(item.key) ? item.key : null;
           if (ik) {
             if (!chompKeep && ik.spaceBefore)
               lines.push("");
@@ -2011,14 +2105,14 @@ ${indent2}${line}` : "\n";
       for (let i = 0; i < items.length; ++i) {
         const item = items[i];
         let comment2 = null;
-        if (Node.isNode(item)) {
+        if (identity.isNode(item)) {
           if (item.spaceBefore)
             lines.push("");
           addCommentBefore(ctx, lines, item.commentBefore, false);
           if (item.comment)
             comment2 = item.comment;
-        } else if (Node.isPair(item)) {
-          const ik = Node.isNode(item.key) ? item.key : null;
+        } else if (identity.isPair(item)) {
+          const ik = identity.isNode(item.key) ? item.key : null;
           if (ik) {
             if (ik.spaceBefore)
               lines.push("");
@@ -2026,7 +2120,7 @@ ${indent2}${line}` : "\n";
             if (ik.comment)
               reqNewline = true;
           }
-          const iv = Node.isNode(item.value) ? item.value : null;
+          const iv = identity.isNode(item.value) ? item.value : null;
           if (iv) {
             if (iv.comment)
               comment2 = iv.comment;
@@ -2087,23 +2181,23 @@ ${indent2}${end}`;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/YAMLMap.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/YAMLMap.js
 var require_YAMLMap = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/YAMLMap.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/YAMLMap.js"(exports) {
     "use strict";
     var stringifyCollection = require_stringifyCollection();
     var addPairToJSMap = require_addPairToJSMap();
     var Collection = require_Collection();
-    var Node = require_Node();
+    var identity = require_identity();
     var Pair = require_Pair();
     var Scalar = require_Scalar();
     function findPair(items, key) {
-      const k = Node.isScalar(key) ? key.value : key;
+      const k = identity.isScalar(key) ? key.value : key;
       for (const it of items) {
-        if (Node.isPair(it)) {
+        if (identity.isPair(it)) {
           if (it.key === key || it.key === k)
             return it;
-          if (Node.isScalar(it.key) && it.key.value === k)
+          if (identity.isScalar(it.key) && it.key.value === k)
             return it;
         }
       }
@@ -2114,8 +2208,35 @@ var require_YAMLMap = __commonJS({
         return "tag:yaml.org,2002:map";
       }
       constructor(schema) {
-        super(Node.MAP, schema);
+        super(identity.MAP, schema);
         this.items = [];
+      }
+      /**
+       * A generic collection parsing method that can be extended
+       * to other node classes that inherit from YAMLMap
+       */
+      static from(schema, obj, ctx) {
+        const { keepUndefined, replacer } = ctx;
+        const map = new this(schema);
+        const add = (key, value2) => {
+          if (typeof replacer === "function")
+            value2 = replacer.call(obj, key, value2);
+          else if (Array.isArray(replacer) && !replacer.includes(key))
+            return;
+          if (value2 !== void 0 || keepUndefined)
+            map.items.push(Pair.createPair(key, value2, ctx));
+        };
+        if (obj instanceof Map) {
+          for (const [key, value2] of obj)
+            add(key, value2);
+        } else if (obj && typeof obj === "object") {
+          for (const key of Object.keys(obj))
+            add(key, obj[key]);
+        }
+        if (typeof schema.sortMapEntries === "function") {
+          map.items.sort(schema.sortMapEntries);
+        }
+        return map;
       }
       /**
        * Adds a value to the collection.
@@ -2126,7 +2247,7 @@ var require_YAMLMap = __commonJS({
       add(pair, overwrite) {
         var _a2;
         let _pair;
-        if (Node.isPair(pair))
+        if (identity.isPair(pair))
           _pair = pair;
         else if (!pair || typeof pair !== "object" || !("key" in pair)) {
           _pair = new Pair.Pair(pair, pair == null ? void 0 : pair.value);
@@ -2137,7 +2258,7 @@ var require_YAMLMap = __commonJS({
         if (prev) {
           if (!overwrite)
             throw new Error(`Key ${_pair.key} already set`);
-          if (Node.isScalar(prev.value) && Scalar.isScalarValue(_pair.value))
+          if (identity.isScalar(prev.value) && Scalar.isScalarValue(_pair.value))
             prev.value.value = _pair.value;
           else
             prev.value = _pair.value;
@@ -2161,7 +2282,7 @@ var require_YAMLMap = __commonJS({
       get(key, keepScalar) {
         const it = findPair(this.items, key);
         const node = it == null ? void 0 : it.value;
-        return (!keepScalar && Node.isScalar(node) ? node.value : node) ?? void 0;
+        return (!keepScalar && identity.isScalar(node) ? node.value : node) ?? void 0;
       }
       has(key) {
         return !!findPair(this.items, key);
@@ -2186,7 +2307,7 @@ var require_YAMLMap = __commonJS({
         if (!ctx)
           return JSON.stringify(this);
         for (const item of this.items) {
-          if (!Node.isPair(item))
+          if (!identity.isPair(item))
             throw new Error(`Map items must all be pairs; found ${JSON.stringify(item)} instead`);
         }
         if (!ctx.allNullValues && this.hasAllNullValues(false))
@@ -2205,59 +2326,36 @@ var require_YAMLMap = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/common/map.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/common/map.js
 var require_map = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/common/map.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/common/map.js"(exports) {
     "use strict";
-    var Node = require_Node();
-    var Pair = require_Pair();
+    var identity = require_identity();
     var YAMLMap = require_YAMLMap();
-    function createMap(schema, obj, ctx) {
-      const { keepUndefined, replacer } = ctx;
-      const map2 = new YAMLMap.YAMLMap(schema);
-      const add = (key, value2) => {
-        if (typeof replacer === "function")
-          value2 = replacer.call(obj, key, value2);
-        else if (Array.isArray(replacer) && !replacer.includes(key))
-          return;
-        if (value2 !== void 0 || keepUndefined)
-          map2.items.push(Pair.createPair(key, value2, ctx));
-      };
-      if (obj instanceof Map) {
-        for (const [key, value2] of obj)
-          add(key, value2);
-      } else if (obj && typeof obj === "object") {
-        for (const key of Object.keys(obj))
-          add(key, obj[key]);
-      }
-      if (typeof schema.sortMapEntries === "function") {
-        map2.items.sort(schema.sortMapEntries);
-      }
-      return map2;
-    }
     var map = {
       collection: "map",
-      createNode: createMap,
       default: true,
       nodeClass: YAMLMap.YAMLMap,
       tag: "tag:yaml.org,2002:map",
       resolve(map2, onError2) {
-        if (!Node.isMap(map2))
+        if (!identity.isMap(map2))
           onError2("Expected a mapping for this tag");
         return map2;
-      }
+      },
+      createNode: (schema, obj, ctx) => YAMLMap.YAMLMap.from(schema, obj, ctx)
     };
     exports.map = map;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/YAMLSeq.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/YAMLSeq.js
 var require_YAMLSeq = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/nodes/YAMLSeq.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/nodes/YAMLSeq.js"(exports) {
     "use strict";
+    var createNode = require_createNode();
     var stringifyCollection = require_stringifyCollection();
     var Collection = require_Collection();
-    var Node = require_Node();
+    var identity = require_identity();
     var Scalar = require_Scalar();
     var toJS = require_toJS();
     var YAMLSeq = class extends Collection.Collection {
@@ -2265,7 +2363,7 @@ var require_YAMLSeq = __commonJS({
         return "tag:yaml.org,2002:seq";
       }
       constructor(schema) {
-        super(Node.SEQ, schema);
+        super(identity.SEQ, schema);
         this.items = [];
       }
       add(value2) {
@@ -2291,7 +2389,7 @@ var require_YAMLSeq = __commonJS({
         if (typeof idx !== "number")
           return void 0;
         const it = this.items[idx];
-        return !keepScalar && Node.isScalar(it) ? it.value : it;
+        return !keepScalar && identity.isScalar(it) ? it.value : it;
       }
       /**
        * Checks if the collection includes a value with the key `key`.
@@ -2315,7 +2413,7 @@ var require_YAMLSeq = __commonJS({
         if (typeof idx !== "number")
           throw new Error(`Expected a valid index, not ${key}.`);
         const prev = this.items[idx];
-        if (Node.isScalar(prev) && Scalar.isScalarValue(value2))
+        if (identity.isScalar(prev) && Scalar.isScalarValue(value2))
           prev.value = value2;
         else
           this.items[idx] = value2;
@@ -2340,9 +2438,24 @@ var require_YAMLSeq = __commonJS({
           onComment
         });
       }
+      static from(schema, obj, ctx) {
+        const { replacer } = ctx;
+        const seq = new this(schema);
+        if (obj && Symbol.iterator in Object(obj)) {
+          let i = 0;
+          for (let it of obj) {
+            if (typeof replacer === "function") {
+              const key = obj instanceof Set ? it : String(i++);
+              it = replacer.call(obj, key, it);
+            }
+            seq.items.push(createNode.createNode(it, void 0, ctx));
+          }
+        }
+        return seq;
+      }
     };
     function asItemIndex(key) {
-      let idx = Node.isScalar(key) ? key.value : key;
+      let idx = identity.isScalar(key) ? key.value : key;
       if (idx && typeof idx === "string")
         idx = Number(idx);
       return typeof idx === "number" && Number.isInteger(idx) && idx >= 0 ? idx : null;
@@ -2351,47 +2464,31 @@ var require_YAMLSeq = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/common/seq.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/common/seq.js
 var require_seq = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/common/seq.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/common/seq.js"(exports) {
     "use strict";
-    var createNode = require_createNode();
-    var Node = require_Node();
+    var identity = require_identity();
     var YAMLSeq = require_YAMLSeq();
-    function createSeq(schema, obj, ctx) {
-      const { replacer } = ctx;
-      const seq2 = new YAMLSeq.YAMLSeq(schema);
-      if (obj && Symbol.iterator in Object(obj)) {
-        let i = 0;
-        for (let it of obj) {
-          if (typeof replacer === "function") {
-            const key = obj instanceof Set ? it : String(i++);
-            it = replacer.call(obj, key, it);
-          }
-          seq2.items.push(createNode.createNode(it, void 0, ctx));
-        }
-      }
-      return seq2;
-    }
     var seq = {
       collection: "seq",
-      createNode: createSeq,
       default: true,
       nodeClass: YAMLSeq.YAMLSeq,
       tag: "tag:yaml.org,2002:seq",
       resolve(seq2, onError2) {
-        if (!Node.isSeq(seq2))
+        if (!identity.isSeq(seq2))
           onError2("Expected a sequence for this tag");
         return seq2;
-      }
+      },
+      createNode: (schema, obj, ctx) => YAMLSeq.YAMLSeq.from(schema, obj, ctx)
     };
     exports.seq = seq;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/common/string.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/common/string.js
 var require_string = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/common/string.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/common/string.js"(exports) {
     "use strict";
     var stringifyString = require_stringifyString();
     var string = {
@@ -2408,9 +2505,9 @@ var require_string = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/common/null.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/common/null.js
 var require_null = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/common/null.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/common/null.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var nullTag = {
@@ -2426,9 +2523,9 @@ var require_null = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/core/bool.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/core/bool.js
 var require_bool = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/core/bool.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/core/bool.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var boolTag = {
@@ -2450,9 +2547,9 @@ var require_bool = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyNumber.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyNumber.js
 var require_stringifyNumber = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyNumber.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyNumber.js"(exports) {
     "use strict";
     function stringifyNumber({ format, minFractionDigits, tag, value: value2 }) {
       if (typeof value2 === "bigint")
@@ -2477,9 +2574,9 @@ var require_stringifyNumber = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/core/float.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/core/float.js
 var require_float = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/core/float.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/core/float.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var stringifyNumber = require_stringifyNumber();
@@ -2523,9 +2620,9 @@ var require_float = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/core/int.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/core/int.js
 var require_int = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/core/int.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/core/int.js"(exports) {
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     var intIdentify = (value2) => typeof value2 === "bigint" || Number.isInteger(value2);
@@ -2568,9 +2665,9 @@ var require_int = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/core/schema.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/core/schema.js
 var require_schema = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/core/schema.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/core/schema.js"(exports) {
     "use strict";
     var map = require_map();
     var _null = require_null();
@@ -2596,9 +2693,9 @@ var require_schema = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/json/schema.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/json/schema.js
 var require_schema2 = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/json/schema.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/json/schema.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var map = require_map();
@@ -2663,9 +2760,9 @@ var require_schema2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/binary.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/binary.js
 var require_binary = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/binary.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/binary.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var stringifyString = require_stringifyString();
@@ -2726,21 +2823,21 @@ var require_binary = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/pairs.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/pairs.js
 var require_pairs = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/pairs.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/pairs.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var Pair = require_Pair();
     var Scalar = require_Scalar();
     var YAMLSeq = require_YAMLSeq();
     function resolvePairs(seq, onError2) {
-      if (Node.isSeq(seq)) {
+      if (identity.isSeq(seq)) {
         for (let i = 0; i < seq.items.length; ++i) {
           let item = seq.items[i];
-          if (Node.isPair(item))
+          if (identity.isPair(item))
             continue;
-          else if (Node.isMap(item)) {
+          else if (identity.isMap(item)) {
             if (item.items.length > 1)
               onError2("Each pair must have its own sequence indicator");
             const pair = item.items[0] || new Pair.Pair(new Scalar.Scalar(null));
@@ -2754,7 +2851,7 @@ ${cn.comment}` : item.comment;
             }
             item = pair;
           }
-          seq.items[i] = Node.isPair(item) ? item : new Pair.Pair(item);
+          seq.items[i] = identity.isPair(item) ? item : new Pair.Pair(item);
         }
       } else
         onError2("Expected a sequence for this tag");
@@ -2803,14 +2900,14 @@ ${cn.comment}` : item.comment;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/omap.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/omap.js
 var require_omap = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/omap.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/omap.js"(exports) {
     "use strict";
-    var YAMLSeq = require_YAMLSeq();
+    var identity = require_identity();
     var toJS = require_toJS();
-    var Node = require_Node();
     var YAMLMap = require_YAMLMap();
+    var YAMLSeq = require_YAMLSeq();
     var pairs = require_pairs();
     var YAMLOMap = class extends YAMLSeq.YAMLSeq {
       constructor() {
@@ -2834,7 +2931,7 @@ var require_omap = __commonJS({
           ctx.onCreate(map);
         for (const pair of this.items) {
           let key, value2;
-          if (Node.isPair(pair)) {
+          if (identity.isPair(pair)) {
             key = toJS.toJS(pair.key, "", ctx);
             value2 = toJS.toJS(pair.value, key, ctx);
           } else {
@@ -2845,6 +2942,12 @@ var require_omap = __commonJS({
           map.set(key, value2);
         }
         return map;
+      }
+      static from(schema, iterable, ctx) {
+        const pairs$1 = pairs.createPairs(schema, iterable, ctx);
+        const omap2 = new this();
+        omap2.items = pairs$1.items;
+        return omap2;
       }
     };
     YAMLOMap.tag = "tag:yaml.org,2002:omap";
@@ -2858,7 +2961,7 @@ var require_omap = __commonJS({
         const pairs$1 = pairs.resolvePairs(seq, onError2);
         const seenKeys = [];
         for (const { key } of pairs$1.items) {
-          if (Node.isScalar(key)) {
+          if (identity.isScalar(key)) {
             if (seenKeys.includes(key.value)) {
               onError2(`Ordered maps must not include duplicate keys: ${key.value}`);
             } else {
@@ -2868,21 +2971,16 @@ var require_omap = __commonJS({
         }
         return Object.assign(new YAMLOMap(), pairs$1);
       },
-      createNode(schema, iterable, ctx) {
-        const pairs$1 = pairs.createPairs(schema, iterable, ctx);
-        const omap2 = new YAMLOMap();
-        omap2.items = pairs$1.items;
-        return omap2;
-      }
+      createNode: (schema, iterable, ctx) => YAMLOMap.from(schema, iterable, ctx)
     };
     exports.YAMLOMap = YAMLOMap;
     exports.omap = omap;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/bool.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/bool.js
 var require_bool2 = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/bool.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/bool.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     function boolStringify({ value: value2, source }, ctx) {
@@ -2912,9 +3010,9 @@ var require_bool2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/float.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/float.js
 var require_float2 = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/float.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/float.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var stringifyNumber = require_stringifyNumber();
@@ -2961,9 +3059,9 @@ var require_float2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/int.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/int.js
 var require_int2 = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/int.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/int.js"(exports) {
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     var intIdentify = (value2) => typeof value2 === "bigint" || Number.isInteger(value2);
@@ -3040,11 +3138,11 @@ var require_int2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/set.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/set.js
 var require_set = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/set.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/set.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var Pair = require_Pair();
     var YAMLMap = require_YAMLMap();
     var YAMLSet = class extends YAMLMap.YAMLMap {
@@ -3054,7 +3152,7 @@ var require_set = __commonJS({
       }
       add(key) {
         let pair;
-        if (Node.isPair(key))
+        if (identity.isPair(key))
           pair = key;
         else if (key && typeof key === "object" && "key" in key && "value" in key && key.value === null)
           pair = new Pair.Pair(key.key, null);
@@ -3070,7 +3168,7 @@ var require_set = __commonJS({
        */
       get(key, keepPair) {
         const pair = YAMLMap.findPair(this.items, key);
-        return !keepPair && Node.isPair(pair) ? Node.isScalar(pair.key) ? pair.key.value : pair.key : pair;
+        return !keepPair && identity.isPair(pair) ? identity.isScalar(pair.key) ? pair.key.value : pair.key : pair;
       }
       set(key, value2) {
         if (typeof value2 !== "boolean")
@@ -3093,27 +3191,9 @@ var require_set = __commonJS({
         else
           throw new Error("Set items must all have null values");
       }
-    };
-    YAMLSet.tag = "tag:yaml.org,2002:set";
-    var set = {
-      collection: "map",
-      identify: (value2) => value2 instanceof Set,
-      nodeClass: YAMLSet,
-      default: false,
-      tag: "tag:yaml.org,2002:set",
-      resolve(map, onError2) {
-        if (Node.isMap(map)) {
-          if (map.hasAllNullValues(true))
-            return Object.assign(new YAMLSet(), map);
-          else
-            onError2("Set items must all have null values");
-        } else
-          onError2("Expected a mapping for this tag");
-        return map;
-      },
-      createNode(schema, iterable, ctx) {
+      static from(schema, iterable, ctx) {
         const { replacer } = ctx;
-        const set2 = new YAMLSet(schema);
+        const set2 = new this(schema);
         if (iterable && Symbol.iterator in Object(iterable))
           for (let value2 of iterable) {
             if (typeof replacer === "function")
@@ -3123,14 +3203,33 @@ var require_set = __commonJS({
         return set2;
       }
     };
+    YAMLSet.tag = "tag:yaml.org,2002:set";
+    var set = {
+      collection: "map",
+      identify: (value2) => value2 instanceof Set,
+      nodeClass: YAMLSet,
+      default: false,
+      tag: "tag:yaml.org,2002:set",
+      createNode: (schema, iterable, ctx) => YAMLSet.from(schema, iterable, ctx),
+      resolve(map, onError2) {
+        if (identity.isMap(map)) {
+          if (map.hasAllNullValues(true))
+            return Object.assign(new YAMLSet(), map);
+          else
+            onError2("Set items must all have null values");
+        } else
+          onError2("Expected a mapping for this tag");
+        return map;
+      }
+    };
     exports.YAMLSet = YAMLSet;
     exports.set = set;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js
 var require_timestamp = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js"(exports) {
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     function parseSexagesimal(str, asBigInt) {
@@ -3164,7 +3263,7 @@ var require_timestamp = __commonJS({
           parts.unshift(value2);
         }
       }
-      return sign + parts.map((n) => n < 10 ? "0" + String(n) : String(n)).join(":").replace(/000000\d*$/, "");
+      return sign + parts.map((n) => String(n).padStart(2, "0")).join(":").replace(/000000\d*$/, "");
     }
     var intTime = {
       identify: (value2) => typeof value2 === "bigint" || Number.isInteger(value2),
@@ -3216,9 +3315,9 @@ var require_timestamp = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/schema.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/schema.js
 var require_schema3 = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/yaml-1.1/schema.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/yaml-1.1/schema.js"(exports) {
     "use strict";
     var map = require_map();
     var _null = require_null();
@@ -3258,9 +3357,9 @@ var require_schema3 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/tags.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/tags.js
 var require_tags = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/tags.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/tags.js"(exports) {
     "use strict";
     var map = require_map();
     var _null = require_null();
@@ -3341,11 +3440,11 @@ var require_tags = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/Schema.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/Schema.js
 var require_Schema = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/schema/Schema.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/schema/Schema.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var map = require_map();
     var seq = require_seq();
     var string = require_string();
@@ -3359,9 +3458,9 @@ var require_Schema = __commonJS({
         this.knownTags = resolveKnownTags ? tags.coreKnownTags : {};
         this.tags = tags.getTags(customTags, this.name);
         this.toStringOptions = toStringDefaults ?? null;
-        Object.defineProperty(this, Node.MAP, { value: map.map });
-        Object.defineProperty(this, Node.SCALAR, { value: string.string });
-        Object.defineProperty(this, Node.SEQ, { value: seq.seq });
+        Object.defineProperty(this, identity.MAP, { value: map.map });
+        Object.defineProperty(this, identity.SCALAR, { value: string.string });
+        Object.defineProperty(this, identity.SEQ, { value: seq.seq });
         this.sortMapEntries = typeof sortMapEntries === "function" ? sortMapEntries : sortMapEntries === true ? sortMapEntriesByKey : null;
       }
       clone() {
@@ -3374,11 +3473,11 @@ var require_Schema = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyDocument.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyDocument.js
 var require_stringifyDocument = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/stringify/stringifyDocument.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/stringify/stringifyDocument.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var stringify2 = require_stringify();
     var stringifyComment = require_stringifyComment();
     function stringifyDocument(doc, options2) {
@@ -3406,7 +3505,7 @@ var require_stringifyDocument = __commonJS({
       let chompKeep = false;
       let contentComment = null;
       if (doc.contents) {
-        if (Node.isNode(doc.contents)) {
+        if (identity.isNode(doc.contents)) {
           if (doc.contents.spaceBefore && hasDirectives)
             lines.push("");
           if (doc.contents.commentBefore) {
@@ -3455,67 +3554,16 @@ var require_stringifyDocument = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/applyReviver.js
-var require_applyReviver = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/applyReviver.js"(exports) {
-    "use strict";
-    function applyReviver(reviver, obj, key, val) {
-      if (val && typeof val === "object") {
-        if (Array.isArray(val)) {
-          for (let i = 0, len = val.length; i < len; ++i) {
-            const v0 = val[i];
-            const v1 = applyReviver(reviver, val, String(i), v0);
-            if (v1 === void 0)
-              delete val[i];
-            else if (v1 !== v0)
-              val[i] = v1;
-          }
-        } else if (val instanceof Map) {
-          for (const k of Array.from(val.keys())) {
-            const v0 = val.get(k);
-            const v1 = applyReviver(reviver, val, k, v0);
-            if (v1 === void 0)
-              val.delete(k);
-            else if (v1 !== v0)
-              val.set(k, v1);
-          }
-        } else if (val instanceof Set) {
-          for (const v0 of Array.from(val)) {
-            const v1 = applyReviver(reviver, val, v0, v0);
-            if (v1 === void 0)
-              val.delete(v0);
-            else if (v1 !== v0) {
-              val.delete(v0);
-              val.add(v1);
-            }
-          }
-        } else {
-          for (const [k, v0] of Object.entries(val)) {
-            const v1 = applyReviver(reviver, val, k, v0);
-            if (v1 === void 0)
-              delete val[k];
-            else if (v1 !== v0)
-              val[k] = v1;
-          }
-        }
-      }
-      return reviver.call(obj, key, val);
-    }
-    exports.applyReviver = applyReviver;
-  }
-});
-
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/Document.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/Document.js
 var require_Document = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/doc/Document.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/doc/Document.js"(exports) {
     "use strict";
     var Alias = require_Alias();
     var Collection = require_Collection();
-    var Node = require_Node();
+    var identity = require_identity();
     var Pair = require_Pair();
     var toJS = require_toJS();
     var Schema2 = require_Schema();
-    var stringify2 = require_stringify();
     var stringifyDocument = require_stringifyDocument();
     var anchors = require_anchors();
     var applyReviver = require_applyReviver();
@@ -3527,7 +3575,7 @@ var require_Document = __commonJS({
         this.comment = null;
         this.errors = [];
         this.warnings = [];
-        Object.defineProperty(this, Node.NODE_TYPE, { value: Node.DOC });
+        Object.defineProperty(this, identity.NODE_TYPE, { value: identity.DOC });
         let _replacer = null;
         if (typeof replacer === "function" || Array.isArray(replacer)) {
           _replacer = replacer;
@@ -3553,11 +3601,7 @@ var require_Document = __commonJS({
         } else
           this.directives = new directives.Directives({ version });
         this.setSchema(version, options2);
-        if (value2 === void 0)
-          this.contents = null;
-        else {
-          this.contents = this.createNode(value2, _replacer, options2);
-        }
+        this.contents = value2 === void 0 ? null : this.createNode(value2, _replacer, options2);
       }
       /**
        * Create a deep copy of this Document and its contents.
@@ -3566,7 +3610,7 @@ var require_Document = __commonJS({
        */
       clone() {
         const copy = Object.create(Document.prototype, {
-          [Node.NODE_TYPE]: { value: Node.DOC }
+          [identity.NODE_TYPE]: { value: identity.DOC }
         });
         copy.commentBefore = this.commentBefore;
         copy.comment = this.comment;
@@ -3576,7 +3620,7 @@ var require_Document = __commonJS({
         if (this.directives)
           copy.directives = this.directives.clone();
         copy.schema = this.schema.clone();
-        copy.contents = Node.isNode(this.contents) ? this.contents.clone(copy.schema) : this.contents;
+        copy.contents = identity.isNode(this.contents) ? this.contents.clone(copy.schema) : this.contents;
         if (this.range)
           copy.range = this.range.slice();
         return copy;
@@ -3639,7 +3683,7 @@ var require_Document = __commonJS({
           sourceObjects
         };
         const node = createNode.createNode(value2, tag, ctx);
-        if (flow && Node.isCollection(node))
+        if (flow && identity.isCollection(node))
           node.flow = true;
         setAnchors();
         return node;
@@ -3679,7 +3723,7 @@ var require_Document = __commonJS({
        * `true` (collections are always returned intact).
        */
       get(key, keepScalar) {
-        return Node.isCollection(this.contents) ? this.contents.get(key, keepScalar) : void 0;
+        return identity.isCollection(this.contents) ? this.contents.get(key, keepScalar) : void 0;
       }
       /**
        * Returns item at `path`, or `undefined` if not found. By default unwraps
@@ -3688,14 +3732,14 @@ var require_Document = __commonJS({
        */
       getIn(path2, keepScalar) {
         if (Collection.isEmptyPath(path2))
-          return !keepScalar && Node.isScalar(this.contents) ? this.contents.value : this.contents;
-        return Node.isCollection(this.contents) ? this.contents.getIn(path2, keepScalar) : void 0;
+          return !keepScalar && identity.isScalar(this.contents) ? this.contents.value : this.contents;
+        return identity.isCollection(this.contents) ? this.contents.getIn(path2, keepScalar) : void 0;
       }
       /**
        * Checks if the document includes a value with the key `key`.
        */
       has(key) {
-        return Node.isCollection(this.contents) ? this.contents.has(key) : false;
+        return identity.isCollection(this.contents) ? this.contents.has(key) : false;
       }
       /**
        * Checks if the document includes a value at `path`.
@@ -3703,7 +3747,7 @@ var require_Document = __commonJS({
       hasIn(path2) {
         if (Collection.isEmptyPath(path2))
           return this.contents !== void 0;
-        return Node.isCollection(this.contents) ? this.contents.hasIn(path2) : false;
+        return identity.isCollection(this.contents) ? this.contents.hasIn(path2) : false;
       }
       /**
        * Sets a value in this document. For `!!set`, `value` needs to be a
@@ -3721,9 +3765,9 @@ var require_Document = __commonJS({
        * boolean to add/remove the item from the set.
        */
       setIn(path2, value2) {
-        if (Collection.isEmptyPath(path2))
+        if (Collection.isEmptyPath(path2)) {
           this.contents = value2;
-        else if (this.contents == null) {
+        } else if (this.contents == null) {
           this.contents = Collection.collectionFromPath(this.schema, Array.from(path2), value2);
         } else if (assertCollection(this.contents)) {
           this.contents.setIn(path2, value2);
@@ -3781,8 +3825,7 @@ var require_Document = __commonJS({
           keep: !json2,
           mapAsMap: mapAsMap === true,
           mapKeyWarned: false,
-          maxAliasCount: typeof maxAliasCount === "number" ? maxAliasCount : 100,
-          stringify: stringify2.stringify
+          maxAliasCount: typeof maxAliasCount === "number" ? maxAliasCount : 100
         };
         const res = toJS.toJS(this.contents, jsonArg ?? "", ctx);
         if (typeof onAnchor === "function")
@@ -3811,7 +3854,7 @@ var require_Document = __commonJS({
       }
     };
     function assertCollection(contents) {
-      if (Node.isCollection(contents))
+      if (identity.isCollection(contents))
         return true;
       throw new Error("Expected a YAML collection as document contents");
     }
@@ -3819,9 +3862,9 @@ var require_Document = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/errors.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/errors.js
 var require_errors = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/errors.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/errors.js"(exports) {
     "use strict";
     var YAMLError = class extends Error {
       constructor(name, pos, code2, message) {
@@ -3884,9 +3927,9 @@ ${pointer}
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-props.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-props.js
 var require_resolve_props = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-props.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-props.js"(exports) {
     "use strict";
     function resolveProps(tokens, { flow, indicator, next, offset, onError: onError2, startOnNewline }) {
       let spaceBefore = false;
@@ -4008,9 +4051,9 @@ var require_resolve_props = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/util-contains-newline.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/util-contains-newline.js
 var require_util_contains_newline = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/util-contains-newline.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/util-contains-newline.js"(exports) {
     "use strict";
     function containsNewline(key) {
       if (!key)
@@ -4050,9 +4093,9 @@ var require_util_contains_newline = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/util-flow-indent-check.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/util-flow-indent-check.js
 var require_util_flow_indent_check = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/util-flow-indent-check.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/util-flow-indent-check.js"(exports) {
     "use strict";
     var utilContainsNewline = require_util_contains_newline();
     function flowIndentCheck(indent2, fc, onError2) {
@@ -4068,25 +4111,25 @@ var require_util_flow_indent_check = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/util-map-includes.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/util-map-includes.js
 var require_util_map_includes = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/util-map-includes.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/util-map-includes.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     function mapIncludes(ctx, items, search2) {
       const { uniqueKeys } = ctx.options;
       if (uniqueKeys === false)
         return false;
-      const isEqual = typeof uniqueKeys === "function" ? uniqueKeys : (a, b) => a === b || Node.isScalar(a) && Node.isScalar(b) && a.value === b.value && !(a.value === "<<" && ctx.schema.merge);
+      const isEqual = typeof uniqueKeys === "function" ? uniqueKeys : (a, b) => a === b || identity.isScalar(a) && identity.isScalar(b) && a.value === b.value && !(a.value === "<<" && ctx.schema.merge);
       return items.some((pair) => isEqual(pair.key, search2));
     }
     exports.mapIncludes = mapIncludes;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-block-map.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-block-map.js
 var require_resolve_block_map = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-block-map.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-block-map.js"(exports) {
     "use strict";
     var Pair = require_Pair();
     var YAMLMap = require_YAMLMap();
@@ -4095,9 +4138,10 @@ var require_resolve_block_map = __commonJS({
     var utilFlowIndentCheck = require_util_flow_indent_check();
     var utilMapIncludes = require_util_map_includes();
     var startColMsg = "All mapping items must start at the same column";
-    function resolveBlockMap({ composeNode, composeEmptyNode }, ctx, bm, onError2) {
+    function resolveBlockMap({ composeNode, composeEmptyNode }, ctx, bm, onError2, tag) {
       var _a2;
-      const map = new YAMLMap.YAMLMap(ctx.schema);
+      const NodeClass = (tag == null ? void 0 : tag.nodeClass) ?? YAMLMap.YAMLMap;
+      const map = new NodeClass(ctx.schema);
       if (ctx.atRoot)
         ctx.atRoot = false;
       let offset = bm.offset;
@@ -4188,15 +4232,16 @@ var require_resolve_block_map = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-block-seq.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-block-seq.js
 var require_resolve_block_seq = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-block-seq.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-block-seq.js"(exports) {
     "use strict";
     var YAMLSeq = require_YAMLSeq();
     var resolveProps = require_resolve_props();
     var utilFlowIndentCheck = require_util_flow_indent_check();
-    function resolveBlockSeq({ composeNode, composeEmptyNode }, ctx, bs, onError2) {
-      const seq = new YAMLSeq.YAMLSeq(ctx.schema);
+    function resolveBlockSeq({ composeNode, composeEmptyNode }, ctx, bs, onError2, tag) {
+      const NodeClass = (tag == null ? void 0 : tag.nodeClass) ?? YAMLSeq.YAMLSeq;
+      const seq = new NodeClass(ctx.schema);
       if (ctx.atRoot)
         ctx.atRoot = false;
       let offset = bs.offset;
@@ -4235,9 +4280,9 @@ var require_resolve_block_seq = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-end.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-end.js
 var require_resolve_end = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-end.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-end.js"(exports) {
     "use strict";
     function resolveEnd(end, offset, reqSpace, onError2) {
       let comment = "";
@@ -4278,11 +4323,11 @@ var require_resolve_end = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-flow-collection.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-flow-collection.js
 var require_resolve_flow_collection = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-flow-collection.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-flow-collection.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var Pair = require_Pair();
     var YAMLMap = require_YAMLMap();
     var YAMLSeq = require_YAMLSeq();
@@ -4292,10 +4337,11 @@ var require_resolve_flow_collection = __commonJS({
     var utilMapIncludes = require_util_map_includes();
     var blockMsg = "Block collections are not allowed within flow collections";
     var isBlock = (token) => token && (token.type === "block-map" || token.type === "block-seq");
-    function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onError2) {
+    function resolveFlowCollection({ composeNode, composeEmptyNode }, ctx, fc, onError2, tag) {
       const isMap = fc.start.source === "{";
       const fcName = isMap ? "flow map" : "flow sequence";
-      const coll = isMap ? new YAMLMap.YAMLMap(ctx.schema) : new YAMLSeq.YAMLSeq(ctx.schema);
+      const NodeClass = (tag == null ? void 0 : tag.nodeClass) ?? (isMap ? YAMLMap.YAMLMap : YAMLSeq.YAMLSeq);
+      const coll = new NodeClass(ctx.schema);
       coll.flow = true;
       const atRoot = ctx.atRoot;
       if (atRoot)
@@ -4358,7 +4404,7 @@ var require_resolve_flow_collection = __commonJS({
               }
             if (prevItemComment) {
               let prev = coll.items[coll.items.length - 1];
-              if (Node.isPair(prev))
+              if (identity.isPair(prev))
                 prev = prev.value ?? prev.key;
               if (prev.comment)
                 prev.comment += "\n" + prevItemComment;
@@ -4464,56 +4510,53 @@ var require_resolve_flow_collection = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/compose-collection.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/compose-collection.js
 var require_compose_collection = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/compose-collection.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/compose-collection.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var Scalar = require_Scalar();
+    var YAMLMap = require_YAMLMap();
+    var YAMLSeq = require_YAMLSeq();
     var resolveBlockMap = require_resolve_block_map();
     var resolveBlockSeq = require_resolve_block_seq();
     var resolveFlowCollection = require_resolve_flow_collection();
-    function composeCollection(CN, ctx, token, tagToken, onError2) {
-      let coll;
-      switch (token.type) {
-        case "block-map": {
-          coll = resolveBlockMap.resolveBlockMap(CN, ctx, token, onError2);
-          break;
-        }
-        case "block-seq": {
-          coll = resolveBlockSeq.resolveBlockSeq(CN, ctx, token, onError2);
-          break;
-        }
-        case "flow-collection": {
-          coll = resolveFlowCollection.resolveFlowCollection(CN, ctx, token, onError2);
-          break;
-        }
-      }
-      if (!tagToken)
-        return coll;
-      const tagName = ctx.directives.tagName(tagToken.source, (msg) => onError2(tagToken, "TAG_RESOLVE_FAILED", msg));
-      if (!tagName)
-        return coll;
+    function resolveCollection(CN, ctx, token, onError2, tagName, tag) {
+      const coll = token.type === "block-map" ? resolveBlockMap.resolveBlockMap(CN, ctx, token, onError2, tag) : token.type === "block-seq" ? resolveBlockSeq.resolveBlockSeq(CN, ctx, token, onError2, tag) : resolveFlowCollection.resolveFlowCollection(CN, ctx, token, onError2, tag);
       const Coll = coll.constructor;
       if (tagName === "!" || tagName === Coll.tagName) {
         coll.tag = Coll.tagName;
         return coll;
       }
-      const expType = Node.isMap(coll) ? "map" : "seq";
-      let tag = ctx.schema.tags.find((t) => t.collection === expType && t.tag === tagName);
+      if (tagName)
+        coll.tag = tagName;
+      return coll;
+    }
+    function composeCollection(CN, ctx, token, tagToken, onError2) {
+      var _a2;
+      const tagName = !tagToken ? null : ctx.directives.tagName(tagToken.source, (msg) => onError2(tagToken, "TAG_RESOLVE_FAILED", msg));
+      const expType = token.type === "block-map" ? "map" : token.type === "block-seq" ? "seq" : token.start.source === "{" ? "map" : "seq";
+      if (!tagToken || !tagName || tagName === "!" || tagName === YAMLMap.YAMLMap.tagName && expType === "map" || tagName === YAMLSeq.YAMLSeq.tagName && expType === "seq" || !expType) {
+        return resolveCollection(CN, ctx, token, onError2, tagName);
+      }
+      let tag = ctx.schema.tags.find((t) => t.tag === tagName && t.collection === expType);
       if (!tag) {
         const kt = ctx.schema.knownTags[tagName];
         if (kt && kt.collection === expType) {
           ctx.schema.tags.push(Object.assign({}, kt, { default: false }));
           tag = kt;
         } else {
-          onError2(tagToken, "TAG_RESOLVE_FAILED", `Unresolved tag: ${tagName}`, true);
-          coll.tag = tagName;
-          return coll;
+          if (kt == null ? void 0 : kt.collection) {
+            onError2(tagToken, "BAD_COLLECTION_TYPE", `${kt.tag} used for ${expType} collection, but expects ${kt.collection}`, true);
+          } else {
+            onError2(tagToken, "TAG_RESOLVE_FAILED", `Unresolved tag: ${tagName}`, true);
+          }
+          return resolveCollection(CN, ctx, token, onError2, tagName);
         }
       }
-      const res = tag.resolve(coll, (msg) => onError2(tagToken, "TAG_RESOLVE_FAILED", msg), ctx.options);
-      const node = Node.isNode(res) ? res : new Scalar.Scalar(res);
+      const coll = resolveCollection(CN, ctx, token, onError2, tagName, tag);
+      const res = ((_a2 = tag.resolve) == null ? void 0 : _a2.call(tag, coll, (msg) => onError2(tagToken, "TAG_RESOLVE_FAILED", msg), ctx.options)) ?? coll;
+      const node = identity.isNode(res) ? res : new Scalar.Scalar(res);
       node.range = coll.range;
       node.tag = tagName;
       if (tag == null ? void 0 : tag.format)
@@ -4524,9 +4567,9 @@ var require_compose_collection = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-block-scalar.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-block-scalar.js
 var require_resolve_block_scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-block-scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-block-scalar.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     function resolveBlockScalar(scalar, strict, onError2) {
@@ -4701,9 +4744,9 @@ var require_resolve_block_scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-flow-scalar.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-flow-scalar.js
 var require_resolve_flow_scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/resolve-flow-scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/resolve-flow-scalar.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var resolveEnd = require_resolve_end();
@@ -4892,8 +4935,8 @@ var require_resolve_flow_scalar = __commonJS({
     };
     function parseCharCode(source, offset, length, onError2) {
       const cc = source.substr(offset, length);
-      const ok2 = cc.length === length && /^[0-9a-fA-F]+$/.test(cc);
-      const code2 = ok2 ? parseInt(cc, 16) : NaN;
+      const ok3 = cc.length === length && /^[0-9a-fA-F]+$/.test(cc);
+      const code2 = ok3 ? parseInt(cc, 16) : NaN;
       if (isNaN(code2)) {
         const raw = source.substr(offset - 2, length + 2);
         onError2(offset - 2, "BAD_DQ_ESCAPE", `Invalid escape sequence ${raw}`);
@@ -4905,22 +4948,22 @@ var require_resolve_flow_scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/compose-scalar.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/compose-scalar.js
 var require_compose_scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/compose-scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/compose-scalar.js"(exports) {
     "use strict";
-    var Node = require_Node();
+    var identity = require_identity();
     var Scalar = require_Scalar();
     var resolveBlockScalar = require_resolve_block_scalar();
     var resolveFlowScalar = require_resolve_flow_scalar();
     function composeScalar(ctx, token, tagToken, onError2) {
       const { value: value2, type, comment, range: range2 } = token.type === "block-scalar" ? resolveBlockScalar.resolveBlockScalar(token, ctx.options.strict, onError2) : resolveFlowScalar.resolveFlowScalar(token, ctx.options.strict, onError2);
       const tagName = tagToken ? ctx.directives.tagName(tagToken.source, (msg) => onError2(tagToken, "TAG_RESOLVE_FAILED", msg)) : null;
-      const tag = tagToken && tagName ? findScalarTagByName(ctx.schema, value2, tagName, tagToken, onError2) : token.type === "scalar" ? findScalarTagByTest(ctx, value2, token, onError2) : ctx.schema[Node.SCALAR];
+      const tag = tagToken && tagName ? findScalarTagByName(ctx.schema, value2, tagName, tagToken, onError2) : token.type === "scalar" ? findScalarTagByTest(ctx, value2, token, onError2) : ctx.schema[identity.SCALAR];
       let scalar;
       try {
         const res = tag.resolve(value2, (msg) => onError2(tagToken ?? token, "TAG_RESOLVE_FAILED", msg), ctx.options);
-        scalar = Node.isScalar(res) ? res : new Scalar.Scalar(res);
+        scalar = identity.isScalar(res) ? res : new Scalar.Scalar(res);
       } catch (error) {
         const msg = error instanceof Error ? error.message : String(error);
         onError2(tagToken ?? token, "TAG_RESOLVE_FAILED", msg);
@@ -4941,7 +4984,7 @@ var require_compose_scalar = __commonJS({
     function findScalarTagByName(schema, value2, tagName, tagToken, onError2) {
       var _a2;
       if (tagName === "!")
-        return schema[Node.SCALAR];
+        return schema[identity.SCALAR];
       const matchWithTest = [];
       for (const tag of schema.tags) {
         if (!tag.collection && tag.tag === tagName) {
@@ -4960,18 +5003,18 @@ var require_compose_scalar = __commonJS({
         return kt;
       }
       onError2(tagToken, "TAG_RESOLVE_FAILED", `Unresolved tag: ${tagName}`, tagName !== "tag:yaml.org,2002:str");
-      return schema[Node.SCALAR];
+      return schema[identity.SCALAR];
     }
     function findScalarTagByTest({ directives, schema }, value2, token, onError2) {
       const tag = schema.tags.find((tag2) => {
         var _a2;
         return tag2.default && ((_a2 = tag2.test) == null ? void 0 : _a2.test(value2));
-      }) || schema[Node.SCALAR];
+      }) || schema[identity.SCALAR];
       if (schema.compat) {
         const compat = schema.compat.find((tag2) => {
           var _a2;
           return tag2.default && ((_a2 = tag2.test) == null ? void 0 : _a2.test(value2));
-        }) ?? schema[Node.SCALAR];
+        }) ?? schema[identity.SCALAR];
         if (tag.tag !== compat.tag) {
           const ts = directives.tagString(tag.tag);
           const cs = directives.tagString(compat.tag);
@@ -4985,9 +5028,9 @@ var require_compose_scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/util-empty-scalar-position.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/util-empty-scalar-position.js
 var require_util_empty_scalar_position = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/util-empty-scalar-position.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/util-empty-scalar-position.js"(exports) {
     "use strict";
     function emptyScalarPosition(offset, before, pos) {
       if (before) {
@@ -5016,9 +5059,9 @@ var require_util_empty_scalar_position = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/compose-node.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/compose-node.js
 var require_compose_node = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/compose-node.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/compose-node.js"(exports) {
     "use strict";
     var Alias = require_Alias();
     var composeCollection = require_compose_collection();
@@ -5111,9 +5154,9 @@ var require_compose_node = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/compose-doc.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/compose-doc.js
 var require_compose_doc = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/compose-doc.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/compose-doc.js"(exports) {
     "use strict";
     var Document = require_Document();
     var composeNode = require_compose_node();
@@ -5152,14 +5195,14 @@ var require_compose_doc = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/composer.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/composer.js
 var require_composer = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/compose/composer.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/compose/composer.js"(exports) {
     "use strict";
     var directives = require_directives();
     var Document = require_Document();
     var errors = require_errors();
-    var Node = require_Node();
+    var identity = require_identity();
     var composeDoc = require_compose_doc();
     var resolveEnd = require_resolve_end();
     function getErrorPos(src) {
@@ -5222,9 +5265,9 @@ var require_composer = __commonJS({
 ${comment}` : comment;
           } else if (afterEmptyLine || doc.directives.docStart || !dc) {
             doc.commentBefore = comment;
-          } else if (Node.isCollection(dc) && !dc.flow && dc.items.length > 0) {
+          } else if (identity.isCollection(dc) && !dc.flow && dc.items.length > 0) {
             let it = dc.items[0];
-            if (Node.isPair(it))
+            if (identity.isPair(it))
               it = it.key;
             const cb = it.commentBefore;
             it.commentBefore = cb ? `${comment}
@@ -5358,9 +5401,9 @@ ${end.comment}` : end.comment;
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/cst-scalar.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/cst-scalar.js
 var require_cst_scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/cst-scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/cst-scalar.js"(exports) {
     "use strict";
     var resolveBlockScalar = require_resolve_block_scalar();
     var resolveFlowScalar = require_resolve_flow_scalar();
@@ -5543,9 +5586,9 @@ var require_cst_scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/cst-stringify.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/cst-stringify.js
 var require_cst_stringify = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/cst-stringify.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/cst-stringify.js"(exports) {
     "use strict";
     var stringify2 = (cst) => "type" in cst ? stringifyToken(cst) : stringifyItem(cst);
     function stringifyToken(token) {
@@ -5604,9 +5647,9 @@ var require_cst_stringify = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/cst-visit.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/cst-visit.js
 var require_cst_visit = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/cst-visit.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/cst-visit.js"(exports) {
     "use strict";
     var BREAK = Symbol("break visit");
     var SKIP2 = Symbol("skip children");
@@ -5666,9 +5709,9 @@ var require_cst_visit = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/cst.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/cst.js
 var require_cst = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/cst.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/cst.js"(exports) {
     "use strict";
     var cstScalar = require_cst_scalar();
     var cstStringify = require_cst_stringify();
@@ -5768,9 +5811,9 @@ var require_cst = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/lexer.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/lexer.js
 var require_lexer = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/lexer.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/lexer.js"(exports) {
     "use strict";
     var cst = require_cst();
     function isEmpty(ch) {
@@ -6331,9 +6374,9 @@ var require_lexer = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/line-counter.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/line-counter.js
 var require_line_counter = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/line-counter.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/line-counter.js"(exports) {
     "use strict";
     var LineCounter = class {
       constructor() {
@@ -6362,9 +6405,9 @@ var require_line_counter = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/parser.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/parser.js
 var require_parser = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/parse/parser.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/parse/parser.js"(exports) {
     "use strict";
     var cst = require_cst();
     var lexer2 = require_lexer();
@@ -7215,9 +7258,9 @@ var require_parser = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/public-api.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/public-api.js
 var require_public_api = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/public-api.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/public-api.js"(exports) {
     "use strict";
     var composer = require_composer();
     var Document = require_Document();
@@ -7309,16 +7352,16 @@ var require_public_api = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/index.js
+// node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/index.js
 var require_dist = __commonJS({
-  "node_modules/.pnpm/yaml@2.2.2/node_modules/yaml/dist/index.js"(exports) {
+  "node_modules/.pnpm/yaml@2.3.1/node_modules/yaml/dist/index.js"(exports) {
     "use strict";
     var composer = require_composer();
     var Document = require_Document();
     var Schema2 = require_Schema();
     var errors = require_errors();
     var Alias = require_Alias();
-    var Node = require_Node();
+    var identity = require_identity();
     var Pair = require_Pair();
     var Scalar = require_Scalar();
     var YAMLMap = require_YAMLMap();
@@ -7336,14 +7379,14 @@ var require_dist = __commonJS({
     exports.YAMLParseError = errors.YAMLParseError;
     exports.YAMLWarning = errors.YAMLWarning;
     exports.Alias = Alias.Alias;
-    exports.isAlias = Node.isAlias;
-    exports.isCollection = Node.isCollection;
-    exports.isDocument = Node.isDocument;
-    exports.isMap = Node.isMap;
-    exports.isNode = Node.isNode;
-    exports.isPair = Node.isPair;
-    exports.isScalar = Node.isScalar;
-    exports.isSeq = Node.isSeq;
+    exports.isAlias = identity.isAlias;
+    exports.isCollection = identity.isCollection;
+    exports.isDocument = identity.isDocument;
+    exports.isMap = identity.isMap;
+    exports.isNode = identity.isNode;
+    exports.isPair = identity.isPair;
+    exports.isScalar = identity.isScalar;
+    exports.isSeq = identity.isSeq;
     exports.Pair = Pair.Pair;
     exports.Scalar = Scalar.Scalar;
     exports.YAMLMap = YAMLMap.YAMLMap;
@@ -9755,7 +9798,7 @@ function parse3(matter2) {
     tokenize: tokenizeFrontmatter,
     concrete: true
   };
-  function tokenizeFrontmatter(effects, ok2, nok) {
+  function tokenizeFrontmatter(effects, ok3, nok) {
     const self = this;
     return start;
     function start(code2) {
@@ -9797,10 +9840,10 @@ function parse3(matter2) {
     }
     function after(code2) {
       effects.exit(name);
-      return ok2(code2);
+      return ok3(code2);
     }
   }
-  function tokenizeFence(effects, ok2, nok) {
+  function tokenizeFence(effects, ok3, nok) {
     let bufferIndex = 0;
     return start;
     function start(code2) {
@@ -9837,7 +9880,7 @@ function parse3(matter2) {
     function fenceEnd(code2) {
       if (code2 === null || markdownLineEnding(code2)) {
         effects.exit(fenceType);
-        return ok2(code2);
+        return ok3(code2);
       }
       return nok(code2);
     }
@@ -10031,7 +10074,7 @@ var init_micromark_util_combine_extensions = __esm({
 });
 
 // node_modules/.pnpm/micromark-extension-gfm-autolink-literal@1.0.3/node_modules/micromark-extension-gfm-autolink-literal/lib/syntax.js
-function tokenizeEmailAutolink(effects, ok2, nok) {
+function tokenizeEmailAutolink(effects, ok3, nok) {
   const self = this;
   let hasDot;
   let hasDigitInLastSegment;
@@ -10091,12 +10134,12 @@ function tokenizeEmailAutolink(effects, ok2, nok) {
     if (hasDot && !hasDigitInLastSegment) {
       effects.exit("literalAutolinkEmail");
       effects.exit("literalAutolink");
-      return ok2(code2);
+      return ok3(code2);
     }
     return nok(code2);
   }
 }
-function tokenizeWwwAutolink(effects, ok2, nok) {
+function tokenizeWwwAutolink(effects, ok3, nok) {
   const self = this;
   return start;
   function start(code2) {
@@ -10114,10 +10157,10 @@ function tokenizeWwwAutolink(effects, ok2, nok) {
   function done(code2) {
     effects.exit("literalAutolinkWww");
     effects.exit("literalAutolink");
-    return ok2(code2);
+    return ok3(code2);
   }
 }
-function tokenizeHttpAutolink(effects, ok2, nok) {
+function tokenizeHttpAutolink(effects, ok3, nok) {
   const self = this;
   return start;
   function start(code2) {
@@ -10184,10 +10227,10 @@ function tokenizeHttpAutolink(effects, ok2, nok) {
   function done(code2) {
     effects.exit("literalAutolinkHttp");
     effects.exit("literalAutolink");
-    return ok2(code2);
+    return ok3(code2);
   }
 }
-function tokenizeWww(effects, ok2, nok) {
+function tokenizeWww(effects, ok3, nok) {
   return start;
   function start(code2) {
     effects.consume(code2);
@@ -10215,10 +10258,10 @@ function tokenizeWww(effects, ok2, nok) {
     return nok(code2);
   }
   function after(code2) {
-    return code2 === null || markdownLineEnding(code2) ? nok(code2) : ok2(code2);
+    return code2 === null || markdownLineEnding(code2) ? nok(code2) : ok3(code2);
   }
 }
-function tokenizeDomain(effects, ok2, nok) {
+function tokenizeDomain(effects, ok3, nok) {
   let hasUnderscoreInLastSegment;
   let hasUnderscoreInLastLastSegment;
   return domain3;
@@ -10253,19 +10296,19 @@ function tokenizeDomain(effects, ok2, nok) {
   }
   function done(code2) {
     if (!hasUnderscoreInLastLastSegment && !hasUnderscoreInLastSegment) {
-      return ok2(code2);
+      return ok3(code2);
     }
     return nok(code2);
   }
 }
-function tokenizePath(effects, ok2) {
+function tokenizePath(effects, ok3) {
   let balance = 0;
   return inPath;
   function inPath(code2) {
     if (code2 === 38) {
       return effects.check(
         namedCharacterReference,
-        ok2,
+        ok3,
         continuedPunctuation
       )(code2);
     }
@@ -10280,10 +10323,10 @@ function tokenizePath(effects, ok2) {
       )(code2);
     }
     if (pathEnd(code2)) {
-      return ok2(code2);
+      return ok3(code2);
     }
     if (trailingPunctuation(code2)) {
-      return effects.check(punctuation, ok2, continuedPunctuation)(code2);
+      return effects.check(punctuation, ok3, continuedPunctuation)(code2);
     }
     effects.consume(code2);
     return inPath;
@@ -10294,10 +10337,10 @@ function tokenizePath(effects, ok2) {
   }
   function parenAtPathEnd(code2) {
     balance--;
-    return balance < 0 ? ok2(code2) : continuedPunctuation(code2);
+    return balance < 0 ? ok3(code2) : continuedPunctuation(code2);
   }
 }
-function tokenizeNamedCharacterReference(effects, ok2, nok) {
+function tokenizeNamedCharacterReference(effects, ok3, nok) {
   return start;
   function start(code2) {
     effects.consume(code2);
@@ -10315,10 +10358,10 @@ function tokenizeNamedCharacterReference(effects, ok2, nok) {
     return nok(code2);
   }
   function after(code2) {
-    return pathEnd(code2) ? ok2(code2) : nok(code2);
+    return pathEnd(code2) ? ok3(code2) : nok(code2);
   }
 }
-function tokenizePunctuation(effects, ok2, nok) {
+function tokenizePunctuation(effects, ok3, nok) {
   return start;
   function start(code2) {
     effects.consume(code2);
@@ -10329,7 +10372,7 @@ function tokenizePunctuation(effects, ok2, nok) {
       effects.consume(code2);
       return after;
     }
-    return pathEnd(code2) ? ok2(code2) : nok(code2);
+    return pathEnd(code2) ? ok3(code2) : nok(code2);
   }
 }
 function trailingPunctuation(code2) {
@@ -10470,7 +10513,7 @@ var init_micromark_util_resolve_all = __esm({
 });
 
 // node_modules/.pnpm/micromark-factory-space@1.0.0/node_modules/micromark-factory-space/index.js
-function factorySpace(effects, ok2, type, max) {
+function factorySpace(effects, ok3, type, max) {
   const limit = max ? max - 1 : Number.POSITIVE_INFINITY;
   let size = 0;
   return start;
@@ -10479,7 +10522,7 @@ function factorySpace(effects, ok2, type, max) {
       effects.enter(type);
       return prefix(code2);
     }
-    return ok2(code2);
+    return ok3(code2);
   }
   function prefix(code2) {
     if (markdownSpace(code2) && size++ < limit) {
@@ -10487,7 +10530,7 @@ function factorySpace(effects, ok2, type, max) {
       return prefix;
     }
     effects.exit(type);
-    return ok2(code2);
+    return ok3(code2);
   }
 }
 var init_micromark_factory_space = __esm({
@@ -10497,10 +10540,10 @@ var init_micromark_factory_space = __esm({
 });
 
 // node_modules/.pnpm/micromark-core-commonmark@1.0.6/node_modules/micromark-core-commonmark/lib/blank-line.js
-function tokenizeBlankLine(effects, ok2, nok) {
+function tokenizeBlankLine(effects, ok3, nok) {
   return factorySpace(effects, afterWhitespace, "linePrefix");
   function afterWhitespace(code2) {
-    return code2 === null || markdownLineEnding(code2) ? ok2(code2) : nok(code2);
+    return code2 === null || markdownLineEnding(code2) ? ok3(code2) : nok(code2);
   }
 }
 var blankLine;
@@ -10555,7 +10598,7 @@ function gfmFootnote() {
     }
   };
 }
-function tokenizePotentialGfmFootnoteCall(effects, ok2, nok) {
+function tokenizePotentialGfmFootnoteCall(effects, ok3, nok) {
   const self = this;
   let index = self.events.length;
   const defined = self.parser.gfmFootnotes || (self.parser.gfmFootnotes = []);
@@ -10587,7 +10630,7 @@ function tokenizePotentialGfmFootnoteCall(effects, ok2, nok) {
     effects.enter("gfmFootnoteCallLabelMarker");
     effects.consume(code2);
     effects.exit("gfmFootnoteCallLabelMarker");
-    return ok2(code2);
+    return ok3(code2);
   }
 }
 function resolveToPotentialGfmFootnoteCall(events, context) {
@@ -10649,7 +10692,7 @@ function resolveToPotentialGfmFootnoteCall(events, context) {
   events.splice(index, events.length - index + 1, ...replacement);
   return events;
 }
-function tokenizeGfmFootnoteCall(effects, ok2, nok) {
+function tokenizeGfmFootnoteCall(effects, ok3, nok) {
   const self = this;
   const defined = self.parser.gfmFootnotes || (self.parser.gfmFootnotes = []);
   let size = 0;
@@ -10704,10 +10747,10 @@ function tokenizeGfmFootnoteCall(effects, ok2, nok) {
     effects.consume(code2);
     effects.exit("gfmFootnoteCallLabelMarker");
     effects.exit("gfmFootnoteCall");
-    return ok2;
+    return ok3;
   }
 }
-function tokenizeDefinitionStart(effects, ok2, nok) {
+function tokenizeDefinitionStart(effects, ok3, nok) {
   const self = this;
   const defined = self.parser.gfmFootnotes || (self.parser.gfmFootnotes = []);
   let identifier;
@@ -10792,16 +10835,16 @@ function tokenizeDefinitionStart(effects, ok2, nok) {
     if (!defined.includes(identifier)) {
       defined.push(identifier);
     }
-    return ok2(code2);
+    return ok3(code2);
   }
 }
-function tokenizeDefinitionContinuation(effects, ok2, nok) {
-  return effects.check(blankLine, ok2, effects.attempt(indent, ok2, nok));
+function tokenizeDefinitionContinuation(effects, ok3, nok) {
+  return effects.check(blankLine, ok3, effects.attempt(indent, ok3, nok));
 }
 function gfmFootnoteDefinitionEnd(effects) {
   effects.exit("gfmFootnoteDefinition");
 }
-function tokenizeIndent(effects, ok2, nok) {
+function tokenizeIndent(effects, ok3, nok) {
   const self = this;
   return factorySpace(
     effects,
@@ -10811,7 +10854,7 @@ function tokenizeIndent(effects, ok2, nok) {
   );
   function afterPrefix(code2) {
     const tail = self.events[self.events.length - 1];
-    return tail && tail[1].type === "gfmFootnoteDefinitionIndent" && tail[2].sliceSerialize(tail[1], true).length === 4 ? ok2(code2) : nok(code2);
+    return tail && tail[1].type === "gfmFootnoteDefinitionIndent" && tail[2].sliceSerialize(tail[1], true).length === 4 ? ok3(code2) : nok(code2);
   }
 }
 var indent;
@@ -10913,7 +10956,7 @@ function gfmStrikethrough(options2 = {}) {
     }
     return events;
   }
-  function tokenizeStrikethrough(effects, ok2, nok) {
+  function tokenizeStrikethrough(effects, ok3, nok) {
     const previous2 = this.previous;
     const events = this.events;
     let size = 0;
@@ -10940,7 +10983,7 @@ function gfmStrikethrough(options2 = {}) {
       const after = classifyCharacter(code2);
       token._open = !after || after === 2 && Boolean(before);
       token._close = !before || before === 2 && Boolean(after);
-      return ok2(code2);
+      return ok3(code2);
     }
   }
 }
@@ -11038,7 +11081,7 @@ function resolveTable(events, context) {
   }
   return events;
 }
-function tokenizeTable(effects, ok2, nok) {
+function tokenizeTable(effects, ok3, nok) {
   const self = this;
   const align = [];
   let tableHeaderCount = 0;
@@ -11232,7 +11275,7 @@ function tokenizeTable(effects, ok2, nok) {
   }
   function tableClose(code2) {
     effects.exit("table");
-    return ok2(code2);
+    return ok3(code2);
   }
   function bodyStart(code2) {
     effects.enter("tableBody");
@@ -11312,7 +11355,7 @@ function tokenizeTable(effects, ok2, nok) {
     effects.exit("tableBody");
     return tableClose(code2);
   }
-  function tokenizeRowEnd(effects2, ok3, nok2) {
+  function tokenizeRowEnd(effects2, ok4, nok2) {
     return start2;
     function start2(code2) {
       effects2.enter("lineEnding");
@@ -11337,13 +11380,13 @@ function tokenizeTable(effects, ok2, nok) {
         },
         function(code3) {
           self._gfmTableDynamicInterruptHack = false;
-          return ok3(code3);
+          return ok4(code3);
         }
       )(code2);
     }
   }
 }
-function tokenizeNextPrefixedOrBlank(effects, ok2, nok) {
+function tokenizeNextPrefixedOrBlank(effects, ok3, nok) {
   let size = 0;
   return start;
   function start(code2) {
@@ -11355,10 +11398,10 @@ function tokenizeNextPrefixedOrBlank(effects, ok2, nok) {
     if (code2 === -1 || code2 === 32) {
       effects.consume(code2);
       size++;
-      return size === 4 ? ok2 : whitespace;
+      return size === 4 ? ok3 : whitespace;
     }
     if (code2 === null || markdownLineEndingOrSpace(code2)) {
-      return ok2(code2);
+      return ok3(code2);
     }
     return nok(code2);
   }
@@ -11391,7 +11434,7 @@ var init_micromark_extension_gfm_table = __esm({
 });
 
 // node_modules/.pnpm/micromark-extension-gfm-task-list-item@1.0.3/node_modules/micromark-extension-gfm-task-list-item/lib/syntax.js
-function tokenizeTasklistCheck(effects, ok2, nok) {
+function tokenizeTasklistCheck(effects, ok3, nok) {
   const self = this;
   return open;
   function open(code2) {
@@ -11432,14 +11475,14 @@ function tokenizeTasklistCheck(effects, ok2, nok) {
         {
           tokenize: spaceThenNonSpace
         },
-        ok2,
+        ok3,
         nok
       );
     }
     return nok(code2);
   }
 }
-function spaceThenNonSpace(effects, ok2, nok) {
+function spaceThenNonSpace(effects, ok3, nok) {
   const self = this;
   return factorySpace(effects, after, "whitespace");
   function after(code2) {
@@ -11447,7 +11490,7 @@ function spaceThenNonSpace(effects, ok2, nok) {
     return (tail && tail[1].type === "whitespace" || // …or it was followed by a line ending, in which case, there has to be
     // non-whitespace after that line ending, because otherwise we’d get an
     // EOF as the content is closed with blank lines.
-    markdownLineEnding(code2)) && code2 !== null ? ok2(code2) : nok(code2);
+    markdownLineEnding(code2)) && code2 !== null ? ok3(code2) : nok(code2);
   }
 }
 var tasklistCheck, gfmTaskListItem;
@@ -11525,6 +11568,84 @@ var init_escape_string_regexp = __esm({
   }
 });
 
+// node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/lib/index.js
+function anyFactory2(tests) {
+  const checks2 = [];
+  let index = -1;
+  while (++index < tests.length) {
+    checks2[index] = convert2(tests[index]);
+  }
+  return castFactory2(any);
+  function any(...parameters) {
+    let index2 = -1;
+    while (++index2 < checks2.length) {
+      if (checks2[index2].call(this, ...parameters))
+        return true;
+    }
+    return false;
+  }
+}
+function propsFactory2(check) {
+  return castFactory2(all2);
+  function all2(node) {
+    let key;
+    for (key in check) {
+      if (node[key] !== check[key])
+        return false;
+    }
+    return true;
+  }
+}
+function typeFactory2(check) {
+  return castFactory2(type);
+  function type(node) {
+    return node && node.type === check;
+  }
+}
+function castFactory2(check) {
+  return assertion;
+  function assertion(node, ...parameters) {
+    return Boolean(
+      node && typeof node === "object" && "type" in node && // @ts-expect-error: fine.
+      Boolean(check.call(this, node, ...parameters))
+    );
+  }
+}
+function ok2() {
+  return true;
+}
+var convert2;
+var init_lib5 = __esm({
+  "node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/lib/index.js"() {
+    convert2 = /**
+     * @param {Test} [test]
+     * @returns {AssertAnything}
+     */
+    function(test) {
+      if (test === void 0 || test === null) {
+        return ok2;
+      }
+      if (typeof test === "string") {
+        return typeFactory2(test);
+      }
+      if (typeof test === "object") {
+        return Array.isArray(test) ? anyFactory2(test) : propsFactory2(test);
+      }
+      if (typeof test === "function") {
+        return castFactory2(test);
+      }
+      throw new Error("Expected function, string, or object as test");
+    };
+  }
+});
+
+// node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/index.js
+var init_unist_util_is2 = __esm({
+  "node_modules/.pnpm/unist-util-is@5.2.0/node_modules/unist-util-is/index.js"() {
+    init_lib5();
+  }
+});
+
 // node_modules/.pnpm/mdast-util-find-and-replace@2.2.1/node_modules/mdast-util-find-and-replace/lib/index.js
 function toPairs(schema) {
   const result = [];
@@ -11556,11 +11677,11 @@ function toFunction(replace2) {
   return typeof replace2 === "function" ? replace2 : () => replace2;
 }
 var own8, findAndReplace;
-var init_lib5 = __esm({
+var init_lib6 = __esm({
   "node_modules/.pnpm/mdast-util-find-and-replace@2.2.1/node_modules/mdast-util-find-and-replace/lib/index.js"() {
     init_escape_string_regexp();
     init_unist_util_visit_parents();
-    init_unist_util_is();
+    init_unist_util_is2();
     own8 = {}.hasOwnProperty;
     findAndReplace = /**
      * @param {Node} tree
@@ -11581,7 +11702,7 @@ var init_lib5 = __esm({
       if (!settings) {
         settings = {};
       }
-      const ignored = convert(settings.ignore || []);
+      const ignored = convert2(settings.ignore || []);
       const pairs = toPairs(schema);
       let pairIndex = -1;
       while (++pairIndex < pairs.length) {
@@ -11666,7 +11787,7 @@ var init_lib5 = __esm({
 // node_modules/.pnpm/mdast-util-find-and-replace@2.2.1/node_modules/mdast-util-find-and-replace/index.js
 var init_mdast_util_find_and_replace = __esm({
   "node_modules/.pnpm/mdast-util-find-and-replace@2.2.1/node_modules/mdast-util-find-and-replace/index.js"() {
-    init_lib5();
+    init_lib6();
   }
 });
 
@@ -12659,7 +12780,7 @@ function gfmTableToMarkdown(options2) {
   }
 }
 var gfmTableFromMarkdown;
-var init_lib6 = __esm({
+var init_lib7 = __esm({
   "node_modules/.pnpm/mdast-util-gfm-table@1.0.6/node_modules/mdast-util-gfm-table/lib/index.js"() {
     init_container_phrasing();
     init_inline_code();
@@ -12685,7 +12806,7 @@ var init_lib6 = __esm({
 // node_modules/.pnpm/mdast-util-gfm-table@1.0.6/node_modules/mdast-util-gfm-table/index.js
 var init_mdast_util_gfm_table = __esm({
   "node_modules/.pnpm/mdast-util-gfm-table@1.0.6/node_modules/mdast-util-gfm-table/index.js"() {
-    init_lib6();
+    init_lib7();
   }
 });
 
@@ -12853,7 +12974,7 @@ function gfmToMarkdown(options2) {
     ]
   };
 }
-var init_lib7 = __esm({
+var init_lib8 = __esm({
   "node_modules/.pnpm/mdast-util-gfm@2.0.1/node_modules/mdast-util-gfm/lib/index.js"() {
     init_mdast_util_gfm_autolink_literal();
     init_mdast_util_gfm_footnote();
@@ -12866,7 +12987,7 @@ var init_lib7 = __esm({
 // node_modules/.pnpm/mdast-util-gfm@2.0.1/node_modules/mdast-util-gfm/index.js
 var init_mdast_util_gfm = __esm({
   "node_modules/.pnpm/mdast-util-gfm@2.0.1/node_modules/mdast-util-gfm/index.js"() {
-    init_lib7();
+    init_lib8();
   }
 });
 
@@ -13004,13 +13125,13 @@ var init_hast_util_has_property = __esm({
 });
 
 // node_modules/.pnpm/hast-util-is-element@2.1.2/node_modules/hast-util-is-element/index.js
-function anyFactory2(tests) {
+function anyFactory3(tests) {
   const checks2 = [];
   let index = -1;
   while (++index < tests.length) {
     checks2[index] = convertElement(tests[index]);
   }
-  return castFactory2(any);
+  return castFactory3(any);
   function any(...parameters) {
     let index2 = -1;
     while (++index2 < checks2.length) {
@@ -13027,7 +13148,7 @@ function tagNameFactory(check) {
     return element(node) && node.tagName === check;
   }
 }
-function castFactory2(check) {
+function castFactory3(check) {
   return assertion;
   function assertion(node, ...parameters) {
     return element(node) && Boolean(check.call(this, node, ...parameters));
@@ -13061,10 +13182,10 @@ var init_hast_util_is_element = __esm({
         return tagNameFactory(test);
       }
       if (typeof test === "object") {
-        return anyFactory2(test);
+        return anyFactory3(test);
       }
       if (typeof test === "function") {
-        return castFactory2(test);
+        return castFactory3(test);
       }
       throw new Error("Expected function, string, or array as test");
     };
@@ -13077,7 +13198,7 @@ function rehypeAutolinkHeadings(options2 = {}) {
   const behavior = options2.behaviour || options2.behavior || "prepend";
   const content = options2.content || contentDefaults;
   const group = options2.group;
-  const is2 = convertElement(options2.test);
+  const is3 = convertElement(options2.test);
   let method;
   if (behavior === "wrap") {
     method = wrap;
@@ -13091,7 +13212,7 @@ function rehypeAutolinkHeadings(options2 = {}) {
   }
   return (tree) => {
     visit(tree, "element", (node, index, parent) => {
-      if (headingRank(node) && hasProperty2(node, "id") && is2(node, index, parent)) {
+      if (headingRank(node) && hasProperty2(node, "id") && is3(node, index, parent)) {
         return method(node, index, parent);
       }
     });
@@ -13148,7 +13269,7 @@ function rehypeAutolinkHeadings(options2 = {}) {
   }
 }
 var import_extend, contentDefaults;
-var init_lib8 = __esm({
+var init_lib9 = __esm({
   "node_modules/.pnpm/rehype-autolink-headings@6.1.1/node_modules/rehype-autolink-headings/lib/index.js"() {
     import_extend = __toESM(require_extend(), 1);
     init_hast_util_has_property();
@@ -13171,7 +13292,7 @@ __export(rehype_autolink_headings_exports, {
 });
 var init_rehype_autolink_headings = __esm({
   "node_modules/.pnpm/rehype-autolink-headings@6.1.1/node_modules/rehype-autolink-headings/index.js"() {
-    init_lib8();
+    init_lib9();
   }
 });
 
