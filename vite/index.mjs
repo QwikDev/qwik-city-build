@@ -25003,6 +25003,7 @@ function ssrDevMiddleware(ctx, server) {
 }
 function getUnmatchedRouteHtml(url, ctx) {
   const blue = "#006ce9";
+  const routesAndDistance = sortRoutesByDistance(ctx.routes, url);
   return `
   <html>
     <head>
@@ -25018,19 +25019,49 @@ function getUnmatchedRouteHtml(url, ctx) {
         span { display: inline-block; padding: 15px; }
         a { padding: 15px; }
         a:hover { background-color: rgba(0, 108, 233, 0.125); }
+        .recommended { font-size: 0.8em; font-weight: 700; padding: 10px; }
       </style>
     </head>
     <body>
       <p><strong>404</strong> <span>${url.pathname} not found.</span></p>
-    
+
       <div>
         <strong>Available Routes</strong>
-        
-        ${ctx.routes.map((route) => `<a href="${route.pathname}">${route.pathname}</a>`).join("")}
+
+        ${routesAndDistance.map(
+    ([route, distance], i) => `<a href="${route.pathname}">${route.pathname}${i === 0 && distance < 3 ? '<span class="recommended"> \u{1F448} maybe you meant this?</span>' : ""} </a>`
+  ).join("")}
       </div>
     </body>
   </html>`;
 }
+var sortRoutesByDistance = (routes, url) => {
+  const pathname = url.pathname;
+  const routesWithDistance = routes.map(
+    (route) => [route, levenshteinDistance(pathname, route.pathname)]
+  );
+  return routesWithDistance.sort((a, b) => a[1] - b[1]);
+};
+var levenshteinDistance = (s2, t) => {
+  if (!s2.endsWith("/")) {
+    s2 = s2 + "/";
+  }
+  if (!t.endsWith("/")) {
+    t = t + "/";
+  }
+  const arr = [];
+  for (let i = 0; i <= t.length; i++) {
+    arr[i] = [i];
+    for (let j = 1; j <= s2.length; j++) {
+      arr[i][j] = i === 0 ? j : Math.min(
+        arr[i - 1][j] + 1,
+        arr[i][j - 1] + 1,
+        arr[i - 1][j - 1] + (s2[j - 1] === t[i - 1] ? 0 : 1)
+      );
+    }
+  }
+  return arr[t.length][s2.length];
+};
 function staticDistMiddleware({ config }) {
   const distDirs = new Set(
     ["dist", config.build.outDir, config.publicDir].map(
