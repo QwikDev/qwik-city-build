@@ -1,6 +1,6 @@
 import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
-import { isServer, isBrowser, isDev } from "@builder.io/qwik/build";
+import { isBrowser, isServer, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
 import { z } from "zod";
@@ -12,6 +12,7 @@ const DocumentHeadContext = /* @__PURE__ */ createContextId("qc-h");
 const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
+const RouteInternalContext = /* @__PURE__ */ createContextId("qc-ir");
 const popStateScript = '(function(){\n  const l=location,c=l.pathname+l.search,t="_qCityPopstateFallback",o="_qCityHistory";window[t]||(window[t]=()=>{window[o]||c===(l.pathname+l.search)||l.reload()},setTimeout(()=>{addEventListener("popstate",window[t])},0))\n})();\n';
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   _jsxBranch();
@@ -38,98 +39,6 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
-const toPath = (url) => url.pathname + url.search + url.hash;
-const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
-const isSameOrigin = (a, b) => a.origin === b.origin;
-const isSamePath = (a, b) => a.pathname + a.search === b.pathname + b.search;
-const isSamePathname = (a, b) => a.pathname === b.pathname;
-const isSameOriginDifferentPathname = (a, b) => isSameOrigin(a, b) && !isSamePath(a, b);
-const getClientDataPath = (pathname, pageSearch, action) => {
-  let search = pageSearch ?? "";
-  if (action)
-    search += (search ? "&" : "?") + QACTION_KEY + "=" + encodeURIComponent(action.id);
-  return pathname + (pathname.endsWith("/") ? "" : "/") + "q-data.json" + search;
-};
-const getClientNavPath = (props, baseUrl) => {
-  const href = props.href;
-  if (typeof href === "string" && href.trim() !== "" && typeof props.target !== "string")
-    try {
-      const linkUrl = toUrl(href, baseUrl.url);
-      const currentUrl = toUrl("", baseUrl.url);
-      if (isSameOrigin(linkUrl, currentUrl))
-        return toPath(linkUrl);
-    } catch (e) {
-      console.error(e);
-    }
-  else if (props.reload)
-    return toPath(toUrl("", baseUrl.url));
-  return null;
-};
-const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
-  if (props.prefetch === true && clientNavPath) {
-    const prefetchUrl = toUrl(clientNavPath, currentLoc.url);
-    if (!isSamePathname(prefetchUrl, toUrl("", currentLoc.url)))
-      return "";
-  }
-  return null;
-};
-const clientNavigate = (win, newUrl, routeNavigate) => {
-  const currentUrl = win.location;
-  if (isSameOriginDifferentPathname(currentUrl, newUrl)) {
-    handleScroll(win, currentUrl, newUrl);
-    win.history.pushState("", "", toPath(newUrl));
-  }
-  if (!win._qCityHistory) {
-    win._qCityHistory = 1;
-    win.addEventListener("popstate", () => {
-      const currentUrl2 = win.location;
-      const previousUrl = toUrl(routeNavigate.value, currentUrl2);
-      if (isSameOriginDifferentPathname(currentUrl2, previousUrl)) {
-        handleScroll(win, previousUrl, currentUrl2);
-        routeNavigate.value = toPath(new URL(currentUrl2.href));
-      }
-    });
-    win.removeEventListener("popstate", win._qCityPopstateFallback);
-  }
-};
-const handleScroll = async (win, previousUrl, newUrl) => {
-  const doc = win.document;
-  const newHash = newUrl.hash;
-  if (isSamePath(previousUrl, newUrl)) {
-    if (previousUrl.hash !== newHash) {
-      await domWait();
-      if (newHash)
-        scrollToHashId(doc, newHash);
-      else
-        win.scrollTo(0, 0);
-    }
-  } else {
-    if (newHash)
-      for (let i = 0; i < 24; i++) {
-        await domWait();
-        if (scrollToHashId(doc, newHash))
-          break;
-      }
-    else {
-      await domWait();
-      win.scrollTo(0, 0);
-    }
-  }
-};
-const domWait = () => new Promise((resolve) => setTimeout(resolve, 12));
-const scrollToHashId = (doc, hash) => {
-  const elmId = hash.slice(1);
-  const elm = doc.getElementById(elmId);
-  if (elm)
-    elm.scrollIntoView();
-  return elm;
-};
-const dispatchPrefetchEvent = (prefetchData) => {
-  if (typeof document !== "undefined")
-    document.dispatchEvent(new CustomEvent("qprefetch", {
-      detail: prefetchData
-    }));
-};
 const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   const head = createDocumentHead();
   const getData = (loaderOrAction) => {
@@ -252,6 +161,64 @@ const getPathParams = (paramNames, match) => {
     }
   return params;
 };
+const toPath = (url) => url.pathname + url.search + url.hash;
+const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
+const isSameOrigin = (a, b) => a.origin === b.origin;
+const isSamePath = (a, b) => a.pathname + a.search === b.pathname + b.search;
+const isSamePathname = (a, b) => a.pathname === b.pathname;
+const getClientDataPath = (pathname, pageSearch, action) => {
+  let search = pageSearch ?? "";
+  if (action)
+    search += (search ? "&" : "?") + QACTION_KEY + "=" + encodeURIComponent(action.id);
+  return pathname + (pathname.endsWith("/") ? "" : "/") + "q-data.json" + search;
+};
+const getClientNavPath = (props, baseUrl) => {
+  const href = props.href;
+  if (typeof href === "string" && href.trim() !== "" && typeof props.target !== "string")
+    try {
+      const linkUrl = toUrl(href, baseUrl.url);
+      const currentUrl = toUrl("", baseUrl.url);
+      if (isSameOrigin(linkUrl, currentUrl))
+        return toPath(linkUrl);
+    } catch (e) {
+      console.error(e);
+    }
+  else if (props.reload)
+    return toPath(toUrl("", baseUrl.url));
+  return null;
+};
+const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
+  if (props.prefetch === true && clientNavPath) {
+    const prefetchUrl = toUrl(clientNavPath, currentLoc.url);
+    if (!isSamePathname(prefetchUrl, toUrl("", currentLoc.url)))
+      return "";
+  }
+  return null;
+};
+const clientNavigate = (win, navType, fromURL, toURL) => {
+  if (isSameOrigin(fromURL, toURL)) {
+    if (navType === "popstate")
+      clientHistoryState.id = win.history.state?.id ?? 0;
+    else {
+      const samePath = isSamePath(fromURL, toURL);
+      const sameHash = fromURL.hash === toURL.hash;
+      if (!samePath || !sameHash)
+        win.history.pushState({
+          id: ++clientHistoryState.id
+        }, "", toPath(toURL));
+    }
+  }
+};
+const clientHistoryState = {
+  id: 0
+};
+const getHistoryId = () => "" + clientHistoryState.id;
+const dispatchPrefetchEvent = (prefetchData) => {
+  if (isBrowser)
+    document.dispatchEvent(new CustomEvent("qprefetch", {
+      detail: prefetchData
+    }));
+};
 const loadClientData = async (url, element, clearCache, action) => {
   const pagePathname = url.pathname;
   const pageSearch = url.search;
@@ -336,6 +303,93 @@ const useLocation = () => useContext(RouteLocationContext);
 const useNavigate = () => useContext(RouteNavigateContext);
 const useAction = () => useContext(RouteActionContext);
 const useQwikCityEnv = () => noSerialize(useServerData("qwikcity"));
+const toTopAlways = /* @__PURE__ */ inlinedQrl(async (_type, fromUrl, toUrlSettled) => {
+  nativeScrollRestoration.disable();
+  const toUrl2 = await toUrlSettled;
+  if (!scrollForHashChange(fromUrl, toUrl2))
+    window.scrollTo(0, 0);
+  nativeScrollRestoration.enable();
+}, "toTopAlways_XL1xcvvrH5I");
+const toLastPositionOnPopState = /* @__PURE__ */ inlinedQrl((type, fromUrl, toUrlSettled, scrollRecord) => {
+  nativeScrollRestoration.disable();
+  flushScrollRecordToStorage(scrollRecord);
+  const toUrl2 = toUrlSettled;
+  if (!scrollForHashChange(fromUrl, toUrl2)) {
+    let [scrollX, scrollY] = [
+      0,
+      0
+    ];
+    if (type === "popstate") {
+      const record = scrollRecord[getHistoryId()];
+      if (record) {
+        scrollX = record[0];
+        scrollY = record[1];
+      }
+    }
+    window.scrollTo(scrollX, scrollY);
+  }
+  nativeScrollRestoration.enable();
+}, "toLastPositionOnPopState_ZF5iW45m6Kg");
+const nativeScrollRestoration = {
+  backup: "auto",
+  disable() {
+    nativeScrollRestoration.backup = history.scrollRestoration;
+    history.scrollRestoration = "manual";
+  },
+  enable() {
+    history.scrollRestoration = nativeScrollRestoration.backup;
+  }
+};
+const QWIK_CITY_SCROLL_RECORD = "_qCityScroll";
+const currentScrollState = (elm) => [
+  window.scrollX,
+  window.scrollY,
+  Math.max(elm.scrollWidth, elm.clientWidth),
+  Math.max(elm.scrollHeight, elm.clientHeight)
+];
+const flushScrollRecordToStorage = (scrollRecord) => {
+  try {
+    sessionStorage.setItem(QWIK_CITY_SCROLL_RECORD, JSON.stringify(scrollRecord));
+  } catch (e) {
+    console.error("Failed to save scroll positions", e);
+  }
+};
+const getOrInitializeScrollRecord = () => {
+  const win = window;
+  if (win[QWIK_CITY_SCROLL_RECORD])
+    return win[QWIK_CITY_SCROLL_RECORD];
+  const scrollRecord = sessionStorage.getItem(QWIK_CITY_SCROLL_RECORD);
+  try {
+    return JSON.parse(scrollRecord) || {};
+  } catch (e) {
+    console.error("Failed to parse scroll positions", e);
+    return {};
+  }
+};
+const scrollForHashChange = (fromUrl, toUrl2) => {
+  const newHash = toUrl2.hash;
+  if (isSamePath(fromUrl, toUrl2)) {
+    if (fromUrl.hash !== newHash) {
+      if (newHash)
+        scrollToHashId(newHash);
+      else
+        window.scrollTo(0, 0);
+    }
+  } else {
+    if (newHash)
+      scrollToHashId(newHash);
+    else
+      return false;
+  }
+  return true;
+};
+const scrollToHashId = (hash) => {
+  const elmId = hash.slice(1);
+  const elm = document.getElementById(elmId);
+  if (elm)
+    elm.scrollIntoView();
+  return elm;
+};
 const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   useStylesQrl(/* @__PURE__ */ inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
   const env = useQwikCityEnv();
@@ -357,7 +411,10 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
   const loaderState = _weakSerialize(useStore(env.response.loaders, {
     deep: false
   }));
-  const navPath = useSignal(toPath(url));
+  const routeInternal = useSignal({
+    type: "initial",
+    dest: url
+  });
   const documentHead = useStore(createDocumentHead);
   const content = useStore({
     headings: void 0,
@@ -374,21 +431,22 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       status: env.response.status
     }
   } : void 0);
-  const goto = /* @__PURE__ */ inlinedQrl(async (path, forceReload) => {
-    const [actionState2, navPath2, navResolver2, routeLocation2] = useLexicalScope();
-    if (path === void 0) {
-      path = navPath2.value;
-      navPath2.value = "";
-    } else if (forceReload)
-      navPath2.value = "";
-    const resolvedURL = new URL(path, routeLocation2.url);
-    path = toPath(resolvedURL);
-    if (!forceReload && navPath2.value === path)
+  const goto = /* @__PURE__ */ inlinedQrl(async (path, opt) => {
+    const [actionState2, navResolver2, routeInternal2, routeLocation2] = useLexicalScope();
+    const { type = "link", forceReload = false } = typeof opt === "object" ? opt : {
+      forceReload: opt
+    };
+    const lastDest = routeInternal2.value.dest;
+    const dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
+    if (!forceReload && dest.href === lastDest.href)
       return;
-    navPath2.value = path;
+    routeInternal2.value = {
+      type,
+      dest
+    };
     if (isBrowser) {
-      loadClientData(resolvedURL, _getContextElement());
-      loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, resolvedURL.pathname);
+      loadClientData(dest, _getContextElement());
+      loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, dest.pathname);
     }
     actionState2.value = void 0;
     routeLocation2.isNavigating = true;
@@ -397,8 +455,8 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     });
   }, "QwikCityProvider_component_goto_fX0bDjeJa0E", [
     actionState,
-    navPath,
     navResolver,
+    routeInternal,
     routeLocation
   ]);
   useContextProvider(ContentContext, content);
@@ -408,24 +466,27 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
   useContextProvider(RouteNavigateContext, goto);
   useContextProvider(RouteStateContext, loaderState);
   useContextProvider(RouteActionContext, actionState);
+  useContextProvider(RouteInternalContext, routeInternal);
   useTaskQrl(/* @__PURE__ */ inlinedQrl(({ track }) => {
-    const [actionState2, content2, contentInternal2, documentHead2, env2, loaderState2, navPath2, navResolver2, props2, routeLocation2] = useLexicalScope();
+    const [actionState2, content2, contentInternal2, documentHead2, env2, goto2, loaderState2, navResolver2, props2, routeInternal2, routeLocation2] = useLexicalScope();
     async function run() {
-      const [path, action] = track(() => [
-        navPath2.value,
+      const [navigation, action] = track(() => [
+        routeInternal2.value,
         actionState2.value
       ]);
       const locale = getLocale("");
+      const prevUrl = routeLocation2.url;
+      const navType = action ? "form" : navigation.type;
       let trackUrl;
       let clientPageData;
       let loadedRoute = null;
       let elm;
       if (isServer) {
-        trackUrl = new URL(path, routeLocation2.url);
+        trackUrl = new URL(navigation.dest, routeLocation2.url);
         loadedRoute = env2.loadedRoute;
         clientPageData = env2.response;
       } else {
-        trackUrl = new URL(path, location);
+        trackUrl = new URL(navigation.dest, location);
         if (trackUrl.pathname.endsWith("/")) {
           if (!qwikCity.trailingSlash)
             trackUrl.pathname = trackUrl.pathname.slice(0, -1);
@@ -435,12 +496,15 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         elm = _getContextElement();
         const pageData = clientPageData = await loadClientData(trackUrl, elm, true, action);
         if (!pageData) {
-          navPath2.untrackedValue = toPath(trackUrl);
+          routeInternal2.untrackedValue = {
+            type: navType,
+            dest: trackUrl
+          };
           return;
         }
         const newHref = pageData.href;
-        const newURL = new URL(newHref, trackUrl.href);
-        if (newURL.pathname !== trackUrl.pathname) {
+        const newURL = new URL(newHref, trackUrl);
+        if (!isSamePathname(newURL, trackUrl)) {
           trackUrl = newURL;
           loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
         }
@@ -450,12 +514,15 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         const [params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
-        routeLocation2.prevUrl = routeLocation2.url;
+        routeLocation2.prevUrl = prevUrl;
         routeLocation2.url = trackUrl;
         routeLocation2.params = {
           ...params
         };
-        navPath2.untrackedValue = toPath(trackUrl);
+        routeInternal2.untrackedValue = {
+          type: navType,
+          dest: trackUrl
+        };
         const resolvedHead = resolveHead(clientPageData, routeLocation2, contentModules, locale);
         content2.headings = pageModule.headings;
         content2.menu = menu;
@@ -469,13 +536,28 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
           if (props2.viewTransition !== false)
             document.__q_view_transition__ = true;
           const loaders = clientPageData?.loaders;
+          const win = window;
           if (loaders)
             Object.assign(loaderState2, loaders);
           CLIENT_DATA_CACHE.clear();
-          clientNavigate(window, trackUrl, navPath2);
+          if (!win._qCityHistory) {
+            win._qCityHistory = 1;
+            win.addEventListener("popstate", () => {
+              return goto2(location.href, {
+                type: "popstate"
+              });
+            });
+            win.removeEventListener("popstate", win._qCityPopstateFallback);
+          }
+          const navId = getHistoryId();
+          const scrollRecord = getOrInitializeScrollRecord();
+          scrollRecord[navId] = currentScrollState(document.documentElement);
+          clientNavigate(window, navType, prevUrl, trackUrl);
           routeLocation2.isNavigating = false;
-          if (navResolver2.r)
-            _waitUntilRendered(elm).then(navResolver2.r);
+          _waitUntilRendered(elm).then(() => {
+            const restore = props2.restoreScroll$ ?? toLastPositionOnPopState;
+            restore(routeInternal2.value.type, prevUrl, trackUrl, scrollRecord).then(navResolver2.r);
+          });
         }
       }
     }
@@ -490,10 +572,11 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     contentInternal,
     documentHead,
     env,
+    goto,
     loaderState,
-    navPath,
     navResolver,
     props,
+    routeInternal,
     routeLocation
   ]));
   return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_0");
@@ -510,6 +593,10 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
     deep: false
   });
   const loaderState = useSignal({});
+  const routeInternal = useSignal({
+    type: "initial",
+    dest: url
+  });
   const goto = /* @__PURE__ */ inlinedQrl(async (path) => {
     throw new Error("Not implemented");
   }, "QwikCityMockProvider_component_goto_BUbtvTyvVRE");
@@ -523,12 +610,15 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
     deep: false
   });
   const contentInternal = useSignal();
+  const actionState = useSignal();
   useContextProvider(ContentContext, content);
   useContextProvider(ContentInternalContext, contentInternal);
   useContextProvider(DocumentHeadContext, documentHead);
   useContextProvider(RouteLocationContext, routeLocation);
   useContextProvider(RouteNavigateContext, goto);
   useContextProvider(RouteStateContext, loaderState);
+  useContextProvider(RouteActionContext, actionState);
+  useContextProvider(RouteInternalContext, routeInternal);
   return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_1");
 }, "QwikCityMockProvider_component_WmYC5H00wtI"));
 const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
@@ -544,7 +634,9 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     const [nav2, reload2] = useLexicalScope();
     if (elm.href) {
       elm.setAttribute("aria-pressed", "true");
-      await nav2(elm.href, reload2);
+      await nav2(elm.href, {
+        forceReload: reload2
+      });
       elm.removeAttribute("aria-pressed");
     }
   }, "Link_component_handleClick_event_i1Cv0pYJNR0", [
@@ -893,7 +985,10 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
         if (typeof value === "string")
           params.append(key, value);
       });
-      nav2("?" + params.toString(), true).then(() => {
+      nav2("?" + params.toString(), {
+        type: "form",
+        forceReload: true
+      }).then(() => {
         if (form.getAttribute("data-spa-reset") === "true")
           form.reset();
         form.dispatchEvent(new CustomEvent("submitcompleted", {
@@ -925,6 +1020,7 @@ export {
   QwikCityProvider,
   RouterOutlet,
   ServiceWorkerRegister,
+  getHistoryId,
   globalAction$,
   globalActionQrl,
   routeAction$,
@@ -933,6 +1029,8 @@ export {
   routeLoaderQrl,
   server$,
   serverQrl,
+  toLastPositionOnPopState,
+  toTopAlways,
   useContent,
   useDocumentHead,
   useLocation,

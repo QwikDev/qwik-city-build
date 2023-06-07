@@ -6,6 +6,7 @@ import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler'
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
+import { PropFunction } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -330,6 +331,12 @@ export declare interface FormSubmitSuccessDetail<T> {
     value: T;
 }
 
+/**
+ * @alpha
+ * @returns A unique opaque id representing the current client history entry
+ */
+export declare const getHistoryId: () => string;
+
 declare type GetValidatorType<B extends TypedDataValidator> = B extends TypedDataValidator<infer TYPE> ? zod.infer<TYPE> : never;
 
 /**
@@ -429,6 +436,11 @@ declare type ModuleLoader = ContentModuleLoader | EndpointModuleLoader;
 /**
  * @public
  */
+export declare type NavigationType = 'initial' | 'form' | 'link' | 'popstate';
+
+/**
+ * @public
+ */
 export declare interface PageModule extends RouteModule {
     readonly default: any;
     readonly head?: ContentModuleHead;
@@ -448,7 +460,7 @@ declare type Prettify<T> = {} & {
 /**
  * @public
  */
-declare interface QwikCityMockProps {
+export declare interface QwikCityMockProps {
     url?: string;
     params?: Record<string, string>;
 }
@@ -484,6 +496,7 @@ export declare interface QwikCityProps {
      * @see https://caniuse.com/mdn-api_viewtransition
      */
     viewTransition?: boolean;
+    restoreScroll$?: PropFunction<RestoreScroll>;
 }
 
 /**
@@ -512,6 +525,11 @@ export { RequestHandler }
  * @public
  */
 export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
+
+/**
+ * @alpha
+ */
+export declare type RestoreScroll = (navigationType: NavigationType, fromUrl: URL, toUrl: URL, records: ScrollRecord) => void | Promise<void>;
 
 /**
  * @public
@@ -568,12 +586,30 @@ declare interface RouteModule<BODY = unknown> {
 /**
  * @public
  */
-export declare type RouteNavigate = QRL<(path?: string, forceReload?: boolean) => Promise<void>>;
+export declare type RouteNavigate = QRL<(path?: string, options?: {
+    type?: Exclude<NavigationType, 'initial'>;
+    forceReload?: boolean;
+} | boolean) => Promise<void>>;
 
 /**
  * @public
  */
 export declare const RouterOutlet: Component<    {}>;
+
+/**
+ * @alpha
+ */
+declare type ScrollRecord = Record<string, ScrollState>;
+
+/**
+ * @alpha
+ */
+declare type ScrollState = [
+scrollX: number,
+scrollY: number,
+scrollWidth: number,
+scrollHeight: number
+];
 
 /**
  * @public
@@ -622,6 +658,16 @@ export declare type StaticGenerateHandler = () => Promise<StaticGenerate> | Stat
 declare type StrictUnion<T> = Prettify<StrictUnionHelper<T, T>>;
 
 declare type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never;
+
+/**
+ * @alpha
+ */
+export declare const toLastPositionOnPopState: QRL<RestoreScroll>;
+
+/**
+ * @alpha
+ */
+export declare const toTopAlways: QRL<RestoreScroll>;
 
 /**
  * @public
