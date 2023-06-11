@@ -72,6 +72,14 @@ declare interface CacheControlOptions {
 }
 
 /**
+ * @public
+ */
+export declare interface ClientConn {
+    ip?: string;
+    country?: string;
+}
+
+/**
  * HTTP Client Error Status Codes
  * Status codes in the 4xx range indicate that the client's request was malformed or invalid and could not be understood or processed by the server.
  */
@@ -520,6 +528,10 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends
      * when using `send()` and must be set manually. A `send()` response can only be called once.
      */
     readonly send: SendMethod;
+    /**
+     * Provides information about the client connection, such as the IP address and the country the request originated from.
+     */
+    readonly clientConn: ClientConn;
     readonly exit: () => AbortMessage;
 }
 
@@ -651,6 +663,7 @@ export declare interface ServerRequestEvent<T = any> {
     platform: any;
     request: Request;
     env: EnvGetter;
+    getClientConn: () => ClientConn;
     getWritableStream: ServerResponseHandler<T>;
 }
 

@@ -24347,6 +24347,9 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     get exited() {
       return routeModuleIndex >= ABORT_INDEX;
     },
+    get clientConn() {
+      return serverRequestEv.getClientConn();
+    },
     next,
     exit: () => {
       routeModuleIndex = ABORT_INDEX;
@@ -24621,7 +24624,7 @@ var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
 function normalizeUrl(url, base) {
   return new URL(url.replace(DOUBLE_SLASH_REG, "/"), base);
 }
-async function fromNodeHttp(url, req, res, mode) {
+async function fromNodeHttp(url, req, res, mode, getClientConn) {
   const requestHeaders = new Headers();
   const nodeRequestHeaders = req.headers;
   for (const key in nodeRequestHeaders) {
@@ -24676,6 +24679,11 @@ async function fromNodeHttp(url, req, res, mode) {
           res.end();
         }
       });
+    },
+    getClientConn: () => {
+      return getClientConn ? getClientConn(req) : {
+        ip: req.socket.remoteAddress
+      };
     },
     platform: {
       ssr: true,

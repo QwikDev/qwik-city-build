@@ -165,6 +165,9 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
         }
       },
       platform: sys.platform,
+      getClientConn: () => {
+        return {};
+      },
       getWritableStream: (status, headers, _, _r, requestEv) => {
         result.ok = status >= 200 && status < 300;
         if (!result.ok) {

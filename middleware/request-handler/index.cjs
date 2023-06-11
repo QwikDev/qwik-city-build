@@ -863,6 +863,9 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     get exited() {
       return routeModuleIndex >= ABORT_INDEX;
     },
+    get clientConn() {
+      return serverRequestEv.getClientConn();
+    },
     next,
     exit: () => {
       routeModuleIndex = ABORT_INDEX;

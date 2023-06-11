@@ -37,6 +37,13 @@ function createQwikCity(opts) {
           resolve(response);
           return writable;
         },
+        getClientConn: () => {
+          var _a;
+          return {
+            ip: context.ip,
+            country: (_a = context.geo.country) == null ? void 0 : _a.code
+          };
+        },
         platform: context
       };
       const handledResponse = await requestHandler(serverRequestEv, opts, qwikSerializer);

@@ -7,6 +7,8 @@ import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 import { setServerPlatform } from "@builder.io/qwik/server";
+var COUNTRY_HEADER_NAME = "x-vercel-ip-country";
+var IP_HEADER_NAME = "x-real-ip";
 function createQwikCity(opts) {
   const qwikSerializer = {
     _deserializeData,
@@ -46,7 +48,13 @@ function createQwikCity(opts) {
           resolve(response);
           return writable;
         },
-        platform: {}
+        platform: {},
+        getClientConn: () => {
+          return {
+            ip: request.headers.get(IP_HEADER_NAME) ?? void 0,
+            country: request.headers.get(COUNTRY_HEADER_NAME) ?? void 0
+          };
+        }
       };
       const handledResponse = await requestHandler(serverRequestEv, opts, qwikSerializer);
       if (handledResponse) {

@@ -73,7 +73,7 @@ function createQwikCity(opts) {
     setServerPlatform(opts.manifest);
   }
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? join(fromFileUrl(import.meta.url), "..", "..", "dist");
-  async function router(request) {
+  async function router(request, conn) {
     try {
       const url = new URL(request.url);
       const serverRequestEv = {
@@ -93,6 +93,11 @@ function createQwikCity(opts) {
         },
         platform: {
           ssr: true
+        },
+        getClientConn: () => {
+          return opts.getClientConn ? opts.getClientConn(request, conn) : {
+            ip: conn.remoteAddr.hostname
+          };
         }
       };
       const handledResponse = await requestHandler(serverRequestEv, opts, qwikSerializer);

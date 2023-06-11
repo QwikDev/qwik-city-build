@@ -58,7 +58,7 @@ var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
 function normalizeUrl(url, base) {
   return new URL(url.replace(DOUBLE_SLASH_REG, "/"), base);
 }
-async function fromNodeHttp(url, req, res, mode) {
+async function fromNodeHttp(url, req, res, mode, getClientConn) {
   const requestHeaders = new Headers();
   const nodeRequestHeaders = req.headers;
   for (const key in nodeRequestHeaders) {
@@ -113,6 +113,11 @@ async function fromNodeHttp(url, req, res, mode) {
           res.end();
         }
       });
+    },
+    getClientConn: () => {
+      return getClientConn ? getClientConn(req) : {
+        ip: req.socket.remoteAddress
+      };
     },
     platform: {
       ssr: true,
@@ -218,7 +223,13 @@ function createQwikCity(opts) {
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? (0, import_node_path.join)((0, import_node_url.fileURLToPath)(import_meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {
-      const serverRequestEv = await fromNodeHttp(getUrl(req, opts.origin), req, res, "server");
+      const serverRequestEv = await fromNodeHttp(
+        getUrl(req, opts.origin),
+        req,
+        res,
+        "server",
+        opts.getClientConn
+      );
       const handled = await (0, import_request_handler.requestHandler)(serverRequestEv, opts, qwikSerializer);
       if (handled) {
         const err = await handled.completion;

@@ -1,5 +1,6 @@
 /// <reference types="node" />
 
+import type { ClientConn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { IncomingMessage } from 'node:http';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ServerResponse } from 'node:http';
@@ -45,6 +46,7 @@ export declare interface QwikCityNodeRequestOptions extends ServerRenderOptions 
      * When not specified, it defaults to the `ORIGIN` environment variable (if set) or derived from the incoming request.
      */
     origin?: string;
+    getClientConn?: (req: IncomingMessage) => ClientConn;
 }
 
 export { }

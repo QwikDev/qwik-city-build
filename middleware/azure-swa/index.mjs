@@ -56,6 +56,12 @@ function createQwikCity(opts) {
               resolve(response);
             }
           });
+        },
+        getClientConn: () => {
+          return {
+            ip: req.headers["x-forwarded-client-Ip"],
+            country: void 0
+          };
         }
       };
       const handledResponse = await requestHandler(serverRequestEv, opts, qwikSerializer);

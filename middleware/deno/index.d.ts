@@ -1,10 +1,28 @@
+import type { ClientConn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
 /**
  * @public
  */
+export declare interface Addr {
+    transport: 'tcp' | 'udp';
+    hostname: string;
+    port: number;
+}
+
+/**
+ * @public
+ */
+export declare interface ConnInfo {
+    readonly localAddr: Addr;
+    readonly remoteAddr: Addr;
+}
+
+/**
+ * @public
+ */
 export declare function createQwikCity(opts: QwikCityDenoOptions): {
-    router: (request: Request) => Promise<Response | null>;
+    router: (request: Request, conn: ConnInfo) => Promise<Response | null>;
     notFound: (request: Request) => Promise<Response>;
     staticFile: (request: Request) => Promise<Response | null>;
 };
@@ -20,6 +38,7 @@ export declare interface QwikCityDenoOptions extends ServerRenderOptions {
         /** Set the Cache-Control header for all static files */
         cacheControl?: string;
     };
+    getClientConn?: (request: Request, conn: ConnInfo) => ClientConn;
 }
 
 export { }
