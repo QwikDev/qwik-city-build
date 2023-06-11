@@ -645,14 +645,14 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   ]));
   return /* @__PURE__ */ _jsxS("a", {
     ...linkProps,
-    "data-prefetch": prefetchDataset,
     children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
+    "data-prefetch": prefetchDataset,
     onClick$: [
       onClick$,
       handleClick
     ],
-    onMouseOver$: onPrefetch,
     onFocus$: onPrefetch,
+    onMouseOver$: onPrefetch,
     onQVisible$: onPrefetch
   }, null, 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
@@ -960,9 +960,9 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
     }, 0, key);
   else
     return /* @__PURE__ */ _jsxC(GetForm, {
-      spaReset,
-      reloadDocument,
       onSubmit$,
+      reloadDocument,
+      spaReset,
       ...rest
     }, 0, key);
 };
@@ -1005,12 +1005,12 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
     ])
   }, {
     action: "get",
-    "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
-      props
-    ], "!p0.reloadDocument"),
     "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
       props
-    ], 'p0.spaReset?"true":undefined')
+    ], 'p0.spaReset?"true":undefined'),
+    "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
+      props
+    ], "!p0.reloadDocument")
   }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 export {

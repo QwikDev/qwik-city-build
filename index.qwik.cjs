@@ -663,14 +663,14 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
   ]));
   return /* @__PURE__ */ qwik._jsxS("a", {
     ...linkProps,
-    "data-prefetch": prefetchDataset,
     children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"),
+    "data-prefetch": prefetchDataset,
     onClick$: [
       onClick$,
       handleClick
     ],
-    onMouseOver$: onPrefetch,
     onFocus$: onPrefetch,
+    onMouseOver$: onPrefetch,
     onQVisible$: onPrefetch
   }, null, 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
@@ -978,9 +978,9 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
     }, 0, key);
   else
     return /* @__PURE__ */ qwik._jsxC(GetForm, {
-      spaReset,
-      reloadDocument,
       onSubmit$,
+      reloadDocument,
+      spaReset,
       ...rest
     }, 0, key);
 };
@@ -1023,12 +1023,12 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
     ])
   }, {
     action: "get",
-    "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
-      props
-    ], "!p0.reloadDocument"),
     "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
       props
-    ], 'p0.spaReset?"true":undefined')
+    ], 'p0.spaReset?"true":undefined'),
+    "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
+      props
+    ], "!p0.reloadDocument")
   }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 Object.defineProperty(exports, "z", {
