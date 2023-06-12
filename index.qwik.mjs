@@ -1,4 +1,4 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useServerData, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isBrowser, isServer, isDev } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -17,6 +17,7 @@ const popStateScript = '(function(){\n  const l=location,c=l.pathname+l.search,t
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   _jsxBranch();
   _jsxBranch();
+  const nonce = useServerData("nonce");
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -29,7 +30,8 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
       children: [
         cmp,
         /* @__PURE__ */ _jsxQ("script", null, {
-          dangerouslySetInnerHTML: popStateScript
+          dangerouslySetInnerHTML: popStateScript,
+          nonce
         }, null, 3, null)
       ]
     }, 1, "zl_1");

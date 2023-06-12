@@ -35,6 +35,7 @@ const popStateScript = '(function(){\n  const l=location,c=l.pathname+l.search,t
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   qwik._jsxBranch();
   qwik._jsxBranch();
+  const nonce = qwik.useServerData("nonce");
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
@@ -47,7 +48,8 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
       children: [
         cmp,
         /* @__PURE__ */ qwik._jsxQ("script", null, {
-          dangerouslySetInnerHTML: popStateScript
+          dangerouslySetInnerHTML: popStateScript,
+          nonce
         }, null, 3, null)
       ]
     }, 1, "zl_1");
