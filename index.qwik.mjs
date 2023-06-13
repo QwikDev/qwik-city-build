@@ -168,6 +168,7 @@ const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
 const isSameOrigin = (a, b) => a.origin === b.origin;
 const isSamePath = (a, b) => a.pathname + a.search === b.pathname + b.search;
 const isSamePathname = (a, b) => a.pathname === b.pathname;
+const isSameSearchQuery = (a, b) => a.search === b.search;
 const getClientDataPath = (pathname, pageSearch, action) => {
   let search = pageSearch ?? "";
   if (action)
@@ -192,7 +193,8 @@ const getClientNavPath = (props, baseUrl) => {
 const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
   if (props.prefetch === true && clientNavPath) {
     const prefetchUrl = toUrl(clientNavPath, currentLoc.url);
-    if (!isSamePathname(prefetchUrl, toUrl("", currentLoc.url)))
+    const currentUrl = toUrl("", currentLoc.url);
+    if (!isSamePathname(prefetchUrl, currentUrl) || !isSameSearchQuery(prefetchUrl, currentUrl))
       return "";
   }
   return null;
