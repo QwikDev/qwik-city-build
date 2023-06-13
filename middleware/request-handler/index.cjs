@@ -834,6 +834,10 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
         }
       }
     }
+    return exit();
+  };
+  const exit = () => {
+    routeModuleIndex = ABORT_INDEX;
     return new AbortMessage();
   };
   const loaders = {};
@@ -867,10 +871,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
       return serverRequestEv.getClientConn();
     },
     next,
-    exit: () => {
-      routeModuleIndex = ABORT_INDEX;
-      return new AbortMessage();
-    },
+    exit,
     cacheControl: (cacheControl) => {
       check();
       headers.set("Cache-Control", createCacheControl(cacheControl));
@@ -982,7 +983,7 @@ function getRequestRoute(requestEv) {
 function getRequestMode(requestEv) {
   return requestEv[RequestEvMode];
 }
-var ABORT_INDEX = 999999999;
+var ABORT_INDEX = Number.MAX_SAFE_INTEGER;
 var parseRequest = async (request, sharedMap, qwikSerializer) => {
   var _a2;
   const req = request.clone();
