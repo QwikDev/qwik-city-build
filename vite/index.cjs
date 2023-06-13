@@ -25481,6 +25481,64 @@ var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
 
 // packages/qwik-city/buildtime/vite/plugin.ts
 function qwikCity(userOpts) {
+  return [
+    qwikCityPlugin(userOpts),
+    import("vite-imagetools").then(
+      ({ imagetools }) => imagetools({
+        extendOutputFormats(builtins) {
+          const jsx2 = () => (metadatas) => {
+            const srcSet = metadatas.map((meta) => `${meta.src} ${meta.width}w`).join(", ");
+            let largestImage;
+            let largestImageSize = 0;
+            for (let i = 0; i < metadatas.length; i++) {
+              const m = metadatas[i];
+              if (m.width > largestImageSize) {
+                largestImage = m;
+                largestImageSize = m.width;
+              }
+            }
+            return {
+              srcSet,
+              width: largestImage === null || largestImage === void 0 ? void 0 : largestImage.width,
+              height: largestImage === null || largestImage === void 0 ? void 0 : largestImage.height
+            };
+          };
+          return {
+            ...builtins,
+            jsx: jsx2
+          };
+        },
+        defaultDirectives: (url) => {
+          if (url.searchParams.has("jsx")) {
+            return new URLSearchParams({
+              format: "webp",
+              quality: "75",
+              w: "200;400;800;1200",
+              as: "jsx"
+            });
+          }
+          return new URLSearchParams();
+        }
+      })
+    ),
+    {
+      name: "qwik-city-image",
+      transform: (code2, id) => {
+        if (id.endsWith("?jsx")) {
+          return code2.replace(
+            /export default.*/g,
+            `import { _jsxQ } from '@builder.io/qwik';
+          export default function (props, key) {
+            return _jsxQ('img', props, {decoding: 'async', loading: 'lazy', srcSet, width, height}, undefined, 3, key);
+          }`
+          );
+        }
+        return null;
+      }
+    }
+  ];
+}
+function qwikCityPlugin(userOpts) {
   let ctx = null;
   let mdxTransform = null;
   let rootDir = null;

@@ -1,5 +1,6 @@
 import { CompileOptions } from '@mdx-js/mdx/lib/compile';
 import { ConfigEnv } from 'vite';
+import type { PluginOption } from 'vite';
 import { UserConfigExport } from 'vite';
 
 declare interface BuildEntry extends ParsedPathname {
@@ -103,7 +104,7 @@ declare interface PluginOptions {
 /**
  * @public
  */
-export declare function qwikCity(userOpts?: QwikCityVitePluginOptions): any;
+export declare function qwikCity(userOpts?: QwikCityVitePluginOptions): PluginOption[];
 
 /**
  * @public
