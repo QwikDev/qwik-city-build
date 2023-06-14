@@ -34,7 +34,6 @@ const RouteInternalContext = /* @__PURE__ */ qwik.createContextId("qc-ir");
 const popStateScript = '(function(){\n  const l=location,c=l.pathname+l.search,t="_qCityPopstateFallback",o="_qCityHistory";window[t]||(window[t]=()=>{window[o]||c===(l.pathname+l.search)||l.reload()},setTimeout(()=>{addEventListener("popstate",window[t])},0))\n})();\n';
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
   qwik._jsxBranch();
-  qwik._jsxBranch();
   const nonce = qwik.useServerData("nonce");
   const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {

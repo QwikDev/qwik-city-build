@@ -16,7 +16,6 @@ const RouteInternalContext = /* @__PURE__ */ createContextId("qc-ir");
 const popStateScript = '(function(){\n  const l=location,c=l.pathname+l.search,t="_qCityPopstateFallback",o="_qCityHistory";window[t]||(window[t]=()=>{window[o]||c===(l.pathname+l.search)||l.reload()},setTimeout(()=>{addEventListener("popstate",window[t])},0))\n})();\n';
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   _jsxBranch();
-  _jsxBranch();
   const nonce = useServerData("nonce");
   const context = useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {

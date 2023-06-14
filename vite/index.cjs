@@ -25528,10 +25528,12 @@ function qwikCity(userOpts) {
         if (id.endsWith("?jsx")) {
           return code2.replace(
             /export default.*/g,
-            `import { _jsxQ } from '@builder.io/qwik';
-          export default function (props, key) {
-            return _jsxQ('img', props, {decoding: 'async', loading: 'lazy', srcSet, width, height}, undefined, 3, key);
-          }`
+            `
+import { _jsxQ } from '@builder.io/qwik';
+const PROPS = {decoding: 'async', loading: 'lazy', srcSet, width, height};
+export default function (props, key, _, dev) {
+  return _jsxQ('img', props, PROPS, undefined, 3, key, dev);
+}`
           );
         }
         return null;
