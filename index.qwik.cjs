@@ -217,22 +217,20 @@ const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
   return null;
 };
 const clientNavigate = (win, navType, fromURL, toURL, replaceState = false) => {
-  if (isSameOrigin(fromURL, toURL)) {
-    if (navType === "popstate")
-      clientHistoryState.id = win.history.state?.id ?? 0;
-    else {
-      const samePath = isSamePath(fromURL, toURL);
-      const sameHash = fromURL.hash === toURL.hash;
-      if (!samePath || !sameHash) {
-        if (replaceState)
-          win.history.replaceState({
-            id: ++clientHistoryState.id
-          }, "", toPath(toURL));
-        else
-          win.history.pushState({
-            id: ++clientHistoryState.id
-          }, "", toPath(toURL));
-      }
+  if (navType === "popstate")
+    clientHistoryState.id = win.history.state?.id ?? 0;
+  else {
+    const samePath = isSamePath(fromURL, toURL);
+    const sameHash = fromURL.hash === toURL.hash;
+    if (!samePath || !sameHash) {
+      if (replaceState)
+        win.history.replaceState({
+          id: ++clientHistoryState.id
+        }, "", toPath(toURL));
+      else
+        win.history.pushState({
+          id: ++clientHistoryState.id
+        }, "", toPath(toURL));
     }
   }
 };
