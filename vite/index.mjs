@@ -23292,7 +23292,7 @@ function parseRoutePathname(basePathname, pathname) {
             return rest ? "(.*?)" : "([^/]+?)";
           }
         }
-        return content.normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return encodeURIComponent(content).normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }).join("");
     }).join("")}/?$`
     // always match with and without a trailing slash
