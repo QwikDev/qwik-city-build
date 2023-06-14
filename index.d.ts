@@ -589,6 +589,7 @@ declare interface RouteModule<BODY = unknown> {
 export declare type RouteNavigate = QRL<(path?: string, options?: {
     type?: Exclude<NavigationType, 'initial'>;
     forceReload?: boolean;
+    replaceState?: boolean;
 } | boolean) => Promise<void>>;
 
 /**

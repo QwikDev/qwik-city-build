@@ -216,17 +216,23 @@ const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
   }
   return null;
 };
-const clientNavigate = (win, navType, fromURL, toURL) => {
+const clientNavigate = (win, navType, fromURL, toURL, replaceState = false) => {
   if (isSameOrigin(fromURL, toURL)) {
     if (navType === "popstate")
       clientHistoryState.id = win.history.state?.id ?? 0;
     else {
       const samePath = isSamePath(fromURL, toURL);
       const sameHash = fromURL.hash === toURL.hash;
-      if (!samePath || !sameHash)
-        win.history.pushState({
-          id: ++clientHistoryState.id
-        }, "", toPath(toURL));
+      if (!samePath || !sameHash) {
+        if (replaceState)
+          win.history.replaceState({
+            id: ++clientHistoryState.id
+          }, "", toPath(toURL));
+        else
+          win.history.pushState({
+            id: ++clientHistoryState.id
+          }, "", toPath(toURL));
+      }
     }
   }
 };
@@ -434,7 +440,8 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
   }));
   const routeInternal = qwik.useSignal({
     type: "initial",
-    dest: url
+    dest: url,
+    replaceState: false
   });
   const documentHead = qwik.useStore(createDocumentHead);
   const content = qwik.useStore({
@@ -454,7 +461,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
   } : void 0);
   const goto = /* @__PURE__ */ qwik.inlinedQrl(async (path, opt) => {
     const [actionState2, navResolver2, routeInternal2, routeLocation2] = qwik.useLexicalScope();
-    const { type = "link", forceReload = false } = typeof opt === "object" ? opt : {
+    const { type = "link", forceReload = false, replaceState = false } = typeof opt === "object" ? opt : {
       forceReload: opt
     };
     const lastDest = routeInternal2.value.dest;
@@ -463,7 +470,8 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
       return;
     routeInternal2.value = {
       type,
-      dest
+      dest,
+      replaceState
     };
     if (build.isBrowser) {
       loadClientData(dest, qwik._getContextElement());
@@ -498,6 +506,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
       const locale = qwik.getLocale("");
       const prevUrl = routeLocation2.url;
       const navType = action ? "form" : navigation.type;
+      const replaceState = navigation.replaceState;
       let trackUrl;
       let clientPageData;
       let loadedRoute = null;
@@ -573,7 +582,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
           const navId = getHistoryId();
           const scrollRecord = getOrInitializeScrollRecord();
           scrollRecord[navId] = currentScrollState(document.documentElement);
-          clientNavigate(window, navType, prevUrl, trackUrl);
+          clientNavigate(window, navType, prevUrl, trackUrl, replaceState);
           routeLocation2.isNavigating = false;
           qwik._waitUntilRendered(elm).then(() => {
             const restore = props2.restoreScroll$ ?? toLastPositionOnPopState;
