@@ -481,6 +481,10 @@ export declare interface RequestEventBase<PLATFORM = QwikCityPlatform> {
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
      */
     readonly cacheControl: (cacheControl: CacheControl) => void;
+    /**
+     * Provides information about the client connection, such as the IP address and the country the request originated from.
+     */
+    readonly clientConn: ClientConn;
 }
 
 /**
@@ -539,10 +543,6 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends
      * when using `send()` and must be set manually. A `send()` response can only be called once.
      */
     readonly send: SendMethod;
-    /**
-     * Provides information about the client connection, such as the IP address and the country the request originated from.
-     */
-    readonly clientConn: ClientConn;
     readonly exit: () => AbortMessage;
 }
 
