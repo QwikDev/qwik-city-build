@@ -565,8 +565,8 @@ export declare const routeLoaderQrl: LoaderConstructorQRL;
 /**
  * @public
  */
-export declare interface RouteLocation {
-    readonly params: Readonly<Record<string, string>>;
+export declare interface RouteLocation<Params = Record<string, string>> {
+    readonly params: Readonly<Params>;
     readonly url: URL;
     readonly isNavigating: boolean;
     readonly prevUrl: URL | undefined;
@@ -693,7 +693,7 @@ export declare const useDocumentHead: () => Required<ResolvedDocumentHead>;
 /**
  * @public
  */
-export declare const useLocation: () => RouteLocation;
+export declare const useLocation: <Params = unknown>() => RouteLocation<Params>;
 
 /**
  * @public
