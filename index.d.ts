@@ -6,7 +6,6 @@ import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler'
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
-import { PropFunction } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -331,12 +330,6 @@ export declare interface FormSubmitSuccessDetail<T> {
     value: T;
 }
 
-/**
- * @alpha
- * @returns A unique opaque id representing the current client history entry
- */
-export declare const getHistoryId: () => string;
-
 declare type GetValidatorType<B extends TypedDataValidator> = B extends TypedDataValidator<infer TYPE> ? zod.infer<TYPE> : never;
 
 /**
@@ -496,7 +489,13 @@ export declare interface QwikCityProps {
      * @see https://caniuse.com/mdn-api_viewtransition
      */
     viewTransition?: boolean;
-    restoreScroll$?: PropFunction<RestoreScroll>;
+    /**
+     * @alpha
+     * Scroll restoration logic for SPA navigation.
+     *
+     * Default: `toLastPositionOnPopState`
+     */
+    restoreScroll$?: RestoreScroll;
 }
 
 /**
@@ -529,7 +528,7 @@ export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
 /**
  * @alpha
  */
-export declare type RestoreScroll = (navigationType: NavigationType, fromUrl: URL, toUrl: URL, records: ScrollRecord) => void | Promise<void>;
+export declare type RestoreScroll = (navigationType: NavigationType, fromUrl: URL, toUrl: URL, scrollState?: ScrollState) => () => void;
 
 /**
  * @public
@@ -600,17 +599,12 @@ export declare const RouterOutlet: Component<    {}>;
 /**
  * @alpha
  */
-declare type ScrollRecord = Record<string, ScrollState>;
-
-/**
- * @alpha
- */
-declare type ScrollState = [
-scrollX: number,
-scrollY: number,
-scrollWidth: number,
-scrollHeight: number
-];
+declare type ScrollState = {
+    scrollX: number;
+    scrollY: number;
+    scrollWidth: number;
+    scrollHeight: number;
+};
 
 /**
  * @public
