@@ -24059,8 +24059,9 @@ async function pureServerFunction(ev) {
 }
 function fixTrailingSlash(ev) {
   const trailingSlash = getRequestTrailingSlash(ev);
-  const { basePathname, pathname, url } = ev;
-  if (!isQDataJson(pathname) && pathname !== basePathname && !pathname.endsWith(".html")) {
+  const { basePathname, pathname, url, sharedMap } = ev;
+  const isQData = sharedMap.has(IsQData);
+  if (!isQData && pathname !== basePathname && !pathname.endsWith(".html")) {
     if (trailingSlash) {
       if (!pathname.endsWith("/")) {
         throw ev.redirect(302 /* Found */, pathname + "/" + url.search);
@@ -24117,7 +24118,7 @@ The request origin "${inputOrigin}" does not match the server origin "${origin}"
   }
 }
 async function renderQData(requestEv) {
-  const isPageDataReq = isQDataJson(requestEv.pathname);
+  const isPageDataReq = requestEv.sharedMap.has(IsQData);
   if (isPageDataReq) {
     try {
       await requestEv.next();
@@ -24126,7 +24127,7 @@ async function renderQData(requestEv) {
         throw err;
       }
     }
-    if (requestEv.headersSent || requestEv.exited) {
+    if (requestEv.headersSent) {
       return;
     }
     const status = requestEv.status();
@@ -24270,9 +24271,18 @@ var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
 function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
   const { request, platform, env } = serverRequestEv;
+  const sharedMap = /* @__PURE__ */ new Map();
   const cookie = new Cookie(request.headers.get("cookie"));
   const headers = new Headers();
   const url = new URL(request.url);
+  if (url.pathname.endsWith(QDATA_JSON)) {
+    url.pathname = url.pathname.slice(0, -QDATA_JSON_LEN);
+    if (trailingSlash) {
+      url.pathname += "/";
+    }
+    sharedMap.set(IsQData, true);
+  }
+  sharedMap.set("@manifest", manifest);
   let routeModuleIndex = -1;
   let writableStream = null;
   let requestData = void 0;
@@ -24325,8 +24335,6 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     return new AbortMessage();
   };
   const loaders = {};
-  const sharedMap = /* @__PURE__ */ new Map();
-  sharedMap.set("@manifest", manifest);
   const requestEv = {
     [RequestEvLoaders]: loaders,
     [RequestEvMode]: serverRequestEv.mode,
@@ -24393,11 +24401,16 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     redirect: (statusCode, url2) => {
       check();
       status = statusCode;
-      headers.set("Location", url2);
+      const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
+      if (url2 !== fixedURL) {
+        console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+      }
+      headers.set("Location", fixedURL);
       headers.delete("Cache-Control");
       if (statusCode > 301) {
         headers.set("Cache-Control", "no-store");
       }
+      exit2();
       return new RedirectMessage();
     },
     defer: (returnData) => {
@@ -24578,9 +24591,7 @@ function getRouteMatchPathname(pathname, trailingSlash) {
   }
   return pathname;
 }
-var isQDataJson = (pathname) => {
-  return pathname.endsWith(QDATA_JSON);
-};
+var IsQData = "@isQData";
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
 
