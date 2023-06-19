@@ -6968,14 +6968,14 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs8 = this.flowScalar(this.type);
+              const fs9 = this.flowScalar(this.type);
               if (atNextItem || it.value) {
-                map.items.push({ start, key: fs8, sep: [] });
+                map.items.push({ start, key: fs9, sep: [] });
                 this.onKeyLine = true;
               } else if (it.sep) {
-                this.stack.push(fs8);
+                this.stack.push(fs9);
               } else {
-                Object.assign(it, { key: fs8, sep: [] });
+                Object.assign(it, { key: fs9, sep: [] });
                 this.onKeyLine = true;
               }
               return;
@@ -7094,13 +7094,13 @@ var require_parser = __commonJS({
             case "scalar":
             case "single-quoted-scalar":
             case "double-quoted-scalar": {
-              const fs8 = this.flowScalar(this.type);
+              const fs9 = this.flowScalar(this.type);
               if (!it || it.value)
-                fc.items.push({ start: [], key: fs8, sep: [] });
+                fc.items.push({ start: [], key: fs9, sep: [] });
               else if (it.sep)
-                this.stack.push(fs8);
+                this.stack.push(fs9);
               else
-                Object.assign(it, { key: fs8, sep: [] });
+                Object.assign(it, { key: fs9, sep: [] });
               return;
             }
             case "flow-map-end":
@@ -25231,7 +25231,7 @@ function patchGlobalThis() {
 }
 
 // packages/qwik-city/buildtime/vite/plugin.ts
-var import_node_fs8 = __toESM(require("fs"), 1);
+var import_node_fs9 = __toESM(require("fs"), 1);
 
 // sw-reg:@qwik-city-sw-register-build
 var qwik_city_sw_register_build_default = '((s,a,i,r)=>{i=(e,t)=>{t=document.querySelector("[q\\\\:base]"),t&&a.active&&a.active.postMessage({type:"qprefetch",base:t.getAttribute("q:base"),...e})},document.addEventListener("qprefetch",e=>{const t=e.detail;a?i(t):t.bundles&&s.push(...t.bundles)}),navigator.serviceWorker.register("__url").then(e=>{r=()=>{a=e,i({bundles:s})},e.installing?e.installing.addEventListener("statechange",t=>{t.target.state=="activated"&&r()}):e.active&&r()}).catch(e=>console.error(e))})([])';
@@ -25480,10 +25480,28 @@ var RESOLVED_STATIC_PATHS_ID = `${STATIC_PATHS_ID}.js`;
 var NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
 var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
 
-// packages/qwik-city/buildtime/vite/plugin.ts
-function qwikCity(userOpts) {
+// packages/qwik-city/buildtime/vite/image-jsx.ts
+var import_svgo = require("svgo");
+var import_node_fs8 = __toESM(require("fs"), 1);
+
+// packages/qwik/src/optimizer/src/plugins/plugin.ts
+function parseId(originalId) {
+  const [pathId, query] = originalId.split("?");
+  const queryStr = query || "";
+  return {
+    originalId,
+    pathId,
+    query: queryStr ? `?${query}` : "",
+    params: new URLSearchParams(queryStr)
+  };
+}
+
+// packages/qwik-city/buildtime/vite/image-jsx.ts
+function imagePlugin() {
+  const supportedExtensions = ["jpg", "jpeg", "png", "webp", "gif", "avif", "tiff"].map(
+    (ext) => `.${ext}?jsx`
+  );
   return [
-    qwikCityPlugin(userOpts),
     import("vite-imagetools").then(
       ({ imagetools }) => imagetools({
         extendOutputFormats(builtins) {
@@ -25524,22 +25542,79 @@ function qwikCity(userOpts) {
     ),
     {
       name: "qwik-city-image",
+      load: {
+        order: "pre",
+        handler: async (id) => {
+          if (id.endsWith(".svg?jsx")) {
+            const code2 = await import_node_fs8.default.promises.readFile(parseId(id).pathId, "utf-8");
+            return {
+              code: code2,
+              moduleSideEffects: false
+            };
+          }
+        }
+      },
       transform: (code2, id) => {
+        id = id.toLowerCase();
         if (id.endsWith("?jsx")) {
-          return code2.replace(
-            /export default.*/g,
-            `
-import { _jsxQ } from '@builder.io/qwik';
-const PROPS = {decoding: 'async', loading: 'lazy', srcSet, width, height};
-export default function (props, key, _, dev) {
-  return _jsxQ('img', props, PROPS, undefined, 3, key, dev);
-}`
-          );
+          if (supportedExtensions.some((ext) => id.endsWith(ext))) {
+            return code2.replace(
+              /export default.*/g,
+              `
+  import { _jsxQ } from '@builder.io/qwik';
+  const PROPS = {decoding: 'async', loading: 'lazy', srcSet, width, height};
+  export default function (props, key, _, dev) {
+    return _jsxQ('img', props, PROPS, undefined, 3, key, dev);
+  }`
+            );
+          } else if (id.endsWith(".svg?jsx")) {
+            const svgAttributes = {};
+            const data = (0, import_svgo.optimize)(code2, {
+              plugins: [
+                {
+                  name: "preset-default",
+                  params: {
+                    overrides: {
+                      removeViewBox: false
+                    }
+                  }
+                },
+                {
+                  name: "customPluginName",
+                  fn: () => {
+                    return {
+                      element: {
+                        exit: (node) => {
+                          if (node.name === "svg") {
+                            node.name = "g";
+                            Object.assign(svgAttributes, node.attributes);
+                            node.attributes = {};
+                          }
+                        }
+                      }
+                    };
+                  }
+                }
+              ]
+            }).data;
+            svgAttributes.dangerouslySetInnerHTML = data.slice(3, -3);
+            return `
+  import { _jsxQ } from '@builder.io/qwik';
+  const PROPS = ${JSON.stringify(svgAttributes)};
+  export default function (props, key, _, dev) {
+    return _jsxQ('svg', props, PROPS, undefined, 3, key, dev);
+  }`;
+          }
         }
         return null;
       }
     }
   ];
+}
+
+// packages/qwik-city/buildtime/vite/plugin.ts
+function qwikCity(userOpts) {
+  return [qwikCityPlugin(userOpts), ...imagePlugin()];
 }
 function qwikCityPlugin(userOpts) {
   let ctx = null;
@@ -25735,12 +25810,12 @@ function qwikCityPlugin(userOpts) {
             for (const swEntry of ctx.serviceWorkers) {
               try {
                 const swClientDistPath = (0, import_node_path10.join)(clientOutBaseDir, swEntry.chunkFileName);
-                const swCode = await import_node_fs8.default.promises.readFile(swClientDistPath, "utf-8");
+                const swCode = await import_node_fs9.default.promises.readFile(swClientDistPath, "utf-8");
                 try {
                   const swCodeUpdate = prependManifestToServiceWorker(ctx, manifest, swCode);
                   if (swCodeUpdate) {
-                    await import_node_fs8.default.promises.mkdir(clientOutDir, { recursive: true });
-                    await import_node_fs8.default.promises.writeFile(swClientDistPath, swCodeUpdate);
+                    await import_node_fs9.default.promises.mkdir(clientOutDir, { recursive: true });
+                    await import_node_fs9.default.promises.writeFile(swClientDistPath, swCodeUpdate);
                   }
                 } catch (e2) {
                   console.error(e2);
@@ -25757,11 +25832,11 @@ function qwikCityPlugin(userOpts) {
               ssrFormat,
               false
             );
-            await import_node_fs8.default.promises.mkdir(outDir, { recursive: true });
+            await import_node_fs9.default.promises.mkdir(outDir, { recursive: true });
             const serverPackageJsonPath = (0, import_node_path10.join)(outDir, "package.json");
             let packageJson = {};
-            if (import_node_fs8.default.existsSync(serverPackageJsonPath)) {
-              const content = await import_node_fs8.default.promises.readFile(serverPackageJsonPath, "utf-8");
+            if (import_node_fs9.default.existsSync(serverPackageJsonPath)) {
+              const content = await import_node_fs9.default.promises.readFile(serverPackageJsonPath, "utf-8");
               const contentAsJson = JSON.parse(content);
               packageJson = {
                 ...contentAsJson
@@ -25774,9 +25849,9 @@ function qwikCityPlugin(userOpts) {
             packageJson = { ...packageJson, type: ssrFormat2pkgTypeMap[ssrFormat] || "module" };
             const serverPackageJsonCode = JSON.stringify(packageJson, null, 2);
             await Promise.all([
-              import_node_fs8.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
-              import_node_fs8.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_NOT_FOUND_PATHS_ID), notFoundPathsCode),
-              import_node_fs8.default.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode)
+              import_node_fs9.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
+              import_node_fs9.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_NOT_FOUND_PATHS_ID), notFoundPathsCode),
+              import_node_fs9.default.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode)
             ]);
           }
         }
