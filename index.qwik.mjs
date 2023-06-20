@@ -539,6 +539,15 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
               });
             });
             win.removeEventListener("popstate", win._qCityPopstateFallback);
+            if (!window.navigation)
+              document.addEventListener("visibilitychange", () => {
+                if (win._qCityScrollHandlerEnabled && document.visibilityState === "hidden") {
+                  const scrollState = currentScrollState(document.documentElement);
+                  saveScrollHistory(scrollState);
+                }
+              }, {
+                passive: true
+              });
             win.addEventListener("scroll", () => {
               if (!win._qCityScrollHandlerEnabled)
                 return;
