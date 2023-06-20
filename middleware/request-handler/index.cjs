@@ -621,7 +621,7 @@ function renderQwikMiddleware(render) {
         status: status !== 200 ? status : 200,
         href: getPathname(requestEv.url, trailingSlash)
       };
-      if ((typeof result).html === "string") {
+      if (typeof result.html === "string") {
         await stream.write(result.html);
       }
       requestEv.sharedMap.set("qData", qData);
