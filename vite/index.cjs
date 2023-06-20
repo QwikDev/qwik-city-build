@@ -23287,7 +23287,7 @@ function parseRoutePathname(basePathname, pathname) {
   const paramNames = [];
   const pattern = new RegExp(
     `^${segments.filter((segment) => segment.length > 0).map((s2) => {
-      const segment = decodeURIComponent(s2);
+      const segment = decodeURI(s2);
       const catchAll = /^\[\.\.\.(\w+)?\]$/.exec(segment);
       if (catchAll) {
         paramNames.push(catchAll[1]);
@@ -23302,7 +23302,7 @@ function parseRoutePathname(basePathname, pathname) {
             return rest ? "(.*?)" : "([^/]+?)";
           }
         }
-        return encodeURIComponent(content).normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return encodeURI(content).normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }).join("");
     }).join("")}/?$`
     // always match with and without a trailing slash
