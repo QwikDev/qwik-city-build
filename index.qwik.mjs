@@ -22,9 +22,10 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
     const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
-      cmp = _jsxC(context.value[i].default, {
-        children: cmp
-      }, 1, "zl_0");
+      if (context.value[i].default)
+        cmp = _jsxC(context.value[i].default, {
+          children: cmp
+        }, 1, "zl_0");
     return /* @__PURE__ */ _jsxC(Fragment, {
       children: [
         cmp,
