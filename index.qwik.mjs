@@ -314,12 +314,12 @@ const toTopAlways = /* @__PURE__ */ inlinedQrl((_type, fromUrl, toUrl2) => () =>
     window.scrollTo(0, 0);
 }, "toTopAlways_XL1xcvvrH5I");
 const toLastPositionOnPopState = /* @__PURE__ */ inlinedQrl((type, fromUrl, toUrl2, scrollState) => () => {
-  if (type === "popstate" || !scrollForHashChange(fromUrl, toUrl2)) {
+  if (type === "popstate" && scrollState || !scrollForHashChange(fromUrl, toUrl2)) {
     let [scrollX, scrollY] = [
       0,
       0
     ];
-    if (type === "popstate" && scrollState) {
+    if (scrollState) {
       scrollX = scrollState.scrollX;
       scrollY = scrollState.scrollY;
     }
@@ -417,9 +417,19 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       forceReload: opt
     };
     const lastDest = routeInternal2.value.dest;
-    const dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
-    if (!forceReload && dest.href === lastDest.href)
+    let dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
+    dest = !dest.hash && dest.href.endsWith("#") ? new URL(dest.href.slice(0, -1)) : dest;
+    if (!forceReload && dest.href === lastDest.href) {
+      if (isBrowser) {
+        if (type === "link") {
+          if (dest.hash)
+            scrollToHashId(dest.hash);
+          else
+            window.scrollTo(0, 0);
+        }
+      }
       return;
+    }
     routeInternal2.value = {
       type,
       dest,
@@ -539,6 +549,19 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
               });
             });
             win.removeEventListener("popstate", win._qCityPopstateFallback);
+            document.body.addEventListener("click", (event) => {
+              if (event.defaultPrevented)
+                return;
+              const target = event.target.closest('a[href*="#"]');
+              if (target && !target.getAttribute("preventdefault:click")) {
+                const prev = routeLocation2.url;
+                const dest = toUrl(target.getAttribute("href"), prev);
+                if (isSameOrigin(dest, prev) && isSamePath(dest, prev)) {
+                  event.preventDefault();
+                  goto2(target.getAttribute("href"));
+                }
+              }
+            });
             if (!window.navigation)
               document.addEventListener("visibilitychange", () => {
                 if (win._qCityScrollHandlerEnabled && document.visibilityState === "hidden") {
