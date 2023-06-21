@@ -6,7 +6,7 @@ const awaitingRequests = new Map();
 const prefetchQueue = [];
 
 const getCacheToDelete = (appBundles, cachedUrls) => cachedUrls.filter((url) => !appBundles.some((appBundle) => url.endsWith(appBundle[0])));
-const useCache = (request, response) => !!response && !hasNoCacheHeader(request) && !hasNoCacheHeader(response);
+const useCache = (request, response) => !!response && !hasNoCacheHeader(response);
 const hasNoCacheHeader = (r) => {
     const cacheControl = r.headers.get('Cache-Control') || '';
     return cacheControl.includes('no-cache') || cacheControl.includes('max-age=0');

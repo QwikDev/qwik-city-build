@@ -24413,11 +24413,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     redirect: (statusCode, url2) => {
       check();
       status = statusCode;
-      const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
-      if (url2 !== fixedURL) {
-        console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+      if (url2) {
+        const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
+        if (url2 !== fixedURL) {
+          console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+        }
+        headers.set("Location", fixedURL);
       }
-      headers.set("Location", fixedURL);
       headers.delete("Cache-Control");
       if (statusCode > 301) {
         headers.set("Cache-Control", "no-store");
