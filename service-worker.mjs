@@ -26,7 +26,7 @@ const computeAppSymbols = (appBundles) => {
     return appSymbols;
 };
 
-const cachedFetch = (cache, fetch, awaitingRequests, request) => new Promise((promiseResolve, promiseReject) => {
+const cachedFetch = (cache, fetch, awaitingRequests, request, preloadResponse) => new Promise((promiseResolve, promiseReject) => {
     const url = request.url;
     const awaitingRequestResolves = awaitingRequests.get(url);
     if (awaitingRequestResolves) {
@@ -78,7 +78,8 @@ const cachedFetch = (cache, fetch, awaitingRequests, request) => new Promise((pr
             else {
                 // no cached response found or user didn't want to use the cache
                 // do a full network request
-                return fetch(request).then(async (networkResponse) => {
+                const responsePromise = preloadResponse ? preloadResponse : fetch(request);
+                return responsePromise.then(async (networkResponse) => {
                     if (networkResponse.ok) {
                         // network response was good, let's cache it
                         await cache.put(url, networkResponse.clone());
@@ -204,7 +205,7 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
             if (isAppBundleRequest(appBundles, url.pathname)) {
                 ev.respondWith(swScope.caches.open(qBuildCacheName).then((qBuildCache) => {
                     prefetchWaterfall(appBundles, qBuildCache, swFetch, url);
-                    return cachedFetch(qBuildCache, swFetch, awaitingRequests, request);
+                    return cachedFetch(qBuildCache, swFetch, awaitingRequests, request, ev.preloadResponse);
                 }));
             }
         }
@@ -224,17 +225,23 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
             }
         }
     });
-    swScope.addEventListener('activate', async () => {
-        try {
-            const qBuildCache = await swScope.caches.open(qBuildCacheName);
-            const cachedRequestKeys = await qBuildCache.keys();
-            const cachedUrls = cachedRequestKeys.map((r) => r.url);
-            const cachedRequestsToDelete = getCacheToDelete(appBundles, cachedUrls);
-            await Promise.all(cachedRequestsToDelete.map((r) => qBuildCache.delete(r)));
-        }
-        catch (e) {
-            console.error(e);
-        }
+    swScope.addEventListener('activate', async (event) => {
+        event.waitUntil((async () => {
+            if (self.registration.navigationPreload) {
+                // Enable navigation preloads!
+                await self.registration.navigationPreload.enable();
+            }
+            try {
+                const qBuildCache = await swScope.caches.open(qBuildCacheName);
+                const cachedRequestKeys = await qBuildCache.keys();
+                const cachedUrls = cachedRequestKeys.map((r) => r.url);
+                const cachedRequestsToDelete = getCacheToDelete(appBundles, cachedUrls);
+                await Promise.all(cachedRequestsToDelete.map((r) => qBuildCache.delete(r)));
+            }
+            catch (e) {
+                console.error(e);
+            }
+        })());
     });
 };
 

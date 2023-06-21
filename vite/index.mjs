@@ -24692,12 +24692,10 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
         res.setHeader("Set-Cookie", cookieHeaders);
       }
       return new WritableStream({
-        start(controller) {
-          res.on("close", () => controller.error());
-        },
-        write(chunk, controller) {
+        write(chunk) {
           res.write(chunk, (error) => {
             if (error) {
+              console.error(error);
             }
           });
         },
@@ -25216,8 +25214,8 @@ var STATIC_CONTENT_TYPES = {
   ".ico": "image/x-icon"
 };
 var DEV_SERVICE_WORKER = `/* Qwik City Dev Service Worker */
-addEventListener('install', () => self.skipWaiting());
-addEventListener('activate', () => self.clients.claim());
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (ev) => ev.waitUntil(self.clients.claim()));
 `;
 
 // packages/qwik-city/middleware/node/node-fetch.ts
