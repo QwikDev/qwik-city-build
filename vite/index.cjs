@@ -13686,7 +13686,7 @@ function normalizePathSlash(path2) {
   }
   return path2;
 }
-function createFileId(routesDir, fsPath) {
+function createFileId(routesDir, fsPath, explicitFileType) {
   const ids = [];
   for (let i = 0; i < 25; i++) {
     let baseName = removeExtension((0, import_node_path.basename)(fsPath));
@@ -13705,7 +13705,7 @@ function createFileId(routesDir, fsPath) {
   if (ids.length > 1 && ids[0] === "Index") {
     ids.shift();
   }
-  return ids.reverse().join("");
+  return ids.reverse().join("").concat(explicitFileType || "");
 }
 var PAGE_MODULE_EXTS = {
   ".tsx": true,
@@ -23465,7 +23465,7 @@ function resolveRoute(opts, appLayouts, sourceFile) {
     }
   }
   const buildRoute = {
-    id: createFileId(opts.routesDir, filePath),
+    id: createFileId(opts.routesDir, filePath, "Route"),
     filePath,
     pathname,
     layouts: layouts.reverse(),
@@ -23478,7 +23478,7 @@ function resolveEntry(opts, sourceFile) {
   const pathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
   const chunkFileName = pathname.slice(opts.basePathname.length);
   const buildEntry = {
-    id: createFileId(opts.routesDir, sourceFile.filePath),
+    id: createFileId(opts.routesDir, sourceFile.filePath, "Route"),
     filePath: sourceFile.filePath,
     chunkFileName,
     ...parseRoutePathname(opts.basePathname, pathname)
@@ -23490,7 +23490,7 @@ function resolveServiceWorkerEntry(opts, sourceFile) {
   const pathname = dirPathname + sourceFile.extlessName + ".js";
   const chunkFileName = pathname.slice(opts.basePathname.length);
   const buildEntry = {
-    id: createFileId(opts.routesDir, sourceFile.filePath),
+    id: createFileId(opts.routesDir, sourceFile.filePath, "ServiceWorker"),
     filePath: sourceFile.filePath,
     chunkFileName,
     ...parseRoutePathname(opts.basePathname, pathname)
@@ -23512,7 +23512,7 @@ async function walkServerPlugins(opts) {
       const extlessName = removeExtension(itemName);
       if (isModuleExt(ext) && isPluginModule(extlessName)) {
         sourceFiles.push({
-          id: createFileId(opts.serverPluginsDir, itemPath),
+          id: createFileId(opts.serverPluginsDir, itemPath, "Plugin"),
           filePath: itemPath,
           ext
         });
