@@ -227,12 +227,11 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
             }
         }
     });
-    swScope.addEventListener('activate', async (event) => {
-        event.waitUntil((async () => {
-            if (self.registration.navigationPreload) {
-                // Enable navigation preloads!
-                await self.registration.navigationPreload.enable();
-            }
+    swScope.addEventListener('activate', (event) => {
+        // if (self.registration.navigationPreload) {
+        //   event.waitUntil(self.registration.navigationPreload.enable());
+        // }
+        (async () => {
             try {
                 const qBuildCache = await swScope.caches.open(qBuildCacheName);
                 const cachedRequestKeys = await qBuildCache.keys();
@@ -243,7 +242,7 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
             catch (e) {
                 console.error(e);
             }
-        })());
+        })();
     });
 };
 
