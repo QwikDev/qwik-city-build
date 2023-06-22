@@ -1049,10 +1049,10 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
     action: "get",
     "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
       props
-    ], 'p0.spaReset?"true":undefined'),
+    ]),
     "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
       props
-    ], "!p0.reloadDocument")
+    ])
   }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 export {
