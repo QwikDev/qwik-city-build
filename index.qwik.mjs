@@ -666,24 +666,26 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
 const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
-  const { onClick$, reload, ...linkProps } = (() => props)();
+  const { onClick$, reload, replaceState, ...linkProps } = (() => props)();
   const clientNavPath = untrack(() => getClientNavPath(linkProps, loc));
   const prefetchDataset = untrack(() => getPrefetchDataset(props, clientNavPath, loc));
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
   const onPrefetch = prefetchDataset != null ? eventQrl(/* @__PURE__ */ inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_onPrefetch_event_eBQ0vFsFKsk")) : void 0;
   const handleClick = eventQrl(/* @__PURE__ */ inlinedQrl(async (_, elm) => {
-    const [nav2, reload2] = useLexicalScope();
+    const [nav2, reload2, replaceState2] = useLexicalScope();
     if (elm.href) {
       elm.setAttribute("aria-pressed", "true");
       await nav2(elm.href, {
-        forceReload: reload2
+        forceReload: reload2,
+        replaceState: replaceState2
       });
       elm.removeAttribute("aria-pressed");
     }
   }, "Link_component_handleClick_event_i1Cv0pYJNR0", [
     nav,
-    reload
+    reload,
+    replaceState
   ]));
   return /* @__PURE__ */ _jsxS("a", {
     ...linkProps,

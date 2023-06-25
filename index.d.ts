@@ -372,6 +372,7 @@ export declare const Link: Component<LinkProps>;
 export declare interface LinkProps extends AnchorAttributes {
     prefetch?: boolean;
     reload?: boolean;
+    replaceState?: boolean;
 }
 
 /**
