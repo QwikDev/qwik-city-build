@@ -28,7 +28,7 @@ const computeAppSymbols = (appBundles) => {
     return appSymbols;
 };
 
-const cachedFetch = (cache, fetch, awaitingRequests, request, preloadResponse) => new Promise((promiseResolve, promiseReject) => {
+const cachedFetch = (cache, fetch, awaitingRequests, request) => new Promise((promiseResolve, promiseReject) => {
     const url = request.url;
     const awaitingRequestResolves = awaitingRequests.get(url);
     if (awaitingRequestResolves) {
@@ -80,8 +80,7 @@ const cachedFetch = (cache, fetch, awaitingRequests, request, preloadResponse) =
             else {
                 // no cached response found or user didn't want to use the cache
                 // do a full network request
-                const responsePromise = preloadResponse ? preloadResponse : fetch(request);
-                return responsePromise.then(async (networkResponse) => {
+                return fetch(request).then(async (networkResponse) => {
                     if (networkResponse.ok) {
                         // network response was good, let's cache it
                         await cache.put(url, networkResponse.clone());
@@ -207,7 +206,7 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
             if (isAppBundleRequest(appBundles, url.pathname)) {
                 ev.respondWith(swScope.caches.open(qBuildCacheName).then((qBuildCache) => {
                     prefetchWaterfall(appBundles, qBuildCache, swFetch, url);
-                    return cachedFetch(qBuildCache, swFetch, awaitingRequests, request, ev.preloadResponse);
+                    return cachedFetch(qBuildCache, swFetch, awaitingRequests, request);
                 }));
             }
         }
@@ -227,10 +226,7 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
             }
         }
     });
-    swScope.addEventListener('activate', (event) => {
-        // if (self.registration.navigationPreload) {
-        //   event.waitUntil(self.registration.navigationPreload.enable());
-        // }
+    swScope.addEventListener('activate', () => {
         (async () => {
             try {
                 const qBuildCache = await swScope.caches.open(qBuildCacheName);
