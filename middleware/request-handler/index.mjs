@@ -254,6 +254,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       requestHandlers.push(fixTrailingSlash);
       requestHandlers.push(renderQData);
     }
+    requestHandlers.push(handleRedirect);
     _resolveRequestHandlers(
       routeLoaders,
       routeActions,
@@ -342,7 +343,7 @@ function actionsMiddleware(routeLoaders, routeActions) {
     if (isDev && method === "GET") {
       if (requestEv.query.has(QACTION_KEY)) {
         console.warn(
-          'Seems like you are submitting a Qwik Action via GET request. Qwik Actions should be submitted via POST request.\nMake sure you <form> has method="POST" attribute, like this: <form method="POST">'
+          'Seems like you are submitting a Qwik Action via GET request. Qwik Actions should be submitted via POST request.\nMake sure your <form> has method="POST" attribute, like this: <form method="POST">'
         );
       }
     }
@@ -591,7 +592,7 @@ function renderQwikMiddleware(render) {
         status: status !== 200 ? status : 200,
         href: getPathname(requestEv.url, trailingSlash)
       };
-      if ((typeof result).html === "string") {
+      if (typeof result.html === "string") {
         await stream.write(result.html);
       }
       requestEv.sharedMap.set("qData", qData);
@@ -603,7 +604,7 @@ function renderQwikMiddleware(render) {
     await writableStream.close();
   };
 }
-async function renderQData(requestEv) {
+async function handleRedirect(requestEv) {
   const isPageDataReq = requestEv.sharedMap.has(IsQData);
   if (isPageDataReq) {
     try {
@@ -618,7 +619,6 @@ async function renderQData(requestEv) {
     }
     const status = requestEv.status();
     const location = requestEv.headers.get("Location");
-    const trailingSlash = getRequestTrailingSlash(requestEv);
     const isRedirect = status >= 301 && status <= 308 && location;
     if (isRedirect) {
       const adaptedLocation = makeQDataPath(location);
@@ -631,6 +631,18 @@ async function renderQData(requestEv) {
         requestEv.headers.delete("Location");
       }
     }
+  }
+}
+async function renderQData(requestEv) {
+  const isPageDataReq = requestEv.sharedMap.has(IsQData);
+  if (isPageDataReq) {
+    await requestEv.next();
+    if (requestEv.headersSent || requestEv.exited) {
+      return;
+    }
+    const status = requestEv.status();
+    const location = requestEv.headers.get("Location");
+    const trailingSlash = getRequestTrailingSlash(requestEv);
     const requestHeaders = {};
     requestEv.request.headers.forEach((value, key) => requestHeaders[key] = value);
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
@@ -763,7 +775,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
   const url = new URL(request.url);
   if (url.pathname.endsWith(QDATA_JSON)) {
     url.pathname = url.pathname.slice(0, -QDATA_JSON_LEN);
-    if (trailingSlash) {
+    if (trailingSlash && !url.pathname.endsWith("/")) {
       url.pathname += "/";
     }
     sharedMap.set(IsQData, true);
@@ -887,11 +899,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     redirect: (statusCode, url2) => {
       check();
       status = statusCode;
-      const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
-      if (url2 !== fixedURL) {
-        console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+      if (url2) {
+        const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
+        if (url2 !== fixedURL) {
+          console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+        }
+        headers.set("Location", fixedURL);
       }
-      headers.set("Location", fixedURL);
       headers.delete("Cache-Control");
       if (statusCode > 301) {
         headers.set("Cache-Control", "no-store");

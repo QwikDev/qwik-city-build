@@ -13686,7 +13686,7 @@ function normalizePathSlash(path2) {
   }
   return path2;
 }
-function createFileId(routesDir, fsPath) {
+function createFileId(routesDir, fsPath, explicitFileType) {
   const ids = [];
   for (let i = 0; i < 25; i++) {
     let baseName = removeExtension((0, import_node_path.basename)(fsPath));
@@ -13705,7 +13705,7 @@ function createFileId(routesDir, fsPath) {
   if (ids.length > 1 && ids[0] === "Index") {
     ids.shift();
   }
-  return ids.reverse().join("");
+  return ids.reverse().join("").concat(explicitFileType || "");
 }
 var PAGE_MODULE_EXTS = {
   ".tsx": true,
@@ -23287,7 +23287,7 @@ function parseRoutePathname(basePathname, pathname) {
   const paramNames = [];
   const pattern = new RegExp(
     `^${segments.filter((segment) => segment.length > 0).map((s2) => {
-      const segment = decodeURIComponent(s2);
+      const segment = decodeURI(s2);
       const catchAll = /^\[\.\.\.(\w+)?\]$/.exec(segment);
       if (catchAll) {
         paramNames.push(catchAll[1]);
@@ -23302,7 +23302,7 @@ function parseRoutePathname(basePathname, pathname) {
             return rest ? "(.*?)" : "([^/]+?)";
           }
         }
-        return encodeURIComponent(content).normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return encodeURI(content).normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
       }).join("");
     }).join("")}/?$`
     // always match with and without a trailing slash
@@ -23465,7 +23465,7 @@ function resolveRoute(opts, appLayouts, sourceFile) {
     }
   }
   const buildRoute = {
-    id: createFileId(opts.routesDir, filePath),
+    id: createFileId(opts.routesDir, filePath, "Route"),
     filePath,
     pathname,
     layouts: layouts.reverse(),
@@ -23478,7 +23478,7 @@ function resolveEntry(opts, sourceFile) {
   const pathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
   const chunkFileName = pathname.slice(opts.basePathname.length);
   const buildEntry = {
-    id: createFileId(opts.routesDir, sourceFile.filePath),
+    id: createFileId(opts.routesDir, sourceFile.filePath, "Route"),
     filePath: sourceFile.filePath,
     chunkFileName,
     ...parseRoutePathname(opts.basePathname, pathname)
@@ -23490,7 +23490,7 @@ function resolveServiceWorkerEntry(opts, sourceFile) {
   const pathname = dirPathname + sourceFile.extlessName + ".js";
   const chunkFileName = pathname.slice(opts.basePathname.length);
   const buildEntry = {
-    id: createFileId(opts.routesDir, sourceFile.filePath),
+    id: createFileId(opts.routesDir, sourceFile.filePath, "ServiceWorker"),
     filePath: sourceFile.filePath,
     chunkFileName,
     ...parseRoutePathname(opts.basePathname, pathname)
@@ -23512,7 +23512,7 @@ async function walkServerPlugins(opts) {
       const extlessName = removeExtension(itemName);
       if (isModuleExt(ext) && isPluginModule(extlessName)) {
         sourceFiles.push({
-          id: createFileId(opts.serverPluginsDir, itemPath),
+          id: createFileId(opts.serverPluginsDir, itemPath, "Plugin"),
           filePath: itemPath,
           ext
         });
@@ -23827,6 +23827,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       requestHandlers.push(fixTrailingSlash);
       requestHandlers.push(renderQData);
     }
+    requestHandlers.push(handleRedirect);
     _resolveRequestHandlers(
       routeLoaders,
       routeActions,
@@ -23915,7 +23916,7 @@ function actionsMiddleware(routeLoaders, routeActions) {
     if (isDev && method === "GET") {
       if (requestEv.query.has(QACTION_KEY)) {
         console.warn(
-          'Seems like you are submitting a Qwik Action via GET request. Qwik Actions should be submitted via POST request.\nMake sure you <form> has method="POST" attribute, like this: <form method="POST">'
+          'Seems like you are submitting a Qwik Action via GET request. Qwik Actions should be submitted via POST request.\nMake sure your <form> has method="POST" attribute, like this: <form method="POST">'
         );
       }
     }
@@ -24127,7 +24128,7 @@ The request origin "${inputOrigin}" does not match the server origin "${origin}"
     }
   }
 }
-async function renderQData(requestEv) {
+async function handleRedirect(requestEv) {
   const isPageDataReq = requestEv.sharedMap.has(IsQData);
   if (isPageDataReq) {
     try {
@@ -24142,7 +24143,6 @@ async function renderQData(requestEv) {
     }
     const status = requestEv.status();
     const location = requestEv.headers.get("Location");
-    const trailingSlash = getRequestTrailingSlash(requestEv);
     const isRedirect = status >= 301 && status <= 308 && location;
     if (isRedirect) {
       const adaptedLocation = makeQDataPath(location);
@@ -24155,6 +24155,18 @@ async function renderQData(requestEv) {
         requestEv.headers.delete("Location");
       }
     }
+  }
+}
+async function renderQData(requestEv) {
+  const isPageDataReq = requestEv.sharedMap.has(IsQData);
+  if (isPageDataReq) {
+    await requestEv.next();
+    if (requestEv.headersSent || requestEv.exited) {
+      return;
+    }
+    const status = requestEv.status();
+    const location = requestEv.headers.get("Location");
+    const trailingSlash = getRequestTrailingSlash(requestEv);
     const requestHeaders = {};
     requestEv.request.headers.forEach((value2, key) => requestHeaders[key] = value2);
     requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
@@ -24287,7 +24299,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
   const url = new URL(request.url);
   if (url.pathname.endsWith(QDATA_JSON)) {
     url.pathname = url.pathname.slice(0, -QDATA_JSON_LEN);
-    if (trailingSlash) {
+    if (trailingSlash && !url.pathname.endsWith("/")) {
       url.pathname += "/";
     }
     sharedMap.set(IsQData, true);
@@ -24411,11 +24423,13 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     redirect: (statusCode, url2) => {
       check();
       status = statusCode;
-      const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
-      if (url2 !== fixedURL) {
-        console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+      if (url2) {
+        const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
+        if (url2 !== fixedURL) {
+          console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+        }
+        headers.set("Location", fixedURL);
       }
-      headers.set("Location", fixedURL);
       headers.delete("Cache-Control");
       if (statusCode > 301) {
         headers.set("Cache-Control", "no-store");
@@ -24688,12 +24702,10 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
         res.setHeader("Set-Cookie", cookieHeaders);
       }
       return new WritableStream({
-        start(controller) {
-          res.on("close", () => controller.error());
-        },
-        write(chunk, controller) {
+        write(chunk) {
           res.write(chunk, (error) => {
             if (error) {
+              console.error(error);
             }
           });
         },
@@ -25212,8 +25224,8 @@ var STATIC_CONTENT_TYPES = {
   ".ico": "image/x-icon"
 };
 var DEV_SERVICE_WORKER = `/* Qwik City Dev Service Worker */
-addEventListener('install', () => self.skipWaiting());
-addEventListener('activate', () => self.clients.claim());
+self.addEventListener('install', () => self.skipWaiting());
+self.addEventListener('activate', (ev) => ev.waitUntil(self.clients.claim()));
 `;
 
 // packages/qwik-city/middleware/node/node-fetch.ts
@@ -25569,15 +25581,13 @@ function imagePlugin() {
         id = id.toLowerCase();
         if (id.endsWith("?jsx")) {
           if (supportedExtensions.some((ext) => id.endsWith(ext))) {
-            return code2.replace(
-              /export default.*/g,
-              `
+            const index = code2.indexOf("export default");
+            return code2.slice(0, index) + `
   import { _jsxQ } from '@builder.io/qwik';
   const PROPS = {decoding: 'async', loading: 'lazy', srcSet, width, height};
   export default function (props, key, _, dev) {
     return _jsxQ('img', props, PROPS, undefined, 3, key, dev);
-  }`
-            );
+  }`;
           } else if (id.endsWith(".svg?jsx")) {
             const svgAttributes = {};
             const data = (0, import_svgo.optimize)(code2, {

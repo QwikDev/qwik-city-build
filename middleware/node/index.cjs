@@ -100,12 +100,10 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
         res.setHeader("Set-Cookie", cookieHeaders);
       }
       return new WritableStream({
-        start(controller) {
-          res.on("close", () => controller.error());
-        },
-        write(chunk, controller) {
+        write(chunk) {
           res.write(chunk, (error) => {
             if (error) {
+              console.error(error);
             }
           });
         },

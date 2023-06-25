@@ -40,9 +40,10 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
     const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
-      cmp = qwik._jsxC(context.value[i].default, {
-        children: cmp
-      }, 1, "zl_0");
+      if (context.value[i].default)
+        cmp = qwik._jsxC(context.value[i].default, {
+          children: cmp
+        }, 1, "zl_0");
     return /* @__PURE__ */ qwik._jsxC(jsxRuntime.Fragment, {
       children: [
         cmp,
@@ -217,27 +218,28 @@ const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
   return null;
 };
 const clientNavigate = (win, navType, fromURL, toURL, replaceState = false) => {
-  if (navType === "popstate")
-    clientHistoryState.id = win.history.state?.id ?? 0;
-  else {
+  if (navType !== "popstate") {
     const samePath = isSamePath(fromURL, toURL);
     const sameHash = fromURL.hash === toURL.hash;
     if (!samePath || !sameHash) {
+      const newState = {
+        _qCityScroll: newScrollState()
+      };
       if (replaceState)
-        win.history.replaceState({
-          id: ++clientHistoryState.id
-        }, "", toPath(toURL));
+        win.history.replaceState(newState, "", toPath(toURL));
       else
-        win.history.pushState({
-          id: ++clientHistoryState.id
-        }, "", toPath(toURL));
+        win.history.pushState(newState, "", toPath(toURL));
     }
   }
 };
-const clientHistoryState = {
-  id: 0
+const newScrollState = () => {
+  return {
+    scrollX: 0,
+    scrollY: 0,
+    scrollWidth: 0,
+    scrollHeight: 0
+  };
 };
-const getHistoryId = () => "" + clientHistoryState.id;
 const dispatchPrefetchEvent = (prefetchData) => {
   if (build.isBrowser)
     document.dispatchEvent(new CustomEvent("qprefetch", {
@@ -325,69 +327,23 @@ const useLocation = () => qwik.useContext(RouteLocationContext);
 const useNavigate = () => qwik.useContext(RouteNavigateContext);
 const useAction = () => qwik.useContext(RouteActionContext);
 const useQwikCityEnv = () => qwik.noSerialize(qwik.useServerData("qwikcity"));
-const toTopAlways = /* @__PURE__ */ qwik.inlinedQrl(async (_type, fromUrl, toUrlSettled) => {
-  nativeScrollRestoration.disable();
-  const toUrl2 = await toUrlSettled;
+const toTopAlways = /* @__PURE__ */ qwik.inlinedQrl((_type, fromUrl, toUrl2) => () => {
   if (!scrollForHashChange(fromUrl, toUrl2))
     window.scrollTo(0, 0);
-  nativeScrollRestoration.enable();
 }, "toTopAlways_XL1xcvvrH5I");
-const toLastPositionOnPopState = /* @__PURE__ */ qwik.inlinedQrl((type, fromUrl, toUrlSettled, scrollRecord) => {
-  nativeScrollRestoration.disable();
-  flushScrollRecordToStorage(scrollRecord);
-  const toUrl2 = toUrlSettled;
-  if (!scrollForHashChange(fromUrl, toUrl2)) {
+const toLastPositionOnPopState = /* @__PURE__ */ qwik.inlinedQrl((type, fromUrl, toUrl2, scrollState) => () => {
+  if (type === "popstate" && scrollState || !scrollForHashChange(fromUrl, toUrl2)) {
     let [scrollX, scrollY] = [
       0,
       0
     ];
-    if (type === "popstate") {
-      const record = scrollRecord[getHistoryId()];
-      if (record) {
-        scrollX = record[0];
-        scrollY = record[1];
-      }
+    if (scrollState) {
+      scrollX = scrollState.scrollX;
+      scrollY = scrollState.scrollY;
     }
     window.scrollTo(scrollX, scrollY);
   }
-  nativeScrollRestoration.enable();
 }, "toLastPositionOnPopState_ZF5iW45m6Kg");
-const nativeScrollRestoration = {
-  backup: "auto",
-  disable() {
-    nativeScrollRestoration.backup = history.scrollRestoration;
-    history.scrollRestoration = "manual";
-  },
-  enable() {
-    history.scrollRestoration = nativeScrollRestoration.backup;
-  }
-};
-const QWIK_CITY_SCROLL_RECORD = "_qCityScroll";
-const currentScrollState = (elm) => [
-  window.scrollX,
-  window.scrollY,
-  Math.max(elm.scrollWidth, elm.clientWidth),
-  Math.max(elm.scrollHeight, elm.clientHeight)
-];
-const flushScrollRecordToStorage = (scrollRecord) => {
-  try {
-    sessionStorage.setItem(QWIK_CITY_SCROLL_RECORD, JSON.stringify(scrollRecord));
-  } catch (e) {
-    console.error("Failed to save scroll positions", e);
-  }
-};
-const getOrInitializeScrollRecord = () => {
-  const win = window;
-  if (win[QWIK_CITY_SCROLL_RECORD])
-    return win[QWIK_CITY_SCROLL_RECORD];
-  const scrollRecord = sessionStorage.getItem(QWIK_CITY_SCROLL_RECORD);
-  try {
-    return JSON.parse(scrollRecord) || {};
-  } catch (e) {
-    console.error("Failed to parse scroll positions", e);
-    return {};
-  }
-};
 const scrollForHashChange = (fromUrl, toUrl2) => {
   const newHash = toUrl2.hash;
   if (isSamePath(fromUrl, toUrl2)) {
@@ -411,6 +367,25 @@ const scrollToHashId = (hash) => {
   if (elm)
     elm.scrollIntoView();
   return elm;
+};
+const currentScrollState = (elm) => {
+  return {
+    scrollX: elm.scrollLeft,
+    scrollY: elm.scrollTop,
+    scrollWidth: Math.max(elm.scrollWidth, elm.clientWidth),
+    scrollHeight: Math.max(elm.scrollHeight, elm.clientHeight)
+  };
+};
+const getScrollHistory = () => {
+  const state = history.state;
+  return state?._qCityScroll;
+};
+const saveScrollHistory = (scrollState, initialize = false) => {
+  const state = history.state || {};
+  if (state?._qCityScroll || initialize) {
+    state._qCityScroll = scrollState;
+    history.replaceState(state, "");
+  }
 };
 const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   qwik.useStylesQrl(/* @__PURE__ */ qwik.inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
@@ -460,9 +435,19 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
       forceReload: opt
     };
     const lastDest = routeInternal2.value.dest;
-    const dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
-    if (!forceReload && dest.href === lastDest.href)
+    let dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
+    dest = !dest.hash && dest.href.endsWith("#") ? new URL(dest.href.slice(0, -1)) : dest;
+    if (!forceReload && dest.href === lastDest.href) {
+      if (build.isBrowser) {
+        if (type === "link") {
+          if (dest.hash)
+            scrollToHashId(dest.hash);
+          else
+            window.scrollTo(0, 0);
+        }
+      }
       return;
+    }
     routeInternal2.value = {
       type,
       dest,
@@ -539,6 +524,13 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
         const [params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
+        if (build.isBrowser) {
+          let scrollState;
+          if (navType === "popstate")
+            scrollState = getScrollHistory();
+          const scrollRestoreQrl = props2.restoreScroll$ ?? toLastPositionOnPopState;
+          document.__q_scroll_restore__ = await scrollRestoreQrl(navType, prevUrl, trackUrl, scrollState);
+        }
         routeLocation2.prevUrl = prevUrl;
         routeLocation2.url = trackUrl;
         routeLocation2.params = {
@@ -568,20 +560,63 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
           if (!win._qCityHistory) {
             win._qCityHistory = 1;
             win.addEventListener("popstate", () => {
+              win._qCityScrollHandlerEnabled = false;
+              clearTimeout(win._qCityScrollDebounceTimeout);
               return goto2(location.href, {
                 type: "popstate"
               });
             });
             win.removeEventListener("popstate", win._qCityPopstateFallback);
+            document.body.addEventListener("click", (event) => {
+              if (event.defaultPrevented)
+                return;
+              const target = event.target.closest('a[href*="#"]');
+              if (target && !target.getAttribute("preventdefault:click")) {
+                const prev = routeLocation2.url;
+                const dest = toUrl(target.getAttribute("href"), prev);
+                if (isSameOrigin(dest, prev) && isSamePath(dest, prev)) {
+                  event.preventDefault();
+                  goto2(target.getAttribute("href"));
+                }
+              }
+            });
+            if (!window.navigation)
+              document.addEventListener("visibilitychange", () => {
+                if (win._qCityScrollHandlerEnabled && document.visibilityState === "hidden") {
+                  const scrollState = currentScrollState(document.documentElement);
+                  saveScrollHistory(scrollState);
+                }
+              }, {
+                passive: true
+              });
+            win.addEventListener("scroll", () => {
+              if (!win._qCityScrollHandlerEnabled)
+                return;
+              clearTimeout(win._qCityScrollDebounceTimeout);
+              win._qCityScrollDebounceTimeout = setTimeout(() => {
+                const scrollState = currentScrollState(document.documentElement);
+                saveScrollHistory(scrollState);
+                win._qCityScrollDebounceTimeout = void 0;
+              }, 200);
+            }, {
+              passive: true
+            });
+            if (history.scrollRestoration)
+              history.scrollRestoration = "manual";
           }
-          const navId = getHistoryId();
-          const scrollRecord = getOrInitializeScrollRecord();
-          scrollRecord[navId] = currentScrollState(document.documentElement);
+          win._qCityScrollHandlerEnabled = false;
+          clearTimeout(win._qCityScrollDebounceTimeout);
+          if (navType !== "popstate") {
+            const scrollState = currentScrollState(document.documentElement);
+            saveScrollHistory(scrollState, true);
+          }
           clientNavigate(window, navType, prevUrl, trackUrl, replaceState);
           routeLocation2.isNavigating = false;
           qwik._waitUntilRendered(elm).then(() => {
-            const restore = props2.restoreScroll$ ?? toLastPositionOnPopState;
-            restore(routeInternal2.value.type, prevUrl, trackUrl, scrollRecord).then(navResolver2.r);
+            const scrollState = currentScrollState(document.documentElement);
+            saveScrollHistory(scrollState);
+            win._qCityScrollHandlerEnabled = true;
+            navResolver2.r?.();
           });
         }
       }
@@ -1032,10 +1067,10 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
     action: "get",
     "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
       props
-    ], 'p0.spaReset?"true":undefined'),
+    ]),
     "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
       props
-    ], "!p0.reloadDocument")
+    ])
   }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 Object.defineProperty(exports, "z", {
@@ -1048,7 +1083,6 @@ exports.QwikCityMockProvider = QwikCityMockProvider;
 exports.QwikCityProvider = QwikCityProvider;
 exports.RouterOutlet = RouterOutlet;
 exports.ServiceWorkerRegister = ServiceWorkerRegister;
-exports.getHistoryId = getHistoryId;
 exports.globalAction$ = globalAction$;
 exports.globalActionQrl = globalActionQrl;
 exports.routeAction$ = routeAction$;
