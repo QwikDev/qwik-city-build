@@ -23875,7 +23875,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       method
     );
     if (isPageRoute) {
-      if (routeLoaders.length + actionsMiddleware.length > 0) {
+      if (routeLoaders.length + routeActions.length > 0) {
         requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
       }
       requestHandlers.push(renderHandler);
@@ -23990,13 +23990,6 @@ function actionsMiddleware(routeLoaders, routeActions) {
       await Promise.all(
         routeLoaders.map((loader) => {
           const loaderId = loader.__id;
-          if (isDev) {
-            if (loaders[loaderId]) {
-              throw new Error(
-                `Duplicate loader id "${loaderId}" detected. Please ensure that all loader ids are unique.`
-              );
-            }
-          }
           return loaders[loaderId] = runValidators(
             requestEv,
             loader.__validators,
@@ -24938,11 +24931,13 @@ function ssrDevMiddleware(ctx, server) {
       try {
         const { _deserializeData, _serializeData, _verifySerializable } = await server.ssrLoadModule("@qwik-serializer");
         const qwikSerializer = { _deserializeData, _serializeData, _verifySerializable };
+        const loaderMap = /* @__PURE__ */ new Map();
         const serverPlugins = [];
         for (const file of ctx.serverPlugins) {
           const layoutModule = await server.ssrLoadModule(file.filePath);
           serverPlugins.push(layoutModule);
           routeModulePaths.set(layoutModule, file.filePath);
+          checkModule(loaderMap, layoutModule, file.filePath);
         }
         const matchPathname = getRouteMatchPathname(url.pathname, ctx.opts.trailingSlash);
         const routeResult = matchRouteRequest(matchPathname);
@@ -24955,10 +24950,12 @@ function ssrDevMiddleware(ctx, server) {
             const layoutModule = await server.ssrLoadModule(layout.filePath);
             routeModules.push(layoutModule);
             routeModulePaths.set(layoutModule, layout.filePath);
+            checkModule(loaderMap, layoutModule, layout.filePath);
           }
           const endpointModule = await server.ssrLoadModule(route.filePath);
           routeModules.push(endpointModule);
           routeModulePaths.set(endpointModule, route.filePath);
+          checkModule(loaderMap, endpointModule, route.filePath);
         }
         const renderFn = async (requestEv) => {
           const isPageDataReq = requestEv.pathname.endsWith(QDATA_JSON);
@@ -25081,6 +25078,25 @@ function ssrDevMiddleware(ctx, server) {
     }
   };
 }
+var checkModule = (loaderMap, routeModule, filePath) => {
+  for (const loader of Object.values(routeModule)) {
+    if (checkBrand(loader, "server_action") || checkBrand(loader, "server_loader")) {
+      checkUniqueLoader(loaderMap, loader, filePath);
+    }
+  }
+};
+var checkUniqueLoader = (loaderMap, loader, filePath) => {
+  const prev = loaderMap.get(loader.__id);
+  if (prev) {
+    const type = loader.__brand === "server_loader" ? "routeLoader$" : "routeAction$";
+    throw new Error(
+      `The same ${type} (${loader.__qrl.getSymbol()}) was exported in multiple modules:
+      - ${prev}
+      - ${filePath}`
+    );
+  }
+  loaderMap.set(loader.__id, filePath);
+};
 function getUnmatchedRouteHtml(url, ctx) {
   const blue = "#006ce9";
   const routesAndDistance = sortRoutesByDistance(ctx.routes, url);

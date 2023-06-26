@@ -294,7 +294,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       method
     );
     if (isPageRoute) {
-      if (routeLoaders.length + actionsMiddleware.length > 0) {
+      if (routeLoaders.length + routeActions.length > 0) {
         requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
       }
       requestHandlers.push(renderHandler);
@@ -409,13 +409,6 @@ function actionsMiddleware(routeLoaders, routeActions) {
       await Promise.all(
         routeLoaders.map((loader) => {
           const loaderId = loader.__id;
-          if (isDev) {
-            if (loaders[loaderId]) {
-              throw new Error(
-                `Duplicate loader id "${loaderId}" detected. Please ensure that all loader ids are unique.`
-              );
-            }
-          }
           return loaders[loaderId] = runValidators(
             requestEv,
             loader.__validators,
