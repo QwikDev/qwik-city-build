@@ -1,7 +1,8 @@
-import { createContextId, componentQrl, inlinedQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
-import { isBrowser, isServer, isDev } from "@builder.io/qwik/build";
+import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
+import { basePathname } from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
 import { z } from "zod";
 import { z as z2 } from "zod";
@@ -13,8 +14,179 @@ const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouteInternalContext = /* @__PURE__ */ createContextId("qc-ir");
-const popStateScript = '(function(){\n  const l=location,c=l.pathname+l.search,t="_qCityPopstateFallback",o="_qCityHistory";window[t]||(window[t]=()=>{window[o]||c===(l.pathname+l.search)||l.reload()},setTimeout(()=>{addEventListener("popstate",window[t])},0))\n})();\n';
+const spaInit = /* @__PURE__ */ inlinedQrl((currentScript) => {
+  const win = window;
+  const currentPath = location.pathname + location.search;
+  const spa = "_qCitySPA";
+  const historyPatch = "_qCityHistoryPatch";
+  const bootstrap = "_qCityBootstrap";
+  const initPopstate = "_qCityInitPopstate";
+  const initAnchors = "_qCityInitAnchors";
+  const initVisibility = "_qCityInitVisibility";
+  const initScroll = "_qCityInitScroll";
+  const scrollEnabled = "_qCityScrollEnabled";
+  const debounceTimeout = "_qCityScrollDebounce";
+  const scrollHistory = "_qCityScroll";
+  const checkAndScroll = (scrollState) => {
+    if (scrollState)
+      win.scrollTo(scrollState.x, scrollState.y);
+  };
+  const currentScrollState2 = () => {
+    const elm = document.documentElement;
+    return {
+      x: elm.scrollLeft,
+      y: elm.scrollTop,
+      w: Math.max(elm.scrollWidth, elm.clientWidth),
+      h: Math.max(elm.scrollHeight, elm.clientHeight)
+    };
+  };
+  const saveScrollState = (scrollState) => {
+    const state = history.state || {};
+    state[scrollHistory] = scrollState || currentScrollState2();
+    history.replaceState(state, "");
+  };
+  if (!win[spa] && !win[initPopstate] && !win[initAnchors] && !win[initVisibility] && !win[initScroll]) {
+    saveScrollState();
+    win[initPopstate] = () => {
+      if (win[spa])
+        return;
+      win[scrollEnabled] = false;
+      clearTimeout(win[debounceTimeout]);
+      if (currentPath !== location.pathname + location.search) {
+        const container = currentScript.closest("[q\\:container]");
+        const link = container.querySelector('a[q\\:key="AD_1"]');
+        if (link) {
+          const container2 = link.closest("[q\\:container]");
+          const bootstrapLink = link.cloneNode();
+          bootstrapLink.setAttribute("q:nbs", "");
+          bootstrapLink.style.display = "none";
+          container2.appendChild(bootstrapLink);
+          win[bootstrap] = bootstrapLink;
+          bootstrapLink.click();
+        } else
+          location.reload();
+      } else if (history.scrollRestoration === "manual") {
+        const scrollState = history.state?.[scrollHistory];
+        checkAndScroll(scrollState);
+        win[scrollEnabled] = true;
+      }
+    };
+    if (!win[historyPatch]) {
+      win[historyPatch] = true;
+      const pushState = history.pushState;
+      const replaceState = history.replaceState;
+      const prepareState = (state) => {
+        if (state === null || false)
+          state = {};
+        else if (state?.constructor !== Object) {
+          state = {
+            _data: state
+          };
+          if (isDev)
+            console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
+        }
+        state._qCityScroll = state._qCityScroll || currentScrollState2();
+        return state;
+      };
+      history.pushState = (state, title, url) => {
+        state = prepareState(state);
+        return pushState.call(history, state, title, url);
+      };
+      history.replaceState = (state, title, url) => {
+        state = prepareState(state);
+        return replaceState.call(history, state, title, url);
+      };
+    }
+    win[initAnchors] = (event) => {
+      if (win[spa] || event.defaultPrevented)
+        return;
+      const target = event.target.closest("a[href]");
+      if (target && !target.hasAttribute("preventdefault:click")) {
+        const href = target.getAttribute("href");
+        const prev = new URL(location.href);
+        const dest = new URL(href, prev);
+        const sameOrigin = dest.origin === prev.origin;
+        const samePath = dest.pathname + dest.search === prev.pathname + prev.search;
+        if (sameOrigin && samePath) {
+          event.preventDefault();
+          if (dest.href !== prev.href)
+            history.pushState(null, "", dest);
+          if (!dest.hash) {
+            if (dest.href.endsWith("#"))
+              window.scrollTo(0, 0);
+            else {
+              win[scrollEnabled] = false;
+              clearTimeout(win[debounceTimeout]);
+              saveScrollState({
+                ...currentScrollState2(),
+                x: 0,
+                y: 0
+              });
+              location.reload();
+            }
+          } else {
+            const elmId = dest.hash.slice(1);
+            const elm = document.getElementById(elmId);
+            if (elm)
+              elm.scrollIntoView();
+          }
+        }
+      }
+    };
+    win[initVisibility] = () => {
+      if (!win[spa] && win[scrollEnabled] && document.visibilityState === "hidden")
+        saveScrollState();
+    };
+    win[initScroll] = () => {
+      if (win[spa] || !win[scrollEnabled])
+        return;
+      clearTimeout(win[debounceTimeout]);
+      win[debounceTimeout] = setTimeout(() => {
+        saveScrollState();
+        win[debounceTimeout] = void 0;
+      }, 200);
+    };
+    win[scrollEnabled] = true;
+    setTimeout(() => {
+      addEventListener("popstate", win[initPopstate]);
+      addEventListener("scroll", win[initScroll], {
+        passive: true
+      });
+      document.body.addEventListener("click", win[initAnchors]);
+      if (!win.navigation)
+        document.addEventListener("visibilitychange", win[initVisibility], {
+          passive: true
+        });
+    }, 0);
+  }
+}, "spa_init_DyVc0YBIqQU");
+const shim = () => {
+  if (isServer) {
+    const [symbol, bundle] = getPlatform().chunkForSymbol(spaInit.getSymbol(), null);
+    const path = (!isDev ? basePathname + "build/" : "") + bundle;
+    return `(${shim$1.toString()})('${path}','${symbol}');`;
+  }
+};
+const shim$1 = async (path, symbol) => {
+  if (!window._qcs && history.scrollRestoration === "manual") {
+    window._qcs = true;
+    const scrollState = history.state?._qCityScroll;
+    if (scrollState)
+      window.scrollTo(scrollState.x, scrollState.y);
+    const currentScript = document.currentScript;
+    if (!isDev)
+      (await import(path))[symbol](currentScript);
+    else {
+      const container = currentScript.closest("[q\\:container]");
+      const base = new URL(container.getAttribute("q:base"), document.baseURI);
+      const url = new URL(path, base);
+      const imp = new Function("url", "return import(url)");
+      (await imp(url.href))[symbol](currentScript);
+    }
+  }
+};
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
+  const shimScript = shim();
   _jsxBranch();
   const nonce = useServerData("nonce");
   const context = useContext(ContentInternalContext);
@@ -29,8 +201,9 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
     return /* @__PURE__ */ _jsxC(Fragment, {
       children: [
         cmp,
-        /* @__PURE__ */ _jsxQ("script", null, {
-          dangerouslySetInnerHTML: popStateScript,
+        /* @__PURE__ */ _jsxQ("script", {
+          dangerouslySetInnerHTML: shimScript
+        }, {
           nonce
         }, null, 3, null)
       ]
@@ -177,9 +350,9 @@ const getClientDataPath = (pathname, pageSearch, action) => {
 };
 const getClientNavPath = (props, baseUrl) => {
   const href = props.href;
-  if (typeof href === "string" && href.trim() !== "" && typeof props.target !== "string")
+  if (typeof href === "string" && typeof props.target !== "string")
     try {
-      const linkUrl = toUrl(href, baseUrl.url);
+      const linkUrl = toUrl(href.trim(), baseUrl.url);
       const currentUrl = toUrl("", baseUrl.url);
       if (isSameOrigin(linkUrl, currentUrl))
         return toPath(linkUrl);
@@ -216,10 +389,10 @@ const clientNavigate = (win, navType, fromURL, toURL, replaceState = false) => {
 };
 const newScrollState = () => {
   return {
-    scrollX: 0,
-    scrollY: 0,
-    scrollWidth: 0,
-    scrollHeight: 0
+    x: 0,
+    y: 0,
+    w: 0,
+    h: 0
   };
 };
 const dispatchPrefetchEvent = (prefetchData) => {
@@ -309,65 +482,40 @@ const useLocation = () => useContext(RouteLocationContext);
 const useNavigate = () => useContext(RouteNavigateContext);
 const useAction = () => useContext(RouteActionContext);
 const useQwikCityEnv = () => noSerialize(useServerData("qwikcity"));
-const toTopAlways = /* @__PURE__ */ inlinedQrl((_type, fromUrl, toUrl2) => () => {
-  if (!scrollForHashChange(fromUrl, toUrl2))
-    window.scrollTo(0, 0);
-}, "toTopAlways_XL1xcvvrH5I");
-const toLastPositionOnPopState = /* @__PURE__ */ inlinedQrl((type, fromUrl, toUrl2, scrollState) => () => {
-  if (type === "popstate" && scrollState || !scrollForHashChange(fromUrl, toUrl2)) {
-    let [scrollX, scrollY] = [
-      0,
-      0
-    ];
-    if (scrollState) {
-      scrollX = scrollState.scrollX;
-      scrollY = scrollState.scrollY;
-    }
-    window.scrollTo(scrollX, scrollY);
+const restoreScroll = (type, toUrl2, fromUrl, scrollState) => {
+  if (type === "popstate" && scrollState)
+    window.scrollTo(scrollState.x, scrollState.y);
+  else if (type === "link") {
+    if (!hashScroll(toUrl2, fromUrl))
+      window.scrollTo(0, 0);
   }
-}, "toLastPositionOnPopState_ZF5iW45m6Kg");
-const scrollForHashChange = (fromUrl, toUrl2) => {
-  const newHash = toUrl2.hash;
-  if (isSamePath(fromUrl, toUrl2)) {
-    if (fromUrl.hash !== newHash) {
-      if (newHash)
-        scrollToHashId(newHash);
-      else
-        window.scrollTo(0, 0);
-    }
-  } else {
-    if (newHash)
-      scrollToHashId(newHash);
-    else
-      return false;
-  }
-  return true;
 };
-const scrollToHashId = (hash) => {
-  const elmId = hash.slice(1);
-  const elm = document.getElementById(elmId);
-  if (elm)
+const hashScroll = (toUrl2, fromUrl) => {
+  const elmId = toUrl2.hash.slice(1);
+  const elm = elmId && document.getElementById(elmId);
+  if (elm) {
     elm.scrollIntoView();
-  return elm;
+    return true;
+  } else if (!elm && toUrl2.hash && isSamePath(toUrl2, fromUrl))
+    return true;
+  return false;
 };
 const currentScrollState = (elm) => {
   return {
-    scrollX: elm.scrollLeft,
-    scrollY: elm.scrollTop,
-    scrollWidth: Math.max(elm.scrollWidth, elm.clientWidth),
-    scrollHeight: Math.max(elm.scrollHeight, elm.clientHeight)
+    x: elm.scrollLeft,
+    y: elm.scrollTop,
+    w: Math.max(elm.scrollWidth, elm.clientWidth),
+    h: Math.max(elm.scrollHeight, elm.clientHeight)
   };
 };
 const getScrollHistory = () => {
   const state = history.state;
   return state?._qCityScroll;
 };
-const saveScrollHistory = (scrollState, initialize = false) => {
+const saveScrollHistory = (scrollState) => {
   const state = history.state || {};
-  if (state?._qCityScroll || initialize) {
-    state._qCityScroll = scrollState;
-    history.replaceState(state, "");
-  }
+  state._qCityScroll = scrollState;
+  history.replaceState(state, "");
 };
 const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   useStylesQrl(/* @__PURE__ */ inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
@@ -393,6 +541,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
   const routeInternal = useSignal({
     type: "initial",
     dest: url,
+    forceReload: false,
     replaceState: false
   });
   const documentHead = useStore(createDocumentHead);
@@ -413,26 +562,30 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
   } : void 0);
   const goto = /* @__PURE__ */ inlinedQrl(async (path, opt) => {
     const [actionState2, navResolver2, routeInternal2, routeLocation2] = useLexicalScope();
-    const { type = "link", forceReload = false, replaceState = false } = typeof opt === "object" ? opt : {
+    const { type = "link", forceReload = path === void 0, replaceState = false } = typeof opt === "object" ? opt : {
       forceReload: opt
     };
     const lastDest = routeInternal2.value.dest;
-    let dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
-    dest = !dest.hash && dest.href.endsWith("#") ? new URL(dest.href.slice(0, -1)) : dest;
-    if (!forceReload && dest.href === lastDest.href) {
+    const dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
+    if (!isSameOrigin(dest, lastDest)) {
+      if (isBrowser)
+        location.href = dest.href;
+      return;
+    }
+    if (!forceReload && isSamePath(dest, lastDest)) {
       if (isBrowser) {
-        if (type === "link") {
-          if (dest.hash)
-            scrollToHashId(dest.hash);
-          else
-            window.scrollTo(0, 0);
-        }
+        if (type === "link" && dest.href !== location.href)
+          history.pushState(null, "", dest);
+        restoreScroll(type, dest, new URL(location.href), getScrollHistory());
+        if (type === "popstate")
+          window._qCityScrollEnabled = true;
       }
       return;
     }
     routeInternal2.value = {
       type,
       dest,
+      forceReload,
       replaceState
     };
     if (isBrowser) {
@@ -506,13 +659,6 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         const [params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
-        if (isBrowser) {
-          let scrollState;
-          if (navType === "popstate")
-            scrollState = getScrollHistory();
-          const scrollRestoreQrl = props2.restoreScroll$ ?? toLastPositionOnPopState;
-          document.__q_scroll_restore__ = await scrollRestoreQrl(navType, prevUrl, trackUrl, scrollState);
-        }
         routeLocation2.prevUrl = prevUrl;
         routeLocation2.url = trackUrl;
         routeLocation2.params = {
@@ -534,70 +680,126 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         if (isBrowser) {
           if (props2.viewTransition !== false)
             document.__q_view_transition__ = true;
+          let scrollState;
+          if (navType === "popstate")
+            scrollState = getScrollHistory();
+          if ((!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate"))
+            document.__q_scroll_restore__ = () => restoreScroll(navType, trackUrl, prevUrl, scrollState);
           const loaders = clientPageData?.loaders;
           const win = window;
           if (loaders)
             Object.assign(loaderState2, loaders);
           CLIENT_DATA_CACHE.clear();
-          if (!win._qCityHistory) {
-            win._qCityHistory = 1;
+          if (!win._qCitySPA) {
+            win._qCitySPA = true;
+            history.scrollRestoration = "manual";
             win.addEventListener("popstate", () => {
-              win._qCityScrollHandlerEnabled = false;
-              clearTimeout(win._qCityScrollDebounceTimeout);
-              return goto2(location.href, {
+              win._qCityScrollEnabled = false;
+              clearTimeout(win._qCityScrollDebounce);
+              goto2(location.href, {
                 type: "popstate"
               });
             });
-            win.removeEventListener("popstate", win._qCityPopstateFallback);
+            win.removeEventListener("popstate", win._qCityInitPopstate);
+            win._qCityInitPopstate = void 0;
+            if (!win._qCityHistoryPatch) {
+              win._qCityHistoryPatch = true;
+              const pushState = history.pushState;
+              const replaceState2 = history.replaceState;
+              const prepareState = (state) => {
+                if (state === null || false)
+                  state = {};
+                else if (state?.constructor !== Object) {
+                  state = {
+                    _data: state
+                  };
+                  if (isDev)
+                    console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
+                }
+                state._qCityScroll = state._qCityScroll || currentScrollState(document.documentElement);
+                return state;
+              };
+              history.pushState = (state, title, url2) => {
+                state = prepareState(state);
+                return pushState.call(history, state, title, url2);
+              };
+              history.replaceState = (state, title, url2) => {
+                state = prepareState(state);
+                return replaceState2.call(history, state, title, url2);
+              };
+            }
             document.body.addEventListener("click", (event) => {
               if (event.defaultPrevented)
                 return;
-              const target = event.target.closest('a[href*="#"]');
-              if (target && !target.getAttribute("preventdefault:click")) {
-                const prev = routeLocation2.url;
-                const dest = toUrl(target.getAttribute("href"), prev);
+              const target = event.target.closest("a[href]");
+              if (target && !target.hasAttribute("preventdefault:click")) {
+                const href = target.getAttribute("href");
+                const prev = new URL(location.href);
+                const dest = new URL(href, prev);
                 if (isSameOrigin(dest, prev) && isSamePath(dest, prev)) {
                   event.preventDefault();
+                  if (!dest.hash && !dest.href.endsWith("#")) {
+                    if (dest.href !== prev.href)
+                      history.pushState(null, "", dest);
+                    win._qCityScrollEnabled = false;
+                    clearTimeout(win._qCityScrollDebounce);
+                    saveScrollHistory({
+                      ...currentScrollState(document.documentElement),
+                      x: 0,
+                      y: 0
+                    });
+                    location.reload();
+                    return;
+                  }
                   goto2(target.getAttribute("href"));
                 }
               }
             });
-            if (!window.navigation)
+            document.body.removeEventListener("click", win._qCityInitAnchors);
+            win._qCityInitAnchors = void 0;
+            if (!window.navigation) {
               document.addEventListener("visibilitychange", () => {
-                if (win._qCityScrollHandlerEnabled && document.visibilityState === "hidden") {
-                  const scrollState = currentScrollState(document.documentElement);
-                  saveScrollHistory(scrollState);
+                if (win._qCityScrollEnabled && document.visibilityState === "hidden") {
+                  const scrollState2 = currentScrollState(document.documentElement);
+                  saveScrollHistory(scrollState2);
                 }
               }, {
                 passive: true
               });
+              document.removeEventListener("visibilitychange", win._qCityInitVisibility);
+              win._qCityInitVisibility = void 0;
+            }
             win.addEventListener("scroll", () => {
-              if (!win._qCityScrollHandlerEnabled)
+              if (!win._qCityScrollEnabled)
                 return;
-              clearTimeout(win._qCityScrollDebounceTimeout);
-              win._qCityScrollDebounceTimeout = setTimeout(() => {
-                const scrollState = currentScrollState(document.documentElement);
-                saveScrollHistory(scrollState);
-                win._qCityScrollDebounceTimeout = void 0;
+              clearTimeout(win._qCityScrollDebounce);
+              win._qCityScrollDebounce = setTimeout(() => {
+                const scrollState2 = currentScrollState(document.documentElement);
+                saveScrollHistory(scrollState2);
+                win._qCityScrollDebounce = void 0;
               }, 200);
             }, {
               passive: true
             });
-            if (history.scrollRestoration)
-              history.scrollRestoration = "manual";
+            removeEventListener("scroll", win._qCityInitScroll);
+            win._qCityInitScroll = void 0;
+            win._qCityBootstrap?.remove();
+            win._qCityBootstrap = void 0;
+            if (!isDev)
+              spaInit.resolve();
           }
-          win._qCityScrollHandlerEnabled = false;
-          clearTimeout(win._qCityScrollDebounceTimeout);
           if (navType !== "popstate") {
-            const scrollState = currentScrollState(document.documentElement);
-            saveScrollHistory(scrollState, true);
+            win._qCityScrollEnabled = false;
+            clearTimeout(win._qCityScrollDebounce);
+            const scrollState2 = currentScrollState(document.documentElement);
+            saveScrollHistory(scrollState2);
           }
           clientNavigate(window, navType, prevUrl, trackUrl, replaceState);
-          routeLocation2.isNavigating = false;
           _waitUntilRendered(elm).then(() => {
-            const scrollState = currentScrollState(document.documentElement);
-            saveScrollHistory(scrollState);
-            win._qCityScrollHandlerEnabled = true;
+            const scrollState2 = currentScrollState(document.documentElement);
+            saveScrollHistory(scrollState2);
+            win._qCityScrollEnabled = true;
+            routeLocation2.isNavigating = false;
             navResolver2.r?.();
           });
         }
@@ -674,7 +876,13 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   const onPrefetch = prefetchDataset != null ? eventQrl(/* @__PURE__ */ inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_onPrefetch_event_eBQ0vFsFKsk")) : void 0;
   const handleClick = eventQrl(/* @__PURE__ */ inlinedQrl(async (_, elm) => {
     const [nav2, reload2, replaceState2] = useLexicalScope();
-    if (elm.href) {
+    if (!elm.hasAttribute("preventdefault:click"))
+      return;
+    if (elm.hasAttribute("q:nbs"))
+      await nav2(location.href, {
+        type: "popstate"
+      });
+    else if (elm.href) {
       elm.setAttribute("aria-pressed", "true");
       await nav2(elm.href, {
         forceReload: reload2,
@@ -1072,8 +1280,6 @@ export {
   routeLoaderQrl,
   server$,
   serverQrl,
-  toLastPositionOnPopState,
-  toTopAlways,
   useContent,
   useDocumentHead,
   useLocation,

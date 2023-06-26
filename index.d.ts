@@ -490,13 +490,6 @@ export declare interface QwikCityProps {
      * @see https://caniuse.com/mdn-api_viewtransition
      */
     viewTransition?: boolean;
-    /**
-     * @alpha
-     * Scroll restoration logic for SPA navigation.
-     *
-     * Default: `toLastPositionOnPopState`
-     */
-    restoreScroll$?: RestoreScroll;
 }
 
 /**
@@ -525,11 +518,6 @@ export { RequestHandler }
  * @public
  */
 export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
-
-/**
- * @alpha
- */
-export declare type RestoreScroll = (navigationType: NavigationType, fromUrl: URL, toUrl: URL, scrollState?: ScrollState) => () => void;
 
 /**
  * @public
@@ -598,16 +586,6 @@ export declare type RouteNavigate = QRL<(path?: string, options?: {
 export declare const RouterOutlet: Component<    {}>;
 
 /**
- * @alpha
- */
-declare type ScrollState = {
-    scrollX: number;
-    scrollY: number;
-    scrollWidth: number;
-    scrollHeight: number;
-};
-
-/**
  * @public
  */
 export declare const server$: <T extends ServerFunction>(first: T) => QRL<T>;
@@ -654,16 +632,6 @@ export declare type StaticGenerateHandler = () => Promise<StaticGenerate> | Stat
 declare type StrictUnion<T> = Prettify<StrictUnionHelper<T, T>>;
 
 declare type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never;
-
-/**
- * @alpha
- */
-export declare const toLastPositionOnPopState: QRL<RestoreScroll>;
-
-/**
- * @alpha
- */
-export declare const toTopAlways: QRL<RestoreScroll>;
 
 /**
  * @public
