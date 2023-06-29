@@ -559,7 +559,8 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
     type: "initial",
     dest: url,
     forceReload: false,
-    replaceState: false
+    replaceState: false,
+    scroll: true
   });
   const documentHead = qwik.useStore(createDocumentHead);
   const content = qwik.useStore({
@@ -579,7 +580,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
   } : void 0);
   const goto = /* @__PURE__ */ qwik.inlinedQrl(async (path, opt) => {
     const [actionState2, navResolver2, routeInternal2, routeLocation2] = qwik.useLexicalScope();
-    const { type = "link", forceReload = path === void 0, replaceState = false } = typeof opt === "object" ? opt : {
+    const { type = "link", forceReload = path === void 0, replaceState = false, scroll = true } = typeof opt === "object" ? opt : {
       forceReload: opt
     };
     const lastDest = routeInternal2.value.dest;
@@ -603,7 +604,8 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
       type,
       dest,
       forceReload,
-      replaceState
+      replaceState,
+      scroll
     };
     if (build.isBrowser) {
       loadClientData(dest, qwik._getContextElement());
@@ -700,7 +702,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
           let scrollState;
           if (navType === "popstate")
             scrollState = getScrollHistory();
-          if ((!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate"))
+          if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate"))
             document.__q_scroll_restore__ = () => restoreScroll(navType, trackUrl, prevUrl, scrollState);
           const loaders = clientPageData?.loaders;
           const win = window;
@@ -885,14 +887,14 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ q
 const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
-  const { onClick$, reload, replaceState, ...linkProps } = (() => props)();
+  const { onClick$, reload, replaceState, scroll, ...linkProps } = (() => props)();
   const clientNavPath = qwik.untrack(() => getClientNavPath(linkProps, loc));
   const prefetchDataset = qwik.untrack(() => getPrefetchDataset(props, clientNavPath, loc));
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
   const onPrefetch = prefetchDataset != null ? qwik.eventQrl(/* @__PURE__ */ qwik.inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_onPrefetch_event_eBQ0vFsFKsk")) : void 0;
   const handleClick = qwik.eventQrl(/* @__PURE__ */ qwik.inlinedQrl(async (_, elm) => {
-    const [nav2, reload2, replaceState2] = qwik.useLexicalScope();
+    const [nav2, reload2, replaceState2, scroll2] = qwik.useLexicalScope();
     if (!elm.hasAttribute("preventdefault:click"))
       return;
     if (elm.hasAttribute("q:nbs"))
@@ -903,14 +905,16 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
       elm.setAttribute("aria-pressed", "true");
       await nav2(elm.href, {
         forceReload: reload2,
-        replaceState: replaceState2
+        replaceState: replaceState2,
+        scroll: scroll2
       });
       elm.removeAttribute("aria-pressed");
     }
   }, "Link_component_handleClick_event_i1Cv0pYJNR0", [
     nav,
     reload,
-    replaceState
+    replaceState,
+    scroll
   ]));
   return /* @__PURE__ */ qwik._jsxS("a", {
     ...linkProps,

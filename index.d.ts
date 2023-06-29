@@ -373,6 +373,7 @@ export declare interface LinkProps extends AnchorAttributes {
     prefetch?: boolean;
     reload?: boolean;
     replaceState?: boolean;
+    scroll?: boolean;
 }
 
 /**
@@ -578,6 +579,7 @@ export declare type RouteNavigate = QRL<(path?: string, options?: {
     type?: Exclude<NavigationType, 'initial'>;
     forceReload?: boolean;
     replaceState?: boolean;
+    scroll?: boolean;
 } | boolean) => Promise<void>>;
 
 /**
