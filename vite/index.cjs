@@ -25026,6 +25026,7 @@ function ssrDevMiddleware(ctx, server) {
           const serverRequestEv = await fromNodeHttp(url, req, res, "dev");
           Object.assign(serverRequestEv.platform, ctx.opts.platform);
           const manifest = {
+            manifestHash: "",
             symbols: {},
             mapping: {},
             bundles: {},
