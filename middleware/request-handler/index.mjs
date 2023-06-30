@@ -264,9 +264,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       method
     );
     if (isPageRoute) {
-      if (routeLoaders.length + routeActions.length > 0) {
-        requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
-      }
+      requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
       requestHandlers.push(renderHandler);
     }
   }

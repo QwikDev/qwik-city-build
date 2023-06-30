@@ -20769,11 +20769,11 @@ function getImportPath(importPath) {
 }
 
 // packages/qwik-city/buildtime/runtime-generation/generate-menus.ts
-function createMenus(ctx, c2, esmImports) {
+function createMenus(ctx, c2, esmImports, isSSR) {
   c2.push(`
 /** Qwik City Menus (${ctx.menus.length}) */`);
   c2.push(`export const menus = [`);
-  const dynamicImports = ctx.target === "client";
+  const dynamicImports = !isSSR;
   const routesDir = ctx.opts.routesDir;
   for (const m of ctx.menus) {
     const importPath = JSON.stringify(getImportPath(m.filePath));
@@ -20789,9 +20789,8 @@ function createMenus(ctx, c2, esmImports) {
 }
 
 // packages/qwik-city/buildtime/runtime-generation/generate-routes.ts
-function createRoutes(ctx, qwikPlugin, c2, esmImports) {
-  const isSsr = ctx.target === "ssr";
-  const includeEndpoints = isSsr;
+function createRoutes(ctx, qwikPlugin, c2, esmImports, isSSR) {
+  const includeEndpoints = isSSR;
   const dynamicImports = ctx.target === "client";
   if (ctx.layouts.length > 0) {
     c2.push(`
@@ -20831,7 +20830,7 @@ function createRoutes(ctx, qwikPlugin, c2, esmImports) {
       loaders.push(`()=>${route.id}`);
     }
     if (loaders.length > 0) {
-      c2.push(`  ${createRouteData(qwikPlugin, route, loaders, isSsr)},`);
+      c2.push(`  ${createRouteData(qwikPlugin, route, loaders, isSSR)},`);
     }
   }
   c2.push(`];`);
@@ -20881,14 +20880,11 @@ function getClientRouteBundleNames(qwikPlugin, r2) {
 }
 
 // packages/qwik-city/buildtime/runtime-generation/generate-server-plugins.ts
-function createServerPlugins(ctx, _qwikPlugin, c2, esmImports) {
-  const isSsr = ctx.target === "ssr";
-  c2.push(`
-/** Qwik City Server Plugins (${ctx.layouts.length}) */`);
+function createServerPlugins(ctx, _qwikPlugin, c2, esmImports, isSSR) {
   c2.push(`
 /** Qwik City ServerPlugins (${ctx.serverPlugins.length}) */`);
   c2.push(`export const serverPlugins = [`);
-  if (isSsr) {
+  if (isSSR) {
     for (const file of ctx.serverPlugins) {
       const importPath = JSON.stringify(getImportPath(file.filePath));
       esmImports.push(`import * as ${file.id} from ${importPath};`);
@@ -20901,14 +20897,14 @@ function createServerPlugins(ctx, _qwikPlugin, c2, esmImports) {
 }
 
 // packages/qwik-city/buildtime/runtime-generation/generate-qwik-city-plan.ts
-function generateQwikCityPlan(ctx, qwikPlugin) {
+function generateQwikCityPlan(ctx, qwikPlugin, isSSR) {
   const esmImports = [];
   const c2 = [];
   c2.push(`
 /** Qwik City Plan */`);
-  createServerPlugins(ctx, qwikPlugin, c2, esmImports);
-  createRoutes(ctx, qwikPlugin, c2, esmImports);
-  createMenus(ctx, c2, esmImports);
+  createServerPlugins(ctx, qwikPlugin, c2, esmImports, isSSR);
+  createRoutes(ctx, qwikPlugin, c2, esmImports, isSSR);
+  createMenus(ctx, c2, esmImports, isSSR);
   createEntries(ctx, c2);
   c2.push(`export const trailingSlash = ${JSON.stringify(!!ctx.opts.trailingSlash)};`);
   c2.push(`export const basePathname = ${JSON.stringify(ctx.opts.basePathname)};`);
@@ -23885,9 +23881,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       method
     );
     if (isPageRoute) {
-      if (routeLoaders.length + routeActions.length > 0) {
-        requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
-      }
+      requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
       requestHandlers.push(renderHandler);
     }
   }
@@ -25806,7 +25800,7 @@ function qwikCityPlugin(userOpts) {
       }
       return null;
     },
-    async load(id) {
+    async load(id, opts) {
       if (ctx) {
         if (id.endsWith(QWIK_CITY_ENTRIES_ID)) {
           return generateQwikCityEntries(ctx);
@@ -25826,7 +25820,7 @@ function qwikCityPlugin(userOpts) {
             });
           }
           if (isCityPlan) {
-            return generateQwikCityPlan(ctx, qwikPlugin);
+            return generateQwikCityPlan(ctx, qwikPlugin, (opts == null ? void 0 : opts.ssr) ?? false);
           }
           if (isSwRegister) {
             return generateServiceWorkerRegister(ctx);
@@ -25837,6 +25831,9 @@ function qwikCityPlugin(userOpts) {
     },
     async transform(code2, id) {
       var _a2, _b2;
+      if (id.startsWith("\0")) {
+        return;
+      }
       const isMD = id.endsWith(".md") || id.endsWith(".mdx");
       if (ctx && isMD) {
         const fileName = (0, import_node_path10.basename)(id);
