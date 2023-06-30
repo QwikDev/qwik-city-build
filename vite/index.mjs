@@ -25645,10 +25645,10 @@ function imagePlugin() {
       transform(code2, id) {
         id = id.toLowerCase();
         if (id.endsWith("?jsx")) {
-          if (!code2.includes("srcSet")) {
-            this.error(`Image '${id}' could not be optimized to JSX`);
-          }
           if (supportedExtensions.some((ext) => id.endsWith(ext))) {
+            if (!code2.includes("srcSet")) {
+              this.error(`Image '${id}' could not be optimized to JSX`);
+            }
             const index = code2.indexOf("export default");
             return code2.slice(0, index) + `
   import { _jsxQ } from '@builder.io/qwik';
