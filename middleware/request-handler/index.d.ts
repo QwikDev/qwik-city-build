@@ -485,6 +485,10 @@ export declare interface RequestEventBase<PLATFORM = QwikCityPlatform> {
      * Provides information about the client connection, such as the IP address and the country the request originated from.
      */
     readonly clientConn: ClientConn;
+    /**
+     * Request's AbortSignal (same as `request.signal`). This signal indicates that the request has been aborted.
+     */
+    readonly signal: AbortSignal;
 }
 
 /**

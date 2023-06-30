@@ -496,12 +496,16 @@ async function pureServerFunction(ev) {
         }
         if (isAsyncIterator(result)) {
           ev.headers.set("Content-Type", "text/qwik-json-stream");
-          const stream = ev.getWritableStream().getWriter();
+          const writable = ev.getWritableStream();
+          const stream = writable.getWriter();
           for await (const item of result) {
             if (isDev) {
               verifySerializable(qwikSerializer, item, qrl);
             }
             const message = await qwikSerializer._serializeData(item, true);
+            if (ev.signal.aborted) {
+              break;
+            }
             await stream.write(encoder.encode(`${message}
 `));
           }
@@ -866,6 +870,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     headers,
     env,
     method: request.method,
+    signal: request.signal,
     params: (loadedRoute == null ? void 0 : loadedRoute[0]) ?? {},
     pathname: url.pathname,
     platform,
