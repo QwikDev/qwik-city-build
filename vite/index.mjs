@@ -25584,7 +25584,7 @@ function parseId(originalId) {
 }
 
 // packages/qwik-city/buildtime/vite/image-jsx.ts
-function imagePlugin() {
+function imagePlugin(userOpts) {
   const supportedExtensions = ["jpg", "jpeg", "png", "webp", "gif", "avif", "tiff"].map(
     (ext) => `.${ext}?jsx`
   );
@@ -25616,11 +25616,16 @@ function imagePlugin() {
           };
         },
         defaultDirectives: (url) => {
+          var _a2;
           if (url.searchParams.has("jsx")) {
+            const { jsx: jsx2, ...params } = Object.fromEntries(url.searchParams.entries());
             return new URLSearchParams({
               format: "webp",
               quality: "75",
-              w: "200;400;800;1200",
+              w: "200;400;600;800;1200",
+              withoutEnlargement: "",
+              ...(_a2 = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _a2.jsxDirectives,
+              ...params,
               as: "jsx"
             });
           }
@@ -25703,7 +25708,7 @@ function imagePlugin() {
 
 // packages/qwik-city/buildtime/vite/plugin.ts
 function qwikCity(userOpts) {
-  return [qwikCityPlugin(userOpts), ...imagePlugin()];
+  return [qwikCityPlugin(userOpts), ...imagePlugin(userOpts)];
 }
 function qwikCityPlugin(userOpts) {
   let ctx = null;

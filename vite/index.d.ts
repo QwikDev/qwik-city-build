@@ -42,6 +42,20 @@ export declare function extendConfig(baseConfigExport: UserConfigExport, serverC
 /**
  * @public
  */
+declare interface ImageOptimizationOptions {
+    jsxDirectives?: {
+        quality?: `${number}`;
+        format?: 'webp' | 'avif' | 'png';
+        w?: string;
+        h?: string;
+        [key: string]: string | undefined;
+    };
+    enabled?: boolean | 'only-production';
+}
+
+/**
+ * @public
+ */
 export declare type MdxOptions = CompileOptions;
 
 declare interface MdxPlugins {
@@ -130,6 +144,7 @@ export declare interface QwikCityVitePluginOptions extends Omit<PluginOptions, '
     mdxPlugins?: MdxPlugins;
     mdx?: MdxOptions;
     platform?: Record<string, unknown>;
+    imageOptimization?: ImageOptimizationOptions;
 }
 
 export { }
