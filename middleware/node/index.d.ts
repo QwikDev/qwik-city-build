@@ -49,7 +49,7 @@ export declare interface QwikCityNodeRequestOptions extends ServerRenderOptions 
      * If `ORIGIN` is not set, it's derived from the incoming request, which is not recommended for production use.
      * You can specify the `PROTOCOL_HEADER`, `HOST_HEADER` to `X-Forwarded-Proto` and `X-Forwarded-Host` respectively to override the default behavior.
      */
-    getOrigin?: (req: IncomingMessage | Http2ServerRequest) => string;
+    getOrigin?: (req: IncomingMessage | Http2ServerRequest) => string | null;
     /**
      * Provide a function that returns a `ClientConn` for the given request.
      */

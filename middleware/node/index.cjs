@@ -44,13 +44,8 @@ var import_node_url = require("url");
 // packages/qwik-city/middleware/node/http.ts
 var import_node_http2 = require("http2");
 function computeOrigin(req, opts) {
-  if (opts == null ? void 0 : opts.getOrigin) {
-    return opts.getOrigin(req);
-  }
-  if (opts == null ? void 0 : opts.origin) {
-    return opts.origin;
-  }
-  return process.env.ORIGIN ?? fallbackOrigin(req);
+  var _a;
+  return ((_a = opts == null ? void 0 : opts.getOrigin) == null ? void 0 : _a.call(opts, req)) ?? (opts == null ? void 0 : opts.origin) ?? process.env.ORIGIN ?? fallbackOrigin(req);
 }
 function fallbackOrigin(req) {
   const { PROTOCOL_HEADER, HOST_HEADER } = process.env;
@@ -282,9 +277,17 @@ function createQwikCity(opts) {
       const origin = computeOrigin(req, opts);
       const url = getUrl(req, origin);
       if ((0, import_qwik_city_static_paths.isStaticPath)(req.method || "GET", url)) {
-        const target = (0, import_node_path.join)(staticFolder, url.pathname);
-        const stream = (0, import_node_fs.createReadStream)(target);
-        const ext = (0, import_node_path.extname)(url.pathname).replace(/^\./, "");
+        const pathname = url.pathname;
+        let filePath;
+        if ((0, import_node_path.basename)(pathname).includes(".")) {
+          filePath = (0, import_node_path.join)(staticFolder, pathname);
+        } else if (opts.qwikCityPlan.trailingSlash) {
+          filePath = (0, import_node_path.join)(staticFolder, pathname + "index.html");
+        } else {
+          filePath = (0, import_node_path.join)(staticFolder, pathname, "index.html");
+        }
+        const stream = (0, import_node_fs.createReadStream)(filePath);
+        const ext = (0, import_node_path.extname)(filePath).replace(/^\./, "");
         const contentType = MIME_TYPES[ext];
         if (contentType) {
           res.setHeader("Content-Type", contentType);

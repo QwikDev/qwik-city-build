@@ -24686,13 +24686,8 @@ var getPathParams = (paramNames, match) => {
 // packages/qwik-city/middleware/node/http.ts
 var import_node_http2 = require("http2");
 function computeOrigin(req, opts) {
-  if (opts == null ? void 0 : opts.getOrigin) {
-    return opts.getOrigin(req);
-  }
-  if (opts == null ? void 0 : opts.origin) {
-    return opts.origin;
-  }
-  return process.env.ORIGIN ?? fallbackOrigin(req);
+  var _a2;
+  return ((_a2 = opts == null ? void 0 : opts.getOrigin) == null ? void 0 : _a2.call(opts, req)) ?? (opts == null ? void 0 : opts.origin) ?? process.env.ORIGIN ?? fallbackOrigin(req);
 }
 function fallbackOrigin(req) {
   const { PROTOCOL_HEADER, HOST_HEADER } = process.env;

@@ -4,19 +4,14 @@ import { setServerPlatform } from "@builder.io/qwik/server";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
 import { createReadStream } from "fs";
-import { extname, join } from "path";
+import { extname, join, basename } from "path";
 import { fileURLToPath } from "url";
 
 // packages/qwik-city/middleware/node/http.ts
 import { Http2ServerRequest } from "http2";
 function computeOrigin(req, opts) {
-  if (opts == null ? void 0 : opts.getOrigin) {
-    return opts.getOrigin(req);
-  }
-  if (opts == null ? void 0 : opts.origin) {
-    return opts.origin;
-  }
-  return process.env.ORIGIN ?? fallbackOrigin(req);
+  var _a;
+  return ((_a = opts == null ? void 0 : opts.getOrigin) == null ? void 0 : _a.call(opts, req)) ?? (opts == null ? void 0 : opts.origin) ?? process.env.ORIGIN ?? fallbackOrigin(req);
 }
 function fallbackOrigin(req) {
   const { PROTOCOL_HEADER, HOST_HEADER } = process.env;
@@ -252,9 +247,17 @@ function createQwikCity(opts) {
       const origin = computeOrigin(req, opts);
       const url = getUrl(req, origin);
       if (isStaticPath(req.method || "GET", url)) {
-        const target = join(staticFolder, url.pathname);
-        const stream = createReadStream(target);
-        const ext = extname(url.pathname).replace(/^\./, "");
+        const pathname = url.pathname;
+        let filePath;
+        if (basename(pathname).includes(".")) {
+          filePath = join(staticFolder, pathname);
+        } else if (opts.qwikCityPlan.trailingSlash) {
+          filePath = join(staticFolder, pathname + "index.html");
+        } else {
+          filePath = join(staticFolder, pathname, "index.html");
+        }
+        const stream = createReadStream(filePath);
+        const ext = extname(filePath).replace(/^\./, "");
         const contentType = MIME_TYPES[ext];
         if (contentType) {
           res.setHeader("Content-Type", contentType);
