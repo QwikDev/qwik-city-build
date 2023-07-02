@@ -1280,10 +1280,10 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
     action: "get",
     "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
       props
-    ]),
+    ], 'p0.spaReset?"true":undefined'),
     "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
       props
-    ])
+    ], "!p0.reloadDocument")
   }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 Object.defineProperty(exports, "z", {
