@@ -1,6 +1,7 @@
 /// <reference types="node" />
 
 import type { ClientConn } from '@builder.io/qwik-city/middleware/request-handler';
+import type { Http2ServerRequest } from 'node:http2';
 import type { IncomingMessage } from 'node:http';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ServerResponse } from 'node:http';
@@ -9,9 +10,9 @@ import type { ServerResponse } from 'node:http';
  * @public
  */
 export declare function createQwikCity(opts: QwikCityNodeRequestOptions): {
-    router: (req: IncomingMessage, res: ServerResponse, next: NodeRequestNextFunction) => Promise<void>;
-    notFound: (req: IncomingMessage, res: ServerResponse, next: (e: any) => void) => Promise<void>;
-    staticFile: (req: IncomingMessage, res: ServerResponse, next: (e?: any) => void) => Promise<void>;
+    router: (req: IncomingMessage | Http2ServerRequest, res: ServerResponse, next: NodeRequestNextFunction) => Promise<void>;
+    notFound: (req: IncomingMessage | Http2ServerRequest, res: ServerResponse, next: (e: any) => void) => Promise<void>;
+    staticFile: (req: IncomingMessage | Http2ServerRequest, res: ServerResponse, next: (e?: any) => void) => Promise<void>;
 };
 
 /**
@@ -25,7 +26,7 @@ export declare function createQwikCity(opts: QwikCityNodeRequestOptions): {
  */
 export declare interface PlatformNode {
     ssr?: true;
-    incomingMessage?: IncomingMessage;
+    incomingMessage?: IncomingMessage | Http2ServerRequest;
     node?: string;
 }
 
@@ -41,12 +42,22 @@ export declare interface QwikCityNodeRequestOptions extends ServerRenderOptions 
         cacheControl?: string;
     };
     /**
-     * Origin of the server, used to resolve relative URLs and validate the request origin against CSRF attacks.
+     * Provide a function that computes the origin of the server, used to resolve relative URLs and validate the request origin against CSRF attacks.
      *
-     * When not specified, it defaults to the `ORIGIN` environment variable (if set) or derived from the incoming request.
+     * When not specified, it defaults to the `ORIGIN` environment variable (if set).
+     *
+     * If `ORIGIN` is not set, it's derived from the incoming request, which is not recommended for production use.
+     * You can specify the `PROTOCOL_HEADER`, `HOST_HEADER` to `X-Forwarded-Proto` and `X-Forwarded-Host` respectively to override the default behavior.
+     */
+    getOrigin?: (req: IncomingMessage | Http2ServerRequest) => string;
+    /**
+     * Provide a function that returns a `ClientConn` for the given request.
+     */
+    getClientConn?: (req: IncomingMessage | Http2ServerRequest) => ClientConn;
+    /**
+     * @deprecated Use `getOrigin` instead.
      */
     origin?: string;
-    getClientConn?: (req: IncomingMessage) => ClientConn;
 }
 
 export { }

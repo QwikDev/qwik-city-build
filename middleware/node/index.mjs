@@ -9,7 +9,16 @@ import { fileURLToPath } from "url";
 
 // packages/qwik-city/middleware/node/http.ts
 import { Http2ServerRequest } from "http2";
-function getOrigin(req) {
+function computeOrigin(req, opts) {
+  if (opts == null ? void 0 : opts.getOrigin) {
+    return opts.getOrigin(req);
+  }
+  if (opts == null ? void 0 : opts.origin) {
+    return opts.origin;
+  }
+  return process.env.ORIGIN ?? fallbackOrigin(req);
+}
+function fallbackOrigin(req) {
   const { PROTOCOL_HEADER, HOST_HEADER } = process.env;
   const headers = req.headers;
   const protocol = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
@@ -17,7 +26,7 @@ function getOrigin(req) {
   const host = headers[hostHeader];
   return `${protocol}://${host}`;
 }
-function getUrl(req, origin = process.env.ORIGIN ?? getOrigin(req)) {
+function getUrl(req, origin) {
   return normalizeUrl(req.originalUrl || req.url || "/", origin);
 }
 var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
@@ -196,8 +205,9 @@ function createQwikCity(opts) {
   const staticFolder = ((_a = opts.static) == null ? void 0 : _a.root) ?? join(fileURLToPath(import.meta.url), "..", "..", "dist");
   const router = async (req, res, next) => {
     try {
+      const origin = computeOrigin(req, opts);
       const serverRequestEv = await fromNodeHttp(
-        getUrl(req, opts.origin),
+        getUrl(req, origin),
         req,
         res,
         "server",
@@ -222,7 +232,8 @@ function createQwikCity(opts) {
   const notFound = async (req, res, next) => {
     try {
       if (!res.headersSent) {
-        const url = getUrl(req, opts.origin);
+        const origin = computeOrigin(req, opts);
+        const url = getUrl(req, origin);
         const notFoundHtml = getNotFound(url.pathname);
         res.writeHead(404, {
           "Content-Type": "text/html; charset=utf-8",
@@ -238,7 +249,8 @@ function createQwikCity(opts) {
   const staticFile = async (req, res, next) => {
     var _a2;
     try {
-      const url = getUrl(req);
+      const origin = computeOrigin(req, opts);
+      const url = getUrl(req, origin);
       if (isStaticPath(req.method || "GET", url)) {
         const target = join(staticFolder, url.pathname);
         const stream = createReadStream(target);

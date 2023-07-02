@@ -24685,7 +24685,16 @@ var getPathParams = (paramNames, match) => {
 
 // packages/qwik-city/middleware/node/http.ts
 var import_node_http2 = require("http2");
-function getOrigin(req) {
+function computeOrigin(req, opts) {
+  if (opts == null ? void 0 : opts.getOrigin) {
+    return opts.getOrigin(req);
+  }
+  if (opts == null ? void 0 : opts.origin) {
+    return opts.origin;
+  }
+  return process.env.ORIGIN ?? fallbackOrigin(req);
+}
+function fallbackOrigin(req) {
   const { PROTOCOL_HEADER, HOST_HEADER } = process.env;
   const headers = req.headers;
   const protocol2 = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
@@ -24693,7 +24702,7 @@ function getOrigin(req) {
   const host = headers[hostHeader];
   return `${protocol2}://${host}`;
 }
-function getUrl(req, origin = process.env.ORIGIN ?? getOrigin(req)) {
+function getUrl(req, origin) {
   return normalizeUrl(req.originalUrl || req.url || "/", origin);
 }
 var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
@@ -24928,7 +24937,7 @@ function ssrDevMiddleware(ctx, server) {
   };
   return async (req, res, next) => {
     try {
-      const url = getUrl(req);
+      const url = getUrl(req, computeOrigin(req));
       if (skipRequest(url.pathname) || isVitePing(url.pathname, req.headers)) {
         next();
         return;
