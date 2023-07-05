@@ -13777,16 +13777,16 @@ function isLayoutModule(extlessName) {
   return /^layout(|!|-.+)$/.test(extlessName);
 }
 function isPageModuleExt(ext) {
-  return !!PAGE_MODULE_EXTS[ext];
+  return ext in PAGE_MODULE_EXTS;
 }
 function isModuleExt(ext) {
-  return !!MODULE_EXTS[ext];
+  return ext in MODULE_EXTS;
 }
 function isMarkdownExt(ext) {
-  return !!MARKDOWN_EXTS[ext];
+  return ext in MARKDOWN_EXTS;
 }
 function isPageExt(ext) {
-  return !!PAGE_MODULE_EXTS[ext] || !!MARKDOWN_EXTS[ext];
+  return ext in PAGE_MODULE_EXTS || ext in MARKDOWN_EXTS;
 }
 function isMenuFileName(fileName) {
   return fileName === "menu.md";
@@ -23554,7 +23554,7 @@ async function walkServerPlugins(opts) {
       const itemPath = normalizePath((0, import_node_path7.join)(dirPath, itemName));
       const ext = getExtension(itemName);
       const extlessName = removeExtension(itemName);
-      if (isModuleExt(ext) && isPluginModule(extlessName)) {
+      if ((isModuleExt(ext) || isPageModuleExt(ext)) && isPluginModule(extlessName)) {
         sourceFiles.push({
           id: createFileId(opts.serverPluginsDir, itemPath, "Plugin"),
           filePath: itemPath,
