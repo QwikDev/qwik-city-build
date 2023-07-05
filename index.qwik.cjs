@@ -1073,17 +1073,17 @@ const validatorQrl = (validator) => {
 };
 const validator$ = /* @__PURE__ */ qwik.implicit$FirstArg(validatorQrl);
 const zodQrl = (qrl) => {
-  if (build.isServer) {
-    const schema = qrl.resolve().then((obj) => {
-      if (typeof obj === "function")
-        obj = obj(zod.z);
-      if (obj instanceof zod.z.Schema)
-        return obj;
-      else
-        return zod.z.object(obj);
-    });
+  if (build.isServer)
     return {
       async validate(ev, inputData) {
+        const schema = qrl.resolve().then((obj) => {
+          if (typeof obj === "function")
+            obj = obj(zod.z, ev);
+          if (obj instanceof zod.z.Schema)
+            return obj;
+          else
+            return zod.z.object(obj);
+        });
         const data = inputData ?? await ev.parseBody();
         const result = await (await schema).safeParseAsync(data);
         if (result.success)
@@ -1099,7 +1099,6 @@ const zodQrl = (qrl) => {
         }
       }
     };
-  }
   return void 0;
 };
 const zod$ = /* @__PURE__ */ qwik.implicit$FirstArg(zodQrl);

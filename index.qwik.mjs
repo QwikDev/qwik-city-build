@@ -1056,17 +1056,17 @@ const validatorQrl = (validator) => {
 };
 const validator$ = /* @__PURE__ */ implicit$FirstArg(validatorQrl);
 const zodQrl = (qrl) => {
-  if (isServer) {
-    const schema = qrl.resolve().then((obj) => {
-      if (typeof obj === "function")
-        obj = obj(z);
-      if (obj instanceof z.Schema)
-        return obj;
-      else
-        return z.object(obj);
-    });
+  if (isServer)
     return {
       async validate(ev, inputData) {
+        const schema = qrl.resolve().then((obj) => {
+          if (typeof obj === "function")
+            obj = obj(z, ev);
+          if (obj instanceof z.Schema)
+            return obj;
+          else
+            return z.object(obj);
+        });
         const data = inputData ?? await ev.parseBody();
         const result = await (await schema).safeParseAsync(data);
         if (result.success)
@@ -1082,7 +1082,6 @@ const zodQrl = (qrl) => {
         }
       }
     };
-  }
   return void 0;
 };
 const zod$ = /* @__PURE__ */ implicit$FirstArg(zodQrl);
