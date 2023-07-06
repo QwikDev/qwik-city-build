@@ -787,8 +787,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
             win._qCityInitScroll = void 0;
             win._qCityBootstrap?.remove();
             win._qCityBootstrap = void 0;
-            if (!isDev)
-              spaInit.resolve();
+            spaInit.resolve();
           }
           if (navType !== "popstate") {
             win._qCityScrollEnabled = false;
