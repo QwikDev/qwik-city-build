@@ -25594,9 +25594,7 @@ function parseId(originalId) {
 
 // packages/qwik-city/buildtime/vite/image-jsx.ts
 function imagePlugin(userOpts) {
-  const supportedExtensions = ["jpg", "jpeg", "png", "webp", "gif", "avif", "tiff"].map(
-    (ext) => `.${ext}?jsx`
-  );
+  const supportedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".gif", ".avif", ".tiff"];
   return [
     import("vite-imagetools").then(
       ({ imagetools }) => imagetools({
@@ -25647,8 +25645,10 @@ function imagePlugin(userOpts) {
       load: {
         order: "pre",
         handler: async (id) => {
-          if (id.endsWith(".svg?jsx")) {
-            const code2 = await import_node_fs8.default.promises.readFile(parseId(id).pathId, "utf-8");
+          id = id.toLowerCase();
+          const { params, pathId } = parseId(id);
+          if (pathId.endsWith(".svg") && params.has("jsx")) {
+            const code2 = await import_node_fs8.default.promises.readFile(pathId, "utf-8");
             return {
               code: code2,
               moduleSideEffects: false
@@ -25658,8 +25658,9 @@ function imagePlugin(userOpts) {
       },
       transform(code2, id) {
         id = id.toLowerCase();
-        if (id.endsWith("?jsx")) {
-          if (supportedExtensions.some((ext) => id.endsWith(ext))) {
+        const { params, pathId } = parseId(id);
+        if (params.has("jsx")) {
+          if (supportedExtensions.some((ext) => pathId.endsWith(ext))) {
             if (!code2.includes("srcSet")) {
               this.error(`Image '${id}' could not be optimized to JSX`);
             }
@@ -25670,7 +25671,7 @@ function imagePlugin(userOpts) {
   export default function (props, key, _, dev) {
     return _jsxQ('img', props, PROPS, undefined, 3, key, dev);
   }`;
-          } else if (id.endsWith(".svg?jsx")) {
+          } else if (pathId.endsWith(".svg")) {
             const svgAttributes = {};
             const data = (0, import_svgo.optimize)(code2, {
               plugins: [
