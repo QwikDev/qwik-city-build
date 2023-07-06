@@ -344,17 +344,17 @@ var require_visit = __commonJS({
     visit2.BREAK = BREAK;
     visit2.SKIP = SKIP2;
     visit2.REMOVE = REMOVE;
-    function visit_(key, node, visitor, path2) {
-      const ctrl = callVisitor(key, node, visitor, path2);
+    function visit_(key, node, visitor, path3) {
+      const ctrl = callVisitor(key, node, visitor, path3);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key, path2, ctrl);
-        return visit_(key, ctrl, visitor, path2);
+        replaceNode(key, path3, ctrl);
+        return visit_(key, ctrl, visitor, path3);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path2 = Object.freeze(path2.concat(node));
+          path3 = Object.freeze(path3.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = visit_(i, node.items[i], visitor, path2);
+            const ci = visit_(i, node.items[i], visitor, path3);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -365,13 +365,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path2 = Object.freeze(path2.concat(node));
-          const ck = visit_("key", node.key, visitor, path2);
+          path3 = Object.freeze(path3.concat(node));
+          const ck = visit_("key", node.key, visitor, path3);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = visit_("value", node.value, visitor, path2);
+          const cv = visit_("value", node.value, visitor, path3);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -392,17 +392,17 @@ var require_visit = __commonJS({
     visitAsync.BREAK = BREAK;
     visitAsync.SKIP = SKIP2;
     visitAsync.REMOVE = REMOVE;
-    async function visitAsync_(key, node, visitor, path2) {
-      const ctrl = await callVisitor(key, node, visitor, path2);
+    async function visitAsync_(key, node, visitor, path3) {
+      const ctrl = await callVisitor(key, node, visitor, path3);
       if (identity.isNode(ctrl) || identity.isPair(ctrl)) {
-        replaceNode(key, path2, ctrl);
-        return visitAsync_(key, ctrl, visitor, path2);
+        replaceNode(key, path3, ctrl);
+        return visitAsync_(key, ctrl, visitor, path3);
       }
       if (typeof ctrl !== "symbol") {
         if (identity.isCollection(node)) {
-          path2 = Object.freeze(path2.concat(node));
+          path3 = Object.freeze(path3.concat(node));
           for (let i = 0; i < node.items.length; ++i) {
-            const ci = await visitAsync_(i, node.items[i], visitor, path2);
+            const ci = await visitAsync_(i, node.items[i], visitor, path3);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -413,13 +413,13 @@ var require_visit = __commonJS({
             }
           }
         } else if (identity.isPair(node)) {
-          path2 = Object.freeze(path2.concat(node));
-          const ck = await visitAsync_("key", node.key, visitor, path2);
+          path3 = Object.freeze(path3.concat(node));
+          const ck = await visitAsync_("key", node.key, visitor, path3);
           if (ck === BREAK)
             return BREAK;
           else if (ck === REMOVE)
             node.key = null;
-          const cv = await visitAsync_("value", node.value, visitor, path2);
+          const cv = await visitAsync_("value", node.value, visitor, path3);
           if (cv === BREAK)
             return BREAK;
           else if (cv === REMOVE)
@@ -446,24 +446,24 @@ var require_visit = __commonJS({
       }
       return visitor;
     }
-    function callVisitor(key, node, visitor, path2) {
+    function callVisitor(key, node, visitor, path3) {
       var _a2, _b2, _c, _d, _e;
       if (typeof visitor === "function")
-        return visitor(key, node, path2);
+        return visitor(key, node, path3);
       if (identity.isMap(node))
-        return (_a2 = visitor.Map) == null ? void 0 : _a2.call(visitor, key, node, path2);
+        return (_a2 = visitor.Map) == null ? void 0 : _a2.call(visitor, key, node, path3);
       if (identity.isSeq(node))
-        return (_b2 = visitor.Seq) == null ? void 0 : _b2.call(visitor, key, node, path2);
+        return (_b2 = visitor.Seq) == null ? void 0 : _b2.call(visitor, key, node, path3);
       if (identity.isPair(node))
-        return (_c = visitor.Pair) == null ? void 0 : _c.call(visitor, key, node, path2);
+        return (_c = visitor.Pair) == null ? void 0 : _c.call(visitor, key, node, path3);
       if (identity.isScalar(node))
-        return (_d = visitor.Scalar) == null ? void 0 : _d.call(visitor, key, node, path2);
+        return (_d = visitor.Scalar) == null ? void 0 : _d.call(visitor, key, node, path3);
       if (identity.isAlias(node))
-        return (_e = visitor.Alias) == null ? void 0 : _e.call(visitor, key, node, path2);
+        return (_e = visitor.Alias) == null ? void 0 : _e.call(visitor, key, node, path3);
       return void 0;
     }
-    function replaceNode(key, path2, node) {
-      const parent = path2[path2.length - 1];
+    function replaceNode(key, path3, node) {
+      const parent = path3[path3.length - 1];
       if (identity.isCollection(parent)) {
         parent.items[key] = node;
       } else if (identity.isPair(parent)) {
@@ -1059,10 +1059,10 @@ var require_Collection = __commonJS({
     var createNode = require_createNode();
     var identity = require_identity();
     var Node = require_Node();
-    function collectionFromPath(schema, path2, value2) {
+    function collectionFromPath(schema, path3, value2) {
       let v = value2;
-      for (let i = path2.length - 1; i >= 0; --i) {
-        const k = path2[i];
+      for (let i = path3.length - 1; i >= 0; --i) {
+        const k = path3[i];
         if (typeof k === "number" && Number.isInteger(k) && k >= 0) {
           const a = [];
           a[k] = v;
@@ -1081,7 +1081,7 @@ var require_Collection = __commonJS({
         sourceObjects: /* @__PURE__ */ new Map()
       });
     }
-    var isEmptyPath = (path2) => path2 == null || typeof path2 === "object" && !!path2[Symbol.iterator]().next().done;
+    var isEmptyPath = (path3) => path3 == null || typeof path3 === "object" && !!path3[Symbol.iterator]().next().done;
     var Collection = class extends Node.NodeBase {
       constructor(type, schema) {
         super(type);
@@ -1111,11 +1111,11 @@ var require_Collection = __commonJS({
        * be a Pair instance or a `{ key, value }` object, which may not have a key
        * that already exists in the map.
        */
-      addIn(path2, value2) {
-        if (isEmptyPath(path2))
+      addIn(path3, value2) {
+        if (isEmptyPath(path3))
           this.add(value2);
         else {
-          const [key, ...rest] = path2;
+          const [key, ...rest] = path3;
           const node = this.get(key, true);
           if (identity.isCollection(node))
             node.addIn(rest, value2);
@@ -1129,8 +1129,8 @@ var require_Collection = __commonJS({
        * Removes a value from the collection.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path2) {
-        const [key, ...rest] = path2;
+      deleteIn(path3) {
+        const [key, ...rest] = path3;
         if (rest.length === 0)
           return this.delete(key);
         const node = this.get(key, true);
@@ -1144,8 +1144,8 @@ var require_Collection = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path2, keepScalar) {
-        const [key, ...rest] = path2;
+      getIn(path3, keepScalar) {
+        const [key, ...rest] = path3;
         const node = this.get(key, true);
         if (rest.length === 0)
           return !keepScalar && identity.isScalar(node) ? node.value : node;
@@ -1163,8 +1163,8 @@ var require_Collection = __commonJS({
       /**
        * Checks if the collection includes a value with the key `key`.
        */
-      hasIn(path2) {
-        const [key, ...rest] = path2;
+      hasIn(path3) {
+        const [key, ...rest] = path3;
         if (rest.length === 0)
           return this.has(key);
         const node = this.get(key, true);
@@ -1174,8 +1174,8 @@ var require_Collection = __commonJS({
        * Sets a value in this collection. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path2, value2) {
-        const [key, ...rest] = path2;
+      setIn(path3, value2) {
+        const [key, ...rest] = path3;
         if (rest.length === 0) {
           this.set(key, value2);
         } else {
@@ -3631,9 +3631,9 @@ var require_Document = __commonJS({
           this.contents.add(value2);
       }
       /** Adds a value to the document. */
-      addIn(path2, value2) {
+      addIn(path3, value2) {
         if (assertCollection(this.contents))
-          this.contents.addIn(path2, value2);
+          this.contents.addIn(path3, value2);
       }
       /**
        * Create a new `Alias` node, ensuring that the target `node` has the required anchor.
@@ -3708,14 +3708,14 @@ var require_Document = __commonJS({
        * Removes a value from the document.
        * @returns `true` if the item was found and removed.
        */
-      deleteIn(path2) {
-        if (Collection.isEmptyPath(path2)) {
+      deleteIn(path3) {
+        if (Collection.isEmptyPath(path3)) {
           if (this.contents == null)
             return false;
           this.contents = null;
           return true;
         }
-        return assertCollection(this.contents) ? this.contents.deleteIn(path2) : false;
+        return assertCollection(this.contents) ? this.contents.deleteIn(path3) : false;
       }
       /**
        * Returns item at `key`, or `undefined` if not found. By default unwraps
@@ -3730,10 +3730,10 @@ var require_Document = __commonJS({
        * scalar values from their surrounding node; to disable set `keepScalar` to
        * `true` (collections are always returned intact).
        */
-      getIn(path2, keepScalar) {
-        if (Collection.isEmptyPath(path2))
+      getIn(path3, keepScalar) {
+        if (Collection.isEmptyPath(path3))
           return !keepScalar && identity.isScalar(this.contents) ? this.contents.value : this.contents;
-        return identity.isCollection(this.contents) ? this.contents.getIn(path2, keepScalar) : void 0;
+        return identity.isCollection(this.contents) ? this.contents.getIn(path3, keepScalar) : void 0;
       }
       /**
        * Checks if the document includes a value with the key `key`.
@@ -3744,10 +3744,10 @@ var require_Document = __commonJS({
       /**
        * Checks if the document includes a value at `path`.
        */
-      hasIn(path2) {
-        if (Collection.isEmptyPath(path2))
+      hasIn(path3) {
+        if (Collection.isEmptyPath(path3))
           return this.contents !== void 0;
-        return identity.isCollection(this.contents) ? this.contents.hasIn(path2) : false;
+        return identity.isCollection(this.contents) ? this.contents.hasIn(path3) : false;
       }
       /**
        * Sets a value in this document. For `!!set`, `value` needs to be a
@@ -3764,13 +3764,13 @@ var require_Document = __commonJS({
        * Sets a value in this document. For `!!set`, `value` needs to be a
        * boolean to add/remove the item from the set.
        */
-      setIn(path2, value2) {
-        if (Collection.isEmptyPath(path2)) {
+      setIn(path3, value2) {
+        if (Collection.isEmptyPath(path3)) {
           this.contents = value2;
         } else if (this.contents == null) {
-          this.contents = Collection.collectionFromPath(this.schema, Array.from(path2), value2);
+          this.contents = Collection.collectionFromPath(this.schema, Array.from(path3), value2);
         } else if (assertCollection(this.contents)) {
-          this.contents.setIn(path2, value2);
+          this.contents.setIn(path3, value2);
         }
       }
       /**
@@ -5662,9 +5662,9 @@ var require_cst_visit = __commonJS({
     visit2.BREAK = BREAK;
     visit2.SKIP = SKIP2;
     visit2.REMOVE = REMOVE;
-    visit2.itemAtPath = (cst, path2) => {
+    visit2.itemAtPath = (cst, path3) => {
       let item = cst;
-      for (const [field, index] of path2) {
+      for (const [field, index] of path3) {
         const tok = item == null ? void 0 : item[field];
         if (tok && "items" in tok) {
           item = tok.items[index];
@@ -5673,23 +5673,23 @@ var require_cst_visit = __commonJS({
       }
       return item;
     };
-    visit2.parentCollection = (cst, path2) => {
-      const parent = visit2.itemAtPath(cst, path2.slice(0, -1));
-      const field = path2[path2.length - 1][0];
+    visit2.parentCollection = (cst, path3) => {
+      const parent = visit2.itemAtPath(cst, path3.slice(0, -1));
+      const field = path3[path3.length - 1][0];
       const coll = parent == null ? void 0 : parent[field];
       if (coll && "items" in coll)
         return coll;
       throw new Error("Parent collection not found");
     };
-    function _visit(path2, item, visitor) {
-      let ctrl = visitor(item, path2);
+    function _visit(path3, item, visitor) {
+      let ctrl = visitor(item, path3);
       if (typeof ctrl === "symbol")
         return ctrl;
       for (const field of ["key", "value"]) {
         const token = item[field];
         if (token && "items" in token) {
           for (let i = 0; i < token.items.length; ++i) {
-            const ci = _visit(Object.freeze(path2.concat([[field, i]])), token.items[i], visitor);
+            const ci = _visit(Object.freeze(path3.concat([[field, i]])), token.items[i], visitor);
             if (typeof ci === "number")
               i = ci - 1;
             else if (ci === BREAK)
@@ -5700,10 +5700,10 @@ var require_cst_visit = __commonJS({
             }
           }
           if (typeof ctrl === "function" && field === "key")
-            ctrl = ctrl(item, path2);
+            ctrl = ctrl(item, path3);
         }
       }
-      return typeof ctrl === "function" ? ctrl(item, path2) : ctrl;
+      return typeof ctrl === "function" ? ctrl(item, path3) : ctrl;
     }
     exports.visit = visit2;
   }
@@ -11843,7 +11843,7 @@ function transformGfmAutolinkLiterals(tree) {
     { ignore: ["link", "linkReference"] }
   );
 }
-function findUrl(_2, protocol2, domain3, path2, match) {
+function findUrl(_2, protocol2, domain3, path3, match) {
   let prefix = "";
   if (!previous(match)) {
     return false;
@@ -11856,7 +11856,7 @@ function findUrl(_2, protocol2, domain3, path2, match) {
   if (!isCorrectDomain(domain3)) {
     return false;
   }
-  const parts = splitUrl(domain3 + path2);
+  const parts = splitUrl(domain3 + path3);
   if (!parts[0])
     return false;
   const result = {
@@ -13719,20 +13719,20 @@ function removeExtension(fileName) {
   }
   return "";
 }
-function normalizePath(path2) {
-  return normalizePathSlash((0, import_node_path.normalize)(path2));
+function normalizePath(path3) {
+  return normalizePathSlash((0, import_node_path.normalize)(path3));
 }
-function normalizePathSlash(path2) {
-  const isExtendedLengthPath = /^\\\\\?\\/.test(path2);
-  const hasNonAscii = /[^\u0000-\u0080]+/.test(path2);
+function normalizePathSlash(path3) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path3);
+  const hasNonAscii = /[^\u0000-\u0080]+/.test(path3);
   if (isExtendedLengthPath || hasNonAscii) {
-    return path2;
+    return path3;
   }
-  path2 = path2.replace(/\\/g, "/");
-  if (path2.endsWith("/")) {
-    path2 = path2.slice(0, path2.length - 1);
+  path3 = path3.replace(/\\/g, "/");
+  if (path3.endsWith("/")) {
+    path3 = path3.slice(0, path3.length - 1);
   }
-  return path2;
+  return path3;
 }
 function createFileId(routesDir, fsPath, explicitFileType) {
   const ids = [];
@@ -20731,7 +20731,7 @@ export default WrappedMdxContent;
 }
 
 // packages/qwik-city/buildtime/vite/plugin.ts
-var import_node_path10 = require("path");
+var import_node_path11 = require("path");
 var import_vite2 = require("vite");
 
 // packages/qwik-city/buildtime/runtime-generation/generate-entries.ts
@@ -20759,10 +20759,11 @@ function generateQwikCityEntries(ctx) {
 
 // packages/qwik-city/buildtime/runtime-generation/utils.ts
 function getImportPath(importPath) {
-  if (importPath.endsWith(".tsx") || importPath.endsWith(".jsx")) {
+  const lowerCasePath = importPath.toLowerCase();
+  if (lowerCasePath.endsWith(".tsx") || lowerCasePath.endsWith(".jsx")) {
     return importPath.slice(0, importPath.length - 4);
   }
-  if (importPath.endsWith(".ts")) {
+  if (lowerCasePath.endsWith(".ts")) {
     return importPath.slice(0, importPath.length - 3);
   }
   return importPath;
@@ -24789,8 +24790,8 @@ var findLocation = (e) => {
         const start = line.indexOf("/");
         const end = line.lastIndexOf(")", start);
         if (start > 0) {
-          const path2 = line.slice(start, end);
-          const parts = path2.split(":");
+          const path3 = line.slice(start, end);
+          const parts = path3.split(":");
           const nu0 = safeParseInt(parts[parts.length - 1]);
           const nu1 = safeParseInt(parts[parts.length - 2]);
           if (typeof nu0 === "number" && typeof nu1 === "number") {
@@ -25579,6 +25580,7 @@ var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
 // packages/qwik-city/buildtime/vite/image-jsx.ts
 var import_svgo = require("svgo");
 var import_node_fs8 = __toESM(require("fs"), 1);
+var import_node_path10 = __toESM(require("path"), 1);
 
 // packages/qwik/src/optimizer/src/plugins/plugin.ts
 function parseId(originalId) {
@@ -25645,9 +25647,9 @@ function imagePlugin(userOpts) {
       load: {
         order: "pre",
         handler: async (id) => {
-          id = id.toLowerCase();
           const { params, pathId } = parseId(id);
-          if (pathId.endsWith(".svg") && params.has("jsx")) {
+          const extension = import_node_path10.default.extname(pathId).toLowerCase();
+          if (extension === ".svg" && params.has("jsx")) {
             const code2 = await import_node_fs8.default.promises.readFile(pathId, "utf-8");
             return {
               code: code2,
@@ -25660,7 +25662,8 @@ function imagePlugin(userOpts) {
         id = id.toLowerCase();
         const { params, pathId } = parseId(id);
         if (params.has("jsx")) {
-          if (supportedExtensions.some((ext) => pathId.endsWith(ext))) {
+          const extension = import_node_path10.default.extname(pathId).toLowerCase();
+          if (supportedExtensions.includes(extension)) {
             if (!code2.includes("srcSet")) {
               this.error(`Image '${id}' could not be optimized to JSX`);
             }
@@ -25671,7 +25674,7 @@ function imagePlugin(userOpts) {
   export default function (props, key, _, dev) {
     return _jsxQ('img', props, PROPS, undefined, 3, key, dev);
   }`;
-          } else if (pathId.endsWith(".svg")) {
+          } else if (extension === ".svg") {
             const svgAttributes = {};
             const data = (0, import_svgo.optimize)(code2, {
               plugins: [
@@ -25757,7 +25760,7 @@ function qwikCityPlugin(userOpts) {
     async configResolved(config) {
       var _a2, _b2, _c;
       Object.assign(process.env, (0, import_vite2.loadEnv)(config.mode, process.cwd(), ""));
-      rootDir = (0, import_node_path10.resolve)(config.root);
+      rootDir = (0, import_node_path11.resolve)(config.root);
       const target = ((_a2 = config.build) == null ? void 0 : _a2.ssr) || config.mode === "ssr" ? "ssr" : "client";
       ctx = createBuildContext(rootDir, config.base, userOpts, target);
       ctx.isDevServer = config.command === "serve";
@@ -25786,11 +25789,11 @@ function qwikCityPlugin(userOpts) {
     },
     resolveId(id) {
       if (id === QWIK_SERIALIZER) {
-        return (0, import_node_path10.join)(rootDir, id);
+        return (0, import_node_path11.join)(rootDir, id);
       }
       if (id === QWIK_CITY_PLAN_ID || id === QWIK_CITY_ENTRIES_ID) {
         return {
-          id: (0, import_node_path10.join)(rootDir, id),
+          id: (0, import_node_path11.join)(rootDir, id),
           // user entries added in the routes, like src/routes/service-worker.ts
           // are added as dynamic imports to the qwik-city-plan as a way to create
           // a new entry point for the build. Ensure these are not treeshaked.
@@ -25798,7 +25801,7 @@ function qwikCityPlugin(userOpts) {
         };
       }
       if (id === QWIK_CITY_SW_REGISTER) {
-        return (0, import_node_path10.join)(rootDir, id);
+        return (0, import_node_path11.join)(rootDir, id);
       }
       if (id === STATIC_PATHS_ID) {
         return {
@@ -25848,9 +25851,10 @@ function qwikCityPlugin(userOpts) {
       if (id.startsWith("\0")) {
         return;
       }
-      const isMD = id.endsWith(".md") || id.endsWith(".mdx");
+      const ext = (0, import_node_path11.extname)(id).toLowerCase();
+      const isMD = ext === ".md" || ext === ".mdx";
       if (ctx && isMD) {
-        const fileName = (0, import_node_path10.basename)(id);
+        const fileName = (0, import_node_path11.basename)(id);
         if (isMenuFileName(fileName)) {
           const menuCode = await transformMenu(ctx.opts, id, code2);
           return menuCode;
@@ -25913,10 +25917,10 @@ function qwikCityPlugin(userOpts) {
           const clientOutDir = qwikPlugin.api.getClientOutDir();
           if (manifest && clientOutDir) {
             const basePathRelDir = api.getBasePathname().replace(/^\/|\/$/, "");
-            const clientOutBaseDir = (0, import_node_path10.join)(clientOutDir, basePathRelDir);
+            const clientOutBaseDir = (0, import_node_path11.join)(clientOutDir, basePathRelDir);
             for (const swEntry of ctx.serviceWorkers) {
               try {
-                const swClientDistPath = (0, import_node_path10.join)(clientOutBaseDir, swEntry.chunkFileName);
+                const swClientDistPath = (0, import_node_path11.join)(clientOutBaseDir, swEntry.chunkFileName);
                 const swCode = await import_node_fs9.default.promises.readFile(swClientDistPath, "utf-8");
                 try {
                   const swCodeUpdate = prependManifestToServiceWorker(ctx, manifest, swCode);
@@ -25940,7 +25944,7 @@ function qwikCityPlugin(userOpts) {
               false
             );
             await import_node_fs9.default.promises.mkdir(outDir, { recursive: true });
-            const serverPackageJsonPath = (0, import_node_path10.join)(outDir, "package.json");
+            const serverPackageJsonPath = (0, import_node_path11.join)(outDir, "package.json");
             let packageJson = {};
             if (import_node_fs9.default.existsSync(serverPackageJsonPath)) {
               const content = await import_node_fs9.default.promises.readFile(serverPackageJsonPath, "utf-8");
@@ -25956,8 +25960,8 @@ function qwikCityPlugin(userOpts) {
             packageJson = { ...packageJson, type: ssrFormat2pkgTypeMap[ssrFormat] || "module" };
             const serverPackageJsonCode = JSON.stringify(packageJson, null, 2);
             await Promise.all([
-              import_node_fs9.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
-              import_node_fs9.default.promises.writeFile((0, import_node_path10.join)(outDir, RESOLVED_NOT_FOUND_PATHS_ID), notFoundPathsCode),
+              import_node_fs9.default.promises.writeFile((0, import_node_path11.join)(outDir, RESOLVED_STATIC_PATHS_ID), staticPathsCode),
+              import_node_fs9.default.promises.writeFile((0, import_node_path11.join)(outDir, RESOLVED_NOT_FOUND_PATHS_ID), notFoundPathsCode),
               import_node_fs9.default.promises.writeFile(serverPackageJsonPath, serverPackageJsonCode)
             ]);
           }
