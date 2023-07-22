@@ -1,6 +1,6 @@
 {
   "name": "@builder.io/qwik-city",
-  "version": "1.2.6-dev20230721163838",
+  "version": "1.2.6-dev20230721235748",
   "description": "The meta-framework for Qwik.",
   "main": "./index.qwik.mjs",
   "qwik": "./index.qwik.mjs",
