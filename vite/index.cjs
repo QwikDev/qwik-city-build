@@ -25670,9 +25670,9 @@ function imagePlugin(userOpts) {
             const index = code2.indexOf("export default");
             return code2.slice(0, index) + `
   import { _jsxQ } from '@builder.io/qwik';
-  const PROPS = {decoding: 'async', loading: 'lazy', srcSet, width, height};
+  const PROPS = {srcSet, width, height};
   export default function (props, key, _, dev) {
-    return _jsxQ('img', props, PROPS, undefined, 3, key, dev);
+    return _jsxQ('img', {...{decoding: 'async', loading: 'lazy'}, ...props}, PROPS, undefined, 3, key, dev);
   }`;
           } else if (extension === ".svg") {
             const svgAttributes = {};
