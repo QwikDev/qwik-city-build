@@ -76,7 +76,7 @@ const spaInit = /* @__PURE__ */ inlinedQrl((currentScript) => {
       const pushState = history.pushState;
       const replaceState = history.replaceState;
       const prepareState = (state) => {
-        if (state === null || false)
+        if (state === null || typeof state === "undefined")
           state = {};
         else if (state?.constructor !== Object) {
           state = {
@@ -709,7 +709,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
               const pushState = history.pushState;
               const replaceState2 = history.replaceState;
               const prepareState = (state) => {
-                if (state === null || false)
+                if (state === null || typeof state === "undefined")
                   state = {};
                 else if (state?.constructor !== Object) {
                   state = {

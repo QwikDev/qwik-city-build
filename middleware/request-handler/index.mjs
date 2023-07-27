@@ -155,10 +155,13 @@ var Cookie = class {
     };
   }
   getAll(live = true) {
-    return Object.keys(this[live ? LIVE_COOKIE : REQ_COOKIE]).reduce((cookies, cookieName) => {
-      cookies[cookieName] = this.get(cookieName);
-      return cookies;
-    }, {});
+    return Object.keys(this[live ? LIVE_COOKIE : REQ_COOKIE]).reduce(
+      (cookies, cookieName) => {
+        cookies[cookieName] = this.get(cookieName);
+        return cookies;
+      },
+      {}
+    );
   }
   has(cookieName, live = true) {
     return !!this[live ? LIVE_COOKIE : REQ_COOKIE][cookieName];
