@@ -315,6 +315,7 @@ declare interface LayoutModule extends RouteModule {
 }
 
 declare type LoadedRoute = [
+routeName: string,
 params: PathParams,
 mods: (RouteModule | ContentModule)[],
 menu: ContentMenu | undefined,

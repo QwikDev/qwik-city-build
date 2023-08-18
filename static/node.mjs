@@ -681,7 +681,7 @@ async function generateNotFoundPages(sys, opts, routes) {
   if (opts.emit404Pages !== false) {
     const basePathname = opts.basePathname || "/";
     const rootNotFoundPathname = basePathname + "404.html";
-    const hasRootNotFound = routes.some((r) => r[3] === rootNotFoundPathname);
+    const hasRootNotFound = routes.some((r) => r[2] === rootNotFoundPathname);
     if (!hasRootNotFound) {
       const filePath = sys.getRouteFilePath(rootNotFoundPathname, true);
       const html = getErrorHtml(404, "Resource Not Found");
@@ -876,6 +876,26 @@ function formatError(e) {
 
 // packages/qwik-city/static/main-thread.ts
 import { buildErrorMessage } from "vite";
+
+// packages/qwik-city/static/extract-params.ts
+function extractParamNames(routeName) {
+  const params = [];
+  let idx = 0;
+  while (idx < routeName.length) {
+    const start = routeName.indexOf("[", idx);
+    if (start !== -1) {
+      const end = routeName.indexOf("]", start);
+      const param = routeName.slice(start + 1, end);
+      params.push(param.startsWith("...") ? param.substring(3) : param);
+      idx = end + 1;
+    } else {
+      idx = routeName.length;
+    }
+  }
+  return params;
+}
+
+// packages/qwik-city/static/main-thread.ts
 async function mainThread(sys) {
   const opts = sys.getOptions();
   validateOptions(opts);
@@ -1008,9 +1028,10 @@ ${bold(red("Error during SSG"))}`);
         }
       };
       const loadStaticRoute = async (route) => {
-        const [_, loaders, paramNames, originalPathname] = route;
+        const [routeName, loaders, originalPathname] = route;
         const modules = await Promise.all(loaders.map((loader) => loader()));
         const pageModule = modules[modules.length - 1];
+        const paramNames = extractParamNames(routeName);
         const isValidStaticModule = pageModule && (pageModule.default || pageModule.onRequest || pageModule.onGet);
         if (isValidStaticModule) {
           if (Array.isArray(paramNames) && paramNames.length > 0) {

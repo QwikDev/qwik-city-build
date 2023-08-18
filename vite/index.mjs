@@ -21147,19 +21147,14 @@ function createRoutes(ctx, qwikPlugin, c2, esmImports, isSSR) {
   c2.push(`];`);
 }
 function createRouteData(qwikPlugin, r2, loaders, isSsr) {
-  const pattern = r2.pattern.toString();
+  const routeName = JSON.stringify(r2.routeName);
   const moduleLoaders = `[ ${loaders.join(", ")} ]`;
   if (isSsr) {
-    const paramNames = r2.paramNames && r2.paramNames.length > 0 ? JSON.stringify(r2.paramNames) : `undefined`;
     const originalPathname = JSON.stringify(r2.pathname);
     const clientBundleNames = JSON.stringify(getClientRouteBundleNames(qwikPlugin, r2));
-    return `[ ${pattern}, ${moduleLoaders}, ${paramNames}, ${originalPathname}, ${clientBundleNames} ]`;
+    return `[ ${routeName}, ${moduleLoaders}, ${originalPathname}, ${clientBundleNames} ]`;
   }
-  if (r2.paramNames.length > 0) {
-    const paramNames = JSON.stringify(r2.paramNames);
-    return `[ ${pattern}, ${moduleLoaders}, ${paramNames} ]`;
-  }
-  return `[ ${pattern}, ${moduleLoaders} ]`;
+  return `[ ${routeName}, ${moduleLoaders} ]`;
 }
 function getClientRouteBundleNames(qwikPlugin, r2) {
   const bundlesNames = [];
@@ -23686,6 +23681,7 @@ function parseRoutePathname(basePathname, pathname) {
   if (pathname === basePathname) {
     return {
       pattern: new RegExp("^" + pathname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$"),
+      routeName: pathname,
       paramNames: [],
       segments: [[{ content: "", dynamic: false, rest: false }]]
     };
@@ -23717,6 +23713,7 @@ function parseRoutePathname(basePathname, pathname) {
   );
   return {
     pattern,
+    routeName: pathname,
     paramNames,
     segments: segments.map((segment) => {
       const parts = [];
@@ -24191,13 +24188,18 @@ function getQwikCityServerData(requestEv) {
   request.headers.forEach((value2, key) => requestHeaders[key] = value2);
   const action = requestEv.sharedMap.get(RequestEvSharedActionId);
   const formData = requestEv.sharedMap.get(RequestEvSharedActionFormData);
+  const routeName = requestEv.sharedMap.get(RequestRouteName);
   const nonce = requestEv.sharedMap.get(RequestEvSharedNonce);
   return {
     url: new URL(url.pathname + url.search, url).href,
     requestHeaders,
     locale: locale(),
     nonce,
+    containerAttributes: {
+      "q:route": routeName
+    },
     qwikcity: {
+      routeName,
       ev: requestEv,
       params: { ...params },
       loadedRoute: getRequestRoute(requestEv),
@@ -24216,7 +24218,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
   const routeLoaders = [];
   const routeActions = [];
   const requestHandlers = [];
-  const isPageRoute = !!(route && isLastModulePageRoute(route[1]));
+  const isPageRoute = !!(route && isLastModulePageRoute(route[2]));
   if (serverPlugins) {
     _resolveRequestHandlers(
       routeLoaders,
@@ -24228,6 +24230,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
     );
   }
   if (route) {
+    const routeName = route[0];
     if (checkOrigin && (method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE")) {
       requestHandlers.unshift(csrfCheckMiddleware);
     }
@@ -24243,11 +24246,14 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       routeLoaders,
       routeActions,
       requestHandlers,
-      route[1],
+      route[2],
       isPageRoute,
       method
     );
     if (isPageRoute) {
+      requestHandlers.push((ev) => {
+        ev.sharedMap.set(RequestRouteName, routeName);
+      });
       requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
       requestHandlers.push(renderHandler);
     }
@@ -24694,6 +24700,7 @@ var RequestEvMode = Symbol("RequestEvMode");
 var RequestEvRoute = Symbol("RequestEvRoute");
 var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
+var RequestRouteName = "@routeName";
 var RequestEvSharedActionId = "@actionId";
 var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
@@ -24774,7 +24781,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     env,
     method: request.method,
     signal: request.signal,
-    params: (loadedRoute == null ? void 0 : loadedRoute[0]) ?? {},
+    params: (loadedRoute == null ? void 0 : loadedRoute[1]) ?? {},
     pathname: url.pathname,
     platform,
     query: url.searchParams,
@@ -25026,6 +25033,83 @@ var IsQData = "@isQData";
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
 
+// packages/qwik-city/runtime/src/route-matcher.ts
+function matchRoute(route, path3) {
+  const params = {};
+  let routeIdx = startIdxSkipSlash(route);
+  const routeLength = route.length;
+  let pathIdx = startIdxSkipSlash(path3);
+  const pathLength = lengthNoTrailingSlash(path3);
+  while (routeIdx < routeLength) {
+    const routeCh = route.charCodeAt(routeIdx++);
+    const pathCh = path3.charCodeAt(pathIdx++);
+    if (routeCh === 91 /* OPEN_BRACKET */) {
+      const isRest = isThreeDots(route, routeIdx);
+      const paramNameStart = routeIdx + (isRest ? 3 : 0);
+      const paramNameEnd = scan(route, paramNameStart, routeLength, 93 /* CLOSE_BRACKET */);
+      const paramName = route.substring(paramNameStart, paramNameEnd);
+      const paramSuffixEnd = scan(route, paramNameEnd + 1, routeLength, 47 /* SLASH */);
+      const suffix = route.substring(paramNameEnd + 1, paramSuffixEnd);
+      routeIdx = paramNameEnd + 1;
+      const paramValueStart = pathIdx - 1;
+      const paramValueEnd = scan(
+        path3,
+        paramValueStart,
+        pathLength,
+        isRest ? 0 /* EOL */ : 47 /* SLASH */,
+        suffix
+      );
+      if (paramValueEnd == -1) {
+        return null;
+      }
+      const paramValue = path3.substring(paramValueStart, paramValueEnd);
+      if (!isRest && !suffix && !paramValue) {
+        return null;
+      }
+      pathIdx = paramValueEnd;
+      params[paramName] = decodeURIComponent(paramValue);
+    } else if (routeCh !== pathCh) {
+      if (!(isNaN(pathCh) && isRestParameter(route, routeIdx))) {
+        return null;
+      }
+    }
+  }
+  if (allConsumed(route, routeIdx) && allConsumed(path3, pathIdx)) {
+    return params;
+  } else {
+    return null;
+  }
+}
+function isRestParameter(text2, idx) {
+  return text2.charCodeAt(idx) === 91 /* OPEN_BRACKET */ && isThreeDots(text2, idx + 1);
+}
+function lengthNoTrailingSlash(text2) {
+  const length = text2.length;
+  return length > 1 && text2.charCodeAt(length - 1) === 47 /* SLASH */ ? length - 1 : length;
+}
+function allConsumed(text2, idx) {
+  const length = text2.length;
+  return idx >= length || idx == length - 1 && text2.charCodeAt(idx) === 47 /* SLASH */;
+}
+function startIdxSkipSlash(text2) {
+  return text2.charCodeAt(0) === 47 /* SLASH */ ? 1 : 0;
+}
+function isThreeDots(text2, idx) {
+  return text2.charCodeAt(idx) === 46 /* DOT */ && text2.charCodeAt(idx + 1) === 46 /* DOT */ && text2.charCodeAt(idx + 2) === 46 /* DOT */;
+}
+function scan(text2, idx, length, ch, suffix = "") {
+  while (idx < length && text2.charCodeAt(idx) !== ch) {
+    idx++;
+  }
+  const suffixLength = suffix.length;
+  for (let i = 0; i < suffixLength; i++) {
+    if (text2.charCodeAt(idx - suffixLength + i) !== suffix.charCodeAt(i)) {
+      return -1;
+    }
+  }
+  return idx - suffixLength;
+}
+
 // packages/qwik-city/runtime/src/routing.ts
 var getMenuLoader = (menus, pathname) => {
   if (menus) {
@@ -25037,17 +25121,6 @@ var getMenuLoader = (menus, pathname) => {
       return menu[1];
     }
   }
-};
-var getPathParams = (paramNames, match) => {
-  const params = {};
-  if (paramNames) {
-    for (let i = 0; i < paramNames.length; i++) {
-      const param = (match == null ? void 0 : match[i + 1]) ?? "";
-      const v = param.endsWith("/") ? param.slice(0, -1) : param;
-      params[paramNames[i]] = decodeURIComponent(v);
-    }
-  }
-  return params;
 };
 
 // packages/qwik-city/middleware/node/http.ts
@@ -25275,23 +25348,17 @@ function formatError(e) {
 function ssrDevMiddleware(ctx, server) {
   const matchRouteRequest = (pathname) => {
     for (const route of ctx.routes) {
-      const match = route.pattern.exec(pathname);
-      if (match) {
-        return {
-          route,
-          params: getPathParams(route.paramNames, match)
-        };
+      const params = matchRoute(route.pathname, pathname);
+      if (params) {
+        return { route, params };
       }
     }
     if (ctx.opts.trailingSlash && !pathname.endsWith("/")) {
       const pathnameWithSlash = pathname + "/";
       for (const route of ctx.routes) {
-        const match = route.pattern.exec(pathnameWithSlash);
-        if (match) {
-          return {
-            route,
-            params: getPathParams(route.paramNames, match)
-          };
+        const params = matchRoute(route.pathname, pathnameWithSlash);
+        if (params) {
+          return { route, params };
         }
       }
     }
@@ -25389,7 +25456,13 @@ function ssrDevMiddleware(ctx, server) {
           const menuModule = await menuLoader();
           menu = menuModule == null ? void 0 : menuModule.default;
         }
-        const loadedRoute = [params, routeModules, menu, void 0];
+        const loadedRoute = [
+          routeResult ? routeResult.route.pathname : "",
+          params,
+          routeModules,
+          menu,
+          void 0
+        ];
         const requestHandlers = resolveRequestHandlers(
           serverPlugins,
           loadedRoute,

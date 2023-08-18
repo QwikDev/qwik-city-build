@@ -533,10 +533,9 @@ export declare const routeActionQrl: ActionConstructorQRL;
 /**
  * @public
  */
-export declare type RouteData = [pattern: RegExp, loaders: ModuleLoader[]] | [pattern: RegExp, loaders: ModuleLoader[], paramNames: string[]] | [
-pattern: RegExp,
+export declare type RouteData = [routeName: string, loaders: ModuleLoader[]] | [
+routeName: string,
 loaders: ModuleLoader[],
-paramNames: string[],
 originalPathname: string,
 routeBundleNames: string[]
 ];
