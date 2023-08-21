@@ -9,6 +9,7 @@ import { JSXNode } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
+import type { ReadonlySignal } from '@builder.io/qwik';
 import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventAction } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestEventBase } from '@builder.io/qwik-city/middleware/request-handler';
@@ -223,6 +224,10 @@ export declare interface DocumentHeadValue {
      */
     readonly styles?: readonly DocumentStyle[];
     /**
+     * Used to manually append `<script>` elements to the `<head>`.
+     */
+    readonly scripts?: readonly DocumentScript[];
+    /**
      * Arbitrary object containing custom data. When the document head is created from
      * markdown files, the frontmatter attributes that are not recognized as a well-known
      * meta names (such as title, description, author, etc...), are stored in this property.
@@ -267,13 +272,20 @@ export declare interface DocumentMeta {
 }
 
 /**
+ * @alpha
+ */
+export declare interface DocumentScript {
+    readonly script?: string;
+    readonly props?: Readonly<QwikIntrinsicElements['script']>;
+    readonly key?: string;
+}
+
+/**
  * @public
  */
 export declare interface DocumentStyle {
     readonly style: string;
-    readonly props?: Readonly<{
-        [propName: string]: string;
-    }>;
+    readonly props?: Readonly<QwikIntrinsicElements['style']>;
     readonly key?: string;
 }
 
@@ -498,11 +510,6 @@ export declare interface QwikCityProps {
  */
 export declare const QwikCityProvider: Component<QwikCityProps>;
 
-/**
- * @public
- */
-declare type ReadonlySignal<T = any> = Readonly<Signal<T>>;
-
 export { RequestEvent }
 
 export { RequestEventAction }
@@ -610,13 +617,6 @@ export declare const serverQrl: ServerConstructorQRL;
 export declare const ServiceWorkerRegister: (props: {
     nonce?: string;
 }) => JSXNode<"script">;
-
-/**
- * @public
- */
-declare interface Signal<T = any> {
-    value: T;
-}
 
 /**
  * @public

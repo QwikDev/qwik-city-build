@@ -267,6 +267,7 @@ const resolveDocumentHead = (resolvedHead, updatedHead) => {
   mergeArray(resolvedHead.meta, updatedHead.meta);
   mergeArray(resolvedHead.links, updatedHead.links);
   mergeArray(resolvedHead.styles, updatedHead.styles);
+  mergeArray(resolvedHead.scripts, updatedHead.scripts);
   Object.assign(resolvedHead.frontmatter, updatedHead.frontmatter);
 };
 const mergeArray = (existingArr, newArr) => {
@@ -287,6 +288,7 @@ const createDocumentHead = () => ({
   meta: [],
   links: [],
   styles: [],
+  scripts: [],
   frontmatter: {}
 });
 function matchRoute(route, path) {
@@ -756,6 +758,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
         documentHead2.links = resolvedHead.links;
         documentHead2.meta = resolvedHead.meta;
         documentHead2.styles = resolvedHead.styles;
+        documentHead2.scripts = resolvedHead.scripts;
         documentHead2.title = resolvedHead.title;
         documentHead2.frontmatter = resolvedHead.frontmatter;
         if (build.isBrowser) {

@@ -3,6 +3,7 @@ import type { _deserializeData } from '@builder.io/qwik';
 import type { FailReturn } from '@builder.io/qwik-city';
 import type { Loader } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
+import type { QwikIntrinsicElements } from '@builder.io/qwik';
 import type { Render } from '@builder.io/qwik/server';
 import type { RenderOptions } from '@builder.io/qwik/server';
 import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
@@ -233,6 +234,10 @@ declare interface DocumentHeadValue {
      */
     readonly styles?: readonly DocumentStyle[];
     /**
+     * Used to manually append `<script>` elements to the `<head>`.
+     */
+    readonly scripts?: readonly DocumentScript[];
+    /**
      * Arbitrary object containing custom data. When the document head is created from
      * markdown files, the frontmatter attributes that are not recognized as a well-known
      * meta names (such as title, description, author, etc...), are stored in this property.
@@ -277,13 +282,20 @@ declare interface DocumentMeta {
 }
 
 /**
+ * @alpha
+ */
+declare interface DocumentScript {
+    readonly script?: string;
+    readonly props?: Readonly<QwikIntrinsicElements['script']>;
+    readonly key?: string;
+}
+
+/**
  * @public
  */
 declare interface DocumentStyle {
     readonly style: string;
-    readonly props?: Readonly<{
-        [propName: string]: string;
-    }>;
+    readonly props?: Readonly<QwikIntrinsicElements['style']>;
     readonly key?: string;
 }
 

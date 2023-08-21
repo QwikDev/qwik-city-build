@@ -14174,6 +14174,7 @@ function frontmatterAttrsToDocumentHead(attrs) {
         meta: [],
         styles: [],
         links: [],
+        scripts: [],
         frontmatter: {}
       };
       for (const attrName of attrNames) {
