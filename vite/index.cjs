@@ -24041,6 +24041,13 @@ var createSetCookieValue = (cookieName, cookieValue, options2) => {
   }
   return c2.join("; ");
 };
+function tryDecodeUriComponent(str) {
+  try {
+    return decodeURIComponent(str);
+  } catch {
+    return str;
+  }
+}
 var parseCookieString = (cookieString) => {
   const cookie = {};
   if (typeof cookieString === "string" && cookieString !== "") {
@@ -24048,7 +24055,7 @@ var parseCookieString = (cookieString) => {
     for (const cookieSegment of cookieSegments) {
       const separatorIndex = cookieSegment.indexOf("=");
       if (separatorIndex !== -1) {
-        cookie[decodeURIComponent(cookieSegment.slice(0, separatorIndex).trim())] = decodeURIComponent(cookieSegment.slice(separatorIndex + 1).trim());
+        cookie[tryDecodeUriComponent(cookieSegment.slice(0, separatorIndex).trim())] = tryDecodeUriComponent(cookieSegment.slice(separatorIndex + 1).trim());
       }
     }
   }
