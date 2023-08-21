@@ -1027,26 +1027,21 @@ var parseRequest = async (request, sharedMap, qwikSerializer) => {
   return void 0;
 };
 var formToObj = (formData) => {
-  const obj = {};
-  formData.forEach((value, key) => {
-    const keys = key.split(".").filter((k) => k);
-    let current = obj;
-    for (let i = 0; i < keys.length; i++) {
-      let k = keys[i];
-      if (i === keys.length - 1) {
-        if (k.endsWith("[]")) {
-          k = k.slice(0, -2);
-          current[k] = current[k] || [];
-          current[k].push(value);
-        } else {
-          current[k] = value;
-        }
-      } else {
-        current = current[k] = { ...current[k] };
+  const values = [...formData.entries()].reduce((values2, [name, value]) => {
+    name.split(".").reduce((object, key, index, keys) => {
+      if (key.endsWith("[]")) {
+        const arrayKey = key.slice(0, -2);
+        object[arrayKey] = object[arrayKey] || [];
+        return object[arrayKey] = [...object[arrayKey], value];
       }
-    }
-  });
-  return obj;
+      if (index < keys.length - 1) {
+        return object[key] = object[key] || (Number.isNaN(+keys[index + 1]) ? {} : []);
+      }
+      return object[key] = value;
+    }, values2);
+    return values2;
+  }, {});
+  return values;
 };
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
