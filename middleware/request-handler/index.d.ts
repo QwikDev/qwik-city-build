@@ -1,5 +1,6 @@
 import type { Action } from '@builder.io/qwik-city';
 import type { _deserializeData } from '@builder.io/qwik';
+import type { EnvGetter as EnvGetter_2 } from '@builder.io/qwik-city/middleware/request-handler';
 import type { FailReturn } from '@builder.io/qwik-city';
 import type { Loader } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
@@ -299,7 +300,10 @@ declare interface DocumentStyle {
     readonly key?: string;
 }
 
-declare interface EnvGetter {
+/**
+ * @public
+ */
+export declare interface EnvGetter {
     get(key: string): string | undefined;
 }
 
@@ -715,7 +719,9 @@ declare interface StaticGenerate {
 /**
  * @public
  */
-declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
+declare type StaticGenerateHandler = ({ env, }: {
+    env: EnvGetter_2;
+}) => Promise<StaticGenerate> | StaticGenerate;
 
 declare type StatusCodes = InformationalCode | SuccessCode | ClientErrorCode | ServerErrorCode | RedirectCode | number;
 

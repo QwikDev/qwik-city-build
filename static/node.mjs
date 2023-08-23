@@ -1036,7 +1036,13 @@ ${bold(red("Error during SSG"))}`);
         if (isValidStaticModule) {
           if (Array.isArray(paramNames) && paramNames.length > 0) {
             if (typeof pageModule.onStaticGenerate === "function" && paramNames.length > 0) {
-              const staticGenerate = await pageModule.onStaticGenerate();
+              const staticGenerate = await pageModule.onStaticGenerate({
+                env: {
+                  get(key) {
+                    return sys.getEnv(key);
+                  }
+                }
+              });
               if (Array.isArray(staticGenerate.params)) {
                 for (const params of staticGenerate.params) {
                   const pathname = getPathnameForDynamicRoute(
