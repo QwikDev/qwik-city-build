@@ -431,7 +431,7 @@ const getClientDataPath = (pathname, pageSearch, action) => {
 };
 const getClientNavPath = (props, baseUrl) => {
   const href = props.href;
-  if (typeof href === "string" && typeof props.target !== "string")
+  if (typeof href === "string" && typeof props.target !== "string" && !props.reload)
     try {
       const linkUrl = toUrl(href.trim(), baseUrl.url);
       const currentUrl = toUrl("", baseUrl.url);
@@ -959,7 +959,10 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
   const nav = useNavigate();
   const loc = useLocation();
   const { onClick$, reload, replaceState, scroll, ...linkProps } = (() => props)();
-  const clientNavPath = qwik.untrack(() => getClientNavPath(linkProps, loc));
+  const clientNavPath = qwik.untrack(() => getClientNavPath({
+    ...linkProps,
+    reload
+  }, loc));
   const prefetchDataset = qwik.untrack(() => getPrefetchDataset(props, clientNavPath, loc));
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;

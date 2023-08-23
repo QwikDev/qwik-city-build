@@ -414,7 +414,7 @@ const getClientDataPath = (pathname, pageSearch, action) => {
 };
 const getClientNavPath = (props, baseUrl) => {
   const href = props.href;
-  if (typeof href === "string" && typeof props.target !== "string")
+  if (typeof href === "string" && typeof props.target !== "string" && !props.reload)
     try {
       const linkUrl = toUrl(href.trim(), baseUrl.url);
       const currentUrl = toUrl("", baseUrl.url);
@@ -942,7 +942,10 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   const nav = useNavigate();
   const loc = useLocation();
   const { onClick$, reload, replaceState, scroll, ...linkProps } = (() => props)();
-  const clientNavPath = untrack(() => getClientNavPath(linkProps, loc));
+  const clientNavPath = untrack(() => getClientNavPath({
+    ...linkProps,
+    reload
+  }, loc));
   const prefetchDataset = untrack(() => getPrefetchDataset(props, clientNavPath, loc));
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
