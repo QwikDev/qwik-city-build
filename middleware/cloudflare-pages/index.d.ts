@@ -14,7 +14,7 @@ export declare function createQwikCity(opts: QwikCityCloudflarePagesOptions): (r
  */
 export declare interface PlatformCloudflarePages {
     request: Request;
-    env: Record<string, any>;
+    env?: Record<string, any>;
     ctx: {
         waitUntil: (promise: Promise<any>) => void;
     };
