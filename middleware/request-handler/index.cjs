@@ -1153,7 +1153,7 @@ var QDATA_JSON_LEN = QDATA_JSON.length;
 function matchRoute(route, path) {
   const params = {};
   let routeIdx = startIdxSkipSlash(route);
-  const routeLength = route.length;
+  const routeLength = lengthNoTrailingSlash(route);
   let pathIdx = startIdxSkipSlash(path);
   const pathLength = lengthNoTrailingSlash(path);
   while (routeIdx < routeLength) {
