@@ -1151,39 +1151,51 @@ var QDATA_JSON_LEN = QDATA_JSON.length;
 
 // packages/qwik-city/runtime/src/route-matcher.ts
 function matchRoute(route, path) {
-  const params = {};
-  let routeIdx = startIdxSkipSlash(route);
+  const routeIdx = startIdxSkipSlash(route);
   const routeLength = lengthNoTrailingSlash(route);
-  let pathIdx = startIdxSkipSlash(path);
+  const pathIdx = startIdxSkipSlash(path);
   const pathLength = lengthNoTrailingSlash(path);
+  return matchRoutePart(route, routeIdx, routeLength, path, pathIdx, pathLength);
+}
+function matchRoutePart(route, routeIdx, routeLength, path, pathIdx, pathLength) {
+  let params = null;
   while (routeIdx < routeLength) {
     const routeCh = route.charCodeAt(routeIdx++);
     const pathCh = path.charCodeAt(pathIdx++);
     if (routeCh === 91 /* OPEN_BRACKET */) {
-      const isRest = isThreeDots(route, routeIdx);
-      const paramNameStart = routeIdx + (isRest ? 3 : 0);
+      const isMany = isThreeDots(route, routeIdx);
+      const paramNameStart = routeIdx + (isMany ? 3 : 0);
       const paramNameEnd = scan(route, paramNameStart, routeLength, 93 /* CLOSE_BRACKET */);
       const paramName = route.substring(paramNameStart, paramNameEnd);
       const paramSuffixEnd = scan(route, paramNameEnd + 1, routeLength, 47 /* SLASH */);
       const suffix = route.substring(paramNameEnd + 1, paramSuffixEnd);
       routeIdx = paramNameEnd + 1;
       const paramValueStart = pathIdx - 1;
-      const paramValueEnd = scan(
-        path,
-        paramValueStart,
-        pathLength,
-        isRest ? 0 /* EOL */ : 47 /* SLASH */,
-        suffix
-      );
+      if (isMany) {
+        const match = recursiveScan(
+          paramName,
+          suffix,
+          path,
+          paramValueStart,
+          pathLength,
+          route,
+          routeIdx + suffix.length + 1,
+          routeLength
+        );
+        if (match) {
+          return Object.assign(params || (params = {}), match);
+        }
+      }
+      const paramValueEnd = scan(path, paramValueStart, pathLength, 47 /* SLASH */, suffix);
       if (paramValueEnd == -1) {
         return null;
       }
       const paramValue = path.substring(paramValueStart, paramValueEnd);
-      if (!isRest && !suffix && !paramValue) {
+      if (!isMany && !suffix && !paramValue) {
         return null;
       }
       pathIdx = paramValueEnd;
-      params[paramName] = decodeURIComponent(paramValue);
+      (params || (params = {}))[paramName] = decodeURIComponent(paramValue);
     } else if (routeCh !== pathCh) {
       if (!(isNaN(pathCh) && isRestParameter(route, routeIdx))) {
         return null;
@@ -1191,7 +1203,7 @@ function matchRoute(route, path) {
     }
   }
   if (allConsumed(route, routeIdx) && allConsumed(path, pathIdx)) {
-    return params;
+    return params || {};
   } else {
     return null;
   }
@@ -1213,8 +1225,8 @@ function startIdxSkipSlash(text) {
 function isThreeDots(text, idx) {
   return text.charCodeAt(idx) === 46 /* DOT */ && text.charCodeAt(idx + 1) === 46 /* DOT */ && text.charCodeAt(idx + 2) === 46 /* DOT */;
 }
-function scan(text, idx, length, ch, suffix = "") {
-  while (idx < length && text.charCodeAt(idx) !== ch) {
+function scan(text, idx, end, ch, suffix = "") {
+  while (idx < end && text.charCodeAt(idx) !== ch) {
     idx++;
   }
   const suffixLength = suffix.length;
@@ -1224,6 +1236,34 @@ function scan(text, idx, length, ch, suffix = "") {
     }
   }
   return idx - suffixLength;
+}
+function recursiveScan(paramName, suffix, path, pathStart, pathLength, route, routeStart, routeLength) {
+  if (path.charCodeAt(pathStart) === 47 /* SLASH */) {
+    pathStart++;
+  }
+  let pathIdx = pathLength;
+  const sep = suffix + "/";
+  let depthWatchdog = 5;
+  while (pathIdx >= pathStart && depthWatchdog--) {
+    const match = matchRoutePart(route, routeStart, routeLength, path, pathIdx, path.length);
+    if (match) {
+      let value = path.substring(pathStart, Math.min(pathIdx, pathLength));
+      if (value.endsWith(sep)) {
+        value = value.substring(0, value.length - sep.length);
+      }
+      match[paramName] = decodeURIComponent(value);
+      return match;
+    }
+    pathIdx = lastIndexOf(path, pathStart, sep, pathIdx, pathStart - 1);
+    if (pathIdx > -1) {
+      pathIdx += sep.length;
+    }
+  }
+  return null;
+}
+function lastIndexOf(text, start, match, searchIdx, notFoundIdx) {
+  const idx = text.lastIndexOf(match, searchIdx);
+  return idx > start ? idx : notFoundIdx;
 }
 
 // packages/qwik-city/runtime/src/routing.ts

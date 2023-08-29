@@ -25059,39 +25059,51 @@ var QDATA_JSON_LEN = QDATA_JSON.length;
 
 // packages/qwik-city/runtime/src/route-matcher.ts
 function matchRoute(route, path3) {
-  const params = {};
-  let routeIdx = startIdxSkipSlash(route);
+  const routeIdx = startIdxSkipSlash(route);
   const routeLength = lengthNoTrailingSlash(route);
-  let pathIdx = startIdxSkipSlash(path3);
+  const pathIdx = startIdxSkipSlash(path3);
   const pathLength = lengthNoTrailingSlash(path3);
+  return matchRoutePart(route, routeIdx, routeLength, path3, pathIdx, pathLength);
+}
+function matchRoutePart(route, routeIdx, routeLength, path3, pathIdx, pathLength) {
+  let params = null;
   while (routeIdx < routeLength) {
     const routeCh = route.charCodeAt(routeIdx++);
     const pathCh = path3.charCodeAt(pathIdx++);
     if (routeCh === 91 /* OPEN_BRACKET */) {
-      const isRest = isThreeDots(route, routeIdx);
-      const paramNameStart = routeIdx + (isRest ? 3 : 0);
+      const isMany = isThreeDots(route, routeIdx);
+      const paramNameStart = routeIdx + (isMany ? 3 : 0);
       const paramNameEnd = scan(route, paramNameStart, routeLength, 93 /* CLOSE_BRACKET */);
       const paramName = route.substring(paramNameStart, paramNameEnd);
       const paramSuffixEnd = scan(route, paramNameEnd + 1, routeLength, 47 /* SLASH */);
       const suffix = route.substring(paramNameEnd + 1, paramSuffixEnd);
       routeIdx = paramNameEnd + 1;
       const paramValueStart = pathIdx - 1;
-      const paramValueEnd = scan(
-        path3,
-        paramValueStart,
-        pathLength,
-        isRest ? 0 /* EOL */ : 47 /* SLASH */,
-        suffix
-      );
+      if (isMany) {
+        const match = recursiveScan(
+          paramName,
+          suffix,
+          path3,
+          paramValueStart,
+          pathLength,
+          route,
+          routeIdx + suffix.length + 1,
+          routeLength
+        );
+        if (match) {
+          return Object.assign(params || (params = {}), match);
+        }
+      }
+      const paramValueEnd = scan(path3, paramValueStart, pathLength, 47 /* SLASH */, suffix);
       if (paramValueEnd == -1) {
         return null;
       }
       const paramValue = path3.substring(paramValueStart, paramValueEnd);
-      if (!isRest && !suffix && !paramValue) {
+      if (!isMany && !suffix && !paramValue) {
         return null;
       }
       pathIdx = paramValueEnd;
-      params[paramName] = decodeURIComponent(paramValue);
+      (params || (params = {}))[paramName] = decodeURIComponent(paramValue);
     } else if (routeCh !== pathCh) {
       if (!(isNaN(pathCh) && isRestParameter(route, routeIdx))) {
         return null;
@@ -25099,7 +25111,7 @@ function matchRoute(route, path3) {
     }
   }
   if (allConsumed(route, routeIdx) && allConsumed(path3, pathIdx)) {
-    return params;
+    return params || {};
   } else {
     return null;
   }
@@ -25121,8 +25133,8 @@ function startIdxSkipSlash(text2) {
 function isThreeDots(text2, idx) {
   return text2.charCodeAt(idx) === 46 /* DOT */ && text2.charCodeAt(idx + 1) === 46 /* DOT */ && text2.charCodeAt(idx + 2) === 46 /* DOT */;
 }
-function scan(text2, idx, length, ch, suffix = "") {
-  while (idx < length && text2.charCodeAt(idx) !== ch) {
+function scan(text2, idx, end, ch, suffix = "") {
+  while (idx < end && text2.charCodeAt(idx) !== ch) {
     idx++;
   }
   const suffixLength = suffix.length;
@@ -25132,6 +25144,34 @@ function scan(text2, idx, length, ch, suffix = "") {
     }
   }
   return idx - suffixLength;
+}
+function recursiveScan(paramName, suffix, path3, pathStart, pathLength, route, routeStart, routeLength) {
+  if (path3.charCodeAt(pathStart) === 47 /* SLASH */) {
+    pathStart++;
+  }
+  let pathIdx = pathLength;
+  const sep = suffix + "/";
+  let depthWatchdog = 5;
+  while (pathIdx >= pathStart && depthWatchdog--) {
+    const match = matchRoutePart(route, routeStart, routeLength, path3, pathIdx, path3.length);
+    if (match) {
+      let value2 = path3.substring(pathStart, Math.min(pathIdx, pathLength));
+      if (value2.endsWith(sep)) {
+        value2 = value2.substring(0, value2.length - sep.length);
+      }
+      match[paramName] = decodeURIComponent(value2);
+      return match;
+    }
+    pathIdx = lastIndexOf(path3, pathStart, sep, pathIdx, pathStart - 1);
+    if (pathIdx > -1) {
+      pathIdx += sep.length;
+    }
+  }
+  return null;
+}
+function lastIndexOf(text2, start, match, searchIdx, notFoundIdx) {
+  const idx = text2.lastIndexOf(match, searchIdx);
+  return idx > start ? idx : notFoundIdx;
 }
 
 // packages/qwik-city/runtime/src/routing.ts
