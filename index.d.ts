@@ -304,14 +304,16 @@ export declare interface DocumentStyle {
 
 declare type EndpointModuleLoader = () => Promise<RouteModule>;
 
+declare type Failed = {
+    failed: true;
+};
+
 declare type FailOfRest<REST extends readonly DataValidator[]> = REST extends readonly DataValidator<infer ERROR>[] ? ERROR : never;
 
 /**
  * @public
  */
-export declare type FailReturn<T> = T & {
-    failed: true;
-};
+export declare type FailReturn<T> = T & Failed;
 
 /**
  * @public
@@ -416,7 +418,7 @@ export declare interface Loader<RETURN> {
  * @public
  */
 declare interface LoaderConstructor {
-    <OBJ>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, options?: LoaderOptions): Loader<OBJ>;
+    <OBJ>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, options?: LoaderOptions): Loader<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
     <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, ...rest: REST): Loader<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
 }
 
@@ -424,7 +426,7 @@ declare interface LoaderConstructor {
  * @public
  */
 declare interface LoaderConstructorQRL {
-    <OBJ>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, options?: LoaderOptions): Loader<OBJ>;
+    <OBJ>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, options?: LoaderOptions): Loader<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
     <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, ...rest: REST): Loader<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
 }
 
