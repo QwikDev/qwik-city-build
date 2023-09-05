@@ -1245,7 +1245,7 @@ function recursiveScan(paramName, suffix, path, pathStart, pathLength, route, ro
   const sep = suffix + "/";
   let depthWatchdog = 5;
   while (pathIdx >= pathStart && depthWatchdog--) {
-    const match = matchRoutePart(route, routeStart, routeLength, path, pathIdx, path.length);
+    const match = matchRoutePart(route, routeStart, routeLength, path, pathIdx, pathLength);
     if (match) {
       let value = path.substring(pathStart, Math.min(pathIdx, pathLength));
       if (value.endsWith(sep)) {
@@ -1254,15 +1254,15 @@ function recursiveScan(paramName, suffix, path, pathStart, pathLength, route, ro
       match[paramName] = decodeURIComponent(value);
       return match;
     }
-    pathIdx = lastIndexOf(path, pathStart, sep, pathIdx, pathStart - 1);
-    if (pathIdx > -1) {
-      pathIdx += sep.length;
-    }
+    pathIdx = lastIndexOf(path, pathStart, sep, pathIdx, pathStart - 1) + sep.length;
   }
   return null;
 }
 function lastIndexOf(text, start, match, searchIdx, notFoundIdx) {
-  const idx = text.lastIndexOf(match, searchIdx);
+  let idx = text.lastIndexOf(match, searchIdx);
+  if (idx == searchIdx - match.length) {
+    idx = text.lastIndexOf(match, searchIdx - match.length - 1);
+  }
   return idx > start ? idx : notFoundIdx;
 }
 
