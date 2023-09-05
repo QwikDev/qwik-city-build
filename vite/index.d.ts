@@ -65,6 +65,7 @@ declare interface MdxPlugins {
 }
 
 declare interface ParsedPathname {
+    routeName: string;
     pattern: RegExp;
     paramNames: string[];
     segments: PathnameSegment[];

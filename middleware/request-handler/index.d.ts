@@ -1,8 +1,10 @@
 import type { Action } from '@builder.io/qwik-city';
 import type { _deserializeData } from '@builder.io/qwik';
+import type { EnvGetter as EnvGetter_2 } from '@builder.io/qwik-city/middleware/request-handler';
 import type { FailReturn } from '@builder.io/qwik-city';
 import type { Loader } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
+import type { QwikIntrinsicElements } from '@builder.io/qwik';
 import type { Render } from '@builder.io/qwik/server';
 import type { RenderOptions } from '@builder.io/qwik/server';
 import type { RequestEvent as RequestEvent_2 } from '@builder.io/qwik-city';
@@ -233,6 +235,10 @@ declare interface DocumentHeadValue {
      */
     readonly styles?: readonly DocumentStyle[];
     /**
+     * Used to manually append `<script>` elements to the `<head>`.
+     */
+    readonly scripts?: readonly DocumentScript[];
+    /**
      * Arbitrary object containing custom data. When the document head is created from
      * markdown files, the frontmatter attributes that are not recognized as a well-known
      * meta names (such as title, description, author, etc...), are stored in this property.
@@ -277,17 +283,27 @@ declare interface DocumentMeta {
 }
 
 /**
+ * @alpha
+ */
+declare interface DocumentScript {
+    readonly script?: string;
+    readonly props?: Readonly<QwikIntrinsicElements['script']>;
+    readonly key?: string;
+}
+
+/**
  * @public
  */
 declare interface DocumentStyle {
     readonly style: string;
-    readonly props?: Readonly<{
-        [propName: string]: string;
-    }>;
+    readonly props?: Readonly<QwikIntrinsicElements['style']>;
     readonly key?: string;
 }
 
-declare interface EnvGetter {
+/**
+ * @public
+ */
+export declare interface EnvGetter {
     get(key: string): string | undefined;
 }
 
@@ -315,6 +331,7 @@ declare interface LayoutModule extends RouteModule {
 }
 
 declare type LoadedRoute = [
+routeName: string,
 params: PathParams,
 mods: (RouteModule | ContentModule)[],
 menu: ContentMenu | undefined,
@@ -702,7 +719,9 @@ declare interface StaticGenerate {
 /**
  * @public
  */
-declare type StaticGenerateHandler = () => Promise<StaticGenerate> | StaticGenerate;
+declare type StaticGenerateHandler = ({ env, }: {
+    env: EnvGetter_2;
+}) => Promise<StaticGenerate> | StaticGenerate;
 
 declare type StatusCodes = InformationalCode | SuccessCode | ClientErrorCode | ServerErrorCode | RedirectCode | number;
 

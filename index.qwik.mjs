@@ -76,7 +76,7 @@ const spaInit = /* @__PURE__ */ inlinedQrl((currentScript) => {
       const pushState = history.pushState;
       const replaceState = history.replaceState;
       const prepareState = (state) => {
-        if (state === null || false)
+        if (state === null || typeof state === "undefined")
           state = {};
         else if (state?.constructor !== Object) {
           state = {
@@ -250,6 +250,7 @@ const resolveDocumentHead = (resolvedHead, updatedHead) => {
   mergeArray(resolvedHead.meta, updatedHead.meta);
   mergeArray(resolvedHead.links, updatedHead.links);
   mergeArray(resolvedHead.styles, updatedHead.styles);
+  mergeArray(resolvedHead.scripts, updatedHead.scripts);
   Object.assign(resolvedHead.frontmatter, updatedHead.frontmatter);
 };
 const mergeArray = (existingArr, newArr) => {
@@ -270,16 +271,121 @@ const createDocumentHead = () => ({
   meta: [],
   links: [],
   styles: [],
+  scripts: [],
   frontmatter: {}
 });
+function matchRoute(route, path) {
+  const routeIdx = startIdxSkipSlash(route);
+  const routeLength = lengthNoTrailingSlash(route);
+  const pathIdx = startIdxSkipSlash(path);
+  const pathLength = lengthNoTrailingSlash(path);
+  return matchRoutePart(route, routeIdx, routeLength, path, pathIdx, pathLength);
+}
+function matchRoutePart(route, routeIdx, routeLength, path, pathIdx, pathLength) {
+  let params = null;
+  while (routeIdx < routeLength) {
+    const routeCh = route.charCodeAt(routeIdx++);
+    const pathCh = path.charCodeAt(pathIdx++);
+    if (routeCh === 91) {
+      const isMany = isThreeDots(route, routeIdx);
+      const paramNameStart = routeIdx + (isMany ? 3 : 0);
+      const paramNameEnd = scan(route, paramNameStart, routeLength, 93);
+      const paramName = route.substring(paramNameStart, paramNameEnd);
+      const paramSuffixEnd = scan(route, paramNameEnd + 1, routeLength, 47);
+      const suffix = route.substring(paramNameEnd + 1, paramSuffixEnd);
+      routeIdx = paramNameEnd + 1;
+      const paramValueStart = pathIdx - 1;
+      if (isMany) {
+        const match = recursiveScan(paramName, suffix, path, paramValueStart, pathLength, route, routeIdx + suffix.length + 1, routeLength);
+        if (match)
+          return Object.assign(params || (params = {}), match);
+      }
+      const paramValueEnd = scan(path, paramValueStart, pathLength, 47, suffix);
+      if (paramValueEnd == -1)
+        return null;
+      const paramValue = path.substring(paramValueStart, paramValueEnd);
+      if (!isMany && !suffix && !paramValue)
+        return null;
+      pathIdx = paramValueEnd;
+      (params || (params = {}))[paramName] = decodeURIComponent(paramValue);
+    } else if (routeCh !== pathCh) {
+      if (!(isNaN(pathCh) && isRestParameter(route, routeIdx)))
+        return null;
+    }
+  }
+  if (allConsumed(route, routeIdx) && allConsumed(path, pathIdx))
+    return params || {};
+  else
+    return null;
+}
+function isRestParameter(text, idx) {
+  return text.charCodeAt(idx) === 91 && isThreeDots(text, idx + 1);
+}
+function lengthNoTrailingSlash(text) {
+  const length = text.length;
+  return length > 1 && text.charCodeAt(length - 1) === 47 ? length - 1 : length;
+}
+function allConsumed(text, idx) {
+  const length = text.length;
+  return idx >= length || idx == length - 1 && text.charCodeAt(idx) === 47;
+}
+function startIdxSkipSlash(text) {
+  return text.charCodeAt(0) === 47 ? 1 : 0;
+}
+function isThreeDots(text, idx) {
+  return text.charCodeAt(idx) === 46 && text.charCodeAt(idx + 1) === 46 && text.charCodeAt(idx + 2) === 46;
+}
+function scan(text, idx, end, ch, suffix = "") {
+  while (idx < end && text.charCodeAt(idx) !== ch)
+    idx++;
+  const suffixLength = suffix.length;
+  for (let i = 0; i < suffixLength; i++) {
+    if (text.charCodeAt(idx - suffixLength + i) !== suffix.charCodeAt(i))
+      return -1;
+  }
+  return idx - suffixLength;
+}
+let Char;
+(function(Char2) {
+  Char2[Char2["EOL"] = 0] = "EOL";
+  Char2[Char2["OPEN_BRACKET"] = 91] = "OPEN_BRACKET";
+  Char2[Char2["CLOSE_BRACKET"] = 93] = "CLOSE_BRACKET";
+  Char2[Char2["DOT"] = 46] = "DOT";
+  Char2[Char2["SLASH"] = 47] = "SLASH";
+})(Char || (Char = {}));
+function recursiveScan(paramName, suffix, path, pathStart, pathLength, route, routeStart, routeLength) {
+  if (path.charCodeAt(pathStart) === 47)
+    pathStart++;
+  let pathIdx = pathLength;
+  const sep = suffix + "/";
+  let depthWatchdog = 5;
+  while (pathIdx >= pathStart && depthWatchdog--) {
+    const match = matchRoutePart(route, routeStart, routeLength, path, pathIdx, path.length);
+    if (match) {
+      let value = path.substring(pathStart, Math.min(pathIdx, pathLength));
+      if (value.endsWith(sep))
+        value = value.substring(0, value.length - sep.length);
+      match[paramName] = decodeURIComponent(value);
+      return match;
+    }
+    pathIdx = lastIndexOf(path, pathStart, sep, pathIdx, pathStart - 1);
+    if (pathIdx > -1)
+      pathIdx += sep.length;
+  }
+  return null;
+}
+function lastIndexOf(text, start, match, searchIdx, notFoundIdx) {
+  const idx = text.lastIndexOf(match, searchIdx);
+  return idx > start ? idx : notFoundIdx;
+}
 const loadRoute = async (routes, menus, cacheModules, pathname) => {
   if (Array.isArray(routes))
     for (const route of routes) {
-      const match = route[0].exec(pathname);
-      if (match) {
+      const routeName = route[0];
+      const params = matchRoute(routeName, pathname);
+      if (params) {
         const loaders = route[1];
-        const params = getPathParams(route[2], match);
-        const routeBundleNames = route[4];
+        const routeBundleNames = route[3];
         const mods = new Array(loaders.length);
         const pendingLoads = [];
         const menuLoader = getMenuLoader(menus, pathname);
@@ -291,6 +397,7 @@ const loadRoute = async (routes, menus, cacheModules, pathname) => {
         if (pendingLoads.length > 0)
           await Promise.all(pendingLoads);
         return [
+          routeName,
           params,
           mods,
           menu,
@@ -326,16 +433,6 @@ const getMenuLoader = (menus, pathname) => {
       return menu[1];
   }
 };
-const getPathParams = (paramNames, match) => {
-  const params = {};
-  if (paramNames)
-    for (let i = 0; i < paramNames.length; i++) {
-      const param = match?.[i + 1] ?? "";
-      const v = param.endsWith("/") ? param.slice(0, -1) : param;
-      params[paramNames[i]] = decodeURIComponent(v);
-    }
-  return params;
-};
 const toPath = (url) => url.pathname + url.search + url.hash;
 const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
 const isSameOrigin = (a, b) => a.origin === b.origin;
@@ -350,7 +447,7 @@ const getClientDataPath = (pathname, pageSearch, action) => {
 };
 const getClientNavPath = (props, baseUrl) => {
   const href = props.href;
-  if (typeof href === "string" && typeof props.target !== "string")
+  if (typeof href === "string" && typeof props.target !== "string" && !props.reload)
     try {
       const linkUrl = toUrl(href.trim(), baseUrl.url);
       const currentUrl = toUrl("", baseUrl.url);
@@ -658,7 +755,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         loadedRoute = await loadRoutePromise;
       }
       if (loadedRoute) {
-        const [params, mods, menu] = loadedRoute;
+        const [routeName, params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
         routeLocation2.prevUrl = prevUrl;
@@ -677,6 +774,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         documentHead2.links = resolvedHead.links;
         documentHead2.meta = resolvedHead.meta;
         documentHead2.styles = resolvedHead.styles;
+        documentHead2.scripts = resolvedHead.scripts;
         documentHead2.title = resolvedHead.title;
         documentHead2.frontmatter = resolvedHead.frontmatter;
         if (isBrowser) {
@@ -709,7 +807,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
               const pushState = history.pushState;
               const replaceState2 = history.replaceState;
               const prepareState = (state) => {
-                if (state === null || false)
+                if (state === null || typeof state === "undefined")
                   state = {};
                 else if (state?.constructor !== Object) {
                   state = {
@@ -797,6 +895,8 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
           }
           clientNavigate(window, navType, prevUrl, trackUrl, replaceState);
           _waitUntilRendered(elm).then(() => {
+            const container = getContainer(elm);
+            container.setAttribute("q:route", routeName);
             const scrollState2 = currentScrollState(document.documentElement);
             saveScrollHistory(scrollState2);
             win._qCityScrollEnabled = true;
@@ -826,6 +926,11 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
   ]));
   return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
+function getContainer(elm) {
+  while (elm && elm.nodeType !== Node.ELEMENT_NODE)
+    elm = elm.parentElement;
+  return elm.closest("[q\\:container]");
+}
 const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const urlEnv = props.url ?? "http://localhost/";
   const url = new URL(urlEnv);
@@ -870,7 +975,10 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   const nav = useNavigate();
   const loc = useLocation();
   const { onClick$, reload, replaceState, scroll, ...linkProps } = (() => props)();
-  const clientNavPath = untrack(() => getClientNavPath(linkProps, loc));
+  const clientNavPath = untrack(() => getClientNavPath({
+    ...linkProps,
+    reload
+  }, loc));
   const prefetchDataset = untrack(() => getPrefetchDataset(props, clientNavPath, loc));
   linkProps["preventdefault:click"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;

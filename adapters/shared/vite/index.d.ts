@@ -67,6 +67,7 @@ export declare function getParentDir(startDir: string, dirName: string): string;
 export declare const NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
 
 declare interface ParsedPathname {
+    routeName: string;
     pattern: RegExp;
     paramNames: string[];
     segments: PathnameSegment[];

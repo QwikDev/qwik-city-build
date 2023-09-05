@@ -110,6 +110,9 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
       }
       return new WritableStream({
         write(chunk) {
+          if (res.closed) {
+            return;
+          }
           res.write(chunk, (error) => {
             if (error) {
               console.error(error);

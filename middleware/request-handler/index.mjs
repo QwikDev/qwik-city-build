@@ -103,6 +103,13 @@ var createSetCookieValue = (cookieName, cookieValue, options) => {
   }
   return c.join("; ");
 };
+function tryDecodeUriComponent(str) {
+  try {
+    return decodeURIComponent(str);
+  } catch {
+    return str;
+  }
+}
 var parseCookieString = (cookieString) => {
   const cookie = {};
   if (typeof cookieString === "string" && cookieString !== "") {
@@ -110,7 +117,7 @@ var parseCookieString = (cookieString) => {
     for (const cookieSegment of cookieSegments) {
       const separatorIndex = cookieSegment.indexOf("=");
       if (separatorIndex !== -1) {
-        cookie[decodeURIComponent(cookieSegment.slice(0, separatorIndex).trim())] = decodeURIComponent(cookieSegment.slice(separatorIndex + 1).trim());
+        cookie[tryDecodeUriComponent(cookieSegment.slice(0, separatorIndex).trim())] = tryDecodeUriComponent(cookieSegment.slice(separatorIndex + 1).trim());
       }
     }
   }
@@ -155,10 +162,13 @@ var Cookie = class {
     };
   }
   getAll(live = true) {
-    return Object.keys(this[live ? LIVE_COOKIE : REQ_COOKIE]).reduce((cookies, cookieName) => {
-      cookies[cookieName] = this.get(cookieName);
-      return cookies;
-    }, {});
+    return Object.keys(this[live ? LIVE_COOKIE : REQ_COOKIE]).reduce(
+      (cookies, cookieName) => {
+        cookies[cookieName] = this.get(cookieName);
+        return cookies;
+      },
+      {}
+    );
   }
   has(cookieName, live = true) {
     return !!this[live ? LIVE_COOKIE : REQ_COOKIE][cookieName];
@@ -207,13 +217,29 @@ function getQwikCityServerData(requestEv) {
   request.headers.forEach((value, key) => requestHeaders[key] = value);
   const action = requestEv.sharedMap.get(RequestEvSharedActionId);
   const formData = requestEv.sharedMap.get(RequestEvSharedActionFormData);
+  const routeName = requestEv.sharedMap.get(RequestRouteName);
   const nonce = requestEv.sharedMap.get(RequestEvSharedNonce);
+  const headers = requestEv.request.headers;
+  const reconstructedUrl = new URL(url.pathname + url.search, url);
+  const host = headers.get("X-Forwarded-Host");
+  const protocol = headers.get("X-Forwarded-Proto");
+  if (host) {
+    reconstructedUrl.port = "";
+    reconstructedUrl.host = host;
+  }
+  if (protocol) {
+    reconstructedUrl.protocol = protocol;
+  }
   return {
-    url: new URL(url.pathname + url.search, url).href,
+    url: reconstructedUrl.href,
     requestHeaders,
     locale: locale(),
     nonce,
+    containerAttributes: {
+      "q:route": routeName
+    },
     qwikcity: {
+      routeName,
       ev: requestEv,
       params: { ...params },
       loadedRoute: getRequestRoute(requestEv),
@@ -232,7 +258,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
   const routeLoaders = [];
   const routeActions = [];
   const requestHandlers = [];
-  const isPageRoute = !!(route && isLastModulePageRoute(route[1]));
+  const isPageRoute = !!(route && isLastModulePageRoute(route[2]));
   if (serverPlugins) {
     _resolveRequestHandlers(
       routeLoaders,
@@ -244,6 +270,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
     );
   }
   if (route) {
+    const routeName = route[0];
     if (checkOrigin && (method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE")) {
       requestHandlers.unshift(csrfCheckMiddleware);
     }
@@ -259,11 +286,14 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       routeLoaders,
       routeActions,
       requestHandlers,
-      route[1],
+      route[2],
       isPageRoute,
       method
     );
     if (isPageRoute) {
+      requestHandlers.push((ev) => {
+        ev.sharedMap.set(RequestRouteName, routeName);
+      });
       requestHandlers.push(actionsMiddleware(routeLoaders, routeActions));
       requestHandlers.push(renderHandler);
     }
@@ -573,12 +603,14 @@ function renderQwikMiddleware(render) {
     const status = requestEv.status();
     try {
       const isStatic = getRequestMode(requestEv) === "static";
+      const serverData = getQwikCityServerData(requestEv);
       const result = await render({
         base: requestEv.basePathname + "build/",
         stream,
-        serverData: getQwikCityServerData(requestEv),
+        serverData,
         containerAttributes: {
-          ["q:render"]: isStatic ? "static" : ""
+          ["q:render"]: isStatic ? "static" : "",
+          ...serverData.containerAttributes
         }
       });
       const qData = {
@@ -759,6 +791,7 @@ var RequestEvMode = Symbol("RequestEvMode");
 var RequestEvRoute = Symbol("RequestEvRoute");
 var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
 var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
+var RequestRouteName = "@routeName";
 var RequestEvSharedActionId = "@actionId";
 var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
@@ -839,7 +872,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     env,
     method: request.method,
     signal: request.signal,
-    params: (loadedRoute == null ? void 0 : loadedRoute[0]) ?? {},
+    params: (loadedRoute == null ? void 0 : loadedRoute[1]) ?? {},
     pathname: url.pathname,
     platform,
     query: url.searchParams,
@@ -994,26 +1027,21 @@ var parseRequest = async (request, sharedMap, qwikSerializer) => {
   return void 0;
 };
 var formToObj = (formData) => {
-  const obj = {};
-  formData.forEach((value, key) => {
-    const keys = key.split(".").filter((k) => k);
-    let current = obj;
-    for (let i = 0; i < keys.length; i++) {
-      let k = keys[i];
-      if (i === keys.length - 1) {
-        if (k.endsWith("[]")) {
-          k = k.slice(0, -2);
-          current[k] = current[k] || [];
-          current[k].push(value);
-        } else {
-          current[k] = value;
-        }
-      } else {
-        current = current[k] = { ...current[k] };
+  const values = [...formData.entries()].reduce((values2, [name, value]) => {
+    name.split(".").reduce((object, key, index, keys) => {
+      if (key.endsWith("[]")) {
+        const arrayKey = key.slice(0, -2);
+        object[arrayKey] = object[arrayKey] || [];
+        return object[arrayKey] = [...object[arrayKey], value];
       }
-    }
-  });
-  return obj;
+      if (index < keys.length - 1) {
+        return object[key] = object[key] || (Number.isNaN(+keys[index + 1]) ? {} : []);
+      }
+      return object[key] = value;
+    }, values2);
+    return values2;
+  }, {});
+  return values;
 };
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
@@ -1091,15 +1119,132 @@ var IsQData = "@isQData";
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
 
+// packages/qwik-city/runtime/src/route-matcher.ts
+function matchRoute(route, path) {
+  const routeIdx = startIdxSkipSlash(route);
+  const routeLength = lengthNoTrailingSlash(route);
+  const pathIdx = startIdxSkipSlash(path);
+  const pathLength = lengthNoTrailingSlash(path);
+  return matchRoutePart(route, routeIdx, routeLength, path, pathIdx, pathLength);
+}
+function matchRoutePart(route, routeIdx, routeLength, path, pathIdx, pathLength) {
+  let params = null;
+  while (routeIdx < routeLength) {
+    const routeCh = route.charCodeAt(routeIdx++);
+    const pathCh = path.charCodeAt(pathIdx++);
+    if (routeCh === 91 /* OPEN_BRACKET */) {
+      const isMany = isThreeDots(route, routeIdx);
+      const paramNameStart = routeIdx + (isMany ? 3 : 0);
+      const paramNameEnd = scan(route, paramNameStart, routeLength, 93 /* CLOSE_BRACKET */);
+      const paramName = route.substring(paramNameStart, paramNameEnd);
+      const paramSuffixEnd = scan(route, paramNameEnd + 1, routeLength, 47 /* SLASH */);
+      const suffix = route.substring(paramNameEnd + 1, paramSuffixEnd);
+      routeIdx = paramNameEnd + 1;
+      const paramValueStart = pathIdx - 1;
+      if (isMany) {
+        const match = recursiveScan(
+          paramName,
+          suffix,
+          path,
+          paramValueStart,
+          pathLength,
+          route,
+          routeIdx + suffix.length + 1,
+          routeLength
+        );
+        if (match) {
+          return Object.assign(params || (params = {}), match);
+        }
+      }
+      const paramValueEnd = scan(path, paramValueStart, pathLength, 47 /* SLASH */, suffix);
+      if (paramValueEnd == -1) {
+        return null;
+      }
+      const paramValue = path.substring(paramValueStart, paramValueEnd);
+      if (!isMany && !suffix && !paramValue) {
+        return null;
+      }
+      pathIdx = paramValueEnd;
+      (params || (params = {}))[paramName] = decodeURIComponent(paramValue);
+    } else if (routeCh !== pathCh) {
+      if (!(isNaN(pathCh) && isRestParameter(route, routeIdx))) {
+        return null;
+      }
+    }
+  }
+  if (allConsumed(route, routeIdx) && allConsumed(path, pathIdx)) {
+    return params || {};
+  } else {
+    return null;
+  }
+}
+function isRestParameter(text, idx) {
+  return text.charCodeAt(idx) === 91 /* OPEN_BRACKET */ && isThreeDots(text, idx + 1);
+}
+function lengthNoTrailingSlash(text) {
+  const length = text.length;
+  return length > 1 && text.charCodeAt(length - 1) === 47 /* SLASH */ ? length - 1 : length;
+}
+function allConsumed(text, idx) {
+  const length = text.length;
+  return idx >= length || idx == length - 1 && text.charCodeAt(idx) === 47 /* SLASH */;
+}
+function startIdxSkipSlash(text) {
+  return text.charCodeAt(0) === 47 /* SLASH */ ? 1 : 0;
+}
+function isThreeDots(text, idx) {
+  return text.charCodeAt(idx) === 46 /* DOT */ && text.charCodeAt(idx + 1) === 46 /* DOT */ && text.charCodeAt(idx + 2) === 46 /* DOT */;
+}
+function scan(text, idx, end, ch, suffix = "") {
+  while (idx < end && text.charCodeAt(idx) !== ch) {
+    idx++;
+  }
+  const suffixLength = suffix.length;
+  for (let i = 0; i < suffixLength; i++) {
+    if (text.charCodeAt(idx - suffixLength + i) !== suffix.charCodeAt(i)) {
+      return -1;
+    }
+  }
+  return idx - suffixLength;
+}
+function recursiveScan(paramName, suffix, path, pathStart, pathLength, route, routeStart, routeLength) {
+  if (path.charCodeAt(pathStart) === 47 /* SLASH */) {
+    pathStart++;
+  }
+  let pathIdx = pathLength;
+  const sep = suffix + "/";
+  let depthWatchdog = 5;
+  while (pathIdx >= pathStart && depthWatchdog--) {
+    const match = matchRoutePart(route, routeStart, routeLength, path, pathIdx, path.length);
+    if (match) {
+      let value = path.substring(pathStart, Math.min(pathIdx, pathLength));
+      if (value.endsWith(sep)) {
+        value = value.substring(0, value.length - sep.length);
+      }
+      match[paramName] = decodeURIComponent(value);
+      return match;
+    }
+    pathIdx = lastIndexOf(path, pathStart, sep, pathIdx, pathStart - 1);
+    if (pathIdx > -1) {
+      pathIdx += sep.length;
+    }
+  }
+  return null;
+}
+function lastIndexOf(text, start, match, searchIdx, notFoundIdx) {
+  const idx = text.lastIndexOf(match, searchIdx);
+  return idx > start ? idx : notFoundIdx;
+}
+
 // packages/qwik-city/runtime/src/routing.ts
 var loadRoute = async (routes, menus, cacheModules, pathname) => {
   if (Array.isArray(routes)) {
     for (const route of routes) {
-      const match = route[0].exec(pathname);
-      if (match) {
+      const routeName = route[0];
+      const params = matchRoute(routeName, pathname);
+      if (params) {
         const loaders = route[1];
-        const params = getPathParams(route[2], match);
-        const routeBundleNames = route[4];
+        const routeBundleNames = route[3];
         const mods = new Array(loaders.length);
         const pendingLoads = [];
         const menuLoader = getMenuLoader(menus, pathname);
@@ -1121,7 +1266,7 @@ var loadRoute = async (routes, menus, cacheModules, pathname) => {
         if (pendingLoads.length > 0) {
           await Promise.all(pendingLoads);
         }
-        return [params, mods, menu, routeBundleNames];
+        return [routeName, params, mods, menu, routeBundleNames];
       }
     }
   }
@@ -1159,17 +1304,6 @@ var getMenuLoader = (menus, pathname) => {
       return menu[1];
     }
   }
-};
-var getPathParams = (paramNames, match) => {
-  const params = {};
-  if (paramNames) {
-    for (let i = 0; i < paramNames.length; i++) {
-      const param = (match == null ? void 0 : match[i + 1]) ?? "";
-      const v = param.endsWith("/") ? param.slice(0, -1) : param;
-      params[paramNames[i]] = decodeURIComponent(v);
-    }
-  }
-  return params;
 };
 
 // packages/qwik-city/middleware/request-handler/request-handler.ts
