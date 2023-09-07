@@ -23962,6 +23962,7 @@ async function updateBuildContext(ctx) {
         return walkRoutes(ctx.opts.routesDir);
       }).then((sourceFiles) => {
         const resolved = resolveSourceFiles(ctx.opts, sourceFiles);
+        rewriteRoutes(ctx, resolved);
         ctx.layouts = resolved.layouts;
         ctx.routes = resolved.routes;
         ctx.entries = resolved.entries;
@@ -23974,6 +23975,60 @@ async function updateBuildContext(ctx) {
     });
   }
   return ctx.activeBuild;
+}
+function rewriteRoutes(ctx, resolved) {
+  if (ctx.opts.rewriteRoutes) {
+    ctx.opts.rewriteRoutes.forEach((rewriteOpt, rewriteIndex) => {
+      const rewriteFrom = Object.keys(rewriteOpt.paths || {});
+      const rewriteRoutes2 = (resolved.routes || []).filter(
+        (route) => rewriteFrom.some((from) => route.pathname.includes(from))
+      );
+      const replacePath = (part) => (rewriteOpt.paths || {})[part] ?? part;
+      rewriteRoutes2.forEach((rewriteRoute) => {
+        var _a2;
+        const pathnamePrefix = rewriteOpt.prefix ? "/" + rewriteOpt.prefix : "";
+        const routeNamePrefix = rewriteOpt.prefix ? rewriteOpt.prefix + "/" : "";
+        const idSuffix = (_a2 = rewriteOpt.prefix) == null ? void 0 : _a2.toUpperCase().replace(/-/g, "");
+        const patternInfix = rewriteOpt.prefix ? [rewriteOpt.prefix] : [];
+        const splittedPathName = rewriteRoute.pathname.split("/");
+        const translatedPathParts = splittedPathName.map(replacePath);
+        const splittedRouteName = rewriteRoute.routeName.split("/");
+        const translatedRouteParts = splittedRouteName.map(replacePath);
+        const splittedPattern = rewriteRoute.pattern.toString().split("\\/");
+        const [translatedPatternFirst, ...translatedPatternOthers] = splittedPattern.map(replacePath);
+        const translatedPatternParts = [
+          translatedPatternFirst,
+          ...patternInfix,
+          ...translatedPatternOthers
+        ];
+        const translatedPatternString = translatedPatternParts.join("\\/");
+        const translatedRegExp = translatedPatternString.substring(
+          1,
+          translatedPatternString.length - 2
+        );
+        const translatedSegments = rewriteRoute.segments.map(
+          (segment) => segment.map((item) => ({ ...item, content: replacePath(item.content) }))
+        );
+        if (rewriteOpt.prefix) {
+          translatedSegments.splice(0, 0, [
+            {
+              content: rewriteOpt.prefix,
+              dynamic: false,
+              rest: false
+            }
+          ]);
+        }
+        resolved.routes.push({
+          ...rewriteRoute,
+          id: rewriteRoute.id + (idSuffix || rewriteIndex),
+          pathname: pathnamePrefix + translatedPathParts.join("/"),
+          routeName: routeNamePrefix + translatedRouteParts.join("/"),
+          pattern: new RegExp(translatedRegExp),
+          segments: translatedSegments
+        });
+      });
+    });
+  }
 }
 function validateBuild(ctx) {
   const pathnames = Array.from(new Set(ctx.routes.map((r2) => r2.pathname))).sort();

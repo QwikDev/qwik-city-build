@@ -114,6 +114,10 @@ declare interface PluginOptions {
      * The platform object which can be used to mock the Cloudflare bindings.
      */
     platform?: Record<string, unknown>;
+    /**
+     * Configuration to rewrite url paths
+     */
+    rewriteRoutes?: RewriteRouteOption[];
 }
 
 /**
@@ -146,6 +150,14 @@ export declare interface QwikCityVitePluginOptions extends Omit<PluginOptions, '
     mdx?: MdxOptions;
     platform?: Record<string, unknown>;
     imageOptimization?: ImageOptimizationOptions;
+}
+
+/**
+ * @public
+ */
+declare interface RewriteRouteOption {
+    prefix?: string;
+    paths: Record<string, string>;
 }
 
 export { }
