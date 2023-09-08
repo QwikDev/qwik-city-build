@@ -26006,9 +26006,10 @@ import fs6 from "fs";
 import { join as join5 } from "path";
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
-  const staticPaths = new Set(userStaticPaths);
+  const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));
   const notFounds = [];
   const loadItem = async (fsDir, fsName, pathname) => {
+    pathname = normalizeTrailingSlash(pathname);
     if (ignorePathnames.has(pathname)) {
       return;
     }
@@ -26044,6 +26045,12 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
     notFoundPathsCode,
     staticPathsCode
   };
+}
+function normalizeTrailingSlash(pathname) {
+  if (!pathname.endsWith("/")) {
+    return pathname + "/";
+  }
+  return pathname;
 }
 function createNotFoundPathsModule(basePathname, notFounds, format) {
   notFounds.sort((a, b) => {
