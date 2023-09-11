@@ -24778,6 +24778,11 @@ function createCacheControl(cacheControl) {
   return controls.join(", ");
 }
 
+// packages/qwik-city/runtime/src/utils.ts
+var isPromise = (value2) => {
+  return value2 && typeof value2.then === "function";
+};
+
 // packages/qwik-city/middleware/request-handler/request-event.ts
 var RequestEvLoaders = Symbol("RequestEvLoaders");
 var RequestEvMode = Symbol("RequestEvMode");
@@ -24812,7 +24817,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     while (routeModuleIndex < requestHandlers.length) {
       const moduleRequestHandler = requestHandlers[routeModuleIndex];
       const result = moduleRequestHandler(requestEv);
-      if (result instanceof Promise) {
+      if (isPromise(result)) {
         await result;
       }
       routeModuleIndex++;

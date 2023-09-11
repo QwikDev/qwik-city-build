@@ -231,6 +231,45 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
+const toPath = (url) => url.pathname + url.search + url.hash;
+const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
+const isSameOrigin = (a, b) => a.origin === b.origin;
+const isSamePath = (a, b) => a.pathname + a.search === b.pathname + b.search;
+const isSamePathname = (a, b) => a.pathname === b.pathname;
+const isSameSearchQuery = (a, b) => a.search === b.search;
+const getClientDataPath = (pathname, pageSearch, action) => {
+  let search = pageSearch ?? "";
+  if (action)
+    search += (search ? "&" : "?") + QACTION_KEY + "=" + encodeURIComponent(action.id);
+  return pathname + (pathname.endsWith("/") ? "" : "/") + "q-data.json" + search;
+};
+const getClientNavPath = (props, baseUrl) => {
+  const href = props.href;
+  if (typeof href === "string" && typeof props.target !== "string" && !props.reload)
+    try {
+      const linkUrl = toUrl(href.trim(), baseUrl.url);
+      const currentUrl = toUrl("", baseUrl.url);
+      if (isSameOrigin(linkUrl, currentUrl))
+        return toPath(linkUrl);
+    } catch (e) {
+      console.error(e);
+    }
+  else if (props.reload)
+    return toPath(toUrl("", baseUrl.url));
+  return null;
+};
+const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
+  if (props.prefetch === true && clientNavPath) {
+    const prefetchUrl = toUrl(clientNavPath, currentLoc.url);
+    const currentUrl = toUrl("", currentLoc.url);
+    if (!isSamePathname(prefetchUrl, currentUrl) || !isSameSearchQuery(prefetchUrl, currentUrl))
+      return "";
+  }
+  return null;
+};
+const isPromise = (value) => {
+  return value && typeof value.then === "function";
+};
 const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   const head = createDocumentHead();
   const getData = (loaderOrAction) => {
@@ -240,7 +279,7 @@ const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
         throw new Error("You can not get the returned data of a loader that has not been executed for this request.");
     }
     const data = endpoint.loaders[id];
-    if (data instanceof Promise)
+    if (isPromise(data))
       throw new Error("Loaders returning a function can not be referred to in the head function.");
     return data;
   };
@@ -449,42 +488,6 @@ const getMenuLoader = (menus, pathname) => {
     if (menu)
       return menu[1];
   }
-};
-const toPath = (url) => url.pathname + url.search + url.hash;
-const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
-const isSameOrigin = (a, b) => a.origin === b.origin;
-const isSamePath = (a, b) => a.pathname + a.search === b.pathname + b.search;
-const isSamePathname = (a, b) => a.pathname === b.pathname;
-const isSameSearchQuery = (a, b) => a.search === b.search;
-const getClientDataPath = (pathname, pageSearch, action) => {
-  let search = pageSearch ?? "";
-  if (action)
-    search += (search ? "&" : "?") + QACTION_KEY + "=" + encodeURIComponent(action.id);
-  return pathname + (pathname.endsWith("/") ? "" : "/") + "q-data.json" + search;
-};
-const getClientNavPath = (props, baseUrl) => {
-  const href = props.href;
-  if (typeof href === "string" && typeof props.target !== "string" && !props.reload)
-    try {
-      const linkUrl = toUrl(href.trim(), baseUrl.url);
-      const currentUrl = toUrl("", baseUrl.url);
-      if (isSameOrigin(linkUrl, currentUrl))
-        return toPath(linkUrl);
-    } catch (e) {
-      console.error(e);
-    }
-  else if (props.reload)
-    return toPath(toUrl("", baseUrl.url));
-  return null;
-};
-const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
-  if (props.prefetch === true && clientNavPath) {
-    const prefetchUrl = toUrl(clientNavPath, currentLoc.url);
-    const currentUrl = toUrl("", currentLoc.url);
-    if (!isSamePathname(prefetchUrl, currentUrl) || !isSameSearchQuery(prefetchUrl, currentUrl))
-      return "";
-  }
-  return null;
 };
 const clientNavigate = (win, navType, fromURL, toURL, replaceState = false) => {
   if (navType !== "popstate") {
