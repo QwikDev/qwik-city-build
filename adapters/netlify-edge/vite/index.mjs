@@ -41,13 +41,29 @@ function netlifyEdgeAdapter(opts = {}) {
     },
     async generate({ serverOutDir }) {
       if (opts.functionRoutes !== false) {
+        const excludedPath = [];
+        if (typeof opts.excludedPath === "string") {
+          excludedPath.push(opts.excludedPath);
+        } else if (Array.isArray(opts.excludedPath)) {
+          excludedPath.push(...opts.excludedPath);
+        } else {
+          excludedPath.push(
+            "/build/*",
+            "/favicon.ico",
+            "/robots.txt",
+            "/mainifest.json",
+            "/~partytown/*",
+            "/service-worker.js",
+            "/sitemap.xml"
+          );
+        }
         const netlifyEdgeManifest = {
           functions: [
             {
               path: basePathname + "*",
               function: "entry.netlify-edge",
               cache: "manual",
-              excludedPath: opts.excludedPath || ""
+              excludedPath
             }
           ],
           version: 1
