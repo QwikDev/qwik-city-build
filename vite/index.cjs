@@ -23981,7 +23981,7 @@ function rewriteRoutes(ctx, resolved) {
     ctx.opts.rewriteRoutes.forEach((rewriteOpt, rewriteIndex) => {
       const rewriteFrom = Object.keys(rewriteOpt.paths || {});
       const rewriteRoutes2 = (resolved.routes || []).filter(
-        (route) => rewriteFrom.some((from) => route.pathname.includes(from))
+        (route) => rewriteFrom.some((from) => route.pathname.split("/").includes(from)) || rewriteOpt.prefix && route.pathname === "/"
       );
       const replacePath = (part) => (rewriteOpt.paths || {})[part] ?? part;
       rewriteRoutes2.forEach((rewriteRoute) => {
@@ -24004,7 +24004,7 @@ function rewriteRoutes(ctx, resolved) {
         const translatedPatternString = translatedPatternParts.join("\\/");
         const translatedRegExp = translatedPatternString.substring(
           1,
-          translatedPatternString.length - 2
+          rewriteRoute.pathname === "/" ? translatedPatternString.length - 1 : translatedPatternString.length - 2
         );
         const translatedSegments = rewriteRoute.segments.map(
           (segment) => segment.map((item) => ({ ...item, content: replacePath(item.content) }))
@@ -24018,11 +24018,13 @@ function rewriteRoutes(ctx, resolved) {
             }
           ]);
         }
+        const translatedPath = translatedPathParts.join("/");
+        const translatedRoute = translatedRouteParts.join("/");
         resolved.routes.push({
           ...rewriteRoute,
           id: rewriteRoute.id + (idSuffix || rewriteIndex),
-          pathname: pathnamePrefix + translatedPathParts.join("/"),
-          routeName: routeNamePrefix + translatedRouteParts.join("/"),
+          pathname: pathnamePrefix + translatedPath,
+          routeName: routeNamePrefix + (translatedRoute !== "/" ? translatedRoute : ""),
           pattern: new RegExp(translatedRegExp),
           segments: translatedSegments
         });
