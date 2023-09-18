@@ -513,6 +513,7 @@ const loadClientData = async (url, element, clearCache, action) => {
       pagePathname
     ]
   });
+  let resolveFn;
   if (!qData) {
     const options = getFetchOptions(action);
     if (action)
@@ -537,10 +538,12 @@ const loadClientData = async (url, element, clearCache, action) => {
             location.href = clientData.redirect;
           else if (action) {
             const actionData = clientData.loaders[action.id];
-            action.resolve({
-              status: rsp.status,
-              result: actionData
-            });
+            resolveFn = () => {
+              action.resolve({
+                status: rsp.status,
+                result: actionData
+              });
+            };
           }
           return clientData;
         });
@@ -555,6 +558,7 @@ const loadClientData = async (url, element, clearCache, action) => {
   return qData.then((v) => {
     if (!v)
       CLIENT_DATA_CACHE.delete(clientDataPath);
+    resolveFn && resolveFn();
     return v;
   });
 };
