@@ -25308,7 +25308,7 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
       }
       return new WritableStream({
         write(chunk) {
-          if (res.closed) {
+          if (res.closed || res.destroyed) {
             return;
           }
           res.write(chunk, (error) => {
