@@ -1,7 +1,7 @@
 {
   "name": "@builder.io/qwik-city",
   "description": "The meta-framework for Qwik.",
-  "version": "1.2.11-dev20230918155727",
+  "version": "1.2.11-dev20230918191411",
   "bugs": "https://github.com/BuilderIO/qwik/issues",
   "dependencies": {
     "@mdx-js/mdx": "2.3.0",
@@ -35,6 +35,11 @@
       "types": "./adapters/cloud-run/vite/index.d.ts",
       "import": "./adapters/cloud-run/vite/index.mjs",
       "require": "./adapters/cloud-run/vite/index.cjs"
+    },
+    "./adapters/bun-server/vite": {
+      "types": "./adapters/bun-server/vite/index.d.ts",
+      "import": "./adapters/bun-server/vite/index.mjs",
+      "require": "./adapters/bun-server/vite/index.cjs"
     },
     "./adapters/deno-server/vite": {
       "types": "./adapters/deno-server/vite/index.d.ts",
@@ -81,6 +86,10 @@
     "./middleware/deno": {
       "types": "./middleware/deno/index.d.ts",
       "import": "./middleware/deno/index.mjs"
+    },
+    "./middleware/bun": {
+      "types": "./middleware/bun/index.d.ts",
+      "import": "./middleware/bun/index.mjs"
     },
     "./middleware/netlify-edge": {
       "types": "./middleware/netlify-edge/index.d.ts",

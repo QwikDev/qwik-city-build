@@ -32,7 +32,7 @@ function getEntryModulePath() {
   if (isDeno()) {
     return "./deno.mjs";
   }
-  if (isNode()) {
+  if (isNode() || isBun()) {
     if (isCjs()) {
       return "./node.cjs";
     }
@@ -50,9 +50,12 @@ function getEntryModule() {
 function isDeno() {
   return typeof Deno !== "undefined";
 }
+function isBun() {
+  return typeof Bun !== "undefined";
+}
 function isNode() {
   var _a;
-  return !isDeno() && typeof process !== "undefined" && !!((_a = process.versions) == null ? void 0 : _a.node);
+  return !isBun() && !isDeno() && typeof process !== "undefined" && !!((_a = process.versions) == null ? void 0 : _a.node);
 }
 function isCjs() {
   const req = "require";
