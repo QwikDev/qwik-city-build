@@ -76,6 +76,11 @@ declare interface CacheControlOptions {
 /**
  * @public
  */
+declare type CacheControlTarget = 'Cache-Control' | 'CDN-Cache-Control' | 'Cloudflare-CDN-Cache-Control' | 'Vercel-CDN-Cache-Control' | '~ANY-OTHER-STRING' | (string & {});
+
+/**
+ * @public
+ */
 export declare interface ClientConn {
     ip?: string;
     country?: string;
@@ -493,11 +498,11 @@ export declare interface RequestEventBase<PLATFORM = QwikCityPlatform> {
      */
     readonly parseBody: () => Promise<unknown>;
     /**
-     * Convenience method to set the Cache-Control header.
+     * Convenience method to set the Cache-Control header. Depending on your CDN, you may want to add another cacheControl with the second argument set to `CDN-Cache-Control` or any other value (we provide the most common values for auto-complete, but you can use any string you want).
      *
-     * https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control
+     * See https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cache-Control and https://qwik.builder.io/docs/caching/#CDN-Cache-Controls for more information.
      */
-    readonly cacheControl: (cacheControl: CacheControl) => void;
+    readonly cacheControl: (cacheControl: CacheControl, target?: CacheControlTarget) => void;
     /**
      * Provides information about the client connection, such as the IP address and the country the request originated from.
      */

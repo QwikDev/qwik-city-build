@@ -926,9 +926,9 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     },
     next,
     exit,
-    cacheControl: (cacheControl) => {
+    cacheControl: (cacheControl, target = "Cache-Control") => {
       check();
-      headers.set("Cache-Control", createCacheControl(cacheControl));
+      headers.set(target, createCacheControl(cacheControl));
     },
     resolveValue: async (loaderOrAction) => {
       const id = loaderOrAction.__id;
