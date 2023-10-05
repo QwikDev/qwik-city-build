@@ -62,8 +62,37 @@ var MIME_TYPES = {
 
 // packages/qwik-city/middleware/bun/index.ts
 import { join, extname } from "path";
+var resolved = Promise.resolve();
+var TextEncoderStream = class {
+  constructor() {
+    this._writer = null;
+    this.readable = {
+      pipeTo: (writableStream) => {
+        this._writer = writableStream.getWriter();
+      }
+    };
+    this.writable = {
+      getWriter: () => {
+        if (!this._writer) {
+          throw new Error("No writable stream");
+        }
+        const encoder = new TextEncoder();
+        return {
+          write: async (chunk) => {
+            if (chunk != null) {
+              await this._writer.write(encoder.encode(chunk));
+            }
+          },
+          close: () => this._writer.close(),
+          ready: resolved
+        };
+      }
+    };
+  }
+};
 function createQwikCity(opts) {
   var _a;
+  globalThis.TextEncoderStream = TextEncoderStream;
   const qwikSerializer = {
     _deserializeData,
     _serializeData,
@@ -107,6 +136,12 @@ function createQwikCity(opts) {
         });
         const response = await handledResponse.response;
         if (response) {
+          const status = response.status;
+          const location = response.headers.get("Location");
+          const isRedirect = status >= 301 && status <= 308 && location;
+          if (isRedirect) {
+            return new Response(null, response);
+          }
           return response;
         }
       }
