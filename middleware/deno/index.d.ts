@@ -1,35 +1,27 @@
 import type { ClientConn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
-/**
- * @public
- */
+/** @public */
 export declare interface Addr {
     transport: 'tcp' | 'udp';
     hostname: string;
     port: number;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface ConnInfo {
     readonly localAddr: Addr;
     readonly remoteAddr: Addr;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare function createQwikCity(opts: QwikCityDenoOptions): {
     router: (request: Request, conn: ConnInfo) => Promise<Response | null>;
     notFound: (request: Request) => Promise<Response>;
     staticFile: (request: Request) => Promise<Response | null>;
 };
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityDenoOptions extends ServerRenderOptions {
     /** Options for serving static files */
     static?: {

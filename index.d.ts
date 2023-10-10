@@ -22,20 +22,17 @@ import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
 import type * as zod from 'zod';
 
-/**
- * @public
- */
+/** @public */
 export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL extends boolean = true> {
     /**
-     * Returns the `ActionStore` containing the current action state and methods to invoke it from a component$().
-     * Like all `use-` functions and methods, it can only be invoked within a `component$()`.
+     * Returns the `ActionStore` containing the current action state and methods to invoke it from a
+     * component$(). Like all `use-` functions and methods, it can only be invoked within a
+     * `component$()`.
      */
     (): ActionStore<RETURN, INPUT, OPTIONAL>;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface ActionConstructor {
     <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: (data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: {
         readonly id?: string;
@@ -57,9 +54,7 @@ export declare interface ActionConstructor {
     }): Action<StrictUnion<OBJ>>;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface ActionConstructorQRL {
     <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: QRL<(data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: {
         readonly id?: string;
@@ -81,17 +76,13 @@ declare interface ActionConstructorQRL {
     }): Action<StrictUnion<OBJ>>;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface ActionReturn<RETURN> {
     readonly status?: number;
     readonly value: RETURN;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = true> {
     /**
      * It's the "action" path that a native `<form>` should have in order to call the action.
@@ -117,11 +108,16 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      */
     readonly actionPath: string;
     /**
-     * Reactive property that becomes `true` only in the browser, when a form is submitted and switched back to false when the action finish, ie, it describes if the action is actively running.
+     * Reactive property that becomes `true` only in the browser, when a form is submitted and
+     * switched back to false when the action finish, ie, it describes if the action is actively
+     * running.
      *
-     * This property is specially useful to disable the submit button while the action is processing, to prevent multiple submissions, and to inform visually to the user that the action is actively running.
+     * This property is specially useful to disable the submit button while the action is processing,
+     * to prevent multiple submissions, and to inform visually to the user that the action is actively
+     * running.
      *
-     * It will be always `false` in the server, and only becomes `true` briefly while the action is running.
+     * It will be always `false` in the server, and only becomes `true` briefly while the action is
+     * running.
      */
     readonly isRunning: boolean;
     /**
@@ -131,7 +127,8 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      */
     readonly status?: number;
     /**
-     * When calling an action through a `<form>`, this property contains the previously submitted `FormData`.
+     * When calling an action through a `<form>`, this property contains the previously submitted
+     * `FormData`.
      *
      * This is useful to keep the filled form data even after a full page reload.
      *
@@ -139,32 +136,30 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      */
     readonly formData: FormData | undefined;
     /**
-     * Returned successful data of the action. This reactive property will contain the data returned inside the `action$` function.
+     * Returned successful data of the action. This reactive property will contain the data returned
+     * inside the `action$` function.
      *
      * It's `undefined` before the action is first called.
      */
     readonly value: RETURN | undefined;
     /**
-     * Method to execute the action programmatically from the browser. Ie, instead of using a `<form>`, a 'click' handle can call the `run()` method of the action
-     * in order to execute the action in the server.
+     * Method to execute the action programmatically from the browser. Ie, instead of using a
+     * `<form>`, a 'click' handle can call the `run()` method of the action in order to execute the
+     * action in the server.
      */
     readonly submit: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
 }
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
 
-/**
- * @public
- */
+/** @public */
 export declare interface ContentHeading {
     readonly text: string;
     readonly id: string;
     readonly level: number;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface ContentMenu {
     readonly text: string;
     readonly href?: string;
@@ -177,9 +172,7 @@ declare type ContentModuleHead = DocumentHead | ResolvedDocumentHead;
 
 declare type ContentModuleLoader = () => Promise<ContentModule>;
 
-/**
- * @public
- */
+/** @public */
 declare interface ContentState {
     readonly headings: ContentHeading[] | undefined;
     readonly menu: ContentMenu | undefined;
@@ -191,66 +184,47 @@ export { CookieOptions }
 
 export { CookieValue }
 
-/**
- * @public
- */
+/** @public */
 declare interface DataValidator<T extends Record<string, any> = {}> {
     validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn<T>>;
 }
 
 export { DeferReturn }
 
-/**
- * @public
- */
+/** @public */
 export declare type DocumentHead = DocumentHeadValue | ((props: DocumentHeadProps) => DocumentHeadValue);
 
-/**
- * @public
- */
+/** @public */
 export declare interface DocumentHeadProps extends RouteLocation {
     readonly head: ResolvedDocumentHead;
     readonly withLocale: <T>(fn: () => T) => T;
     readonly resolveValue: ResolveSyncValue;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface DocumentHeadValue {
-    /**
-     * Sets `document.title`.
-     */
+    /** Sets `document.title`. */
     readonly title?: string;
     /**
-     * Used to manually set meta tags in the head. Additionally, the `data`
-     * property could be used to set arbitrary data which the `<head>` component
-     * could later use to generate `<meta>` tags.
+     * Used to manually set meta tags in the head. Additionally, the `data` property could be used to
+     * set arbitrary data which the `<head>` component could later use to generate `<meta>` tags.
      */
     readonly meta?: readonly DocumentMeta[];
-    /**
-     * Used to manually append `<link>` elements to the `<head>`.
-     */
+    /** Used to manually append `<link>` elements to the `<head>`. */
     readonly links?: readonly DocumentLink[];
-    /**
-     * Used to manually append `<style>` elements to the `<head>`.
-     */
+    /** Used to manually append `<style>` elements to the `<head>`. */
     readonly styles?: readonly DocumentStyle[];
-    /**
-     * Used to manually append `<script>` elements to the `<head>`.
-     */
+    /** Used to manually append `<script>` elements to the `<head>`. */
     readonly scripts?: readonly DocumentScript[];
     /**
-     * Arbitrary object containing custom data. When the document head is created from
-     * markdown files, the frontmatter attributes that are not recognized as a well-known
-     * meta names (such as title, description, author, etc...), are stored in this property.
+     * Arbitrary object containing custom data. When the document head is created from markdown files,
+     * the frontmatter attributes that are not recognized as a well-known meta names (such as title,
+     * description, author, etc...), are stored in this property.
      */
     readonly frontmatter?: Readonly<Record<string, any>>;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface DocumentLink {
     as?: string;
     crossorigin?: string;
@@ -271,9 +245,7 @@ export declare interface DocumentLink {
     key?: string;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface DocumentMeta {
     readonly content?: string;
     readonly httpEquiv?: string;
@@ -284,18 +256,14 @@ export declare interface DocumentMeta {
     readonly media?: string;
 }
 
-/**
- * @alpha
- */
+/** @alpha */
 export declare interface DocumentScript {
     readonly script?: string;
     readonly props?: Readonly<QwikIntrinsicElements['script']>;
     readonly key?: string;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface DocumentStyle {
     readonly style: string;
     readonly props?: Readonly<QwikIntrinsicElements['style']>;
@@ -310,48 +278,36 @@ declare type Failed = {
 
 declare type FailOfRest<REST extends readonly DataValidator[]> = REST extends readonly DataValidator<infer ERROR>[] ? ERROR : never;
 
-/**
- * @public
- */
+/** @public */
 export declare type FailReturn<T> = T & Failed;
 
-/**
- * @public
- */
+/** @public */
 export declare const Form: <O, I>({ action, spaReset, reloadDocument, onSubmit$, ...rest }: FormProps<O, I>, key: string | null) => QwikJSX.Element;
 
-/**
- * @public
- */
+/** @public */
 export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements['form'], 'action' | 'method'> {
-    /**
-     * Reference to the action returned by `action()`.
-     */
+    /** Reference to the action returned by `action()`. */
     action?: ActionStore<O, I, true | false>;
     /**
-     * When `true` the form submission will cause a full page reload, even if SPA mode is enabled and JS is available.
+     * When `true` the form submission will cause a full page reload, even if SPA mode is enabled and
+     * JS is available.
      */
     reloadDocument?: boolean;
     /**
-     * When `true` all the form inputs will be reset in SPA mode, just like happens in a full page form submission.
+     * When `true` all the form inputs will be reset in SPA mode, just like happens in a full page
+     * form submission.
      *
      * Defaults to `false`
      */
     spaReset?: boolean;
-    /**
-     * Event handler executed right when the form is submitted.
-     */
+    /** Event handler executed right when the form is submitted. */
     onSubmit$?: (event: Event, form: HTMLFormElement) => ValueOrPromise<void>;
-    /**
-     * Event handler executed right after the action is executed successfully and returns some data.
-     */
+    /** Event handler executed right after the action is executed successfully and returns some data. */
     onSubmitCompleted$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
     key?: string | number | null;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface FormSubmitSuccessDetail<T> {
     status: number;
     value: T;
@@ -359,26 +315,18 @@ export declare interface FormSubmitSuccessDetail<T> {
 
 declare type GetValidatorType<VALIDATOR extends TypedDataValidator> = VALIDATOR extends TypedDataValidator<infer TYPE> ? zod.infer<TYPE> : never;
 
-/**
- * @public
- */
+/** @public */
 export declare const globalAction$: ActionConstructor;
 
-/**
- * @public
- */
+/** @public */
 export declare const globalActionQrl: ActionConstructorQRL;
 
-/**
- * @public
- */
+/** @public */
 export declare type JSONObject = {
     [x: string]: JSONValue;
 };
 
-/**
- * @public
- */
+/** @public */
 export declare type JSONValue = string | number | boolean | {
     [x: string]: JSONValue;
 } | Array<JSONValue>;
@@ -388,14 +336,10 @@ declare interface LayoutModule extends RouteModule {
     readonly head?: ContentModuleHead;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare const Link: Component<LinkProps>;
 
-/**
- * @public
- */
+/** @public */
 export declare interface LinkProps extends AnchorAttributes {
     prefetch?: boolean;
     reload?: boolean;
@@ -403,48 +347,36 @@ export declare interface LinkProps extends AnchorAttributes {
     scroll?: boolean;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface Loader<RETURN> {
     /**
-     * Returns the `Signal` containing the data returned by the `loader$` function.
-     * Like all `use-` functions and methods, it can only be invoked within a `component$()`.
+     * Returns the `Signal` containing the data returned by the `loader$` function. Like all `use-`
+     * functions and methods, it can only be invoked within a `component$()`.
      */
     (): LoaderSignal<RETURN>;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface LoaderConstructor {
     <OBJ>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, options?: LoaderOptions): Loader<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
     <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, ...rest: REST): Loader<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface LoaderConstructorQRL {
     <OBJ>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, options?: LoaderOptions): Loader<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
     <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, ...rest: REST): Loader<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface LoaderOptions {
     id?: string;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare type LoaderSignal<TYPE> = TYPE extends () => ValueOrPromise<infer VALIDATOR> ? ReadonlySignal<ValueOrPromise<VALIDATOR>> : ReadonlySignal<TYPE>;
 
-/**
- * @public
- */
+/** @public */
 export declare type MenuData = [pathname: string, menuLoader: MenuModuleLoader];
 
 declare interface MenuModule {
@@ -455,14 +387,10 @@ declare type MenuModuleLoader = () => Promise<MenuModule>;
 
 declare type ModuleLoader = ContentModuleLoader | EndpointModuleLoader;
 
-/**
- * @public
- */
+/** @public */
 export declare type NavigationType = 'initial' | 'form' | 'link' | 'popstate';
 
-/**
- * @public
- */
+/** @public */
 export declare interface PageModule extends RouteModule {
     readonly default: any;
     readonly head?: ContentModuleHead;
@@ -470,31 +398,23 @@ export declare interface PageModule extends RouteModule {
     readonly onStaticGenerate?: StaticGenerateHandler;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare type PathParams = Record<string, string>;
 
 declare type Prettify<T> = {} & {
     [K in keyof T]: T[K];
 };
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityMockProps {
     url?: string;
     params?: Record<string, string>;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare const QwikCityMockProvider: Component<QwikCityMockProps>;
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityPlan {
     readonly routes: RouteData[];
     readonly serverPlugins?: RouteModule[];
@@ -504,9 +424,7 @@ export declare interface QwikCityPlan {
     readonly cacheModules?: boolean;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityProps {
     /**
      * Enable the ViewTransition API
@@ -520,9 +438,7 @@ export declare interface QwikCityProps {
     viewTransition?: boolean;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare const QwikCityProvider: Component<QwikCityProps>;
 
 export { RequestEvent }
@@ -537,24 +453,16 @@ export { RequestEventLoader }
 
 export { RequestHandler }
 
-/**
- * @public
- */
+/** @public */
 export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
 
-/**
- * @public
- */
+/** @public */
 export declare const routeAction$: ActionConstructor;
 
-/**
- * @public
- */
+/** @public */
 export declare const routeActionQrl: ActionConstructorQRL;
 
-/**
- * @public
- */
+/** @public */
 export declare type RouteData = [routeName: string, loaders: ModuleLoader[]] | [
 routeName: string,
 loaders: ModuleLoader[],
@@ -562,19 +470,13 @@ originalPathname: string,
 routeBundleNames: string[]
 ];
 
-/**
- * @public
- */
+/** @public */
 export declare const routeLoader$: LoaderConstructor;
 
-/**
- * @public
- */
+/** @public */
 export declare const routeLoaderQrl: LoaderConstructorQRL;
 
-/**
- * @public
- */
+/** @public */
 export declare interface RouteLocation {
     readonly params: Readonly<Record<string, string>>;
     readonly url: URL;
@@ -593,9 +495,7 @@ declare interface RouteModule<BODY = unknown> {
     onRequest?: RequestHandler<BODY> | RequestHandler<BODY>[];
 }
 
-/**
- * @public
- */
+/** @public */
 export declare type RouteNavigate = QRL<(path?: string, options?: {
     type?: Exclude<NavigationType, 'initial'>;
     forceReload?: boolean;
@@ -603,14 +503,10 @@ export declare type RouteNavigate = QRL<(path?: string, options?: {
     scroll?: boolean;
 } | boolean) => Promise<void>>;
 
-/**
- * @public
- */
+/** @public */
 export declare const RouterOutlet: Component<    {}>;
 
-/**
- * @public
- */
+/** @public */
 export declare const server$: <T extends ServerFunction>(first: T) => QRL<T>;
 
 declare interface ServerConstructorQRL {
@@ -621,28 +517,20 @@ declare interface ServerFunction {
     (this: RequestEventBase, ...args: any[]): any;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare const serverQrl: ServerConstructorQRL;
 
-/**
- * @public
- */
+/** @public */
 export declare const ServiceWorkerRegister: (props: {
     nonce?: string;
 }) => JSXNode<"script">;
 
-/**
- * @public
- */
+/** @public */
 export declare interface StaticGenerate {
     params?: PathParams[];
 }
 
-/**
- * @public
- */
+/** @public */
 export declare type StaticGenerateHandler = ({ env, }: {
     env: EnvGetter;
 }) => Promise<StaticGenerate> | StaticGenerate;
@@ -651,9 +539,7 @@ declare type StrictUnion<T> = Prettify<StrictUnionHelper<T, T>>;
 
 declare type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never;
 
-/**
- * @public
- */
+/** @public */
 declare interface TypedDataValidator<T extends zod.ZodType = any> {
     __zod: zod.ZodSchema<T>;
     validate(ev: RequestEvent, data: unknown): Promise<zod.SafeParseReturnType<T, T>>;
@@ -661,29 +547,19 @@ declare interface TypedDataValidator<T extends zod.ZodType = any> {
 
 declare type UnionKeys<T> = T extends T ? keyof T : never;
 
-/**
- * @public
- */
+/** @public */
 export declare const useContent: () => ContentState;
 
-/**
- * @public
- */
+/** @public */
 export declare const useDocumentHead: () => Required<ResolvedDocumentHead>;
 
-/**
- * @public
- */
+/** @public */
 export declare const useLocation: () => RouteLocation;
 
-/**
- * @public
- */
+/** @public */
 export declare const useNavigate: () => RouteNavigate;
 
-/**
- * @public
- */
+/** @public */
 export declare const validator$: ValidatorConstructor;
 
 declare interface ValidatorConstructor {
@@ -694,9 +570,7 @@ declare interface ValidatorConstructorQRL {
     <T extends ValidatorReturn>(validator: QRL<(ev: RequestEvent, data: unknown) => ValueOrPromise<T>>): T extends ValidatorReturnFail<infer ERROR> ? DataValidator<ERROR> : DataValidator<never>;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare const validatorQrl: ValidatorConstructorQRL;
 
 declare type ValidatorReturn<T extends Record<string, any> = {}> = ValidatorReturnSuccess | ValidatorReturnFail<T>;
@@ -714,14 +588,10 @@ declare interface ValidatorReturnSuccess {
 
 export { z }
 
-/**
- * @public
- */
+/** @public */
 export declare const zod$: ZodConstructor;
 
-/**
- * @public
- */
+/** @public */
 export declare interface ZodConstructor {
     <T extends zod.ZodRawShape>(schema: T): TypedDataValidator<zod.ZodObject<T>>;
     <T extends zod.ZodRawShape>(schema: (z: typeof zod, ev: RequestEvent) => T): TypedDataValidator<zod.ZodObject<T>>;
@@ -729,9 +599,7 @@ export declare interface ZodConstructor {
     <T extends zod.Schema>(schema: (z: typeof zod, ev: RequestEvent) => T): TypedDataValidator<T>;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface ZodConstructorQRL {
     <T extends zod.ZodRawShape>(schema: QRL<T>): TypedDataValidator<zod.ZodObject<T>>;
     <T extends zod.ZodRawShape>(schema: QRL<(zs: typeof zod, ev: RequestEvent) => T>): TypedDataValidator<zod.ZodObject<T>>;
@@ -739,9 +607,7 @@ declare interface ZodConstructorQRL {
     <T extends zod.Schema>(schema: QRL<(z: typeof zod, ev: RequestEvent) => T>): TypedDataValidator<T>;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare const zodQrl: ZodConstructorQRL;
 
 export { }

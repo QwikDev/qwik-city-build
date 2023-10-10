@@ -1,14 +1,10 @@
 import { ServerAdapterOptions } from '../../shared/vite';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
-/**
- * @public
- */
+/** @public */
 export declare function azureSwaAdapter(opts?: AzureSwaAdapterOptions): any;
 
-/**
- * @public
- */
+/** @public */
 export declare interface AzureSwaAdapterOptions extends ServerAdapterOptions {
 }
 

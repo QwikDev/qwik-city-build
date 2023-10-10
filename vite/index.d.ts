@@ -18,30 +18,20 @@ declare interface BuildLayout {
 }
 
 declare interface BuildRoute extends ParsedPathname {
-    /**
-     * Unique id built from its relative file system path
-     */
+    /** Unique id built from its relative file system path */
     id: string;
-    /**
-     * Local file system path
-     */
+    /** Local file system path */
     filePath: string;
     ext: string;
-    /**
-     * URL Pathname
-     */
+    /** URL Pathname */
     pathname: string;
     layouts: BuildLayout[];
 }
 
-/**
- * @public
- */
+/** @public */
 export declare function extendConfig(baseConfigExport: UserConfigExport, serverConfigExport: UserConfigExport): (env: ConfigEnv) => Promise<Record<string, any>>;
 
-/**
- * @public
- */
+/** @public */
 declare interface ImageOptimizationOptions {
     jsxDirectives?: {
         quality?: `${number}`;
@@ -53,9 +43,7 @@ declare interface ImageOptimizationOptions {
     enabled?: boolean | 'only-production';
 }
 
-/**
- * @public
- */
+/** @public */
 export declare type MdxOptions = CompileOptions;
 
 declare interface MdxPlugins {
@@ -79,72 +67,49 @@ declare interface PathnameSegmentPart {
     rest: boolean;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface PluginOptions {
-    /**
-     * Directory of the `routes`. Defaults to `src/routes`.
-     */
+    /** Directory of the `routes`. Defaults to `src/routes`. */
     routesDir?: string;
-    /**
-     * Directory of the `server plugins`. Defaults to `src/server-plugins`.
-     */
+    /** Directory of the `server plugins`. Defaults to `src/server-plugins`. */
     serverPluginsDir?: string;
     /**
-     * The base pathname is used to create absolute URL paths up to
-     * the `hostname`, and must always start and end with a
-     * `/`.  Defaults to `/`.
+     * The base pathname is used to create absolute URL paths up to the `hostname`, and must always
+     * start and end with a `/`. Defaults to `/`.
      */
     basePathname?: string;
     /**
-     * Ensure a trailing slash ends page urls. Defaults to `true`.
-     * (Note: Previous versions defaulted to `false`).
+     * Ensure a trailing slash ends page urls. Defaults to `true`. (Note: Previous versions defaulted
+     * to `false`).
      */
     trailingSlash?: boolean;
-    /**
-     * Enable or disable MDX plugins included by default in qwik-city.
-     */
+    /** Enable or disable MDX plugins included by default in qwik-city. */
     mdxPlugins?: MdxPlugins;
-    /**
-     * MDX Options https://mdxjs.com/
-     */
+    /** MDX Options https://mdxjs.com/ */
     mdx?: any;
-    /**
-     * The platform object which can be used to mock the Cloudflare bindings.
-     */
+    /** The platform object which can be used to mock the Cloudflare bindings. */
     platform?: Record<string, unknown>;
-    /**
-     * Configuration to rewrite url paths
-     */
+    /** Configuration to rewrite url paths */
     rewriteRoutes?: RewriteRouteOption[];
 }
 
-/**
- * @public
- */
+/** @public */
 export declare function qwikCity(userOpts?: QwikCityVitePluginOptions): PluginOption[];
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityPlugin {
     name: 'vite-plugin-qwik-city';
     api: QwikCityPluginApi;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface QwikCityPluginApi {
     getBasePathname: () => string;
     getRoutes: () => BuildRoute[];
     getServiceWorkers: () => BuildEntry[];
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityVitePluginOptions extends Omit<PluginOptions, 'basePathname'> {
     mdxPlugins?: MdxPlugins;
     mdx?: MdxOptions;
@@ -152,9 +117,7 @@ export declare interface QwikCityVitePluginOptions extends Omit<PluginOptions, '
     imageOptimization?: ImageOptimizationOptions;
 }
 
-/**
- * @public
- */
+/** @public */
 declare interface RewriteRouteOption {
     prefix?: string;
     paths: Record<string, string>;

@@ -2,20 +2,14 @@ import type { AzureFunction } from '@azure/functions';
 import type { Context } from '@azure/functions';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
-/**
- * @public
- */
+/** @public */
 export declare function createQwikCity(opts: QwikCityAzureOptions): AzureFunction;
 
-/**
- * @public
- */
+/** @public */
 export declare interface PlatformAzure extends Partial<Context> {
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityAzureOptions extends ServerRenderOptions {
 }
 

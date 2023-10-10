@@ -1,17 +1,13 @@
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
-/**
- * @public
- */
+/** @public */
 export declare function createQwikCity(opts: QwikCityCloudflarePagesOptions): (request: PlatformCloudflarePages['request'], env: Record<string, any> & {
     ASSETS: {
         fetch: (req: Request) => Response;
     };
 }, ctx: PlatformCloudflarePages['ctx']) => Promise<Response>;
 
-/**
- * @public
- */
+/** @public */
 export declare interface PlatformCloudflarePages {
     request: Request;
     env?: Record<string, any>;
@@ -20,9 +16,7 @@ export declare interface PlatformCloudflarePages {
     };
 }
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityCloudflarePagesOptions extends ServerRenderOptions {
 }
 

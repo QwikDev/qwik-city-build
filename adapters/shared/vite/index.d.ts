@@ -2,31 +2,26 @@ import type { Plugin as Plugin_2 } from 'vite';
 import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 import type { UserConfig } from 'vite';
 
-/**
- * @public
- */
+/** @public */
 export declare interface AdapterSSGOptions extends Omit<StaticGenerateRenderOptions, 'outDir' | 'origin'> {
-    /**
-     * Defines routes that should be static generated. Accepts wildcard behavior.
-     */
+    /** Defines routes that should be static generated. Accepts wildcard behavior. */
     include: string[];
     /**
      * Defines routes that should not be static generated. Accepts wildcard behavior. `exclude` always
-     * take priority over  `include`.
+     * take priority over `include`.
      */
     exclude?: string[];
     /**
-     * The URL `origin`, which is a combination of the scheme (protocol) and hostname (domain).
-     * For example, `https://qwik.builder.io` has the protocol `https://` and domain `qwik.builder.io`.
+     * The URL `origin`, which is a combination of the scheme (protocol) and hostname (domain). For
+     * example, `https://qwik.builder.io` has the protocol `https://` and domain `qwik.builder.io`.
      * However, the `origin` does not include a `pathname`.
      *
-     * The `origin` is used to provide a full URL during Static Site Generation (SSG), and to
-     * simulate a complete URL rather than just the `pathname`. For example, in order to
-     * render a correct canonical tag URL or URLs within the `sitemap.xml`, the `origin` must
-     * be provided too.
+     * The `origin` is used to provide a full URL during Static Site Generation (SSG), and to simulate
+     * a complete URL rather than just the `pathname`. For example, in order to render a correct
+     * canonical tag URL or URLs within the `sitemap.xml`, the `origin` must be provided too.
      *
-     * If the site also starts with a pathname other than `/`, please use the `basePathname`
-     * option in the Qwik City config options.
+     * If the site also starts with a pathname other than `/`, please use the `basePathname` option in
+     * the Qwik City config options.
      */
     origin?: string;
 }
@@ -40,30 +35,20 @@ declare interface BuildLayout {
 }
 
 declare interface BuildRoute extends ParsedPathname {
-    /**
-     * Unique id built from its relative file system path
-     */
+    /** Unique id built from its relative file system path */
     id: string;
-    /**
-     * Local file system path
-     */
+    /** Local file system path */
     filePath: string;
     ext: string;
-    /**
-     * URL Pathname
-     */
+    /** URL Pathname */
     pathname: string;
     layouts: BuildLayout[];
 }
 
-/**
- * @public
- */
+/** @public */
 export declare function getParentDir(startDir: string, dirName: string): string;
 
-/**
- * @public
- */
+/** @public */
 export declare const NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
 
 declare interface ParsedPathname {
@@ -81,43 +66,30 @@ declare interface PathnameSegmentPart {
     rest: boolean;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare const RESOLVED_NOT_FOUND_PATHS_ID: string;
 
-/**
- * @public
- */
+/** @public */
 export declare const RESOLVED_STATIC_PATHS_ID: string;
 
-/**
- * @public
- */
+/** @public */
 export declare interface ServerAdapterOptions {
     /**
-     * Options the adapter should use when running Static Site Generation (SSG).
-     * Defaults the `filter` to "auto" which will attempt to automatically decides if
-     * a page can be statically generated and does not have dynamic data, or if it the page
-     * should instead be rendered on the server (SSR). Setting to `null` will prevent any
-     * pages from being statically generated.
+     * Options the adapter should use when running Static Site Generation (SSG). Defaults the `filter`
+     * to "auto" which will attempt to automatically decides if a page can be statically generated and
+     * does not have dynamic data, or if it the page should instead be rendered on the server (SSR).
+     * Setting to `null` will prevent any pages from being statically generated.
      */
     ssg?: AdapterSSGOptions | null;
 }
 
-/**
- * @public
- */
+/** @public */
 export declare const STATIC_PATHS_ID = "@qwik-city-static-paths";
 
-/**
- * @public
- */
+/** @public */
 export declare function viteAdapter(opts: ViteAdapterPluginOptions): Plugin_2;
 
-/**
- * @public
- */
+/** @public */
 declare interface ViteAdapterPluginOptions {
     name: string;
     origin: string;

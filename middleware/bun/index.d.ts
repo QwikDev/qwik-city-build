@@ -1,18 +1,14 @@
 import type { ClientConn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 
-/**
- * @public
- */
+/** @public */
 export declare function createQwikCity(opts: QwikCityBunOptions): {
     router: (request: Request) => Promise<Response | null>;
     notFound: (request: Request) => Promise<Response>;
     staticFile: (request: Request) => Promise<Response | null>;
 };
 
-/**
- * @public
- */
+/** @public */
 export declare interface QwikCityBunOptions extends ServerRenderOptions {
     /** Options for serving static files */
     static?: {

@@ -242,9 +242,7 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
     });
 };
 
-/**
- * @public
- */
+/** @public */
 const setupServiceWorker = () => {
     if (typeof self !== 'undefined' && typeof appBundles !== 'undefined') {
         setupServiceWorkerScope(self, appBundles, libraryBundleIds, linkBundles);

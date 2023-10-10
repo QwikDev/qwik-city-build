@@ -3,14 +3,10 @@ import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
 
 export { StaticGenerateRenderOptions }
 
-/**
- * @public
- */
+/** @public */
 export declare function vercelEdgeAdapter(opts?: VercelEdgeAdapterOptions): any;
 
-/**
- * @public
- */
+/** @public */
 export declare interface VercelEdgeAdapterOptions extends ServerAdapterOptions {
     /**
      * Determines if the build should auto-generate the `.vercel/output/config.json` config.
@@ -19,23 +15,23 @@ export declare interface VercelEdgeAdapterOptions extends ServerAdapterOptions {
      */
     outputConfig?: boolean;
     /**
-     * The `entrypoint` property in the `.vc-config.json` file.
-     * Indicates the initial file where code will be executed for the Edge Function.
+     * The `entrypoint` property in the `.vc-config.json` file. Indicates the initial file where code
+     * will be executed for the Edge Function.
      *
      * Defaults to `entry.vercel-edge.js`.
      */
     vcConfigEntryPoint?: string;
     /**
-     * The `envVarsInUse` property in the `.vc-config.json` file.
-     * List of environment variable names that will be available for the Edge Function to utilize.
+     * The `envVarsInUse` property in the `.vc-config.json` file. List of environment variable names
+     * that will be available for the Edge Function to utilize.
      *
      * Defaults to `undefined`.
      */
     vcConfigEnvVarsInUse?: string[];
     /**
-     * Manually add pathnames that should be treated as static paths and not SSR.
-     * For example, when these pathnames are requested, their response should
-     * come from a static file, rather than a server-side rendered response.
+     * Manually add pathnames that should be treated as static paths and not SSR. For example, when
+     * these pathnames are requested, their response should come from a static file, rather than a
+     * server-side rendered response.
      */
     staticPaths?: string[];
 }
