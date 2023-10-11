@@ -13470,6 +13470,9 @@ function extendConfig(baseConfigExport, serverConfigExport) {
   };
 }
 
+// sw-reg:@qwik-city-sw-register-build
+var qwik_city_sw_register_build_default = '((i,a,r,s)=>{r=e=>{const t=document.querySelector("[q\\\\:base]");t&&a.active&&a.active.postMessage({type:"qprefetch",base:t.getAttribute("q:base"),...e})},document.addEventListener("qprefetch",e=>{const t=e.detail;a?r(t):i.push(t)}),navigator.serviceWorker.register("__url").then(e=>{s=()=>{a=e,i.forEach(r),r({bundles:i})},e.installing?e.installing.addEventListener("statechange",t=>{t.target.state=="activated"&&s()}):e.active&&s()}).catch(e=>console.error(e))})([])';
+
 // packages/qwik-city/buildtime/markdown/mdx.ts
 import { SourceMapGenerator } from "source-map";
 
@@ -25890,16 +25893,13 @@ function patchGlobalThis() {
 // packages/qwik-city/buildtime/vite/plugin.ts
 import fs8 from "fs";
 
-// sw-reg:@qwik-city-sw-register-build
-var qwik_city_sw_register_build_default = '((s,a,i,r)=>{i=(e,t)=>{t=document.querySelector("[q\\\\:base]"),t&&a.active&&a.active.postMessage({type:"qprefetch",base:t.getAttribute("q:base"),...e})},document.addEventListener("qprefetch",e=>{const t=e.detail;a?i(t):t.bundles&&s.push(...t.bundles)}),navigator.serviceWorker.register("__url").then(e=>{r=()=>{a=e,i({bundles:s})},e.installing?e.installing.addEventListener("statechange",t=>{t.target.state=="activated"&&r()}):e.active&&r()}).catch(e=>console.error(e))})([])';
-
 // packages/qwik-city/buildtime/runtime-generation/generate-service-worker.ts
-function generateServiceWorkerRegister(ctx) {
+function generateServiceWorkerRegister(ctx, swRegister) {
   let swReg;
   if (ctx.isDevServer) {
     swReg = SW_UNREGISTER;
   } else {
-    swReg = qwik_city_sw_register_build_default;
+    swReg = swRegister;
     let swUrl = "/service-worker.js";
     if (ctx.serviceWorkers.length > 0) {
       const sw = ctx.serviceWorkers.sort(
@@ -25911,7 +25911,7 @@ function generateServiceWorkerRegister(ctx) {
   }
   return `export default ${JSON.stringify(swReg)};`;
 }
-function prependManifestToServiceWorker(ctx, manifest, swCode) {
+function prependManifestToServiceWorker(ctx, manifest, prefetch, swCode) {
   const key = `/* Qwik Service Worker */`;
   if (swCode.includes(key)) {
     return null;
@@ -25919,7 +25919,7 @@ function prependManifestToServiceWorker(ctx, manifest, swCode) {
   const appBundles = [];
   const appBundlesCode = generateAppBundles(appBundles, manifest);
   const libraryBundlesCode = generateLibraryBundles(appBundles, manifest);
-  const linkBundlesCode = generateLinkBundles(ctx, appBundles, manifest);
+  const [linkBundlesCode] = generateLinkBundles(ctx, appBundles, manifest, prefetch);
   return [key, appBundlesCode, libraryBundlesCode, linkBundlesCode, swCode].join("\n");
 }
 function generateAppBundles(appBundles, manifest) {
@@ -25959,8 +25959,17 @@ function generateLibraryBundles(appBundles, manifest) {
   }
   return `const libraryBundleIds=${JSON.stringify(libraryBundleIds)};`;
 }
-function generateLinkBundles(ctx, appBundles, manifest) {
+function generateLinkBundles(ctx, appBundles, manifest, prefetch) {
+  var _a2, _b2;
   const linkBundles = [];
+  const symbolToBundle = /* @__PURE__ */ new Map();
+  const routeToBundles = {};
+  for (const bundleName in manifest.bundles || []) {
+    (_a2 = manifest.bundles[bundleName].symbols) == null ? void 0 : _a2.forEach((symbol) => {
+      const idx = symbol.lastIndexOf("_");
+      symbolToBundle.set(idx === -1 ? symbol : symbol.substring(idx + 1), bundleName);
+    });
+  }
   for (const r2 of ctx.routes) {
     const linkBundleNames = [];
     const addFileBundles = (filePath) => {
@@ -25989,13 +25998,27 @@ function generateLinkBundles(ctx, appBundles, manifest) {
       addFileBundles(layout.filePath);
     }
     addFileBundles(r2.filePath);
+    if (prefetch) {
+      const symbolsForRoute = prefetch.find((p) => p.route === r2.routeName);
+      (_b2 = symbolsForRoute == null ? void 0 : symbolsForRoute.symbols) == null ? void 0 : _b2.reverse().forEach((symbol) => {
+        const bundle = symbolToBundle.get(symbol);
+        if (bundle) {
+          const idx = linkBundleNames.indexOf(bundle);
+          if (idx !== -1) {
+            linkBundleNames.splice(idx, 1);
+          }
+          linkBundleNames.unshift(bundle);
+        }
+      });
+    }
     linkBundles.push(
       `[${r2.pattern.toString()},${JSON.stringify(
         linkBundleNames.map((bundleName) => getAppBundleId(appBundles, bundleName))
       )}]`
     );
+    routeToBundles[r2.routeName] = linkBundleNames;
   }
-  return `const linkBundles=[${linkBundles.join(",")}];`;
+  return [`const linkBundles=[${linkBundles.join(",")}];`, routeToBundles];
 }
 function getAppBundleId(appBundles, bundleName) {
   return appBundles.findIndex((b) => b[0] === bundleName);
@@ -26407,7 +26430,7 @@ function qwikCityPlugin(userOpts) {
             return generateQwikCityPlan(ctx, qwikPlugin, (opts == null ? void 0 : opts.ssr) ?? false);
           }
           if (isSwRegister) {
-            return generateServiceWorkerRegister(ctx);
+            return generateServiceWorkerRegister(ctx, qwik_city_sw_register_build_default);
           }
         }
       }
@@ -26481,6 +26504,7 @@ function qwikCityPlugin(userOpts) {
       async handler() {
         if ((ctx == null ? void 0 : ctx.target) === "ssr") {
           const manifest = qwikPlugin.api.getManifest();
+          const insightsManifest = await qwikPlugin.api.getInsightsManifest();
           const clientOutDir = qwikPlugin.api.getClientOutDir();
           if (manifest && clientOutDir) {
             const basePathRelDir = api.getBasePathname().replace(/^\/|\/$/, "");
@@ -26490,7 +26514,12 @@ function qwikCityPlugin(userOpts) {
                 const swClientDistPath = join6(clientOutBaseDir, swEntry.chunkFileName);
                 const swCode = await fs8.promises.readFile(swClientDistPath, "utf-8");
                 try {
-                  const swCodeUpdate = prependManifestToServiceWorker(ctx, manifest, swCode);
+                  const swCodeUpdate = prependManifestToServiceWorker(
+                    ctx,
+                    manifest,
+                    (insightsManifest == null ? void 0 : insightsManifest.prefetch) || null,
+                    swCode
+                  );
                   if (swCodeUpdate) {
                     await fs8.promises.mkdir(clientOutDir, { recursive: true });
                     await fs8.promises.writeFile(swClientDistPath, swCodeUpdate);
