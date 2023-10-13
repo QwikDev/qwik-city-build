@@ -67,10 +67,10 @@ declare interface PathnameSegmentPart {
 }
 
 /** @public */
-export declare const RESOLVED_NOT_FOUND_PATHS_ID: string;
+export declare const RESOLVED_NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths.js";
 
 /** @public */
-export declare const RESOLVED_STATIC_PATHS_ID: string;
+export declare const RESOLVED_STATIC_PATHS_ID = "@qwik-city-static-paths.js";
 
 /** @public */
 export declare interface ServerAdapterOptions {
