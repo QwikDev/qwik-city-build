@@ -49,10 +49,10 @@ function vercelEdgeAdapter(opts = {}) {
       const outDir = ((_a2 = config.build) == null ? void 0 : _a2.outDir) || (0, import_node_path.join)(".vercel", "output", "functions", "_qwik-city.func");
       return {
         resolve: {
-          conditions: ["webworker", "worker"]
+          conditions: opts.target === "webworker" ? ["edge-light", "worker", "browser", "module", "main"] : ["webworker", "worker"]
         },
         ssr: {
-          target: "webworker",
+          target: opts.target === "webworker" ? "webworker" : "node",
           noExternal: true
         },
         build: {
