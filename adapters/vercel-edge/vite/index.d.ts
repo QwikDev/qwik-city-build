@@ -37,8 +37,8 @@ export declare interface VercelEdgeAdapterOptions extends ServerAdapterOptions {
     /**
      * Define the `target` proeprty in the `ssr` property in the `vite.config.ts` file.
      *
-     * Defaults to `webworker` for not having a breaking change. But `node` will become the default
-     * in an upcoming release.
+     * Defaults to `webworker` for not having a breaking change. But `node` will become the default in
+     * an upcoming release.
      */
     target?: 'webworker' | 'node';
 }
