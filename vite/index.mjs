@@ -24594,10 +24594,20 @@ function isLastModulePageRoute(routeModules) {
   return lastRouteModule && typeof lastRouteModule.default === "function";
 }
 function getPathname(url, trailingSlash) {
+  url = new URL(url);
   if (url.pathname.endsWith(QDATA_JSON)) {
-    return url.pathname.slice(0, -QDATA_JSON.length + (trailingSlash ? 1 : 0)) + url.search;
+    url.pathname = url.pathname.slice(0, -QDATA_JSON.length);
   }
-  return url.pathname;
+  if (trailingSlash) {
+    if (!url.pathname.endsWith("/")) {
+      url.pathname += "/";
+    }
+  } else {
+    if (url.pathname.endsWith("/")) {
+      url.pathname = url.pathname.slice(0, -1);
+    }
+  }
+  return url.toString().substring(url.origin.length);
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
 function csrfCheckMiddleware(requestEv) {
