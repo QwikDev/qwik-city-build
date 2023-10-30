@@ -26515,8 +26515,8 @@ function qwikCityPlugin(userOpts) {
       async handler() {
         if ((ctx == null ? void 0 : ctx.target) === "ssr") {
           const manifest = qwikPlugin.api.getManifest();
-          const insightsManifest = await qwikPlugin.api.getInsightsManifest();
           const clientOutDir = qwikPlugin.api.getClientOutDir();
+          const insightsManifest = await qwikPlugin.api.getInsightsManifest(clientOutDir);
           if (manifest && clientOutDir) {
             const basePathRelDir = api.getBasePathname().replace(/^\/|\/$/, "");
             const clientOutBaseDir = join6(clientOutDir, basePathRelDir);
