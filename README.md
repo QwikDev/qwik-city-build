@@ -1,15 +1,54 @@
-# Qwik City 🏙
+# Continuous Build Artifacts
 
-The meta-framework for [Qwik](https://qwik.builder.io/).
+This repo contains build artifacts that are generated as part of the continues build pipeline. 
 
-## Community
+Currently supported artifacts:
+- [`@builder.io/qwik`](https://github.com/BuilderIO/qwik-build)
+- [`@builder.io/qwik-city`](https://github.com/BuilderIO/qwik-city-build)
+- [`@builder.io/qwik-labs`](https://github.com/BuilderIO/qwik-labs-build)
 
-- Ping us at [@QwikDev](https://twitter.com/QwikDev)
-- Join our [Discord](https://qwik.builder.io/chat) community
+The build artifact is created if:
+- Code is merged to `main` branch
+- Code is merged to `build/*` branch
 
-## Related
 
-- [Qwik](https://qwik.builder.io/): An open-source framework designed for best possible time to interactive, by focusing on resumability of server-side-rendering of HTML, and fine-grained lazy-loading of code.
-- [Partytown](https://partytown.builder.io/): Relocate resource intensive third-party scripts off of the main thread and into a web worker 🎉.
-- [Mitosis](https://github.com/BuilderIO/mitosis): Write components once, run everywhere. Compiles to Vue, React, Solid, Angular, Svelte, and more.
-- [Builder](https://github.com/BuilderIO/builder): Drag and drop page builder and CMS for React, Vue, Angular, and more.
+## How to use
+
+The build artifacts are useful if you want to:
+- Install an un-released change.
+- Bisect which specific commit caused a regression.
+
+
+## Install specific build artifact
+To install a specific build artifact change you `package.json` like so (not all lines may be needed):
+
+```json
+{
+  "dependencies": {
+    "@builder.io/qwik": "github:BuilderIO/qwik-build#SHA",
+    "@builder.io/qwik-city": "github:BuilderIO/qwik-city-build#SHA",
+    "@builder.io/qwik-labs": "github:BuilderIO/qwik-labs-build#SHA"
+  }
+}
+```
+
+Where `#SHA` is one of the following:
+- `#SHA` - Install a specific build SHA. You can get the SHA from:
+  - [`@builder.io/qwik`](https://github.com/BuilderIO/qwik-build/commits/) commits
+  - [`@builder.io/qwik-city`](https://github.com/BuilderIO/qwik-city-build/commits/) commits
+  - [`@builder.io/qwik-labs`](https://github.com/BuilderIO/qwik-labs-build/commits/) commits
+- `#build/name` (or `#main`) - Install a specific `build/*` (or `#main`) branch:
+  - [`@builder.io/qwik`](https://github.com/BuilderIO/qwik-build/branches/) branches
+  - [`@builder.io/qwik-city`](https://github.com/BuilderIO/qwik-city-build/branches/) branches
+  - [`@builder.io/qwik-labs`](https://github.com/BuilderIO/qwik-labs-build/branches/) branches
+   > NOTE: Package managers will treat any SHA in the lock file which is on the branch as valid, and so they will not auto upgrade to the latest.  For this reason this is not recommended.
+
+## Bisect for regression
+
+You can bisect different commits to `main` to determine which specific change has cause the regression.
+
+1. Install latest to get an upper mound
+2. Install oldest known good to get a lower bound
+3. Keep bisecting until you find a specific SHA where the code breaks. 
+
+When creating the issue please include which SHA has caused the regression.
