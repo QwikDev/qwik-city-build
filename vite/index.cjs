@@ -26517,13 +26517,13 @@ function qwikCityPlugin(userOpts) {
     closeBundle: {
       sequential: true,
       async handler() {
-        if ((ctx == null ? void 0 : ctx.target) === "ssr") {
+        if ((ctx == null ? void 0 : ctx.target) === "ssr" && !(ctx == null ? void 0 : ctx.isDevServer)) {
           const manifest = qwikPlugin.api.getManifest();
           const clientOutDir = qwikPlugin.api.getClientOutDir();
-          const insightsManifest = await qwikPlugin.api.getInsightsManifest(clientOutDir);
           if (manifest && clientOutDir) {
             const basePathRelDir = api.getBasePathname().replace(/^\/|\/$/, "");
             const clientOutBaseDir = (0, import_node_path11.join)(clientOutDir, basePathRelDir);
+            const insightsManifest = await qwikPlugin.api.getInsightsManifest(clientOutDir);
             for (const swEntry of ctx.serviceWorkers) {
               try {
                 const swClientDistPath = (0, import_node_path11.join)(clientOutBaseDir, swEntry.chunkFileName);
