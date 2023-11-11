@@ -26280,36 +26280,7 @@ function imagePlugin(userOpts) {
     return _jsxQ('img', {...{decoding: 'async', loading: 'lazy'}, ...props}, PROPS, undefined, 3, key, dev);
   }`;
           } else if (extension === ".svg") {
-            const svgAttributes = {};
-            const data = (0, import_svgo.optimize)(code2, {
-              plugins: [
-                {
-                  name: "preset-default",
-                  params: {
-                    overrides: {
-                      removeViewBox: false
-                    }
-                  }
-                },
-                {
-                  name: "customPluginName",
-                  fn: () => {
-                    return {
-                      element: {
-                        exit: (node) => {
-                          if (node.name === "svg") {
-                            node.name = "g";
-                            Object.assign(svgAttributes, node.attributes);
-                            node.attributes = {};
-                          }
-                        }
-                      }
-                    };
-                  }
-                }
-              ]
-            }).data;
-            svgAttributes.dangerouslySetInnerHTML = data.slice(3, -3);
+            const { svgAttributes } = optimizeSvg(code2);
             return `
   import { _jsxQ } from '@builder.io/qwik';
   const PROPS = ${JSON.stringify(svgAttributes)};
@@ -26322,6 +26293,42 @@ function imagePlugin(userOpts) {
       }
     }
   ];
+}
+function optimizeSvg(code2) {
+  const svgAttributes = {};
+  const data = (0, import_svgo.optimize)(code2, {
+    plugins: [
+      {
+        name: "preset-default",
+        params: {
+          overrides: {
+            removeViewBox: false
+          }
+        }
+      },
+      {
+        name: "customPluginName",
+        fn: () => {
+          return {
+            element: {
+              exit: (node) => {
+                if (node.name === "svg") {
+                  node.name = "g";
+                  Object.assign(svgAttributes, node.attributes);
+                  node.attributes = {};
+                }
+              }
+            }
+          };
+        }
+      }
+    ]
+  }).data;
+  svgAttributes.dangerouslySetInnerHTML = data.slice(3, -4);
+  return {
+    data,
+    svgAttributes
+  };
 }
 
 // packages/qwik-city/buildtime/vite/plugin.ts
