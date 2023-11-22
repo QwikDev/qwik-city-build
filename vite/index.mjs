@@ -26275,7 +26275,7 @@ function imagePlugin(userOpts) {
     return _jsxQ('img', {...{decoding: 'async', loading: 'lazy'}, ...props}, PROPS, undefined, 3, key, dev);
   }`;
           } else if (extension === ".svg") {
-            const { svgAttributes } = optimizeSvg(code2);
+            const { svgAttributes } = optimizeSvg({ code: code2, path: pathId }, userOpts);
             return `
   import { _jsxQ } from '@builder.io/qwik';
   const PROPS = ${JSON.stringify(svgAttributes)};
@@ -26289,15 +26289,21 @@ function imagePlugin(userOpts) {
     }
   ];
 }
-function optimizeSvg(code2) {
+function optimizeSvg({ code: code2, path: path3 }, userOpts) {
+  var _a2, _b2, _c, _d, _e, _f, _g, _h;
   const svgAttributes = {};
+  const userPlugins = ((_b2 = (_a2 = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _a2.svgo) == null ? void 0 : _b2.plugins) || [];
   const data = optimize(code2, {
+    floatPrecision: (_d = (_c = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _c.svgo) == null ? void 0 : _d.floatPrecision,
+    multipass: (_f = (_e = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _e.svgo) == null ? void 0 : _f.multipass,
+    path: path3,
     plugins: [
       {
         name: "preset-default",
         params: {
           overrides: {
-            removeViewBox: false
+            removeViewBox: false,
+            ...(_h = (_g = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _g.svgo) == null ? void 0 : _h.defaultPresetOverrides
           }
         }
       },
@@ -26316,7 +26322,8 @@ function optimizeSvg(code2) {
             }
           };
         }
-      }
+      },
+      ...userPlugins
     ]
   }).data;
   svgAttributes.dangerouslySetInnerHTML = data.slice(3, -4);
