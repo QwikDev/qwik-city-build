@@ -87,7 +87,7 @@ export declare interface ServerAdapterOptions {
 export declare const STATIC_PATHS_ID = "@qwik-city-static-paths";
 
 /** @public */
-export declare function viteAdapter(opts: ViteAdapterPluginOptions): Plugin_2;
+export declare function viteAdapter(opts: ViteAdapterPluginOptions): Plugin_2<any>;
 
 /** @public */
 declare interface ViteAdapterPluginOptions {
