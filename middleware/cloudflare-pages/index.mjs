@@ -8,6 +8,7 @@ import { isStaticPath } from "@qwik-city-static-paths";
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 import { setServerPlatform } from "@builder.io/qwik/server";
 function createQwikCity(opts) {
+  globalThis.TextEncoderStream = TextEncoderStream;
   const qwikSerializer = {
     _deserializeData,
     _serializeData,
@@ -92,6 +93,34 @@ function createQwikCity(opts) {
   }
   return onCloudflarePagesFetch;
 }
+var resolved = Promise.resolve();
+var TextEncoderStream = class {
+  constructor() {
+    this._writer = null;
+    this.readable = {
+      pipeTo: (writableStream) => {
+        this._writer = writableStream.getWriter();
+      }
+    };
+    this.writable = {
+      getWriter: () => {
+        if (!this._writer) {
+          throw new Error("No writable stream");
+        }
+        const encoder = new TextEncoder();
+        return {
+          write: async (chunk) => {
+            if (chunk != null) {
+              await this._writer.write(encoder.encode(chunk));
+            }
+          },
+          close: () => this._writer.close(),
+          ready: resolved
+        };
+      }
+    };
+  }
+};
 export {
   createQwikCity
 };
