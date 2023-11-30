@@ -26290,12 +26290,28 @@ function imagePlugin(userOpts) {
   ];
 }
 function optimizeSvg({ code: code2, path: path3 }, userOpts) {
-  var _a2, _b2, _c, _d, _e, _f, _g, _h;
+  var _a2, _b2, _c, _d, _e, _f, _g, _h, _i, _j, _k;
   const svgAttributes = {};
-  const userPlugins = ((_b2 = (_a2 = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _a2.svgo) == null ? void 0 : _b2.plugins) || [];
+  const prefixIdsConfiguration = (_b2 = (_a2 = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _a2.svgo) == null ? void 0 : _b2.prefixIds;
+  const maybePrefixIdsPlugin = prefixIdsConfiguration !== false ? [{ name: "prefixIds", params: prefixIdsConfiguration }] : [];
+  const userPlugins = ((_e = (_d = (_c = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _c.svgo) == null ? void 0 : _d.plugins) == null ? void 0 : _e.filter((plugin) => {
+    if (plugin === "preset-default" || typeof plugin === "object" && plugin.name === "preset-default") {
+      console.warn(
+        `You are trying to use the preset-default SVGO plugin. This plugin is already included by default, you can customize it through the defaultPresetOverrides option.`
+      );
+      return false;
+    }
+    if (plugin === "prefixIds" || typeof plugin === "object" && plugin.name === "prefixIds") {
+      console.warn(
+        `You are trying to use the preset-default SVGO plugin. This plugin is already included by default, you can customize it through the prefixIds option.`
+      );
+      return false;
+    }
+    return true;
+  })) || [];
   const data = optimize(code2, {
-    floatPrecision: (_d = (_c = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _c.svgo) == null ? void 0 : _d.floatPrecision,
-    multipass: (_f = (_e = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _e.svgo) == null ? void 0 : _f.multipass,
+    floatPrecision: (_g = (_f = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _f.svgo) == null ? void 0 : _g.floatPrecision,
+    multipass: (_i = (_h = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _h.svgo) == null ? void 0 : _i.multipass,
     path: path3,
     plugins: [
       {
@@ -26303,7 +26319,7 @@ function optimizeSvg({ code: code2, path: path3 }, userOpts) {
         params: {
           overrides: {
             removeViewBox: false,
-            ...(_h = (_g = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _g.svgo) == null ? void 0 : _h.defaultPresetOverrides
+            ...(_k = (_j = userOpts == null ? void 0 : userOpts.imageOptimization) == null ? void 0 : _j.svgo) == null ? void 0 : _k.defaultPresetOverrides
           }
         }
       },
@@ -26323,6 +26339,7 @@ function optimizeSvg({ code: code2, path: path3 }, userOpts) {
           };
         }
       },
+      ...maybePrefixIdsPlugin,
       ...userPlugins
     ]
   }).data;

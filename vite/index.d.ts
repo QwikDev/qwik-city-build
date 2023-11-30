@@ -44,6 +44,7 @@ declare interface ImageOptimizationOptions {
     };
     svgo?: Pick<Config, 'floatPrecision' | 'multipass' | 'plugins'> & {
         defaultPresetOverrides?: BuiltinsWithOptionalParams['preset-default']['overrides'];
+        prefixIds?: BuiltinsWithOptionalParams['prefixIds'] | false;
     };
     enabled?: boolean | 'only-production';
 }
