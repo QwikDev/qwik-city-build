@@ -8,7 +8,9 @@ import { isStaticPath } from "@qwik-city-static-paths";
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 import { setServerPlatform } from "@builder.io/qwik/server";
 function createQwikCity(opts) {
-  if (typeof globalThis.TextEncoderStream === "undefined") {
+  try {
+    new globalThis.TextEncoderStream();
+  } catch (e) {
     globalThis.TextEncoderStream = TextEncoderStream;
   }
   const qwikSerializer = {
