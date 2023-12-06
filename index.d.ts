@@ -7,6 +7,7 @@ import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { EnvGetter } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
+import { PropFunctionProps } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -23,17 +24,17 @@ import { z } from 'zod';
 import type * as zod from 'zod';
 
 /** @public */
-export declare interface Action<RETURN, INPUT = Record<string, any>, OPTIONAL extends boolean = true> {
+export declare type Action<RETURN, INPUT = Record<string, unknown>, OPTIONAL extends boolean = true> = {
     /**
      * Returns the `ActionStore` containing the current action state and methods to invoke it from a
      * component$(). Like all `use-` functions and methods, it can only be invoked within a
      * `component$()`.
      */
     (): ActionStore<RETURN, INPUT, OPTIONAL>;
-}
+};
 
 /** @public */
-export declare interface ActionConstructor {
+export declare type ActionConstructor = {
     <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: (data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: {
         readonly id?: string;
         readonly validation: [VALIDATOR, ...REST];
@@ -52,10 +53,10 @@ export declare interface ActionConstructor {
     <OBJ>(actionQrl: (form: JSONObject, event: RequestEventAction) => ValueOrPromise<OBJ>, options?: {
         readonly id?: string;
     }): Action<StrictUnion<OBJ>>;
-}
+};
 
 /** @public */
-declare interface ActionConstructorQRL {
+declare type ActionConstructorQRL = {
     <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: QRL<(data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: {
         readonly id?: string;
         readonly validation: [VALIDATOR, ...REST];
@@ -74,16 +75,16 @@ declare interface ActionConstructorQRL {
     <OBJ>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<OBJ>>, options?: {
         readonly id?: string;
     }): Action<StrictUnion<OBJ>>;
-}
+};
 
 /** @public */
-declare interface ActionReturn<RETURN> {
+export declare type ActionReturn<RETURN> = {
     readonly status?: number;
     readonly value: RETURN;
-}
+};
 
 /** @public */
-export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = true> {
+export declare type ActionStore<RETURN, INPUT, OPTIONAL extends boolean = true> = {
     /**
      * It's the "action" path that a native `<form>` should have in order to call the action.
      *
@@ -148,7 +149,7 @@ export declare interface ActionStore<RETURN, INPUT, OPTIONAL extends boolean = t
      * action in the server.
      */
     readonly submit: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
-}
+};
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
 
@@ -185,9 +186,9 @@ export { CookieOptions }
 export { CookieValue }
 
 /** @public */
-declare interface DataValidator<T extends Record<string, any> = {}> {
+export declare type DataValidator<T extends Record<string, any> = {}> = {
     validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn<T>>;
-}
+};
 
 export { DeferReturn }
 
@@ -202,7 +203,7 @@ export declare interface DocumentHeadProps extends RouteLocation {
 }
 
 /** @public */
-export declare interface DocumentHeadValue {
+export declare interface DocumentHeadValue<FrontMatter extends Record<string, any> = Record<string, unknown>> {
     /** Sets `document.title`. */
     readonly title?: string;
     /**
@@ -221,7 +222,7 @@ export declare interface DocumentHeadValue {
      * the frontmatter attributes that are not recognized as a well-known meta names (such as title,
      * description, author, etc...), are stored in this property.
      */
-    readonly frontmatter?: Readonly<Record<string, any>>;
+    readonly frontmatter?: Readonly<FrontMatter>;
 }
 
 /** @public */
@@ -276,7 +277,8 @@ declare type Failed = {
     failed: true;
 };
 
-declare type FailOfRest<REST extends readonly DataValidator[]> = REST extends readonly DataValidator<infer ERROR>[] ? ERROR : never;
+/** @public */
+export declare type FailOfRest<REST extends readonly DataValidator[]> = REST extends readonly DataValidator<infer ERROR>[] ? ERROR : never;
 
 /** @public */
 export declare type FailReturn<T> = T & Failed;
@@ -313,7 +315,8 @@ export declare interface FormSubmitSuccessDetail<T> {
     value: T;
 }
 
-declare type GetValidatorType<VALIDATOR extends TypedDataValidator> = VALIDATOR extends TypedDataValidator<infer TYPE> ? zod.infer<TYPE> : never;
+/** @public */
+export declare type GetValidatorType<VALIDATOR extends TypedDataValidator> = VALIDATOR extends TypedDataValidator<infer TYPE> ? zod.infer<TYPE> : never;
 
 /** @public */
 export declare const globalAction$: ActionConstructor;
@@ -332,12 +335,12 @@ export declare type JSONValue = string | number | boolean | {
 } | Array<JSONValue>;
 
 declare interface LayoutModule extends RouteModule {
-    readonly default: any;
+    readonly default: unknown;
     readonly head?: ContentModuleHead;
 }
 
 /** @public */
-export declare const Link: Component<LinkProps>;
+export declare const Link: Component<PropFunctionProps<LinkProps>>;
 
 /** @public */
 export declare interface LinkProps extends AnchorAttributes {
@@ -348,30 +351,30 @@ export declare interface LinkProps extends AnchorAttributes {
 }
 
 /** @public */
-export declare interface Loader<RETURN> {
+export declare type Loader<RETURN> = {
     /**
      * Returns the `Signal` containing the data returned by the `loader$` function. Like all `use-`
      * functions and methods, it can only be invoked within a `component$()`.
      */
     (): LoaderSignal<RETURN>;
-}
+};
 
 /** @public */
-declare interface LoaderConstructor {
+declare type LoaderConstructor = {
     <OBJ>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, options?: LoaderOptions): Loader<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
     <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, ...rest: REST): Loader<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
-}
+};
 
 /** @public */
-declare interface LoaderConstructorQRL {
+declare type LoaderConstructorQRL = {
     <OBJ>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, options?: LoaderOptions): Loader<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
     <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, ...rest: REST): Loader<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
-}
+};
 
 /** @public */
-declare interface LoaderOptions {
+declare type LoaderOptions = {
     id?: string;
-}
+};
 
 /** @public */
 export declare type LoaderSignal<TYPE> = TYPE extends () => ValueOrPromise<infer VALIDATOR> ? ReadonlySignal<ValueOrPromise<VALIDATOR>> : ReadonlySignal<TYPE>;
@@ -392,7 +395,7 @@ export declare type NavigationType = 'initial' | 'form' | 'link' | 'popstate';
 
 /** @public */
 export declare interface PageModule extends RouteModule {
-    readonly default: any;
+    readonly default: unknown;
     readonly head?: ContentModuleHead;
     readonly headings?: ContentHeading[];
     readonly onStaticGenerate?: StaticGenerateHandler;
@@ -412,7 +415,7 @@ export declare interface QwikCityMockProps {
 }
 
 /** @public */
-export declare const QwikCityMockProvider: Component<QwikCityMockProps>;
+export declare const QwikCityMockProvider: Component<PropFunctionProps<QwikCityMockProps>>;
 
 /** @public */
 export declare interface QwikCityPlan {
@@ -439,7 +442,7 @@ export declare interface QwikCityProps {
 }
 
 /** @public */
-export declare const QwikCityProvider: Component<QwikCityProps>;
+export declare const QwikCityProvider: Component<PropFunctionProps<QwikCityProps>>;
 
 export { RequestEvent }
 
@@ -454,7 +457,7 @@ export { RequestEventLoader }
 export { RequestHandler }
 
 /** @public */
-export declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
+export declare type ResolvedDocumentHead<FrontMatter extends Record<string, any> = Record<string, unknown>> = Required<DocumentHeadValue<FrontMatter>>;
 
 /** @public */
 export declare const routeAction$: ActionConstructor;
@@ -504,21 +507,23 @@ export declare type RouteNavigate = QRL<(path?: string, options?: {
 } | boolean) => Promise<void>>;
 
 /** @public */
-export declare const RouterOutlet: Component<    {}>;
+export declare const RouterOutlet: Component<PropFunctionProps<Record<any, any>>>;
 
 /** @public */
-export declare const server$: <T extends ServerFunction>(first: T) => QRL<T>;
+export declare const server$: <T extends ServerFunction>(first: T) => ServerQRL<T>;
 
-declare interface ServerConstructorQRL {
-    <T extends ServerFunction>(fnQrl: QRL<T>): QRL<T>;
-}
-
-declare interface ServerFunction {
+declare type ServerFunction = {
     (this: RequestEventBase, ...args: any[]): any;
-}
+};
+
+/**
+ * You can pass an AbortSignal as the first argument of a `server$` function and it will use it to
+ * abort the fetch when fired.
+ */
+declare type ServerQRL<T extends ServerFunction> = QRL<(...args: [abort: AbortSignal, ...Parameters<T>] | Parameters<T>) => ReturnType<T>>;
 
 /** @public */
-export declare const serverQrl: ServerConstructorQRL;
+export declare const serverQrl: <T extends ServerFunction>(qrl: QRL<T>) => ServerQRL<T>;
 
 /** @public */
 export declare const ServiceWorkerRegister: (props: {
@@ -535,23 +540,28 @@ export declare type StaticGenerateHandler = ({ env, }: {
     env: EnvGetter;
 }) => Promise<StaticGenerate> | StaticGenerate;
 
-declare type StrictUnion<T> = Prettify<StrictUnionHelper<T, T>>;
+/** @public */
+export declare type StrictUnion<T> = Prettify<StrictUnionHelper<T, T>>;
 
 declare type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never;
 
 /** @public */
-declare interface TypedDataValidator<T extends zod.ZodType = any> {
+export declare type TypedDataValidator<T extends zod.ZodType = zod.ZodType> = {
     __zod: zod.ZodSchema<T>;
     validate(ev: RequestEvent, data: unknown): Promise<zod.SafeParseReturnType<T, T>>;
-}
+};
 
 declare type UnionKeys<T> = T extends T ? keyof T : never;
 
 /** @public */
 export declare const useContent: () => ContentState;
 
-/** @public */
-export declare const useDocumentHead: () => Required<ResolvedDocumentHead>;
+/**
+ * Returns the document head for the current page. The generic type describes the front matter.
+ *
+ * @public
+ */
+export declare const useDocumentHead: <FrontMatter extends Record<string, unknown> = Record<string, any>>() => Required<Required<DocumentHeadValue<FrontMatter>>>;
 
 /** @public */
 export declare const useLocation: () => RouteLocation;
@@ -562,29 +572,30 @@ export declare const useNavigate: () => RouteNavigate;
 /** @public */
 export declare const validator$: ValidatorConstructor;
 
-declare interface ValidatorConstructor {
+declare type ValidatorConstructor = {
     <T extends ValidatorReturn>(validator: (ev: RequestEvent, data: unknown) => ValueOrPromise<T>): T extends ValidatorReturnFail<infer ERROR> ? DataValidator<ERROR> : DataValidator<never>;
-}
+};
 
-declare interface ValidatorConstructorQRL {
+declare type ValidatorConstructorQRL = {
     <T extends ValidatorReturn>(validator: QRL<(ev: RequestEvent, data: unknown) => ValueOrPromise<T>>): T extends ValidatorReturnFail<infer ERROR> ? DataValidator<ERROR> : DataValidator<never>;
-}
+};
 
 /** @public */
 export declare const validatorQrl: ValidatorConstructorQRL;
 
-declare type ValidatorReturn<T extends Record<string, any> = {}> = ValidatorReturnSuccess | ValidatorReturnFail<T>;
+/** @public */
+export declare type ValidatorReturn<T extends Record<string, any> = {}> = ValidatorReturnSuccess | ValidatorReturnFail<T>;
 
-declare interface ValidatorReturnFail<T extends Record<string, any> = {}> {
+declare type ValidatorReturnFail<T extends Record<string, any> = {}> = {
     readonly success: false;
     readonly error: T;
     readonly status?: number;
-}
+};
 
-declare interface ValidatorReturnSuccess {
+declare type ValidatorReturnSuccess = {
     readonly success: true;
-    readonly data?: any;
-}
+    readonly data?: unknown;
+};
 
 export { z }
 
@@ -592,20 +603,20 @@ export { z }
 export declare const zod$: ZodConstructor;
 
 /** @public */
-export declare interface ZodConstructor {
+export declare type ZodConstructor = {
     <T extends zod.ZodRawShape>(schema: T): TypedDataValidator<zod.ZodObject<T>>;
     <T extends zod.ZodRawShape>(schema: (z: typeof zod, ev: RequestEvent) => T): TypedDataValidator<zod.ZodObject<T>>;
     <T extends zod.Schema>(schema: T): TypedDataValidator<T>;
     <T extends zod.Schema>(schema: (z: typeof zod, ev: RequestEvent) => T): TypedDataValidator<T>;
-}
+};
 
 /** @public */
-declare interface ZodConstructorQRL {
+declare type ZodConstructorQRL = {
     <T extends zod.ZodRawShape>(schema: QRL<T>): TypedDataValidator<zod.ZodObject<T>>;
     <T extends zod.ZodRawShape>(schema: QRL<(zs: typeof zod, ev: RequestEvent) => T>): TypedDataValidator<zod.ZodObject<T>>;
     <T extends zod.Schema>(schema: QRL<T>): TypedDataValidator<T>;
     <T extends zod.Schema>(schema: QRL<(z: typeof zod, ev: RequestEvent) => T>): TypedDataValidator<T>;
-}
+};
 
 /** @public */
 export declare const zodQrl: ZodConstructorQRL;

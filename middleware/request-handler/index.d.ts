@@ -202,7 +202,7 @@ declare interface DocumentHeadProps extends RouteLocation {
 }
 
 /** @public */
-declare interface DocumentHeadValue {
+declare interface DocumentHeadValue<FrontMatter extends Record<string, any> = Record<string, unknown>> {
     /** Sets `document.title`. */
     readonly title?: string;
     /**
@@ -221,7 +221,7 @@ declare interface DocumentHeadValue {
      * the frontmatter attributes that are not recognized as a well-known meta names (such as title,
      * description, author, etc...), are stored in this property.
      */
-    readonly frontmatter?: Readonly<Record<string, any>>;
+    readonly frontmatter?: Readonly<FrontMatter>;
 }
 
 /** @public */
@@ -292,7 +292,7 @@ export declare function getErrorHtml(status: number, e: any): string;
 declare type InformationalCode = 100 | 101 | 102 | 103;
 
 declare interface LayoutModule extends RouteModule {
-    readonly default: any;
+    readonly default: unknown;
     readonly head?: ContentModuleHead;
 }
 
@@ -309,7 +309,7 @@ export declare const mergeHeadersCookies: (headers: Headers, cookies: Cookie) =>
 
 /** @public */
 declare interface PageModule extends RouteModule {
-    readonly default: any;
+    readonly default: unknown;
     readonly head?: ContentModuleHead;
     readonly headings?: ContentHeading[];
     readonly onStaticGenerate?: StaticGenerateHandler;
@@ -537,11 +537,15 @@ declare const RequestEvTrailingSlash: unique symbol;
 /** @public */
 export declare type RequestHandler<PLATFORM = QwikCityPlatform> = (ev: RequestEvent<PLATFORM>) => Promise<void> | void;
 
-/** @public */
+/**
+ * The request handler for QwikCity. Called by every integration.
+ *
+ * @public
+ */
 export declare function requestHandler<T = unknown>(serverRequestEv: ServerRequestEvent<T>, opts: ServerRenderOptions, qwikSerializer: QwikSerializer): Promise<QwikCityRun<T> | null>;
 
 /** @public */
-declare type ResolvedDocumentHead = Required<DocumentHeadValue>;
+declare type ResolvedDocumentHead<FrontMatter extends Record<string, any> = Record<string, unknown>> = Required<DocumentHeadValue<FrontMatter>>;
 
 /** @public */
 export declare interface ResolveSyncValue {
@@ -607,11 +611,11 @@ export declare interface ServerRenderOptions extends RenderOptions {
  * @public
  * Request event created by the server.
  */
-export declare interface ServerRequestEvent<T = any> {
+export declare interface ServerRequestEvent<T = unknown> {
     mode: ServerRequestMode;
     url: URL;
     locale: string | undefined;
-    platform: any;
+    platform: QwikCityPlatform;
     request: Request;
     env: EnvGetter;
     getClientConn: () => ClientConn;

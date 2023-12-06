@@ -231,6 +231,7 @@ const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inli
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const QACTION_KEY = "qaction";
+const QFN_KEY = "qfunc";
 const toPath = (url) => url.pathname + url.search + url.hash;
 const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
 const isSameOrigin = (a, b) => a.origin === b.origin;
@@ -998,7 +999,7 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ q
 const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
-  const { onClick$, reload, replaceState, scroll, ...linkProps } = (() => props)();
+  const { onClick$, reload, replaceState, scroll, ...linkProps } = /* @__PURE__ */ (() => props)();
   const clientNavPath = qwik.untrack(() => getClientNavPath({
     ...linkProps,
     reload
@@ -1245,10 +1246,11 @@ const serverQrl = (qrl) => {
           return arg;
         });
         const hash = qrl2.getHash();
-        const res = await fetch(`?qfunc=${hash}`, {
+        const res = await fetch(`?${QFN_KEY}=${hash}`, {
           method: "POST",
           headers: {
             "Content-Type": "application/qwik-json",
+            // Required so we don't call accidentally
             "X-QRL": hash
           },
           signal,

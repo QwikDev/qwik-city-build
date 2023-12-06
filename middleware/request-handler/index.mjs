@@ -468,7 +468,7 @@ async function runValidators(requestEv, validators, data, isDev) {
   return lastResult;
 }
 function isAsyncIterator(obj) {
-  return obj && typeof obj === "object" && Symbol.asyncIterator in obj;
+  return obj ? typeof obj === "object" && Symbol.asyncIterator in obj : false;
 }
 async function pureServerFunction(ev) {
   const fn = ev.query.get(QFN_KEY);
@@ -483,7 +483,11 @@ async function pureServerFunction(ev) {
         let result;
         try {
           if (isDev) {
-            result = await measure(ev, `server_${qrl.getSymbol()}`, () => qrl.apply(ev, args));
+            result = await measure(
+              ev,
+              `server_${qrl.getSymbol()}`,
+              () => qrl.apply(ev, args)
+            );
           } else {
             result = await qrl.apply(ev, args);
           }
