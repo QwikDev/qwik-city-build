@@ -520,7 +520,7 @@ declare type ServerFunction = {
  * You can pass an AbortSignal as the first argument of a `server$` function and it will use it to
  * abort the fetch when fired.
  */
-declare type ServerQRL<T extends ServerFunction> = QRL<(...args: [abort: AbortSignal, ...Parameters<T>] | Parameters<T>) => ReturnType<T>>;
+declare type ServerQRL<T extends ServerFunction> = QRL<((abort: AbortSignal, ...args: Parameters<T>) => ReturnType<T>) | ((...args: Parameters<T>) => ReturnType<T>)>;
 
 /** @public */
 export declare const serverQrl: <T extends ServerFunction>(qrl: QRL<T>) => ServerQRL<T>;
