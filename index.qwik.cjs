@@ -607,7 +607,7 @@ const useQwikCityEnv = () => qwik.noSerialize(qwik.useServerData("qwikcity"));
 const restoreScroll = (type, toUrl2, fromUrl, scrollState) => {
   if (type === "popstate" && scrollState)
     window.scrollTo(scrollState.x, scrollState.y);
-  else if (type === "link") {
+  else if (type === "link" || type === "form") {
     if (!hashScroll(toUrl2, fromUrl))
       window.scrollTo(0, 0);
   }
@@ -808,7 +808,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
           let scrollState;
           if (navType === "popstate")
             scrollState = getScrollHistory();
-          if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate"))
+          if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate") || navType === "form" && !isSamePath(trackUrl, prevUrl))
             document.__q_scroll_restore__ = () => restoreScroll(navType, trackUrl, prevUrl, scrollState);
           const loaders = clientPageData?.loaders;
           const win = window;
