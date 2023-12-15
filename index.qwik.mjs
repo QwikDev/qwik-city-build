@@ -1,4 +1,4 @@
-import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -988,25 +988,29 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     reload
   }, loc));
   const prefetchDataset = untrack(() => getPrefetchDataset(props, clientNavPath, loc));
-  linkProps["preventdefault:click"] = !!clientNavPath;
+  linkProps["link:app"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
   const onPrefetch = prefetchDataset != null ? eventQrl(/* @__PURE__ */ inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_onPrefetch_event_eBQ0vFsFKsk")) : void 0;
-  const handleClick = eventQrl(/* @__PURE__ */ inlinedQrl(async (_, elm) => {
+  const preventDefault = _qrlSync((event, target) => {
+    if (target.hasAttribute("link:app") && !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey))
+      event.preventDefault();
+  }, '(event,target)=>{if(target.hasAttribute("link:app")&&!(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)){event.preventDefault();}}');
+  const handleClick = eventQrl(/* @__PURE__ */ inlinedQrl(async (event, elm) => {
     const [nav2, reload2, replaceState2, scroll2] = useLexicalScope();
-    if (!elm.hasAttribute("preventdefault:click"))
-      return;
-    if (elm.hasAttribute("q:nbs"))
-      await nav2(location.href, {
-        type: "popstate"
-      });
-    else if (elm.href) {
-      elm.setAttribute("aria-pressed", "true");
-      await nav2(elm.href, {
-        forceReload: reload2,
-        replaceState: replaceState2,
-        scroll: scroll2
-      });
-      elm.removeAttribute("aria-pressed");
+    if (event.defaultPrevented) {
+      if (elm.hasAttribute("q:nbs"))
+        await nav2(location.href, {
+          type: "popstate"
+        });
+      else if (elm.href) {
+        elm.setAttribute("aria-pressed", "true");
+        await nav2(elm.href, {
+          forceReload: reload2,
+          replaceState: replaceState2,
+          scroll: scroll2
+        });
+        elm.removeAttribute("aria-pressed");
+      }
     }
   }, "Link_component_handleClick_event_i1Cv0pYJNR0", [
     nav,
@@ -1019,6 +1023,7 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
     "data-prefetch": prefetchDataset,
     onClick$: [
+      preventDefault,
       onClick$,
       handleClick
     ],
