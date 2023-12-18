@@ -348,6 +348,7 @@ export declare interface LinkProps extends AnchorAttributes {
     reload?: boolean;
     replaceState?: boolean;
     scroll?: boolean;
+    'link:app'?: boolean;
 }
 
 /** @public */

@@ -1005,25 +1005,29 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
     reload
   }, loc));
   const prefetchDataset = qwik.untrack(() => getPrefetchDataset(props, clientNavPath, loc));
-  linkProps["preventdefault:click"] = !!clientNavPath;
+  linkProps["link:app"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
   const onPrefetch = prefetchDataset != null ? qwik.eventQrl(/* @__PURE__ */ qwik.inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_onPrefetch_event_eBQ0vFsFKsk")) : void 0;
-  const handleClick = qwik.eventQrl(/* @__PURE__ */ qwik.inlinedQrl(async (_, elm) => {
+  const preventDefault = qwik._qrlSync((event, target) => {
+    if (target.hasAttribute("link:app") && !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey))
+      event.preventDefault();
+  }, '(event,target)=>{if(target.hasAttribute("link:app")&&!(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)){event.preventDefault();}}');
+  const handleClick = qwik.eventQrl(/* @__PURE__ */ qwik.inlinedQrl(async (event, elm) => {
     const [nav2, reload2, replaceState2, scroll2] = qwik.useLexicalScope();
-    if (!elm.hasAttribute("preventdefault:click"))
-      return;
-    if (elm.hasAttribute("q:nbs"))
-      await nav2(location.href, {
-        type: "popstate"
-      });
-    else if (elm.href) {
-      elm.setAttribute("aria-pressed", "true");
-      await nav2(elm.href, {
-        forceReload: reload2,
-        replaceState: replaceState2,
-        scroll: scroll2
-      });
-      elm.removeAttribute("aria-pressed");
+    if (event.defaultPrevented) {
+      if (elm.hasAttribute("q:nbs"))
+        await nav2(location.href, {
+          type: "popstate"
+        });
+      else if (elm.href) {
+        elm.setAttribute("aria-pressed", "true");
+        await nav2(elm.href, {
+          forceReload: reload2,
+          replaceState: replaceState2,
+          scroll: scroll2
+        });
+        elm.removeAttribute("aria-pressed");
+      }
     }
   }, "Link_component_handleClick_event_i1Cv0pYJNR0", [
     nav,
@@ -1036,6 +1040,7 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
     children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"),
     "data-prefetch": prefetchDataset,
     onClick$: [
+      preventDefault,
       onClick$,
       handleClick
     ],
