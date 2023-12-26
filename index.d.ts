@@ -513,15 +513,18 @@ export declare const RouterOutlet: Component<PropFunctionProps<Record<any, any>>
 /** @public */
 export declare const server$: <T extends ServerFunction>(first: T) => ServerQRL<T>;
 
-declare type ServerFunction = {
+/** @public */
+export declare type ServerFunction = {
     (this: RequestEventBase, ...args: any[]): any;
 };
 
 /**
  * You can pass an AbortSignal as the first argument of a `server$` function and it will use it to
  * abort the fetch when fired.
+ *
+ * @public
  */
-declare type ServerQRL<T extends ServerFunction> = QRL<((abort: AbortSignal, ...args: Parameters<T>) => ReturnType<T>) | ((...args: Parameters<T>) => ReturnType<T>)>;
+export declare type ServerQRL<T extends ServerFunction> = QRL<((abort: AbortSignal, ...args: Parameters<T>) => ReturnType<T>) | ((...args: Parameters<T>) => ReturnType<T>)>;
 
 /** @public */
 export declare const serverQrl: <T extends ServerFunction>(qrl: QRL<T>) => ServerQRL<T>;
