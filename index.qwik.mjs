@@ -264,7 +264,7 @@ const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
     }
     const data = endpoint.loaders[id];
     if (isPromise(data))
-      throw new Error("Loaders returning a function can not be referred to in the head function.");
+      throw new Error("Loaders returning a promise can not be resolved for the head function.");
     return data;
   };
   const headProps = {
