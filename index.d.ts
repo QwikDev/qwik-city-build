@@ -7,7 +7,6 @@ import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { EnvGetter } from '@builder.io/qwik-city/middleware/request-handler';
 import { JSXNode } from '@builder.io/qwik';
-import { PropFunctionProps } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
@@ -340,7 +339,7 @@ declare interface LayoutModule extends RouteModule {
 }
 
 /** @public */
-export declare const Link: Component<PropFunctionProps<LinkProps>>;
+export declare const Link: Component<LinkProps>;
 
 /** @public */
 export declare interface LinkProps extends AnchorAttributes {
@@ -416,7 +415,7 @@ export declare interface QwikCityMockProps {
 }
 
 /** @public */
-export declare const QwikCityMockProvider: Component<PropFunctionProps<QwikCityMockProps>>;
+export declare const QwikCityMockProvider: Component<QwikCityMockProps>;
 
 /** @public */
 export declare interface QwikCityPlan {
@@ -443,7 +442,7 @@ export declare interface QwikCityProps {
 }
 
 /** @public */
-export declare const QwikCityProvider: Component<PropFunctionProps<QwikCityProps>>;
+export declare const QwikCityProvider: Component<QwikCityProps>;
 
 export { RequestEvent }
 
@@ -508,7 +507,7 @@ export declare type RouteNavigate = QRL<(path?: string, options?: {
 } | boolean) => Promise<void>>;
 
 /** @public */
-export declare const RouterOutlet: Component<PropFunctionProps<Record<any, any>>>;
+export declare const RouterOutlet: Component<Record<any, any>>;
 
 /** @public */
 export declare const server$: <T extends ServerFunction>(first: T) => ServerQRL<T>;
