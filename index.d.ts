@@ -507,7 +507,7 @@ export declare type RouteNavigate = QRL<(path?: string, options?: {
 } | boolean) => Promise<void>>;
 
 /** @public */
-export declare const RouterOutlet: Component<Record<any, any>>;
+export declare const RouterOutlet: Component<unknown>;
 
 /** @public */
 export declare const server$: <T extends ServerFunction>(first: T) => ServerQRL<T>;
