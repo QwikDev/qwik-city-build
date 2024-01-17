@@ -24053,8 +24053,11 @@ import { join as join4, resolve as resolve2 } from "path";
 // packages/qwik-city/middleware/request-handler/cookie.ts
 var SAMESITE = {
   lax: "Lax",
+  Lax: "Lax",
+  None: "None",
   none: "None",
-  strict: "Strict"
+  strict: "Strict",
+  Strict: "Strict"
 };
 var UNIT = {
   seconds: 1,

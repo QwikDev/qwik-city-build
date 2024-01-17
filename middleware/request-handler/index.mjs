@@ -64,8 +64,11 @@ var COLOR_500 = "#713fc2";
 // packages/qwik-city/middleware/request-handler/cookie.ts
 var SAMESITE = {
   lax: "Lax",
+  Lax: "Lax",
+  None: "None",
   none: "None",
-  strict: "Strict"
+  strict: "Strict",
+  Strict: "Strict"
 };
 var UNIT = {
   seconds: 1,
