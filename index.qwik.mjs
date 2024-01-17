@@ -1,4 +1,4 @@
-import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, eventQrl, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -213,14 +213,19 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
 }, "RouterOutlet_component_e0ssiDXoeAM"));
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
+const PREFETCHED_NAVIGATE_PATHS = /* @__PURE__ */ new Set();
 const QACTION_KEY = "qaction";
 const QFN_KEY = "qfunc";
 const toPath = (url) => url.pathname + url.search + url.hash;
 const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
 const isSameOrigin = (a, b) => a.origin === b.origin;
-const isSamePath = (a, b) => a.pathname + a.search === b.pathname + b.search;
-const isSamePathname = (a, b) => a.pathname === b.pathname;
+const withSlash = (path) => path.endsWith("/") ? path : path + "/";
+const isSamePathname = ({ pathname: a }, { pathname: b }) => {
+  const lDiff = Math.abs(a.length - b.length);
+  return lDiff === 0 ? a === b : lDiff === 1 && withSlash(a) === withSlash(b);
+};
 const isSameSearchQuery = (a, b) => a.search === b.search;
+const isSamePath = (a, b) => isSameSearchQuery(a, b) && isSamePathname(a, b);
 const getClientDataPath = (pathname, pageSearch, action) => {
   let search = pageSearch ?? "";
   if (action)
@@ -242,14 +247,21 @@ const getClientNavPath = (props, baseUrl) => {
     return toPath(toUrl("", baseUrl.url));
   return null;
 };
-const getPrefetchDataset = (props, clientNavPath, currentLoc) => {
-  if (props.prefetch === true && clientNavPath) {
+const shouldPrefetchData = (clientNavPath, currentLoc) => {
+  if (clientNavPath) {
     const prefetchUrl = toUrl(clientNavPath, currentLoc.url);
     const currentUrl = toUrl("", currentLoc.url);
-    if (!isSamePathname(prefetchUrl, currentUrl) || !isSameSearchQuery(prefetchUrl, currentUrl))
-      return "";
+    return !isSamePath(prefetchUrl, currentUrl);
   }
-  return null;
+  return false;
+};
+const shouldPrefetchSymbols = (clientNavPath, currentLoc) => {
+  if (clientNavPath) {
+    const prefetchUrl = toUrl(clientNavPath, currentLoc.url);
+    const currentUrl = toUrl("", currentLoc.url);
+    return !isSamePathname(prefetchUrl, currentUrl);
+  }
+  return false;
 };
 const isPromise = (value) => {
   return value && typeof value.then === "function";
@@ -496,30 +508,36 @@ const newScrollState = () => {
     h: 0
   };
 };
-const dispatchPrefetchEvent = (prefetchData) => {
-  if (isBrowser)
-    document.dispatchEvent(new CustomEvent("qprefetch", {
-      detail: prefetchData
-    }));
+const prefetchSymbols = (path) => {
+  if (isBrowser) {
+    path = path.endsWith("/") ? path : path + "/";
+    if (!PREFETCHED_NAVIGATE_PATHS.has(path)) {
+      PREFETCHED_NAVIGATE_PATHS.add(path);
+      document.dispatchEvent(new CustomEvent("qprefetch", {
+        detail: {
+          links: [
+            path
+          ]
+        }
+      }));
+    }
+  }
 };
-const loadClientData = async (url, element, clearCache, action) => {
+const loadClientData = async (url, element, opts) => {
   const pagePathname = url.pathname;
   const pageSearch = url.search;
-  const clientDataPath = getClientDataPath(pagePathname, pageSearch, action);
+  const clientDataPath = getClientDataPath(pagePathname, pageSearch, opts?.action);
   let qData = void 0;
-  if (!action)
+  if (!opts?.action)
     qData = CLIENT_DATA_CACHE.get(clientDataPath);
-  dispatchPrefetchEvent({
-    links: [
-      pagePathname
-    ]
-  });
+  if (opts?.prefetchSymbols !== false)
+    prefetchSymbols(pagePathname);
   let resolveFn;
   if (!qData) {
-    const options = getFetchOptions(action);
-    if (action)
-      action.data = void 0;
-    qData = fetch(clientDataPath, options).then((rsp) => {
+    const fetchOptions = getFetchOptions(opts?.action);
+    if (opts?.action)
+      opts.action.data = void 0;
+    qData = fetch(clientDataPath, fetchOptions).then((rsp) => {
       const redirectedURL = new URL(rsp.url);
       const isQData = redirectedURL.pathname.endsWith("/q-data.json");
       if (redirectedURL.origin !== location.origin || !isQData) {
@@ -533,11 +551,12 @@ const loadClientData = async (url, element, clearCache, action) => {
             location.href = url.href;
             return;
           }
-          if (clearCache)
+          if (opts?.clearCache)
             CLIENT_DATA_CACHE.delete(clientDataPath);
           if (clientData.redirect)
             location.href = clientData.redirect;
-          else if (action) {
+          else if (opts?.action) {
+            const { action } = opts;
             const actionData = clientData.loaders[action.id];
             resolveFn = () => {
               action.resolve({
@@ -553,7 +572,7 @@ const loadClientData = async (url, element, clearCache, action) => {
         return void 0;
       }
     });
-    if (!action)
+    if (!opts?.action)
       CLIENT_DATA_CACHE.set(clientDataPath, qData);
   }
   return qData.then((v) => {
@@ -746,7 +765,10 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
           trackUrl.pathname += "/";
         let loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
         elm = _getContextElement();
-        const pageData = clientPageData = await loadClientData(trackUrl, elm, true, action);
+        const pageData = clientPageData = await loadClientData(trackUrl, elm, {
+          action,
+          clearCache: true
+        });
         if (!pageData) {
           routeInternal2.untrackedValue = {
             type: navType,
@@ -982,20 +1004,32 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
 const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
-  const { onClick$, reload, replaceState, scroll, ...linkProps } = /* @__PURE__ */ (() => props)();
+  const { onClick$, prefetch: prefetchProp, reload, replaceState, scroll, ...linkProps } = /* @__PURE__ */ (() => props)();
   const clientNavPath = untrack(() => getClientNavPath({
     ...linkProps,
     reload
   }, loc));
-  const prefetchDataset = untrack(() => getPrefetchDataset(props, clientNavPath, loc));
   linkProps["link:app"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
-  const onPrefetch = prefetchDataset != null ? eventQrl(/* @__PURE__ */ inlinedQrl((ev, elm) => prefetchLinkResources(elm, ev.type === "qvisible"), "Link_component_onPrefetch_event_eBQ0vFsFKsk")) : void 0;
-  const preventDefault = _qrlSync((event, target) => {
-    if (target.hasAttribute("link:app") && !(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey))
+  const prefetchData = untrack(() => !!clientNavPath && prefetchProp !== false && prefetchProp !== "js" && shouldPrefetchData(clientNavPath, loc) || void 0);
+  const prefetch = untrack(() => prefetchData || !!clientNavPath && prefetchProp !== false && shouldPrefetchSymbols(clientNavPath, loc));
+  const handlePrefetch = prefetch ? /* @__PURE__ */ inlinedQrl((_, elm) => {
+    if (navigator.connection?.saveData)
+      return;
+    if (elm && elm.href) {
+      const url = new URL(elm.href);
+      prefetchSymbols(url.pathname);
+      if (elm.hasAttribute("data-prefetch"))
+        loadClientData(url, elm, {
+          prefetchSymbols: false
+        });
+    }
+  }, "Link_component_handlePrefetch_Osdg8FnYTw4") : void 0;
+  const preventDefault = clientNavPath ? _qrlSync((event, target) => {
+    if (!(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey))
       event.preventDefault();
-  }, '(event,target)=>{if(target.hasAttribute("link:app")&&!(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)){event.preventDefault();}}');
-  const handleClick = eventQrl(/* @__PURE__ */ inlinedQrl(async (event, elm) => {
+  }, "(event,target)=>{if(!(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)){event.preventDefault();}}") : void 0;
+  const handleClick = clientNavPath ? /* @__PURE__ */ inlinedQrl(async (event, elm) => {
     const [nav2, reload2, replaceState2, scroll2] = useLexicalScope();
     if (event.defaultPrevented) {
       if (elm.hasAttribute("q:nbs"))
@@ -1012,35 +1046,36 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
         elm.removeAttribute("aria-pressed");
       }
     }
-  }, "Link_component_handleClick_event_i1Cv0pYJNR0", [
+  }, "Link_component_handleClick_pIf0khHUxfY", [
     nav,
     reload,
     replaceState,
     scroll
-  ]));
+  ]) : void 0;
   return /* @__PURE__ */ _jsxS("a", {
     ...linkProps,
     children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
-    "data-prefetch": prefetchDataset,
+    "data-prefetch": prefetchData,
     onClick$: [
       preventDefault,
       onClick$,
       handleClick
     ],
-    onFocus$: onPrefetch,
-    onMouseOver$: onPrefetch,
-    onQVisible$: onPrefetch
+    onFocus$: [
+      linkProps.onFocus$,
+      handlePrefetch
+    ],
+    onMouseOver$: [
+      linkProps.onMouseOver$,
+      handlePrefetch
+    ],
+    // Don't prefetch on visible in dev mode
+    onQVisible$: [
+      linkProps.onQVisible$,
+      !isDev ? handlePrefetch : void 0
+    ]
   }, null, 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
-const prefetchLinkResources = (elm, isOnVisible) => {
-  if (elm && elm.href && elm.hasAttribute("data-prefetch")) {
-    if (!windowInnerWidth)
-      windowInnerWidth = innerWidth;
-    if (!isOnVisible || isOnVisible && windowInnerWidth < 520)
-      loadClientData(new URL(elm.href), elm);
-  }
-};
-let windowInnerWidth = 0;
 const ServiceWorkerRegister = (props) => _jsxQ("script", {
   nonce: _wrapSignal(props, "nonce")
 }, {
