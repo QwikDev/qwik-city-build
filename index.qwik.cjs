@@ -799,7 +799,12 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
           trackUrl = newURL;
           loadRoutePromise = loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, trackUrl.pathname);
         }
-        loadedRoute = await loadRoutePromise;
+        try {
+          loadedRoute = await loadRoutePromise;
+        } catch (e) {
+          window.location.href = newHref;
+          return;
+        }
       }
       if (loadedRoute) {
         const [routeName, params, mods, menu] = loadedRoute;
