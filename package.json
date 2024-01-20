@@ -1,7 +1,7 @@
 {
   "name": "@builder.io/qwik-city",
   "description": "The meta-framework for Qwik.",
-  "version": "1.3.5-dev20240118081548",
+  "version": "1.4.0-dev20240120140223",
   "bugs": "https://github.com/BuilderIO/qwik/issues",
   "dependencies": {
     "@mdx-js/mdx": "2.3.0",
@@ -76,6 +76,10 @@
     "./middleware/azure-swa": {
       "types": "./middleware/azure-swa/index.d.ts",
       "import": "./middleware/azure-swa/index.mjs"
+    },
+    "./middleware/aws-lambda": {
+      "types": "./middleware/aws-lambda/index.d.ts",
+      "import": "./middleware/aws-lambda/index.mjs"
     },
     "./middleware/cloudflare-pages": {
       "types": "./middleware/cloudflare-pages/index.d.ts",
