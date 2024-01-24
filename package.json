@@ -1,7 +1,7 @@
 {
   "name": "@builder.io/qwik-city",
   "description": "The meta-framework for Qwik.",
-  "version": "1.4.0-dev20240124215411",
+  "version": "1.4.0-dev20240124215837",
   "bugs": "https://github.com/BuilderIO/qwik/issues",
   "dependencies": {
     "@mdx-js/mdx": "2.3.0",
@@ -10,7 +10,7 @@
     "svgo": "^3.2.0",
     "undici": "*",
     "vfile": "^6.0.1",
-    "vite": "^5.0.11",
+    "vite": "^5.0.12",
     "vite-imagetools": "^6.2.9",
     "zod": "^3.22.4"
   },
