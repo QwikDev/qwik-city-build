@@ -26449,13 +26449,13 @@ function qwikCityPlugin(userOpts) {
       }
       if (id === STATIC_PATHS_ID) {
         return {
-          id: "./" + RESOLVED_STATIC_PATHS_ID,
+          id: join6(outDir, RESOLVED_STATIC_PATHS_ID),
           external: true
         };
       }
       if (id === NOT_FOUND_PATHS_ID) {
         return {
-          id: "./" + RESOLVED_NOT_FOUND_PATHS_ID,
+          id: join6(outDir, RESOLVED_NOT_FOUND_PATHS_ID),
           external: true
         };
       }
