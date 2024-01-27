@@ -25516,6 +25516,81 @@ function ssrDevMiddleware(ctx, server) {
     }
     return null;
   };
+  const routePs = {};
+  const _resolveRoute = async (routeModulePaths, matchPathname) => {
+    await updateBuildContext(ctx);
+    for (const d of ctx.diagnostics) {
+      if (d.type === "error") {
+        console.error(d.message);
+      } else {
+        console.warn(d.message);
+      }
+    }
+    const loaderMap = /* @__PURE__ */ new Map();
+    const serverPlugins = [];
+    for (const file of ctx.serverPlugins) {
+      const layoutModule = await server.ssrLoadModule(file.filePath);
+      serverPlugins.push(layoutModule);
+      routeModulePaths.set(layoutModule, file.filePath);
+      checkModule(loaderMap, layoutModule, file.filePath);
+    }
+    const routeResult = matchRouteRequest(matchPathname);
+    const routeModules = [];
+    let params = {};
+    if (routeResult) {
+      const route = routeResult.route;
+      params = routeResult.params;
+      for (const layout of route.layouts) {
+        const layoutModule = await server.ssrLoadModule(layout.filePath);
+        routeModules.push(layoutModule);
+        routeModulePaths.set(layoutModule, layout.filePath);
+        checkModule(loaderMap, layoutModule, layout.filePath);
+      }
+      const endpointModule = await server.ssrLoadModule(route.filePath);
+      routeModules.push(endpointModule);
+      routeModulePaths.set(endpointModule, route.filePath);
+      checkModule(loaderMap, endpointModule, route.filePath);
+    }
+    let menu = void 0;
+    const menus = ctx.menus.map((buildMenu) => {
+      const menuLoader2 = async () => {
+        const m = await server.ssrLoadModule(buildMenu.filePath);
+        const menuModule = {
+          default: m.default
+        };
+        return menuModule;
+      };
+      const menuData = [buildMenu.pathname, menuLoader2];
+      return menuData;
+    });
+    const menuLoader = getMenuLoader(menus, matchPathname);
+    if (menuLoader) {
+      const menuModule = await menuLoader();
+      menu = menuModule == null ? void 0 : menuModule.default;
+    }
+    const loadedRoute = [
+      routeResult ? routeResult.route.pathname : "",
+      params,
+      routeModules,
+      menu,
+      void 0
+    ];
+    return { serverPlugins, loadedRoute };
+  };
+  const resolveRoute2 = (routeModulePaths, url) => {
+    const matchPathname = getRouteMatchPathname(url.pathname, ctx.opts.trailingSlash);
+    routePs[matchPathname] || (routePs[matchPathname] = _resolveRoute(routeModulePaths, matchPathname).then((r2) => {
+      delete routePs[matchPathname];
+      return r2;
+    }));
+    return routePs[matchPathname];
+  };
+  resolveRoute2(/* @__PURE__ */ new WeakMap(), new URL("/", "http://localhost")).catch((e) => {
+    if (e instanceof Error) {
+      server.ssrFixStacktrace(e);
+      formatError(e);
+    }
+  });
   return async (req, res, next) => {
     try {
       const url = getUrl(req, computeOrigin(req));
@@ -25523,44 +25598,9 @@ function ssrDevMiddleware(ctx, server) {
         next();
         return;
       }
-      await updateBuildContext(ctx);
-      for (const d of ctx.diagnostics) {
-        if (d.type === "error") {
-          console.error(d.message);
-        } else {
-          console.warn(d.message);
-        }
-      }
       const routeModulePaths = /* @__PURE__ */ new WeakMap();
       try {
-        const { _deserializeData, _serializeData, _verifySerializable } = await server.ssrLoadModule("@qwik-serializer");
-        const qwikSerializer = { _deserializeData, _serializeData, _verifySerializable };
-        const loaderMap = /* @__PURE__ */ new Map();
-        const serverPlugins = [];
-        for (const file of ctx.serverPlugins) {
-          const layoutModule = await server.ssrLoadModule(file.filePath);
-          serverPlugins.push(layoutModule);
-          routeModulePaths.set(layoutModule, file.filePath);
-          checkModule(loaderMap, layoutModule, file.filePath);
-        }
-        const matchPathname = getRouteMatchPathname(url.pathname, ctx.opts.trailingSlash);
-        const routeResult = matchRouteRequest(matchPathname);
-        const routeModules = [];
-        let params = {};
-        if (routeResult) {
-          const route = routeResult.route;
-          params = routeResult.params;
-          for (const layout of route.layouts) {
-            const layoutModule = await server.ssrLoadModule(layout.filePath);
-            routeModules.push(layoutModule);
-            routeModulePaths.set(layoutModule, layout.filePath);
-            checkModule(loaderMap, layoutModule, layout.filePath);
-          }
-          const endpointModule = await server.ssrLoadModule(route.filePath);
-          routeModules.push(endpointModule);
-          routeModulePaths.set(endpointModule, route.filePath);
-          checkModule(loaderMap, endpointModule, route.filePath);
-        }
+        const { serverPlugins, loadedRoute } = await resolveRoute2(routeModulePaths, url);
         const renderFn = async (requestEv) => {
           const isPageDataReq = requestEv.pathname.endsWith(QDATA_JSON);
           if (!isPageDataReq) {
@@ -25591,30 +25631,6 @@ function ssrDevMiddleware(ctx, server) {
             return qwikRenderPromise;
           }
         };
-        let menu = void 0;
-        const menus = ctx.menus.map((buildMenu) => {
-          const menuLoader2 = async () => {
-            const m = await server.ssrLoadModule(buildMenu.filePath);
-            const menuModule = {
-              default: m.default
-            };
-            return menuModule;
-          };
-          const menuData = [buildMenu.pathname, menuLoader2];
-          return menuData;
-        });
-        const menuLoader = getMenuLoader(menus, url.pathname);
-        if (menuLoader) {
-          const menuModule = await menuLoader();
-          menu = menuModule == null ? void 0 : menuModule.default;
-        }
-        const loadedRoute = [
-          routeResult ? routeResult.route.pathname : "",
-          params,
-          routeModules,
-          menu,
-          void 0
-        ];
         const requestHandlers = resolveRequestHandlers(
           serverPlugins,
           loadedRoute,
@@ -25633,6 +25649,8 @@ function ssrDevMiddleware(ctx, server) {
             injections: [],
             version: "1"
           };
+          const { _deserializeData, _serializeData, _verifySerializable } = await server.ssrLoadModule("@qwik-serializer");
+          const qwikSerializer = { _deserializeData, _serializeData, _verifySerializable };
           const { completion, requestEv } = runQwikCity(
             serverRequestEv,
             loadedRoute,
