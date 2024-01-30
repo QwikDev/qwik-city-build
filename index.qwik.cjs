@@ -999,8 +999,8 @@ const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ q
     type: "initial",
     dest: url
   });
-  const goto = /* @__PURE__ */ qwik.inlinedQrl(async (path) => {
-    throw new Error("Not implemented");
+  const goto = props.goto ?? /* @__PURE__ */ qwik.inlinedQrl(async () => {
+    console.warn("QwikCityMockProvider: goto not provided");
   }, "QwikCityMockProvider_component_goto_BUbtvTyvVRE");
   const documentHead = qwik.useStore(createDocumentHead, {
     deep: false

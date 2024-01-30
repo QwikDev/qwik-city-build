@@ -1,7 +1,7 @@
 {
   "name": "@builder.io/qwik-city",
   "description": "The meta-framework for Qwik.",
-  "version": "1.4.2-dev20240129180904",
+  "version": "1.4.2-dev20240130011352",
   "bugs": "https://github.com/BuilderIO/qwik/issues",
   "dependencies": {
     "@mdx-js/mdx": "2.3.0",

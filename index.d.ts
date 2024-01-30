@@ -429,6 +429,7 @@ declare type Prettify<T> = {} & {
 export declare interface QwikCityMockProps {
     url?: string;
     params?: Record<string, string>;
+    goto?: RouteNavigate;
 }
 
 /** @public */
