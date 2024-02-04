@@ -585,7 +585,8 @@ const loadClientData = async (url, element, opts) => {
           return clientData;
         });
       else {
-        location.href = url.href;
+        if (opts?.isPrefetch !== true)
+          location.href = url.href;
         return void 0;
       }
     });
@@ -1043,7 +1044,8 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
       prefetchSymbols(url.pathname);
       if (elm.hasAttribute("data-prefetch"))
         loadClientData(url, elm, {
-          prefetchSymbols: false
+          prefetchSymbols: false,
+          isPrefetch: true
         });
     }
   }, "Link_component_handlePrefetch_Osdg8FnYTw4") : void 0;
