@@ -25569,9 +25569,8 @@ function ssrDevMiddleware(ctx, server) {
   };
   const resolveRoute2 = (routeModulePaths, url) => {
     const matchPathname = getRouteMatchPathname(url.pathname, ctx.opts.trailingSlash);
-    routePs[matchPathname] || (routePs[matchPathname] = _resolveRoute(routeModulePaths, matchPathname).then((r2) => {
+    routePs[matchPathname] || (routePs[matchPathname] = _resolveRoute(routeModulePaths, matchPathname).finally(() => {
       delete routePs[matchPathname];
-      return r2;
     }));
     return routePs[matchPathname];
   };
