@@ -180,8 +180,7 @@ const spaInit = /* @__PURE__ */ qwik.inlinedQrl((currentScript) => {
 const shim = () => {
   if (build.isServer) {
     const [symbol, bundle] = qwik.getPlatform().chunkForSymbol(spaInit.getSymbol(), null);
-    const path = (!build.isDev ? qwikCity.basePathname + "build/" : "") + bundle;
-    return `(${shim$1.toString()})('${path}','${symbol}');`;
+    return `(${shim$1.toString()})('${bundle}','${symbol}');`;
   }
 };
 const shim$1 = async (path, symbol) => {
@@ -191,15 +190,14 @@ const shim$1 = async (path, symbol) => {
     if (scrollState)
       window.scrollTo(scrollState.x, scrollState.y);
     const currentScript = document.currentScript;
-    if (!build.isDev)
-      (await import(path))[symbol](currentScript);
-    else {
-      const container = currentScript.closest("[q\\:container]");
-      const base = new URL(container.getAttribute("q:base"), document.baseURI);
-      const url = new URL(path, base);
+    const container = currentScript.closest("[q\\:container]");
+    const base = new URL(container.getAttribute("q:base"), document.baseURI);
+    const url = new URL(path, base);
+    if (build.isDev) {
       const imp = new Function("url", "return import(url)");
       (await imp(url.href))[symbol](currentScript);
-    }
+    } else
+      (await import(path))[symbol](currentScript);
   }
 };
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
