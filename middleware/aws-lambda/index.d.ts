@@ -248,7 +248,6 @@ declare interface QwikCityPlan {
 
 /** @public */
 declare interface QwikLoaderOptions {
-    events?: string[];
     include?: 'always' | 'never' | 'auto';
     position?: 'top' | 'bottom';
 }
