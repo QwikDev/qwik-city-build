@@ -1,7 +1,7 @@
 // packages/qwik-city/adapters/azure-swa/vite/index.ts
 import { viteAdapter } from "../../shared/vite/index.mjs";
-import { join } from "path";
-import fs from "fs";
+import { join } from "node:path";
+import fs from "node:fs";
 function azureSwaAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return viteAdapter({

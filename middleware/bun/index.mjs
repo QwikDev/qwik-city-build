@@ -61,7 +61,7 @@ var MIME_TYPES = {
 };
 
 // packages/qwik-city/middleware/bun/index.ts
-import { join, extname } from "path";
+import { join, extname } from "node:path";
 var resolved = Promise.resolve();
 var TextEncoderStream = class {
   constructor() {

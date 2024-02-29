@@ -1,10 +1,10 @@
 // packages/qwik-city/adapters/shared/vite/index.ts
-import fs2 from "fs";
-import { basename, dirname, join as join2, resolve } from "path";
+import fs2 from "node:fs";
+import { basename, dirname, join as join2, resolve } from "node:path";
 
 // packages/qwik-city/adapters/shared/vite/post-build.ts
-import fs from "fs";
-import { join } from "path";
+import fs from "node:fs";
+import { join } from "node:path";
 import { getErrorHtml } from "../../../middleware/request-handler/index.mjs";
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);

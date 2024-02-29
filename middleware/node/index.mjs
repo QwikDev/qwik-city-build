@@ -3,12 +3,12 @@ import { requestHandler } from "../request-handler/index.mjs";
 import { setServerPlatform } from "@builder.io/qwik/server";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
-import { createReadStream } from "fs";
-import { extname, join, basename } from "path";
-import { fileURLToPath } from "url";
+import { createReadStream } from "node:fs";
+import { extname, join, basename } from "node:path";
+import { fileURLToPath } from "node:url";
 
 // packages/qwik-city/middleware/node/http.ts
-import { Http2ServerRequest } from "http2";
+import { Http2ServerRequest } from "node:http2";
 function computeOrigin(req, opts) {
   var _a;
   return ((_a = opts == null ? void 0 : opts.getOrigin) == null ? void 0 : _a.call(opts, req)) ?? (opts == null ? void 0 : opts.origin) ?? process.env.ORIGIN ?? fallbackOrigin(req);
@@ -163,7 +163,7 @@ import {
   TextDecoderStream,
   WritableStream as WritableStream2,
   ReadableStream
-} from "stream/web";
+} from "node:stream/web";
 import { fetch, Headers as Headers2, Request as Request2, Response, FormData } from "undici";
 import crypto from "crypto";
 function patchGlobalThis() {

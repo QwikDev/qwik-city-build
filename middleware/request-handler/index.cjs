@@ -1108,7 +1108,7 @@ var formToObj = (formData) => {
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
 var asyncStore;
-import("async_hooks").then((module2) => {
+import("node:async_hooks").then((module2) => {
   const AsyncLocalStorage = module2.AsyncLocalStorage;
   asyncStore = new AsyncLocalStorage();
   globalThis.asyncStore = asyncStore;

@@ -35,11 +35,11 @@ __export(node_exports, {
 module.exports = __toCommonJS(node_exports);
 
 // packages/qwik-city/static/node/node-system.ts
-var import_node_fs2 = __toESM(require("fs"), 1);
-var import_node_path3 = require("path");
+var import_node_fs2 = __toESM(require("node:fs"), 1);
+var import_node_path3 = require("node:path");
 
 // packages/qwik-city/middleware/node/node-fetch.ts
-var import_web = require("stream/web");
+var import_web = require("node:stream/web");
 var import_undici = require("undici");
 var import_crypto = __toESM(require("crypto"), 1);
 function patchGlobalThis() {
@@ -64,13 +64,13 @@ function patchGlobalThis() {
 }
 
 // packages/qwik-city/static/node/node-main.ts
-var import_node_fs = __toESM(require("fs"), 1);
-var import_node_os = require("os");
-var import_node_worker_threads = require("worker_threads");
-var import_node_path2 = require("path");
+var import_node_fs = __toESM(require("node:fs"), 1);
+var import_node_os = require("node:os");
+var import_node_worker_threads = require("node:worker_threads");
+var import_node_path2 = require("node:path");
 
 // packages/qwik-city/utils/fs.ts
-var import_node_path = require("path");
+var import_node_path = require("node:path");
 
 // packages/qwik-city/utils/format.ts
 function msToString(ms) {
@@ -120,8 +120,8 @@ function normalizePathSlash(path) {
 
 // packages/qwik-city/static/worker-thread.ts
 var import_request_handler = require("../middleware/request-handler/index.cjs");
-var import_node_url = require("url");
-var import_web2 = require("stream/web");
+var import_node_url = require("node:url");
+var import_web2 = require("node:stream/web");
 var import_qwik = require("@builder.io/qwik");
 async function workerThread(sys) {
   const ssgOpts = sys.getOptions();
@@ -562,7 +562,7 @@ function ssgWorkerCompare(a, b) {
 }
 
 // packages/qwik-city/static/node/node-worker.ts
-var import_node_worker_threads2 = require("worker_threads");
+var import_node_worker_threads2 = require("node:worker_threads");
 async function createNodeWorkerProcess(onMessage) {
   var _a;
   (_a = import_node_worker_threads2.parentPort) == null ? void 0 : _a.on("message", async (msg) => {
@@ -658,7 +658,7 @@ var access = async (path) => {
 };
 
 // packages/qwik-city/static/node/index.ts
-var import_node_worker_threads3 = require("worker_threads");
+var import_node_worker_threads3 = require("node:worker_threads");
 
 // packages/qwik-city/static/routes.ts
 function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
@@ -728,8 +728,8 @@ async function generateNotFoundPages(sys, opts, routes) {
 }
 
 // packages/qwik-city/static/main-thread.ts
-var import_node_url2 = require("url");
-var import_node_path4 = require("path");
+var import_node_url2 = require("node:url");
+var import_node_path4 = require("node:path");
 
 // node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/colors.mjs
 var FORCE_COLOR;
@@ -881,7 +881,7 @@ function generateCodeFrame(source, start = 0, end) {
 }
 
 // packages/qwik-city/buildtime/vite/format-error.ts
-var import_node_fs3 = __toESM(require("fs"), 1);
+var import_node_fs3 = __toESM(require("node:fs"), 1);
 function formatError(e) {
   if (e instanceof Error) {
     const err = e;

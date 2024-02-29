@@ -35,12 +35,12 @@ __export(vite_exports, {
 module.exports = __toCommonJS(vite_exports);
 
 // packages/qwik-city/adapters/shared/vite/index.ts
-var import_node_fs2 = __toESM(require("fs"), 1);
-var import_node_path2 = require("path");
+var import_node_fs2 = __toESM(require("node:fs"), 1);
+var import_node_path2 = require("node:path");
 
 // packages/qwik-city/adapters/shared/vite/post-build.ts
-var import_node_fs = __toESM(require("fs"), 1);
-var import_node_path = require("path");
+var import_node_fs = __toESM(require("node:fs"), 1);
+var import_node_path = require("node:path");
 var import_request_handler = require("@builder.io/qwik-city/middleware/request-handler");
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);

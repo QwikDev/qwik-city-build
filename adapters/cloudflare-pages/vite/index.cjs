@@ -34,8 +34,8 @@ __export(vite_exports, {
 });
 module.exports = __toCommonJS(vite_exports);
 var import_vite = require("../../shared/vite/index.cjs");
-var import_node_fs = __toESM(require("fs"), 1);
-var import_node_path = require("path");
+var import_node_fs = __toESM(require("node:fs"), 1);
+var import_node_path = require("node:path");
 
 // packages/qwik-city/utils/fs.ts
 function normalizePathSlash(path) {
@@ -67,7 +67,8 @@ function cloudflarePagesAdapter(opts = {}) {
         },
         ssr: {
           target: "webworker",
-          noExternal: true
+          noExternal: true,
+          external: ["node:async_hooks"]
         },
         build: {
           ssr: true,

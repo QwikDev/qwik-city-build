@@ -1,7 +1,7 @@
 // packages/qwik-city/adapters/vercel-edge/vite/index.ts
 import { getParentDir, viteAdapter } from "../../shared/vite/index.mjs";
-import fs from "fs";
-import { dirname, join } from "path";
+import fs from "node:fs";
+import { dirname, join } from "node:path";
 function vercelEdgeAdapter(opts = {}) {
   var _a;
   return viteAdapter({

@@ -1,6 +1,6 @@
 // packages/qwik-city/static/node/node-system.ts
-import fs2 from "fs";
-import { dirname as dirname2, join } from "path";
+import fs2 from "node:fs";
+import { dirname as dirname2, join } from "node:path";
 
 // packages/qwik-city/middleware/node/node-fetch.ts
 import {
@@ -8,7 +8,7 @@ import {
   TextDecoderStream,
   WritableStream,
   ReadableStream
-} from "stream/web";
+} from "node:stream/web";
 import { fetch, Headers, Request as Request2, Response, FormData } from "undici";
 import crypto from "crypto";
 function patchGlobalThis() {
@@ -33,13 +33,13 @@ function patchGlobalThis() {
 }
 
 // packages/qwik-city/static/node/node-main.ts
-import fs from "fs";
-import { cpus as nodeCpus } from "os";
-import { Worker } from "worker_threads";
-import { isAbsolute, resolve } from "path";
+import fs from "node:fs";
+import { cpus as nodeCpus } from "node:os";
+import { Worker } from "node:worker_threads";
+import { isAbsolute, resolve } from "node:path";
 
 // packages/qwik-city/utils/fs.ts
-import { basename, dirname, normalize, relative } from "path";
+import { basename, dirname, normalize, relative } from "node:path";
 
 // packages/qwik-city/utils/format.ts
 function msToString(ms) {
@@ -89,8 +89,8 @@ function normalizePathSlash(path) {
 
 // packages/qwik-city/static/worker-thread.ts
 import { requestHandler } from "../middleware/request-handler/index.mjs";
-import { pathToFileURL } from "url";
-import { WritableStream as WritableStream2 } from "stream/web";
+import { pathToFileURL } from "node:url";
+import { WritableStream as WritableStream2 } from "node:stream/web";
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 async function workerThread(sys) {
   const ssgOpts = sys.getOptions();
@@ -530,7 +530,7 @@ function ssgWorkerCompare(a, b) {
 }
 
 // packages/qwik-city/static/node/node-worker.ts
-import { parentPort } from "worker_threads";
+import { parentPort } from "node:worker_threads";
 async function createNodeWorkerProcess(onMessage) {
   var _a;
   (_a = parentPort) == null ? void 0 : _a.on("message", async (msg) => {
@@ -626,7 +626,7 @@ var access = async (path) => {
 };
 
 // packages/qwik-city/static/node/index.ts
-import { isMainThread, workerData } from "worker_threads";
+import { isMainThread, workerData } from "node:worker_threads";
 
 // packages/qwik-city/static/routes.ts
 function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
@@ -696,8 +696,8 @@ async function generateNotFoundPages(sys, opts, routes) {
 }
 
 // packages/qwik-city/static/main-thread.ts
-import { pathToFileURL as pathToFileURL2 } from "url";
-import { relative as relative2 } from "path";
+import { pathToFileURL as pathToFileURL2 } from "node:url";
+import { relative as relative2 } from "node:path";
 
 // node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/colors.mjs
 var FORCE_COLOR;
@@ -849,7 +849,7 @@ function generateCodeFrame(source, start = 0, end) {
 }
 
 // packages/qwik-city/buildtime/vite/format-error.ts
-import fs3 from "fs";
+import fs3 from "node:fs";
 function formatError(e) {
   if (e instanceof Error) {
     const err = e;

@@ -37,12 +37,12 @@ var import_request_handler = require("../request-handler/index.cjs");
 var import_server = require("@builder.io/qwik/server");
 var import_qwik_city_not_found_paths = require("@qwik-city-not-found-paths");
 var import_qwik_city_static_paths = require("@qwik-city-static-paths");
-var import_node_fs = require("fs");
-var import_node_path = require("path");
-var import_node_url = require("url");
+var import_node_fs = require("node:fs");
+var import_node_path = require("node:path");
+var import_node_url = require("node:url");
 
 // packages/qwik-city/middleware/node/http.ts
-var import_node_http2 = require("http2");
+var import_node_http2 = require("node:http2");
 function computeOrigin(req, opts) {
   var _a;
   return ((_a = opts == null ? void 0 : opts.getOrigin) == null ? void 0 : _a.call(opts, req)) ?? (opts == null ? void 0 : opts.origin) ?? process.env.ORIGIN ?? fallbackOrigin(req);
@@ -192,7 +192,7 @@ var MIME_TYPES = {
 };
 
 // packages/qwik-city/middleware/node/node-fetch.ts
-var import_web = require("stream/web");
+var import_web = require("node:stream/web");
 var import_undici = require("undici");
 var import_crypto = __toESM(require("crypto"), 1);
 function patchGlobalThis() {

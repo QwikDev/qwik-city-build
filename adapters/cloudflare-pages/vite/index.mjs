@@ -1,7 +1,7 @@
 // packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
 import { viteAdapter } from "../../shared/vite/index.mjs";
-import fs from "fs";
-import { join, relative } from "path";
+import fs from "node:fs";
+import { join, relative } from "node:path";
 
 // packages/qwik-city/utils/fs.ts
 function normalizePathSlash(path) {
@@ -33,7 +33,8 @@ function cloudflarePagesAdapter(opts = {}) {
         },
         ssr: {
           target: "webworker",
-          noExternal: true
+          noExternal: true,
+          external: ["node:async_hooks"]
         },
         build: {
           ssr: true,

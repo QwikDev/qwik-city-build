@@ -5,7 +5,6 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __defNormalProp = (obj, key, value2) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value: value2 }) : obj[key] = value2;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
 };
@@ -33,23 +32,6 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
-var __publicField = (obj, key, value2) => {
-  __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value2);
-  return value2;
-};
-var __accessCheck = (obj, member, msg) => {
-  if (!member.has(obj))
-    throw TypeError("Cannot " + msg);
-};
-var __privateAdd = (obj, member, value2) => {
-  if (member.has(obj))
-    throw TypeError("Cannot add the same private member more than once");
-  member instanceof WeakSet ? member.add(obj) : member.set(obj, value2);
-};
-var __privateMethod = (obj, member, method) => {
-  __accessCheck(obj, member, "access private method");
-  return method;
-};
 
 // node_modules/.pnpm/unist-util-is@6.0.0/node_modules/unist-util-is/lib/index.js
 function anyFactory(tests) {
@@ -2667,7 +2649,7 @@ var require_int = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "OCT",
       test: /^0o[0-7]+$/,
-      resolve: (str, _onError2, opt) => intResolve(str, 2, 8, opt),
+      resolve: (str, _onError, opt) => intResolve(str, 2, 8, opt),
       stringify: (node2) => intStringify(node2, 8, "0o")
     };
     var int = {
@@ -2675,7 +2657,7 @@ var require_int = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:int",
       test: /^[-+]?[0-9]+$/,
-      resolve: (str, _onError2, opt) => intResolve(str, 0, 10, opt),
+      resolve: (str, _onError, opt) => intResolve(str, 0, 10, opt),
       stringify: stringifyNumber.stringifyNumber
     };
     var intHex = {
@@ -2684,7 +2666,7 @@ var require_int = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "HEX",
       test: /^0x[0-9a-fA-F]+$/,
-      resolve: (str, _onError2, opt) => intResolve(str, 2, 16, opt),
+      resolve: (str, _onError, opt) => intResolve(str, 2, 16, opt),
       stringify: (node2) => intStringify(node2, 16, "0x")
     };
     exports2.int = int;
@@ -2762,7 +2744,7 @@ var require_schema2 = __commonJS({
         default: true,
         tag: "tag:yaml.org,2002:int",
         test: /^-?(?:0|[1-9][0-9]*)$/,
-        resolve: (str, _onError2, { intAsBigInt }) => intAsBigInt ? BigInt(str) : parseInt(str, 10),
+        resolve: (str, _onError, { intAsBigInt }) => intAsBigInt ? BigInt(str) : parseInt(str, 10),
         stringify: ({ value: value2 }) => intIdentify(value2) ? value2.toString() : JSON.stringify(value2)
       },
       {
@@ -3132,7 +3114,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "BIN",
       test: /^[-+]?0b[0-1_]+$/,
-      resolve: (str, _onError2, opt) => intResolve(str, 2, 2, opt),
+      resolve: (str, _onError, opt) => intResolve(str, 2, 2, opt),
       stringify: (node2) => intStringify(node2, 2, "0b")
     };
     var intOct = {
@@ -3141,7 +3123,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "OCT",
       test: /^[-+]?0[0-7_]+$/,
-      resolve: (str, _onError2, opt) => intResolve(str, 1, 8, opt),
+      resolve: (str, _onError, opt) => intResolve(str, 1, 8, opt),
       stringify: (node2) => intStringify(node2, 8, "0")
     };
     var int = {
@@ -3149,7 +3131,7 @@ var require_int2 = __commonJS({
       default: true,
       tag: "tag:yaml.org,2002:int",
       test: /^[-+]?[0-9][0-9_]*$/,
-      resolve: (str, _onError2, opt) => intResolve(str, 0, 10, opt),
+      resolve: (str, _onError, opt) => intResolve(str, 0, 10, opt),
       stringify: stringifyNumber.stringifyNumber
     };
     var intHex = {
@@ -3158,7 +3140,7 @@ var require_int2 = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "HEX",
       test: /^[-+]?0x[0-9a-fA-F_]+$/,
-      resolve: (str, _onError2, opt) => intResolve(str, 2, 16, opt),
+      resolve: (str, _onError, opt) => intResolve(str, 2, 16, opt),
       stringify: (node2) => intStringify(node2, 16, "0x")
     };
     exports2.int = int;
@@ -3301,7 +3283,7 @@ var require_timestamp = __commonJS({
       tag: "tag:yaml.org,2002:int",
       format: "TIME",
       test: /^[-+]?[0-9][0-9_]*(?::[0-5]?[0-9])+$/,
-      resolve: (str, _onError2, { intAsBigInt }) => parseSexagesimal(str, intAsBigInt),
+      resolve: (str, _onError, { intAsBigInt }) => parseSexagesimal(str, intAsBigInt),
       stringify: stringifySexagesimal
     };
     var floatTime = {
@@ -4784,19 +4766,19 @@ var require_resolve_flow_scalar = __commonJS({
       const { offset, type, source, end } = scalar;
       let _type;
       let value2;
-      const _onError2 = (rel, code3, msg) => onError(offset + rel, code3, msg);
+      const _onError = (rel, code3, msg) => onError(offset + rel, code3, msg);
       switch (type) {
         case "scalar":
           _type = Scalar.Scalar.PLAIN;
-          value2 = plainValue(source, _onError2);
+          value2 = plainValue(source, _onError);
           break;
         case "single-quoted-scalar":
           _type = Scalar.Scalar.QUOTE_SINGLE;
-          value2 = singleQuotedValue(source, _onError2);
+          value2 = singleQuotedValue(source, _onError);
           break;
         case "double-quoted-scalar":
           _type = Scalar.Scalar.QUOTE_DOUBLE;
-          value2 = doubleQuotedValue(source, _onError2);
+          value2 = doubleQuotedValue(source, _onError);
           break;
         default:
           onError(scalar, "UNEXPECTED_TOKEN", `Expected a flow scalar value, but found: ${type}`);
@@ -5454,7 +5436,7 @@ var require_cst_scalar = __commonJS({
     var stringifyString = require_stringifyString();
     function resolveAsScalar(token, strict = true, onError) {
       if (token) {
-        const _onError2 = (pos, code3, message) => {
+        const _onError = (pos, code3, message) => {
           const offset = typeof pos === "number" ? pos : Array.isArray(pos) ? pos[0] : pos.offset;
           if (onError)
             onError(offset, code3, message);
@@ -5465,9 +5447,9 @@ var require_cst_scalar = __commonJS({
           case "scalar":
           case "single-quoted-scalar":
           case "double-quoted-scalar":
-            return resolveFlowScalar.resolveFlowScalar(token, strict, _onError2);
+            return resolveFlowScalar.resolveFlowScalar(token, strict, _onError);
           case "block-scalar":
-            return resolveBlockScalar.resolveBlockScalar(token, strict, _onError2);
+            return resolveBlockScalar.resolveBlockScalar(token, strict, _onError);
         }
       }
       return null;
@@ -14507,7 +14489,7 @@ function all(node2) {
 init_unist_util_visit();
 
 // packages/qwik-city/utils/fs.ts
-var import_node_path = require("path");
+var import_node_path = require("node:path");
 
 // packages/qwik-city/utils/format.ts
 function toTitleCase(str) {
@@ -14833,7 +14815,7 @@ function frontmatterAttrsToDocumentHead(attrs) {
 }
 
 // packages/qwik-city/buildtime/markdown/markdown-url.ts
-var import_node_path2 = require("path");
+var import_node_path2 = require("node:path");
 
 // packages/qwik-city/buildtime/routing/source-file.ts
 function getSourceFile(fileName) {
@@ -14866,7 +14848,7 @@ function getSourceFile(fileName) {
 }
 
 // packages/qwik-city/buildtime/markdown/markdown-url.ts
-var import_node_fs = require("fs");
+var import_node_fs = require("node:fs");
 function getMarkdownRelativeUrl(opts, containingFilePath, url, checkFileExists) {
   if (typeof url !== "string" || !isSameOriginUrl(url)) {
     return url;
@@ -21609,7 +21591,7 @@ function getLanguage(className) {
 }
 
 // packages/qwik-city/buildtime/markdown/mdx.ts
-var import_node_crypto = require("crypto");
+var import_node_crypto = require("node:crypto");
 async function createMdxTransformer(ctx) {
   const { compile } = await import("@mdx-js/mdx");
   const { default: remarkFrontmatter2 } = await Promise.resolve().then(() => (init_remark_frontmatter(), remark_frontmatter_exports));
@@ -21681,7 +21663,7 @@ export default WrappedMdxContent;
 }
 
 // packages/qwik-city/buildtime/vite/plugin.ts
-var import_node_path11 = require("path");
+var import_node_path11 = require("node:path");
 var import_vite2 = require("vite");
 
 // packages/qwik-city/buildtime/runtime-generation/generate-entries.ts
@@ -21862,7 +21844,7 @@ function generateQwikCityPlan(ctx, qwikPlugin, isSSR) {
 }
 
 // packages/qwik-city/buildtime/context.ts
-var import_node_path3 = require("path");
+var import_node_path3 = require("node:path");
 function createBuildContext(rootDir, viteBasePath, userOpts, target) {
   const ctx = {
     rootDir: normalizePath(rootDir),
@@ -21928,8 +21910,8 @@ function normalizeOptions(rootDir, viteBasePath, userOpts) {
 }
 
 // packages/qwik-city/buildtime/vite/validate-plugin.ts
-var import_node_fs2 = __toESM(require("fs"), 1);
-var import_node_path4 = require("path");
+var import_node_fs2 = __toESM(require("node:fs"), 1);
+var import_node_path4 = require("node:path");
 async function validatePlugin(opts) {
   if (typeof opts.routesDir !== "string") {
     throw new Error(`qwikCity plugin "routesDir" option missing`);
@@ -21950,8 +21932,8 @@ async function validatePlugin(opts) {
 }
 
 // packages/qwik-city/buildtime/routing/walk-routes-dir.ts
-var import_node_fs3 = __toESM(require("fs"), 1);
-var import_node_path5 = require("path");
+var import_node_fs3 = __toESM(require("node:fs"), 1);
+var import_node_path5 = require("node:path");
 async function walkRoutes(routesDir) {
   const sourceFiles = [];
   await walkRouteDir(sourceFiles, normalizePath(routesDir), (0, import_node_path5.basename)(routesDir));
@@ -21982,7 +21964,7 @@ async function walkRouteDir(sourceFiles, dirPath, dirName) {
 }
 
 // packages/qwik-city/buildtime/routing/resolve-source-file.ts
-var import_node_path6 = require("path");
+var import_node_path6 = require("node:path");
 
 // node_modules/.pnpm/marked@12.0.0/node_modules/marked/lib/marked.esm.js
 function _getDefaults() {
@@ -23680,21 +23662,18 @@ var _Hooks = class {
     return tokens;
   }
 };
-var _parseMarkdown, parseMarkdown_fn, _onError, onError_fn;
 var Marked = class {
+  defaults = _getDefaults();
+  options = this.setOptions;
+  parse = this.#parseMarkdown(_Lexer.lex, _Parser.parse);
+  parseInline = this.#parseMarkdown(_Lexer.lexInline, _Parser.parseInline);
+  Parser = _Parser;
+  Renderer = _Renderer;
+  TextRenderer = _TextRenderer;
+  Lexer = _Lexer;
+  Tokenizer = _Tokenizer;
+  Hooks = _Hooks;
   constructor(...args) {
-    __privateAdd(this, _parseMarkdown);
-    __privateAdd(this, _onError);
-    __publicField(this, "defaults", _getDefaults());
-    __publicField(this, "options", this.setOptions);
-    __publicField(this, "parse", __privateMethod(this, _parseMarkdown, parseMarkdown_fn).call(this, _Lexer.lex, _Parser.parse));
-    __publicField(this, "parseInline", __privateMethod(this, _parseMarkdown, parseMarkdown_fn).call(this, _Lexer.lexInline, _Parser.parseInline));
-    __publicField(this, "Parser", _Parser);
-    __publicField(this, "Renderer", _Renderer);
-    __publicField(this, "TextRenderer", _TextRenderer);
-    __publicField(this, "Lexer", _Lexer);
-    __publicField(this, "Tokenizer", _Tokenizer);
-    __publicField(this, "Hooks", _Hooks);
     this.use(...args);
   }
   /**
@@ -23898,68 +23877,66 @@ var Marked = class {
   parser(tokens, options2) {
     return _Parser.parse(tokens, options2 ?? this.defaults);
   }
-};
-_parseMarkdown = new WeakSet();
-parseMarkdown_fn = function(lexer2, parser2) {
-  return (src, options2) => {
-    const origOpt = { ...options2 };
-    const opt = { ...this.defaults, ...origOpt };
-    if (this.defaults.async === true && origOpt.async === false) {
-      if (!opt.silent) {
-        console.warn("marked(): The async option was set to true by an extension. The async: false option sent to parse will be ignored.");
+  #parseMarkdown(lexer2, parser2) {
+    return (src, options2) => {
+      const origOpt = { ...options2 };
+      const opt = { ...this.defaults, ...origOpt };
+      if (this.defaults.async === true && origOpt.async === false) {
+        if (!opt.silent) {
+          console.warn("marked(): The async option was set to true by an extension. The async: false option sent to parse will be ignored.");
+        }
+        opt.async = true;
       }
-      opt.async = true;
-    }
-    const throwError = __privateMethod(this, _onError, onError_fn).call(this, !!opt.silent, !!opt.async);
-    if (typeof src === "undefined" || src === null) {
-      return throwError(new Error("marked(): input parameter is undefined or null"));
-    }
-    if (typeof src !== "string") {
-      return throwError(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected"));
-    }
-    if (opt.hooks) {
-      opt.hooks.options = opt;
-    }
-    if (opt.async) {
-      return Promise.resolve(opt.hooks ? opt.hooks.preprocess(src) : src).then((src2) => lexer2(src2, opt)).then((tokens) => opt.hooks ? opt.hooks.processAllTokens(tokens) : tokens).then((tokens) => opt.walkTokens ? Promise.all(this.walkTokens(tokens, opt.walkTokens)).then(() => tokens) : tokens).then((tokens) => parser2(tokens, opt)).then((html5) => opt.hooks ? opt.hooks.postprocess(html5) : html5).catch(throwError);
-    }
-    try {
+      const throwError = this.#onError(!!opt.silent, !!opt.async);
+      if (typeof src === "undefined" || src === null) {
+        return throwError(new Error("marked(): input parameter is undefined or null"));
+      }
+      if (typeof src !== "string") {
+        return throwError(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected"));
+      }
       if (opt.hooks) {
-        src = opt.hooks.preprocess(src);
+        opt.hooks.options = opt;
       }
-      let tokens = lexer2(src, opt);
-      if (opt.hooks) {
-        tokens = opt.hooks.processAllTokens(tokens);
+      if (opt.async) {
+        return Promise.resolve(opt.hooks ? opt.hooks.preprocess(src) : src).then((src2) => lexer2(src2, opt)).then((tokens) => opt.hooks ? opt.hooks.processAllTokens(tokens) : tokens).then((tokens) => opt.walkTokens ? Promise.all(this.walkTokens(tokens, opt.walkTokens)).then(() => tokens) : tokens).then((tokens) => parser2(tokens, opt)).then((html5) => opt.hooks ? opt.hooks.postprocess(html5) : html5).catch(throwError);
       }
-      if (opt.walkTokens) {
-        this.walkTokens(tokens, opt.walkTokens);
+      try {
+        if (opt.hooks) {
+          src = opt.hooks.preprocess(src);
+        }
+        let tokens = lexer2(src, opt);
+        if (opt.hooks) {
+          tokens = opt.hooks.processAllTokens(tokens);
+        }
+        if (opt.walkTokens) {
+          this.walkTokens(tokens, opt.walkTokens);
+        }
+        let html5 = parser2(tokens, opt);
+        if (opt.hooks) {
+          html5 = opt.hooks.postprocess(html5);
+        }
+        return html5;
+      } catch (e) {
+        return throwError(e);
       }
-      let html5 = parser2(tokens, opt);
-      if (opt.hooks) {
-        html5 = opt.hooks.postprocess(html5);
+    };
+  }
+  #onError(silent, async) {
+    return (e) => {
+      e.message += "\nPlease report this to https://github.com/markedjs/marked.";
+      if (silent) {
+        const msg = "<p>An error occurred:</p><pre>" + escape$1(e.message + "", true) + "</pre>";
+        if (async) {
+          return Promise.resolve(msg);
+        }
+        return msg;
       }
-      return html5;
-    } catch (e) {
-      return throwError(e);
-    }
-  };
-};
-_onError = new WeakSet();
-onError_fn = function(silent, async) {
-  return (e) => {
-    e.message += "\nPlease report this to https://github.com/markedjs/marked.";
-    if (silent) {
-      const msg = "<p>An error occurred:</p><pre>" + escape$1(e.message + "", true) + "</pre>";
       if (async) {
-        return Promise.resolve(msg);
+        return Promise.reject(e);
       }
-      return msg;
-    }
-    if (async) {
-      return Promise.reject(e);
-    }
-    throw e;
-  };
+      throw e;
+    };
+  }
 };
 var markedInstance = new Marked();
 function marked(src, opt) {
@@ -24336,8 +24313,8 @@ function resolveServiceWorkerEntry(opts, sourceFile) {
 }
 
 // packages/qwik-city/buildtime/routing/walk-server-plugins.ts
-var import_node_fs4 = __toESM(require("fs"), 1);
-var import_node_path7 = require("path");
+var import_node_fs4 = __toESM(require("node:fs"), 1);
+var import_node_path7 = require("node:path");
 async function walkServerPlugins(opts) {
   const dirPath = opts.serverPluginsDir;
   const dirItemNames = await import_node_fs4.default.promises.readdir(dirPath);
@@ -24474,8 +24451,8 @@ ${foundRoutes.map((r2) => `  - ${r2.filePath}`).join("\n")}`
 }
 
 // packages/qwik-city/buildtime/vite/dev-server.ts
-var import_node_fs6 = __toESM(require("fs"), 1);
-var import_node_path8 = require("path");
+var import_node_fs6 = __toESM(require("node:fs"), 1);
+var import_node_path8 = require("node:path");
 
 // packages/qwik-city/middleware/request-handler/cookie.ts
 var SAMESITE = {
@@ -25484,7 +25461,7 @@ var formToObj = (formData) => {
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
 var asyncStore;
-import("async_hooks").then((module2) => {
+import("node:async_hooks").then((module2) => {
   const AsyncLocalStorage = module2.AsyncLocalStorage;
   asyncStore = new AsyncLocalStorage();
   globalThis.asyncStore = asyncStore;
@@ -25699,7 +25676,7 @@ var getMenuLoader = (menus, pathname) => {
 };
 
 // packages/qwik-city/middleware/node/http.ts
-var import_node_http2 = require("http2");
+var import_node_http2 = require("node:http2");
 function computeOrigin(req, opts) {
   var _a2;
   return ((_a2 = opts == null ? void 0 : opts.getOrigin) == null ? void 0 : _a2.call(opts, req)) ?? (opts == null ? void 0 : opts.origin) ?? process.env.ORIGIN ?? fallbackOrigin(req);
@@ -25897,7 +25874,7 @@ function generateCodeFrame(source, start = 0, end) {
 }
 
 // packages/qwik-city/buildtime/vite/format-error.ts
-var import_node_fs5 = __toESM(require("fs"), 1);
+var import_node_fs5 = __toESM(require("node:fs"), 1);
 function formatError(e) {
   if (e instanceof Error) {
     const err = e;
@@ -26002,9 +25979,9 @@ function ssrDevMiddleware(ctx, server) {
   };
   const resolveRoute2 = (routeModulePaths, url) => {
     const matchPathname = getRouteMatchPathname(url.pathname, ctx.opts.trailingSlash);
-    routePs[matchPathname] || (routePs[matchPathname] = _resolveRoute(routeModulePaths, matchPathname).finally(() => {
+    routePs[matchPathname] ||= _resolveRoute(routeModulePaths, matchPathname).finally(() => {
       delete routePs[matchPathname];
-    }));
+    });
     return routePs[matchPathname];
   };
   resolveRoute2(/* @__PURE__ */ new WeakMap(), new URL("/", "http://localhost")).catch((e) => {
@@ -26334,7 +26311,7 @@ self.addEventListener('activate', (ev) => ev.waitUntil(self.clients.claim()));
 `;
 
 // packages/qwik-city/middleware/node/node-fetch.ts
-var import_web = require("stream/web");
+var import_web = require("node:stream/web");
 var import_undici = require("undici");
 var import_crypto = __toESM(require("crypto"), 1);
 function patchGlobalThis() {
@@ -26359,7 +26336,7 @@ function patchGlobalThis() {
 }
 
 // packages/qwik-city/buildtime/vite/plugin.ts
-var import_node_fs9 = __toESM(require("fs"), 1);
+var import_node_fs9 = __toESM(require("node:fs"), 1);
 
 // packages/qwik-city/buildtime/runtime-generation/generate-service-worker.ts
 function generateServiceWorkerRegister(ctx, swRegister) {
@@ -26500,8 +26477,8 @@ navigator.serviceWorker?.getRegistrations().then((regs) => {
 `;
 
 // packages/qwik-city/adapters/shared/vite/post-build.ts
-var import_node_fs7 = __toESM(require("fs"), 1);
-var import_node_path9 = require("path");
+var import_node_fs7 = __toESM(require("node:fs"), 1);
+var import_node_path9 = require("node:path");
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
   const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));
@@ -26637,8 +26614,8 @@ var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
 
 // packages/qwik-city/buildtime/vite/image-jsx.ts
 var import_svgo = require("svgo");
-var import_node_fs8 = __toESM(require("fs"), 1);
-var import_node_path10 = __toESM(require("path"), 1);
+var import_node_fs8 = __toESM(require("node:fs"), 1);
+var import_node_path10 = __toESM(require("node:path"), 1);
 
 // packages/qwik/src/optimizer/src/plugins/plugin.ts
 function parseId(originalId) {
