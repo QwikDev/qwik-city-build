@@ -24,7 +24,8 @@ function netlifyEdgeAdapter(opts = {}) {
         },
         ssr: {
           target: "webworker",
-          noExternal: true
+          noExternal: true,
+          external: ["node:async_hooks"]
         },
         build: {
           ssr: true,
