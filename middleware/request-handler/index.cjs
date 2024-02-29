@@ -1,7 +1,9 @@
 "use strict";
+var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
+var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __export = (target, all) => {
   for (var name in all)
@@ -15,6 +17,14 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
+var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
+  // If the importer is in node compatibility mode or this is not an ESM
+  // file that has been converted to a CommonJS file using a Babel-
+  // compatible transform (i.e. "__esModule" has not been set), then set
+  // "default" to the CommonJS "module.exports" for node compatibility.
+  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
+  mod
+));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // packages/qwik-city/middleware/request-handler/index.ts
@@ -870,7 +880,8 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     routeModuleIndex++;
     while (routeModuleIndex < requestHandlers.length) {
       const moduleRequestHandler = requestHandlers[routeModuleIndex];
-      const result = moduleRequestHandler(requestEv);
+      const asyncStore2 = globalThis.asyncStore;
+      const result = asyncStore2 && (asyncStore2 == null ? void 0 : asyncStore2.run) ? asyncStore2 == null ? void 0 : asyncStore2.run(requestEv, moduleRequestHandler, requestEv) : moduleRequestHandler(requestEv);
       if (isPromise(result)) {
         await result;
       }
@@ -1096,6 +1107,17 @@ var formToObj = (formData) => {
 };
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
+var asyncStore;
+import("async_hooks").then((module2) => {
+  const AsyncLocalStorage = module2.AsyncLocalStorage;
+  asyncStore = new AsyncLocalStorage();
+  globalThis.asyncStore = asyncStore;
+}).catch((err) => {
+  console.warn(
+    "AsyncLocalStorage not available, continuing without it. This might impact concurrent server calls.",
+    err
+  );
+});
 function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash = true, basePathname = "/", qwikSerializer) {
   let resolve;
   const responsePromise = new Promise((r) => resolve = r);
@@ -1112,7 +1134,7 @@ function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, tr
   return {
     response: responsePromise,
     requestEv,
-    completion: runNext(requestEv, resolve)
+    completion: asyncStore ? asyncStore.run(requestEv, runNext, requestEv, resolve) : runNext(requestEv, resolve)
   };
 }
 async function runNext(requestEv, resolve) {

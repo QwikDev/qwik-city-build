@@ -1276,11 +1276,13 @@ const serverQrl = (qrl) => {
       const [qrl2] = qwik.useLexicalScope();
       const signal = args.length > 0 && args[0] instanceof AbortSignal ? args.shift() : void 0;
       if (build.isServer) {
-        const requestEvent = [
+        const contexts = [
+          globalThis.asyncStore?.getStore(),
           useQwikCityEnv()?.ev,
           this,
           qwik._getContextEvent()
-        ].find((v) => v && Object.prototype.hasOwnProperty.call(v, "sharedMap") && Object.prototype.hasOwnProperty.call(v, "cookie"));
+        ];
+        const requestEvent = contexts.find((v) => v && Object.prototype.hasOwnProperty.call(v, "sharedMap") && Object.prototype.hasOwnProperty.call(v, "cookie"));
         return qrl2.apply(requestEvent, args);
       } else {
         const ctxElm = qwik._getContextElement();

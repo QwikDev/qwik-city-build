@@ -25256,7 +25256,8 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     routeModuleIndex++;
     while (routeModuleIndex < requestHandlers.length) {
       const moduleRequestHandler = requestHandlers[routeModuleIndex];
-      const result = moduleRequestHandler(requestEv);
+      const asyncStore2 = globalThis.asyncStore;
+      const result = asyncStore2 && (asyncStore2 == null ? void 0 : asyncStore2.run) ? asyncStore2 == null ? void 0 : asyncStore2.run(requestEv, moduleRequestHandler, requestEv) : moduleRequestHandler(requestEv);
       if (isPromise(result)) {
         await result;
       }
@@ -25482,6 +25483,17 @@ var formToObj = (formData) => {
 };
 
 // packages/qwik-city/middleware/request-handler/user-response.ts
+var asyncStore;
+import("async_hooks").then((module2) => {
+  const AsyncLocalStorage = module2.AsyncLocalStorage;
+  asyncStore = new AsyncLocalStorage();
+  globalThis.asyncStore = asyncStore;
+}).catch((err) => {
+  console.warn(
+    "AsyncLocalStorage not available, continuing without it. This might impact concurrent server calls.",
+    err
+  );
+});
 function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash = true, basePathname = "/", qwikSerializer) {
   let resolve4;
   const responsePromise = new Promise((r2) => resolve4 = r2);
@@ -25498,7 +25510,7 @@ function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, tr
   return {
     response: responsePromise,
     requestEv,
-    completion: runNext(requestEv, resolve4)
+    completion: asyncStore ? asyncStore.run(requestEv, runNext, requestEv, resolve4) : runNext(requestEv, resolve4)
   };
 }
 async function runNext(requestEv, resolve4) {
