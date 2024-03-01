@@ -25223,8 +25223,8 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
     routeModuleIndex++;
     while (routeModuleIndex < requestHandlers.length) {
       const moduleRequestHandler = requestHandlers[routeModuleIndex];
-      const asyncStore2 = globalThis.asyncStore;
-      const result = asyncStore2 && (asyncStore2 == null ? void 0 : asyncStore2.run) ? asyncStore2 == null ? void 0 : asyncStore2.run(requestEv, moduleRequestHandler, requestEv) : moduleRequestHandler(requestEv);
+      const asyncStore2 = globalThis.qcAsyncRequestStore;
+      const result = (asyncStore2 == null ? void 0 : asyncStore2.run) ? asyncStore2.run(requestEv, moduleRequestHandler, requestEv) : moduleRequestHandler(requestEv);
       if (isPromise(result)) {
         await result;
       }
@@ -25454,7 +25454,7 @@ var asyncStore;
 import("node:async_hooks").then((module) => {
   const AsyncLocalStorage = module.AsyncLocalStorage;
   asyncStore = new AsyncLocalStorage();
-  globalThis.asyncStore = asyncStore;
+  globalThis.qcAsyncRequestStore = asyncStore;
 }).catch((err) => {
   console.warn(
     "AsyncLocalStorage not available, continuing without it. This might impact concurrent server calls.",

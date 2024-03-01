@@ -1258,13 +1258,15 @@ const serverQrl = (qrl) => {
       const [qrl2] = useLexicalScope();
       const signal = args.length > 0 && args[0] instanceof AbortSignal ? args.shift() : void 0;
       if (isServer) {
-        const contexts = [
-          globalThis.asyncStore?.getStore(),
-          useQwikCityEnv()?.ev,
-          this,
-          _getContextEvent()
-        ];
-        const requestEvent = contexts.find((v) => v && Object.prototype.hasOwnProperty.call(v, "sharedMap") && Object.prototype.hasOwnProperty.call(v, "cookie"));
+        let requestEvent = globalThis.qcAsyncRequestStore?.getStore();
+        if (!requestEvent) {
+          const contexts = [
+            useQwikCityEnv()?.ev,
+            this,
+            _getContextEvent()
+          ];
+          requestEvent = contexts.find((v) => v && Object.prototype.hasOwnProperty.call(v, "sharedMap") && Object.prototype.hasOwnProperty.call(v, "cookie"));
+        }
         return qrl2.apply(requestEvent, args);
       } else {
         const ctxElm = _getContextElement();
