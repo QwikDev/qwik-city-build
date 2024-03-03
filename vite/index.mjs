@@ -25757,6 +25757,7 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
       ssr: true,
       incomingMessage: req,
       node: process.versions.node
+      // Weirdly needed to make typecheck of insights happy
     },
     locale: void 0
   };
