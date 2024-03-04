@@ -368,24 +368,25 @@ export declare interface LinkProps extends AnchorAttributes {
 }
 
 /** @public */
-export declare type Loader<RETURN> = {
+declare type Loader_2<RETURN> = {
     /**
      * Returns the `Signal` containing the data returned by the `loader$` function. Like all `use-`
      * functions and methods, it can only be invoked within a `component$()`.
      */
     (): LoaderSignal<RETURN>;
 };
+export { Loader_2 as Loader }
 
 /** @public */
 declare type LoaderConstructor = {
-    <OBJ>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, options?: LoaderOptions): Loader<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
-    <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, ...rest: REST): Loader<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
+    <OBJ>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, options?: LoaderOptions): Loader_2<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
+    <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderFn: (event: RequestEventLoader) => ValueOrPromise<OBJ>, ...rest: REST): Loader_2<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
 };
 
 /** @public */
 declare type LoaderConstructorQRL = {
-    <OBJ>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, options?: LoaderOptions): Loader<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
-    <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, ...rest: REST): Loader<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
+    <OBJ>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, options?: LoaderOptions): Loader_2<[Extract<OBJ, Failed>] extends [never] ? OBJ : StrictUnion<OBJ>>;
+    <OBJ extends Record<string, any> | void | null, REST extends readonly DataValidator[]>(loaderQrl: QRL<(event: RequestEventLoader) => ValueOrPromise<OBJ>>, ...rest: REST): Loader_2<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
 };
 
 /** @public */

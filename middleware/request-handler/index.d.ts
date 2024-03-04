@@ -2,7 +2,7 @@ import type { Action } from '@builder.io/qwik-city';
 import type { _deserializeData } from '@builder.io/qwik';
 import type { EnvGetter as EnvGetter_2 } from '@builder.io/qwik-city/middleware/request-handler';
 import type { FailReturn } from '@builder.io/qwik-city';
-import type { Loader } from '@builder.io/qwik-city';
+import type { Loader as Loader_2 } from '@builder.io/qwik-city';
 import type { QwikCityPlan } from '@builder.io/qwik-city';
 import type { QwikIntrinsicElements } from '@builder.io/qwik';
 import type { Render } from '@builder.io/qwik/server';
@@ -549,13 +549,13 @@ declare type ResolvedDocumentHead<FrontMatter extends Record<string, any> = Reco
 
 /** @public */
 export declare interface ResolveSyncValue {
-    <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Awaited<T>;
+    <T>(loader: Loader_2<T>): Awaited<T> extends () => any ? never : Awaited<T>;
     <T>(action: Action<T>): Awaited<T> | undefined;
 }
 
 /** @public */
 export declare interface ResolveValue {
-    <T>(loader: Loader<T>): Awaited<T> extends () => any ? never : Promise<T>;
+    <T>(loader: Loader_2<T>): Awaited<T> extends () => any ? never : Promise<T>;
     <T>(action: Action<T>): Promise<T | undefined>;
 }
 
