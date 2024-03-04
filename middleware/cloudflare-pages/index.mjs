@@ -77,7 +77,9 @@ function createQwikCity(opts) {
         const response = await handledResponse.response;
         if (response) {
           if (response.ok && cache && response.headers.has("Cache-Control")) {
-            ctx.waitUntil(cache.put(cacheKey, response.clone()));
+            ctx.waitUntil(
+              handledResponse.completion.then(() => cache.put(cacheKey, response.clone()))
+            );
           }
           return response;
         }
