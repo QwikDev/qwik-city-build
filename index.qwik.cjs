@@ -197,7 +197,7 @@ const shim$1 = async (path, symbol) => {
       const imp = new Function("url", "return import(url)");
       (await imp(url.href))[symbol](currentScript);
     } else
-      (await import(path))[symbol](currentScript);
+      (await import(url.href))[symbol](currentScript);
   }
 };
 const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
