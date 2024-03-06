@@ -26822,6 +26822,7 @@ function qwikCityPlugin(userOpts) {
           exclude: [QWIK_CITY, QWIK_CITY_PLAN_ID, QWIK_CITY_ENTRIES_ID, QWIK_CITY_SW_REGISTER]
         },
         ssr: {
+          external: ["node:async_hooks"],
           noExternal: [QWIK_CITY, QWIK_CITY_PLAN_ID, QWIK_CITY_ENTRIES_ID, QWIK_CITY_SW_REGISTER]
         }
       };
