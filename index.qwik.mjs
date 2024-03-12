@@ -1,4 +1,4 @@
-import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _IMMUTABLE, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -1058,19 +1058,19 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   ]) : void 0;
   return /* @__PURE__ */ _jsxS("a", {
     ...linkProps,
-    children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
     "data-prefetch": prefetchData,
+    children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
     onClick$: [
       preventDefault,
       onClick$,
       handleClick
     ],
-    onFocus$: [
-      linkProps.onFocus$,
-      handlePrefetch
-    ],
     onMouseOver$: [
       linkProps.onMouseOver$,
+      handlePrefetch
+    ],
+    onFocus$: [
+      linkProps.onFocus$,
       handlePrefetch
     ],
     // Don't prefetch on visible in dev mode
@@ -1374,21 +1374,25 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
   if (action)
     return _jsxS("form", {
       ...rest,
+      get action() {
+        return action.actionPath;
+      },
       action: _wrapSignal(action, "actionPath"),
       "preventdefault:submit": !reloadDocument,
+      method: "post",
       ["data-spa-reset"]: spaReset ? "true" : void 0,
       onSubmit$: [
         !reloadDocument ? action.submit : void 0,
         onSubmit$
       ]
     }, {
-      method: "post"
+      method: _IMMUTABLE
     }, 0, key);
   else
     return /* @__PURE__ */ _jsxC(GetForm, {
-      onSubmit$,
-      reloadDocument,
       spaReset,
+      reloadDocument,
+      onSubmit$,
       ...rest
     }, 0, key);
 };
@@ -1401,6 +1405,13 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
   ]);
   const nav = useNavigate();
   return /* @__PURE__ */ _jsxS("form", {
+    action: "get",
+    get "preventdefault:submit"() {
+      return !props.reloadDocument;
+    },
+    get "data-spa-reset"() {
+      return props.spaReset ? "true" : void 0;
+    },
     ...rest,
     children: /* @__PURE__ */ _jsxC(Slot, null, 3, "BC_0"),
     onSubmit$: /* @__PURE__ */ inlinedQrl(async (_, form) => {
@@ -1430,13 +1441,13 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
       nav
     ])
   }, {
-    action: "get",
-    "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
-      props
-    ], 'p0.spaReset?"true":undefined'),
+    action: _IMMUTABLE,
     "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
       props
-    ], "!p0.reloadDocument")
+    ], "!p0.reloadDocument"),
+    "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
+      props
+    ], 'p0.spaReset?"true":undefined')
   }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 export {

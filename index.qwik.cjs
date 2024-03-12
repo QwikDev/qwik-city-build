@@ -1076,19 +1076,19 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
   ]) : void 0;
   return /* @__PURE__ */ qwik._jsxS("a", {
     ...linkProps,
-    children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"),
     "data-prefetch": prefetchData,
+    children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"),
     onClick$: [
       preventDefault,
       onClick$,
       handleClick
     ],
-    onFocus$: [
-      linkProps.onFocus$,
-      handlePrefetch
-    ],
     onMouseOver$: [
       linkProps.onMouseOver$,
+      handlePrefetch
+    ],
+    onFocus$: [
+      linkProps.onFocus$,
       handlePrefetch
     ],
     // Don't prefetch on visible in dev mode
@@ -1392,21 +1392,25 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
   if (action)
     return qwik._jsxS("form", {
       ...rest,
+      get action() {
+        return action.actionPath;
+      },
       action: qwik._wrapSignal(action, "actionPath"),
       "preventdefault:submit": !reloadDocument,
+      method: "post",
       ["data-spa-reset"]: spaReset ? "true" : void 0,
       onSubmit$: [
         !reloadDocument ? action.submit : void 0,
         onSubmit$
       ]
     }, {
-      method: "post"
+      method: qwik._IMMUTABLE
     }, 0, key);
   else
     return /* @__PURE__ */ qwik._jsxC(GetForm, {
-      onSubmit$,
-      reloadDocument,
       spaReset,
+      reloadDocument,
+      onSubmit$,
       ...rest
     }, 0, key);
 };
@@ -1419,6 +1423,13 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
   ]);
   const nav = useNavigate();
   return /* @__PURE__ */ qwik._jsxS("form", {
+    action: "get",
+    get "preventdefault:submit"() {
+      return !props.reloadDocument;
+    },
+    get "data-spa-reset"() {
+      return props.spaReset ? "true" : void 0;
+    },
     ...rest,
     children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "BC_0"),
     onSubmit$: /* @__PURE__ */ qwik.inlinedQrl(async (_, form) => {
@@ -1448,13 +1459,13 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
       nav
     ])
   }, {
-    action: "get",
-    "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
-      props
-    ], 'p0.spaReset?"true":undefined'),
+    action: qwik._IMMUTABLE,
     "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
       props
-    ], "!p0.reloadDocument")
+    ], "!p0.reloadDocument"),
+    "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
+      props
+    ], 'p0.spaReset?"true":undefined')
   }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
 Object.defineProperty(exports, "z", {
