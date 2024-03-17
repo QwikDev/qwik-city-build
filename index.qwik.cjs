@@ -71,7 +71,7 @@ const spaInit = /* @__PURE__ */ qwik.inlinedQrl((currentScript) => {
       clearTimeout(win[debounceTimeout]);
       if (currentPath !== location.pathname + location.search) {
         const container = currentScript.closest("[q\\:container]");
-        const link = container.querySelector('a[q\\:key="AD_1"]');
+        const link = container.querySelector("a[q\\:link]");
         if (link) {
           const container2 = link.closest("[q\\:container]");
           const bootstrapLink = link.cloneNode();
@@ -1030,7 +1030,6 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
     ...linkProps,
     reload
   }, loc));
-  linkProps["link:app"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
   const prefetchData = qwik.untrack(() => !!clientNavPath && prefetchProp !== false && prefetchProp !== "js" && shouldPrefetchData(clientNavPath, loc) || void 0);
   const prefetch = qwik.untrack(() => prefetchData || !!clientNavPath && prefetchProp !== false && shouldPrefetchSymbols(clientNavPath, loc));
@@ -1075,6 +1074,7 @@ const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((
     scroll
   ]) : void 0;
   return /* @__PURE__ */ qwik._jsxS("a", {
+    "q:link": !!clientNavPath,
     ...linkProps,
     "data-prefetch": prefetchData,
     children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"),

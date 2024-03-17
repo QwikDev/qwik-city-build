@@ -53,7 +53,7 @@ const spaInit = /* @__PURE__ */ inlinedQrl((currentScript) => {
       clearTimeout(win[debounceTimeout]);
       if (currentPath !== location.pathname + location.search) {
         const container = currentScript.closest("[q\\:container]");
-        const link = container.querySelector('a[q\\:key="AD_1"]');
+        const link = container.querySelector("a[q\\:link]");
         if (link) {
           const container2 = link.closest("[q\\:container]");
           const bootstrapLink = link.cloneNode();
@@ -1012,7 +1012,6 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     ...linkProps,
     reload
   }, loc));
-  linkProps["link:app"] = !!clientNavPath;
   linkProps.href = clientNavPath || props.href;
   const prefetchData = untrack(() => !!clientNavPath && prefetchProp !== false && prefetchProp !== "js" && shouldPrefetchData(clientNavPath, loc) || void 0);
   const prefetch = untrack(() => prefetchData || !!clientNavPath && prefetchProp !== false && shouldPrefetchSymbols(clientNavPath, loc));
@@ -1057,6 +1056,7 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     scroll
   ]) : void 0;
   return /* @__PURE__ */ _jsxS("a", {
+    "q:link": !!clientNavPath,
     ...linkProps,
     "data-prefetch": prefetchData,
     children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
