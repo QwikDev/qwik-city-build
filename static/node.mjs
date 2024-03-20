@@ -1002,7 +1002,7 @@ ${bold(red("Error during SSG"))}`);
       };
       const addToQueue = (pathname, params) => {
         if (pathname) {
-          pathname = new URL(pathname, `https://qwik.builder.io`).pathname;
+          pathname = new URL(pathname, `https://qwik.dev`).pathname;
           if (pathname !== opts.basePathname) {
             if (trailingSlash) {
               if (!pathname.endsWith("/")) {

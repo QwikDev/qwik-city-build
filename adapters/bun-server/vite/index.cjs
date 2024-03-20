@@ -28,7 +28,7 @@ function bunServerAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return (0, import_vite.viteAdapter)({
     name: opts.name || "bun-server",
-    origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.qwik.builder.io",
+    origin: (env == null ? void 0 : env.ORIGIN) ?? (env == null ? void 0 : env.URL) ?? "https://yoursitename.qwik.dev",
     ssg: opts.ssg,
     cleanStaticGenerated: true,
     config() {

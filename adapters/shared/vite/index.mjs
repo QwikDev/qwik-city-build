@@ -229,7 +229,7 @@ function viteAdapter(opts) {
           if (renderModulePath && qwikCityPlanModulePath && clientOutDir && clientPublicOutDir) {
             let ssgOrigin = ((_a = opts.ssg) == null ? void 0 : _a.origin) ?? opts.origin;
             if (!ssgOrigin) {
-              ssgOrigin = `https://yoursite.qwik.builder.io`;
+              ssgOrigin = `https://yoursite.qwik.dev`;
             }
             if (ssgOrigin.length > 0 && !ssgOrigin.startsWith("https://") && !ssgOrigin.startsWith("http://")) {
               ssgOrigin = `https://${ssgOrigin}`;
@@ -238,9 +238,9 @@ function viteAdapter(opts) {
               ssgOrigin = new URL(ssgOrigin).origin;
             } catch (e) {
               this.warn(
-                `Invalid "origin" option: "${ssgOrigin}". Using default origin: "https://yoursite.qwik.builder.io"`
+                `Invalid "origin" option: "${ssgOrigin}". Using default origin: "https://yoursite.qwik.dev"`
               );
-              ssgOrigin = `https://yoursite.qwik.builder.io`;
+              ssgOrigin = `https://yoursite.qwik.dev`;
             }
             const staticGenerate = await import("../../../static/index.mjs");
             const generateOpts = {
