@@ -26282,7 +26282,10 @@ var SKIP_SRC_EXTS = {
   ".mdx": true,
   ".css": true,
   ".scss": true,
-  ".sass": true
+  ".sass": true,
+  ".less": true,
+  ".styl": true,
+  ".stylus": true
 };
 var STATIC_CONTENT_TYPES = {
   ".js": "text/javascript",
