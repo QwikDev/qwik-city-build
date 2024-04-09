@@ -24419,7 +24419,8 @@ function rewriteRoutes(ctx, resolved) {
         }
         const translatedPath = translatedPathParts.join("/");
         const translatedRoute = translatedRouteParts.join("/");
-        resolved.routes.push({
+        const originalRouteIndex = resolved.routes.indexOf(rewriteRoute);
+        resolved.routes.splice(originalRouteIndex + 1, 0, {
           ...rewriteRoute,
           id: rewriteRoute.id + (idSuffix || rewriteIndex),
           pathname: pathnamePrefix + translatedPath,
