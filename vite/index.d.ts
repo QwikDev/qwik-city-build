@@ -1,5 +1,5 @@
 import type { BuiltinsWithOptionalParams } from 'svgo/plugins/plugins-types';
-import { CompileOptions } from '@mdx-js/mdx/lib/compile';
+import { CompileOptions } from '@mdx-js/mdx';
 import type { Config } from 'svgo';
 import { ConfigEnv } from 'vite';
 import type { PluginOption } from 'vite';

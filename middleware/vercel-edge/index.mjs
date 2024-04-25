@@ -9,6 +9,10 @@ import { _deserializeData, _serializeData, _verifySerializable } from "@builder.
 import { setServerPlatform } from "@builder.io/qwik/server";
 var COUNTRY_HEADER_NAME = "x-vercel-ip-country";
 var IP_HEADER_NAME = "x-real-ip";
+var VERCEL_COOKIE = "__vdpl";
+var VERCEL_SKEW_PROTECTION_ENABLED = "VERCEL_SKEW_PROTECTION_ENABLED";
+var VERCEL_DEPLOYMENT_ID = "VERCEL_DEPLOYMENT_ID";
+var BASE_URL = "BASE_URL";
 function createQwikCity(opts) {
   const qwikSerializer = {
     _deserializeData,
@@ -41,6 +45,18 @@ function createQwikCity(opts) {
         },
         getWritableStream: (status, headers, cookies, resolve) => {
           const { readable, writable } = new TransformStream();
+          if (serverRequestEv.env.get(VERCEL_SKEW_PROTECTION_ENABLED)) {
+            const deploymentId = serverRequestEv.env.get(VERCEL_DEPLOYMENT_ID) || "";
+            const baseUrl = serverRequestEv.env.get(BASE_URL) || "/";
+            if (request.headers.has("Sec-Fetch-Dest")) {
+              cookies.set(VERCEL_COOKIE, deploymentId, {
+                path: baseUrl,
+                secure: true,
+                sameSite: true,
+                httpOnly: true
+              });
+            }
+          }
           const response = new Response(readable, {
             status,
             headers: mergeHeadersCookies(headers, cookies)

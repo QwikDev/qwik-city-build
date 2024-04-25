@@ -92,7 +92,7 @@ var TextEncoderStream = class {
 };
 function createQwikCity(opts) {
   var _a;
-  globalThis.TextEncoderStream = TextEncoderStream;
+  globalThis.TextEncoderStream ||= TextEncoderStream;
   const qwikSerializer = {
     _deserializeData,
     _serializeData,

@@ -582,7 +582,7 @@ export declare const useContent: () => ContentState;
  *
  * @public
  */
-export declare const useDocumentHead: <FrontMatter extends Record<string, unknown> = Record<string, any>>() => Required<Required<DocumentHeadValue<FrontMatter>>>;
+export declare const useDocumentHead: <FrontMatter extends Record<string, unknown> = Record<string, any>>() => Required<ResolvedDocumentHead<FrontMatter>>;
 
 /** @public */
 export declare const useLocation: () => RouteLocation;

@@ -80,6 +80,7 @@ function createQwikCity(opts) {
         mode: "server",
         locale: void 0,
         url,
+        // @ts-ignore
         env: Deno.env,
         request,
         getWritableStream: (status, headers, cookies, resolve) => {
@@ -150,6 +151,7 @@ function createQwikCity(opts) {
     }
     return {
       filePath,
+      // @ts-ignore
       content: await Deno.open(filePath, { read: true })
     };
   };
