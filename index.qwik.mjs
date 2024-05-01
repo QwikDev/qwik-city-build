@@ -1,4 +1,4 @@
-import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _getContextEvent, _serializeData, _IMMUTABLE, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _wrapProp, _getContextEvent, _serializeData, _IMMUTABLE, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -1198,7 +1198,7 @@ const routeLoaderQrl = (loaderQrl, ...rest) => {
 
     If your are managing reusable logic or a library it is essential that this function is re-exported from within 'layout.tsx' or 'index.tsx file of the existing route otherwise it will not run or throw exception.
     For more information check: https://qwik.dev/docs/cookbook/re-exporting-loaders/`);
-      return _wrapSignal(state, id);
+      return _wrapProp(state, id);
     });
   }
   loader.__brand = "server_loader";
