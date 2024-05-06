@@ -12634,7 +12634,7 @@ var init_micromark_factory_space = __esm({
   }
 });
 
-// node_modules/.pnpm/micromark-core-commonmark@2.0.1/node_modules/micromark-core-commonmark/lib/blank-line.js
+// node_modules/.pnpm/micromark-core-commonmark@2.0.0/node_modules/micromark-core-commonmark/lib/blank-line.js
 function tokenizeBlankLine(effects, ok3, nok) {
   return start;
   function start(code3) {
@@ -12646,7 +12646,7 @@ function tokenizeBlankLine(effects, ok3, nok) {
 }
 var blankLine;
 var init_blank_line = __esm({
-  "node_modules/.pnpm/micromark-core-commonmark@2.0.1/node_modules/micromark-core-commonmark/lib/blank-line.js"() {
+  "node_modules/.pnpm/micromark-core-commonmark@2.0.0/node_modules/micromark-core-commonmark/lib/blank-line.js"() {
     init_micromark_factory_space();
     init_micromark_util_character();
     blankLine = {
@@ -12656,9 +12656,9 @@ var init_blank_line = __esm({
   }
 });
 
-// node_modules/.pnpm/micromark-core-commonmark@2.0.1/node_modules/micromark-core-commonmark/index.js
+// node_modules/.pnpm/micromark-core-commonmark@2.0.0/node_modules/micromark-core-commonmark/index.js
 var init_micromark_core_commonmark = __esm({
-  "node_modules/.pnpm/micromark-core-commonmark@2.0.1/node_modules/micromark-core-commonmark/index.js"() {
+  "node_modules/.pnpm/micromark-core-commonmark@2.0.0/node_modules/micromark-core-commonmark/index.js"() {
     init_blank_line();
   }
 });
@@ -18835,7 +18835,7 @@ function vbnet(Prism2) {
   });
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/util/schema.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/util/schema.js
 var Schema = class {
   /**
    * @constructor
@@ -18855,7 +18855,7 @@ Schema.prototype.property = {};
 Schema.prototype.normal = {};
 Schema.prototype.space = null;
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/util/merge.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/util/merge.js
 function merge(definitions, space) {
   const property = {};
   const normal = {};
@@ -18867,12 +18867,12 @@ function merge(definitions, space) {
   return new Schema(property, normal, space);
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/normalize.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/normalize.js
 function normalize2(value2) {
   return value2.toLowerCase();
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/util/info.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/util/info.js
 var Info = class {
   /**
    * @constructor
@@ -18895,7 +18895,7 @@ Info.prototype.commaOrSpaceSeparated = false;
 Info.prototype.mustUseProperty = false;
 Info.prototype.defined = false;
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/util/types.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/util/types.js
 var types_exports = {};
 __export(types_exports, {
   boolean: () => boolean,
@@ -18918,7 +18918,7 @@ function increment() {
   return 2 ** ++powers;
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/util/defined-info.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/util/defined-info.js
 var checks = Object.keys(types_exports);
 var DefinedInfo = class extends Info {
   /**
@@ -18947,7 +18947,7 @@ function mark(values, key, value2) {
   }
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/util/create.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/util/create.js
 var own3 = {}.hasOwnProperty;
 function create(definition2) {
   const property = {};
@@ -18973,7 +18973,7 @@ function create(definition2) {
   return new Schema(property, normal, definition2.space);
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/xlink.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/xlink.js
 var xlink = create({
   space: "xlink",
   transform(_2, prop) {
@@ -18990,7 +18990,7 @@ var xlink = create({
   }
 });
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/xml.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/xml.js
 var xml = create({
   space: "xml",
   transform(_2, prop) {
@@ -18999,17 +18999,17 @@ var xml = create({
   properties: { xmlLang: null, xmlBase: null, xmlSpace: null }
 });
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/util/case-sensitive-transform.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/util/case-sensitive-transform.js
 function caseSensitiveTransform(attributes2, attribute) {
   return attribute in attributes2 ? attributes2[attribute] : attribute;
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/util/case-insensitive-transform.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/util/case-insensitive-transform.js
 function caseInsensitiveTransform(attributes2, property) {
   return caseSensitiveTransform(attributes2, property.toLowerCase());
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/xmlns.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/xmlns.js
 var xmlns = create({
   space: "xmlns",
   attributes: { xmlnsxlink: "xmlns:xlink" },
@@ -19017,7 +19017,7 @@ var xmlns = create({
   properties: { xmlns: null, xmlnsXLink: null }
 });
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/aria.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/aria.js
 var aria = create({
   transform(_2, prop) {
     return prop === "role" ? prop : "aria-" + prop.slice(4).toLowerCase();
@@ -19075,7 +19075,7 @@ var aria = create({
   }
 });
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/html.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/html.js
 var html = create({
   space: "html",
   attributes: {
@@ -19290,7 +19290,6 @@ var html = create({
     scoped: boolean,
     seamless: boolean,
     selected: boolean,
-    shadowRootClonable: boolean,
     shadowRootDelegatesFocus: boolean,
     shadowRootMode: null,
     shape: null,
@@ -19316,7 +19315,6 @@ var html = create({
     value: booleanish,
     width: number,
     wrap: null,
-    writingSuggestions: null,
     // Legacy.
     // See: https://html.spec.whatwg.org/#other-elements,-attributes-and-apis
     align: null,
@@ -19439,7 +19437,7 @@ var html = create({
   }
 });
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/svg.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/svg.js
 var svg = create({
   space: "svg",
   attributes: {
@@ -20001,7 +19999,7 @@ var svg = create({
   }
 });
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/find.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/lib/find.js
 var valid = /^data[-\w.:]+$/i;
 var dash = /-[a-z]/g;
 var cap = /[A-Z]/g;
@@ -20037,7 +20035,7 @@ function camelcase($0) {
   return $0.charAt(1).toUpperCase();
 }
 
-// node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/index.js
+// node_modules/.pnpm/property-information@6.4.1/node_modules/property-information/index.js
 var html2 = merge([xml, xlink, xmlns, aria, html], "html");
 var svg2 = merge([xml, xlink, xmlns, aria, svg], "svg");
 
