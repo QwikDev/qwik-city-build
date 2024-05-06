@@ -661,7 +661,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
   qwik.useStylesQrl(/* @__PURE__ */ qwik.inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
   const env = useQwikCityEnv();
   if (!env?.params)
-    throw new Error(`Missing Qwik City Env Data`);
+    throw new Error(`Missing Qwik City Env Data for help visit https://github.com/QwikDev/qwik/issues/6237`);
   const urlEnv = qwik.useServerData("url");
   if (!urlEnv)
     throw new Error(`Missing Qwik URL Env Data`);
