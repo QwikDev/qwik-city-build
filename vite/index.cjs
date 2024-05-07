@@ -25696,6 +25696,10 @@ function getUrl(req, origin) {
   return normalizeUrl(req.originalUrl || req.url || "/", origin);
 }
 var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
+function isIgnoredError(message = "") {
+  const ignoredErrors = ["The stream has been destroyed", "write after end"];
+  return ignoredErrors.some((ignored) => message.includes(ignored));
+}
 function normalizeUrl(url, base) {
   return new URL(url.replace(DOUBLE_SLASH_REG, "/"), base);
 }
@@ -25751,7 +25755,7 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
             return;
           }
           res.write(chunk, (error) => {
-            if (error) {
+            if (error && !isIgnoredError(error.message)) {
               console.error(error);
             }
           });
