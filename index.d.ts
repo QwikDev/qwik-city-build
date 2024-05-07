@@ -426,6 +426,9 @@ declare type Prettify<T> = {} & {
 };
 
 /** @public */
+export declare const QWIK_CITY_SCROLLER = "_qCityScroller";
+
+/** @public */
 export declare interface QwikCityMockProps {
     url?: string;
     params?: Record<string, string>;

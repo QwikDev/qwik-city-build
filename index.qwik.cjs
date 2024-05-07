@@ -622,12 +622,12 @@ const useLocation = () => qwik.useContext(RouteLocationContext);
 const useNavigate = () => qwik.useContext(RouteNavigateContext);
 const useAction = () => qwik.useContext(RouteActionContext);
 const useQwikCityEnv = () => qwik.noSerialize(qwik.useServerData("qwikcity"));
-const restoreScroll = (type, toUrl2, fromUrl, scrollState) => {
+const restoreScroll = (type, toUrl2, fromUrl, scroller, scrollState) => {
   if (type === "popstate" && scrollState)
-    window.scrollTo(scrollState.x, scrollState.y);
+    scroller.scrollTo(scrollState.x, scrollState.y);
   else if (type === "link" || type === "form") {
     if (!hashScroll(toUrl2, fromUrl))
-      window.scrollTo(0, 0);
+      scroller.scrollTo(0, 0);
   }
 };
 const hashScroll = (toUrl2, fromUrl) => {
@@ -657,6 +657,7 @@ const saveScrollHistory = (scrollState) => {
   state._qCityScroll = scrollState;
   history.replaceState(state, "");
 };
+const QWIK_CITY_SCROLLER = "_qCityScroller";
 const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   qwik.useStylesQrl(/* @__PURE__ */ qwik.inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
   const env = useQwikCityEnv();
@@ -717,7 +718,8 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
       if (build.isBrowser) {
         if (type === "link" && dest.href !== location.href)
           history.pushState(null, "", dest);
-        restoreScroll(type, dest, new URL(location.href), getScrollHistory());
+        const scroller = document.getElementById(QWIK_CITY_SCROLLER) ?? document.documentElement;
+        restoreScroll(type, dest, new URL(location.href), scroller, getScrollHistory());
         if (type === "popstate")
           window._qCityScrollEnabled = true;
       }
@@ -834,8 +836,9 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
           let scrollState;
           if (navType === "popstate")
             scrollState = getScrollHistory();
+          const scroller = document.getElementById(QWIK_CITY_SCROLLER) ?? document.documentElement;
           if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate") || navType === "form" && !isSamePath(trackUrl, prevUrl))
-            document.__q_scroll_restore__ = () => restoreScroll(navType, trackUrl, prevUrl, scrollState);
+            document.__q_scroll_restore__ = () => restoreScroll(navType, trackUrl, prevUrl, scroller, scrollState);
           const loaders = clientPageData?.loaders;
           const win = window;
           if (loaders)
@@ -867,7 +870,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
                   if (build.isDev)
                     console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
                 }
-                state._qCityScroll = state._qCityScroll || currentScrollState(document.documentElement);
+                state._qCityScroll = state._qCityScroll || currentScrollState(scroller);
                 return state;
               };
               history.pushState = (state, title, url2) => {
@@ -895,7 +898,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
                     win._qCityScrollEnabled = false;
                     clearTimeout(win._qCityScrollDebounce);
                     saveScrollHistory({
-                      ...currentScrollState(document.documentElement),
+                      ...currentScrollState(scroller),
                       x: 0,
                       y: 0
                     });
@@ -911,7 +914,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
             if (!window.navigation) {
               document.addEventListener("visibilitychange", () => {
                 if (win._qCityScrollEnabled && document.visibilityState === "hidden") {
-                  const scrollState2 = currentScrollState(document.documentElement);
+                  const scrollState2 = currentScrollState(scroller);
                   saveScrollHistory(scrollState2);
                 }
               }, {
@@ -925,7 +928,7 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
                 return;
               clearTimeout(win._qCityScrollDebounce);
               win._qCityScrollDebounce = setTimeout(() => {
-                const scrollState2 = currentScrollState(document.documentElement);
+                const scrollState2 = currentScrollState(scroller);
                 saveScrollHistory(scrollState2);
                 win._qCityScrollDebounce = void 0;
               }, 200);
@@ -941,14 +944,14 @@ const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.
           if (navType !== "popstate") {
             win._qCityScrollEnabled = false;
             clearTimeout(win._qCityScrollDebounce);
-            const scrollState2 = currentScrollState(document.documentElement);
+            const scrollState2 = currentScrollState(scroller);
             saveScrollHistory(scrollState2);
           }
           clientNavigate(window, navType, prevUrl, trackUrl, replaceState);
           qwik._waitUntilRendered(elm).then(() => {
             const container = getContainer(elm);
             container.setAttribute("q:route", routeName);
-            const scrollState2 = currentScrollState(document.documentElement);
+            const scrollState2 = currentScrollState(scroller);
             saveScrollHistory(scrollState2);
             win._qCityScrollEnabled = true;
             routeLocation2.isNavigating = false;
@@ -1474,6 +1477,7 @@ Object.defineProperty(exports, "z", {
 });
 exports.Form = Form;
 exports.Link = Link;
+exports.QWIK_CITY_SCROLLER = QWIK_CITY_SCROLLER;
 exports.QwikCityMockProvider = QwikCityMockProvider;
 exports.QwikCityProvider = QwikCityProvider;
 exports.RouterOutlet = RouterOutlet;
