@@ -1253,6 +1253,14 @@ const zodQrl = (qrl) => {
   return void 0;
 };
 const zod$ = /* @__PURE__ */ implicit$FirstArg(zodQrl);
+const deepFreeze = (obj) => {
+  Object.getOwnPropertyNames(obj).forEach((prop) => {
+    const value = obj[prop];
+    if (value && typeof value === "object")
+      deepFreeze(value);
+  });
+  return Object.freeze(obj);
+};
 const serverQrl = (qrl, options) => {
   if (isServer) {
     const captured = qrl.getCaptured();
@@ -1277,7 +1285,7 @@ const serverQrl = (qrl, options) => {
           ];
           requestEvent = contexts.find((v) => v && Object.prototype.hasOwnProperty.call(v, "sharedMap") && Object.prototype.hasOwnProperty.call(v, "cookie"));
         }
-        return qrl2.apply(requestEvent, args);
+        return qrl2.apply(requestEvent, isDev ? deepFreeze(args) : args);
       } else {
         const ctxElm = _getContextElement();
         const filtered = args.map((arg) => {
