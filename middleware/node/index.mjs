@@ -24,26 +24,33 @@ function fallbackOrigin(req) {
 function getUrl(req, origin) {
   return normalizeUrl(req.originalUrl || req.url || "/", origin);
 }
-var DOUBLE_SLASH_REG = /\/\/|\\\\/g;
 function isIgnoredError(message = "") {
   const ignoredErrors = ["The stream has been destroyed", "write after end"];
   return ignoredErrors.some((ignored) => message.includes(ignored));
 }
+var invalidHeadersPattern = /^:(method|scheme|authority|path)$/i;
 function normalizeUrl(url, base) {
+  const DOUBLE_SLASH_REG = /\/\/|\\\\/g;
   return new URL(url.replace(DOUBLE_SLASH_REG, "/"), base);
 }
 async function fromNodeHttp(url, req, res, mode, getClientConn) {
   const requestHeaders = new Headers();
   const nodeRequestHeaders = req.headers;
-  for (const key in nodeRequestHeaders) {
-    const value = nodeRequestHeaders[key];
-    if (typeof value === "string") {
-      requestHeaders.set(key, value);
-    } else if (Array.isArray(value)) {
-      for (const v of value) {
-        requestHeaders.append(key, v);
+  try {
+    for (const [key, value] of Object.entries(nodeRequestHeaders)) {
+      if (invalidHeadersPattern.test(key)) {
+        continue;
+      }
+      if (typeof value === "string") {
+        requestHeaders.set(key, value);
+      } else if (Array.isArray(value)) {
+        for (const v of value) {
+          requestHeaders.append(key, v);
+        }
       }
     }
+  } catch (err) {
+    console.error(err);
   }
   const getRequestBody = async function* () {
     for await (const chunk of req) {
@@ -73,10 +80,19 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
     },
     getWritableStream: (status, headers, cookies) => {
       res.statusCode = status;
-      headers.forEach((value, key) => res.setHeader(key, value));
-      const cookieHeaders = cookies.headers();
-      if (cookieHeaders.length > 0) {
-        res.setHeader("Set-Cookie", cookieHeaders);
+      try {
+        for (const [key, value] of headers) {
+          if (invalidHeadersPattern.test(key)) {
+            continue;
+          }
+          res.setHeader(key, value);
+        }
+        const cookieHeaders = cookies.headers();
+        if (cookieHeaders.length > 0) {
+          res.setHeader("Set-Cookie", cookieHeaders);
+        }
+      } catch (err) {
+        console.error(err);
       }
       return new WritableStream({
         write(chunk) {
