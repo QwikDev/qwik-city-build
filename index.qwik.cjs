@@ -1113,6 +1113,7 @@ const routeActionQrl = (actionQrl, ...rest) => {
     const currentAction = useAction();
     const initialState = {
       actionPath: `?${QACTION_KEY}=${id}`,
+      submitted: false,
       isRunning: false,
       status: void 0,
       value: void 0,
@@ -1151,6 +1152,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
       return new Promise((resolve) => {
         if (data instanceof FormData)
           state2.formData = data;
+        state2.submitted = true;
         state2.isRunning = true;
         loc2.isNavigating = true;
         currentAction2.value = {
@@ -1392,7 +1394,32 @@ const deserializeStream = async function* (stream, ctxElm, signal) {
 };
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
   qwik._jsxBranch();
-  if (action)
+  if (action) {
+    const isArrayApi = Array.isArray(onSubmit$);
+    if (isArrayApi)
+      return qwik._jsxS("form", {
+        ...rest,
+        get action() {
+          return action.actionPath;
+        },
+        action: qwik._wrapSignal(action, "actionPath"),
+        "preventdefault:submit": !reloadDocument,
+        method: "post",
+        ["data-spa-reset"]: spaReset ? "true" : void 0,
+        onSubmit$: [
+          ...onSubmit$,
+          // action.submit "submitcompleted" event for onSubmitCompleted$ events
+          !reloadDocument ? /* @__PURE__ */ qwik.inlinedQrl((evt) => {
+            const [action2] = qwik.useLexicalScope();
+            if (!action2.submitted)
+              return action2.submit(evt);
+          }, "Form_form_onSubmit_uPHV2oGn4wc", [
+            action
+          ]) : void 0
+        ]
+      }, {
+        method: qwik._IMMUTABLE
+      }, 0, key);
     return qwik._jsxS("form", {
       ...rest,
       get action() {
@@ -1403,13 +1430,15 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
       method: "post",
       ["data-spa-reset"]: spaReset ? "true" : void 0,
       onSubmit$: [
+        // action.submit "submitcompleted" event for onSubmitCompleted$ events
         !reloadDocument ? action.submit : void 0,
+        // TODO: v2 breaking change this should fire before the action.submit
         onSubmit$
       ]
     }, {
       method: qwik._IMMUTABLE
     }, 0, key);
-  else
+  } else
     return /* @__PURE__ */ qwik._jsxC(GetForm, {
       spaReset,
       reloadDocument,
@@ -1435,18 +1464,26 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
     },
     ...rest,
     children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "BC_0"),
-    onSubmit$: /* @__PURE__ */ qwik.inlinedQrl(async (_, form) => {
-      const [nav2] = qwik.useLexicalScope();
-      const formData = new FormData(form);
-      const params = new URLSearchParams();
-      formData.forEach((value, key) => {
-        if (typeof value === "string")
-          params.append(key, value);
-      });
-      nav2("?" + params.toString(), {
-        type: "form",
-        forceReload: true
-      }).then(() => {
+    onSubmit$: [
+      ...Array.isArray(props.onSubmit$) ? props.onSubmit$ : [
+        props.onSubmit$
+      ],
+      /* @__PURE__ */ qwik.inlinedQrl(async (_evt, form) => {
+        const [nav2] = qwik.useLexicalScope();
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+        formData.forEach((value, key) => {
+          if (typeof value === "string")
+            params.append(key, value);
+        });
+        await nav2("?" + params.toString(), {
+          type: "form",
+          forceReload: true
+        });
+      }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
+        nav
+      ]),
+      /* @__PURE__ */ qwik.inlinedQrl((_evt, form) => {
         if (form.getAttribute("data-spa-reset") === "true")
           form.reset();
         form.dispatchEvent(new CustomEvent("submitcompleted", {
@@ -1457,10 +1494,8 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
             status: 200
           }
         }));
-      });
-    }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
-      nav
-    ])
+      }, "GetForm_component_form_onSubmit_1_KK5BfmKH4ZI")
+    ]
   }, {
     action: qwik._IMMUTABLE,
     "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [

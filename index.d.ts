@@ -9,6 +9,7 @@ import type { EnvGetter } from '@builder.io/qwik-city/middleware/request-handler
 import { JSXNode } from '@builder.io/qwik';
 import { JSXOutput } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
+import { QRLEventHandlerMulti } from '@builder.io/qwik';
 import { QwikIntrinsicElements } from '@builder.io/qwik';
 import { QwikJSX } from '@builder.io/qwik';
 import type { ReadonlySignal } from '@builder.io/qwik';
@@ -19,7 +20,7 @@ import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-han
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-handler';
-import { ValueOrPromise } from '@builder.io/qwik';
+import type { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
 import type * as zod from 'zod';
 
@@ -149,6 +150,8 @@ export declare type ActionStore<RETURN, INPUT, OPTIONAL extends boolean = true> 
      * action in the server.
      */
     readonly submit: QRL<OPTIONAL extends true ? (form?: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>> : (form: INPUT | FormData | SubmitEvent) => Promise<ActionReturn<RETURN>>>;
+    /** Is action.submit was submitted */
+    readonly submitted: boolean;
 };
 
 declare type AnchorAttributes = QwikIntrinsicElements['a'];
@@ -303,9 +306,9 @@ export declare interface FormProps<O, I> extends Omit<QwikJSX.IntrinsicElements[
      */
     spaReset?: boolean;
     /** Event handler executed right when the form is submitted. */
-    onSubmit$?: (event: Event, form: HTMLFormElement) => ValueOrPromise<void>;
+    onSubmit$?: QRLEventHandlerMulti<SubmitEvent, HTMLFormElement> | undefined;
     /** Event handler executed right after the action is executed successfully and returns some data. */
-    onSubmitCompleted$?: (event: CustomEvent<FormSubmitSuccessDetail<O>>, form: HTMLFormElement) => ValueOrPromise<void>;
+    onSubmitCompleted$?: QRLEventHandlerMulti<CustomEvent<FormSubmitSuccessDetail<O>>, HTMLFormElement> | undefined;
     key?: string | number | null;
 }
 

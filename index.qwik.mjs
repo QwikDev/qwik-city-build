@@ -1095,6 +1095,7 @@ const routeActionQrl = (actionQrl, ...rest) => {
     const currentAction = useAction();
     const initialState = {
       actionPath: `?${QACTION_KEY}=${id}`,
+      submitted: false,
       isRunning: false,
       status: void 0,
       value: void 0,
@@ -1133,6 +1134,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
       return new Promise((resolve) => {
         if (data instanceof FormData)
           state2.formData = data;
+        state2.submitted = true;
         state2.isRunning = true;
         loc2.isNavigating = true;
         currentAction2.value = {
@@ -1374,7 +1376,32 @@ const deserializeStream = async function* (stream, ctxElm, signal) {
 };
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
   _jsxBranch();
-  if (action)
+  if (action) {
+    const isArrayApi = Array.isArray(onSubmit$);
+    if (isArrayApi)
+      return _jsxS("form", {
+        ...rest,
+        get action() {
+          return action.actionPath;
+        },
+        action: _wrapSignal(action, "actionPath"),
+        "preventdefault:submit": !reloadDocument,
+        method: "post",
+        ["data-spa-reset"]: spaReset ? "true" : void 0,
+        onSubmit$: [
+          ...onSubmit$,
+          // action.submit "submitcompleted" event for onSubmitCompleted$ events
+          !reloadDocument ? /* @__PURE__ */ inlinedQrl((evt) => {
+            const [action2] = useLexicalScope();
+            if (!action2.submitted)
+              return action2.submit(evt);
+          }, "Form_form_onSubmit_uPHV2oGn4wc", [
+            action
+          ]) : void 0
+        ]
+      }, {
+        method: _IMMUTABLE
+      }, 0, key);
     return _jsxS("form", {
       ...rest,
       get action() {
@@ -1385,13 +1412,15 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
       method: "post",
       ["data-spa-reset"]: spaReset ? "true" : void 0,
       onSubmit$: [
+        // action.submit "submitcompleted" event for onSubmitCompleted$ events
         !reloadDocument ? action.submit : void 0,
+        // TODO: v2 breaking change this should fire before the action.submit
         onSubmit$
       ]
     }, {
       method: _IMMUTABLE
     }, 0, key);
-  else
+  } else
     return /* @__PURE__ */ _jsxC(GetForm, {
       spaReset,
       reloadDocument,
@@ -1417,18 +1446,26 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
     },
     ...rest,
     children: /* @__PURE__ */ _jsxC(Slot, null, 3, "BC_0"),
-    onSubmit$: /* @__PURE__ */ inlinedQrl(async (_, form) => {
-      const [nav2] = useLexicalScope();
-      const formData = new FormData(form);
-      const params = new URLSearchParams();
-      formData.forEach((value, key) => {
-        if (typeof value === "string")
-          params.append(key, value);
-      });
-      nav2("?" + params.toString(), {
-        type: "form",
-        forceReload: true
-      }).then(() => {
+    onSubmit$: [
+      ...Array.isArray(props.onSubmit$) ? props.onSubmit$ : [
+        props.onSubmit$
+      ],
+      /* @__PURE__ */ inlinedQrl(async (_evt, form) => {
+        const [nav2] = useLexicalScope();
+        const formData = new FormData(form);
+        const params = new URLSearchParams();
+        formData.forEach((value, key) => {
+          if (typeof value === "string")
+            params.append(key, value);
+        });
+        await nav2("?" + params.toString(), {
+          type: "form",
+          forceReload: true
+        });
+      }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
+        nav
+      ]),
+      /* @__PURE__ */ inlinedQrl((_evt, form) => {
         if (form.getAttribute("data-spa-reset") === "true")
           form.reset();
         form.dispatchEvent(new CustomEvent("submitcompleted", {
@@ -1439,10 +1476,8 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
             status: 200
           }
         }));
-      });
-    }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
-      nav
-    ])
+      }, "GetForm_component_form_onSubmit_1_KK5BfmKH4ZI")
+    ]
   }, {
     action: _IMMUTABLE,
     "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
