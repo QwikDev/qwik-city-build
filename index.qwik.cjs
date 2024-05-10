@@ -231,6 +231,7 @@ const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
 const PREFETCHED_NAVIGATE_PATHS = /* @__PURE__ */ new Set();
 const QACTION_KEY = "qaction";
 const QFN_KEY = "qfunc";
+const QDATA_KEY = "qdata";
 const toPath = (url) => url.pathname + url.search + url.hash;
 const toUrl = (url, baseUrl) => new URL(url, baseUrl.href);
 const isSameOrigin = (a, b) => a.origin === b.origin;
@@ -1270,15 +1271,19 @@ const zodQrl = (qrl) => {
   return void 0;
 };
 const zod$ = /* @__PURE__ */ qwik.implicit$FirstArg(zodQrl);
-const serverQrl = (qrl) => {
+const serverQrl = (qrl, options) => {
   if (build.isServer) {
     const captured = qrl.getCaptured();
     if (captured && captured.length > 0 && !qwik._getContextElement())
       throw new Error("For security reasons, we cannot serialize QRLs that capture lexical scope.");
   }
-  function stuff() {
+  const method = options?.method?.toUpperCase?.() || "POST";
+  const headers = options?.headers || {};
+  const origin = options?.origin || "";
+  const fetchOptions = options?.fetchOptions || {};
+  function rpc() {
     return /* @__PURE__ */ qwik.inlinedQrl(async function(...args) {
-      const [qrl2] = qwik.useLexicalScope();
+      const [fetchOptions2, headers2, method2, origin2, qrl2] = qwik.useLexicalScope();
       const signal = args.length > 0 && args[0] instanceof AbortSignal ? args.shift() : void 0;
       if (build.isServer) {
         let requestEvent = globalThis.qcAsyncRequestStore?.getStore();
@@ -1303,19 +1308,27 @@ const serverQrl = (qrl) => {
           return arg;
         });
         const hash = qrl2.getHash();
-        const res = await fetch(`?${QFN_KEY}=${hash}`, {
-          method: "POST",
+        let query = "";
+        const config = {
+          ...fetchOptions2,
+          method: method2,
           headers: {
+            ...headers2,
             "Content-Type": "application/qwik-json",
             // Required so we don't call accidentally
             "X-QRL": hash
           },
-          signal,
-          body: await qwik._serializeData([
-            qrl2,
-            ...filtered
-          ], false)
-        });
+          signal
+        };
+        const body = await qwik._serializeData([
+          qrl2,
+          ...filtered
+        ], false);
+        if (method2 === "GET")
+          query += `&${QDATA_KEY}=${encodeURIComponent(body)}`;
+        else
+          config.body = body;
+        const res = await fetch(`${origin2}?${QFN_KEY}=${hash}${query}`, config);
         const contentType = res.headers.get("Content-Type");
         if (res.ok && contentType === "text/qwik-json-stream" && res.body)
           return async function* () {
@@ -1335,11 +1348,15 @@ const serverQrl = (qrl) => {
           return obj;
         }
       }
-    }, "serverQrl_stuff_wOIPfiQ04l4", [
+    }, "serverQrl_rpc_SGytLJ8uq8I", [
+      fetchOptions,
+      headers,
+      method,
+      origin,
       qrl
     ]);
   }
-  return stuff();
+  return rpc();
 };
 const server$ = /* @__PURE__ */ qwik.implicit$FirstArg(serverQrl);
 const getValidators = (rest, qrl) => {

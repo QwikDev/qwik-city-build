@@ -534,11 +534,20 @@ export declare type RouteNavigate = QRL<(path?: string, options?: {
 export declare const RouterOutlet: Component<unknown>;
 
 /** @public */
-export declare const server$: <T extends ServerFunction>(first: T) => ServerQRL<T>;
+export declare const server$: <T extends ServerFunction>(first: T, options?: ServerConfig | undefined) => ServerQRL<T>;
+
+/** @public */
+declare interface ServerConfig {
+    origin?: string;
+    method?: 'get' | 'post';
+    headers?: Record<string, string>;
+    fetchOptions?: any;
+}
 
 /** @public */
 export declare type ServerFunction = {
     (this: RequestEventBase, ...args: any[]): any;
+    options?: ServerConfig;
 };
 
 /**
@@ -550,7 +559,7 @@ export declare type ServerFunction = {
 export declare type ServerQRL<T extends ServerFunction> = QRL<((abort: AbortSignal, ...args: Parameters<T>) => ReturnType<T>) | ((...args: Parameters<T>) => ReturnType<T>)>;
 
 /** @public */
-export declare const serverQrl: <T extends ServerFunction>(qrl: QRL<T>) => ServerQRL<T>;
+export declare const serverQrl: <T extends ServerFunction>(qrl: QRL<T>, options?: ServerConfig) => ServerQRL<T>;
 
 /** @public */
 export declare const ServiceWorkerRegister: (props: {

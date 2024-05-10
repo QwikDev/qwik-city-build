@@ -24588,6 +24588,13 @@ var Cookie = class {
 REQ_COOKIE, _a = RES_COOKIE, _b = LIVE_COOKIE;
 
 // packages/qwik-city/middleware/request-handler/error-handler.ts
+var ServerError = class extends Error {
+  constructor(status, data) {
+    super();
+    this.status = status;
+    this.data = data;
+  }
+};
 var ErrorResponse = class extends Error {
   constructor(status, message) {
     super(message);
@@ -24659,6 +24666,7 @@ var RedirectMessage = class extends AbortMessage {
 // packages/qwik-city/runtime/src/constants.ts
 var QACTION_KEY = "qaction";
 var QFN_KEY = "qfunc";
+var QDATA_KEY = "qdata";
 
 // packages/qwik-city/middleware/request-handler/response-page.ts
 function getQwikCityServerData(requestEv) {
@@ -24725,7 +24733,7 @@ var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderH
       requestHandlers.unshift(csrfCheckMiddleware);
     }
     if (isPageRoute) {
-      if (method === "POST") {
+      if (method === "POST" || method === "GET") {
         requestHandlers.push(pureServerFunction);
       }
       requestHandlers.push(fixTrailingSlash);
@@ -24942,6 +24950,11 @@ async function pureServerFunction(ev) {
             result = await qrl.apply(ev, args);
           }
         } catch (err) {
+          if (err instanceof ServerError) {
+            ev.headers.set("Content-Type", "application/qwik-json");
+            ev.send(err.status, await qwikSerializer._serializeData(err.data, true));
+            return;
+          }
           ev.headers.set("Content-Type", "application/qwik-json");
           ev.send(500, await qwikSerializer._serializeData(err, true));
           return;
@@ -25385,7 +25398,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
       if (requestData !== void 0) {
         return requestData;
       }
-      return requestData = parseRequest(requestEv.request, sharedMap, qwikSerializer);
+      return requestData = parseRequest(requestEv, sharedMap, qwikSerializer);
     },
     json: (statusCode, data) => {
       headers.set("Content-Type", "application/json; charset=utf-8");
@@ -25429,7 +25442,7 @@ function getRequestMode(requestEv) {
   return requestEv[RequestEvMode];
 }
 var ABORT_INDEX = Number.MAX_SAFE_INTEGER;
-var parseRequest = async (request, sharedMap, qwikSerializer) => {
+var parseRequest = async ({ request, method, query }, sharedMap, qwikSerializer) => {
   var _a2;
   const type = ((_a2 = request.headers.get("content-type")) == null ? void 0 : _a2.split(/[;,]/, 1)[0].trim()) ?? "";
   if (type === "application/x-www-form-urlencoded" || type === "multipart/form-data") {
@@ -25440,6 +25453,15 @@ var parseRequest = async (request, sharedMap, qwikSerializer) => {
     const data = await request.json();
     return data;
   } else if (type === "application/qwik-json") {
+    if (method === "GET" && query.has(QDATA_KEY)) {
+      const data = query.get(QDATA_KEY);
+      if (data) {
+        try {
+          return qwikSerializer._deserializeData(decodeURIComponent(data));
+        } catch (err) {
+        }
+      }
+    }
     return qwikSerializer._deserializeData(await request.text());
   }
   return void 0;

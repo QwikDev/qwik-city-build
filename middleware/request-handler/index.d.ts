@@ -584,6 +584,13 @@ declare interface SendMethod {
     (response: Response): AbortMessage;
 }
 
+/** @public */
+export declare class ServerError<T = Record<any, any>> extends Error {
+    status: number;
+    data: T;
+    constructor(status: number, data: T);
+}
+
 /**
  * HTTP Server Error Status Codes Status codes in the 5xx range indicate that the server encountered
  * an error or was unable to fulfill the request due to unexpected conditions.
