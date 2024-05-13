@@ -14591,6 +14591,9 @@ function getPathnameFromDirPath(opts, dirPath) {
   const relFilePath = (0, import_node_path.relative)(opts.routesDir, dirPath);
   let pathname = normalizePath(relFilePath);
   pathname = normalizePathname(pathname, opts.basePathname, opts.trailingSlash).split("/").filter((segment) => !isGroupedLayoutName(segment)).join("/");
+  if (pathname === "") {
+    return "/";
+  }
   return pathname;
 }
 function getMenuPathname(opts, filePath) {
