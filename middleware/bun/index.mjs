@@ -62,37 +62,40 @@ var MIME_TYPES = {
 
 // packages/qwik-city/middleware/bun/index.ts
 import { join, extname } from "node:path";
-var resolved = Promise.resolve();
-var TextEncoderStream = class {
+var TextEncoderStream_polyfill = class {
   constructor() {
-    this._writer = null;
-    this.readable = {
-      pipeTo: (writableStream) => {
-        this._writer = writableStream.getWriter();
+    this._encoder = new TextEncoder();
+    this._reader = null;
+    this.ready = Promise.resolve();
+    this.closed = false;
+    this.readable = new ReadableStream({
+      start: (controller) => {
+        this._reader = controller;
       }
-    };
-    this.writable = {
-      getWriter: () => {
-        if (!this._writer) {
-          throw new Error("No writable stream");
+    });
+    this.writable = new WritableStream({
+      write: async (chunk) => {
+        if (chunk != null && this._reader) {
+          const encoded = this._encoder.encode(chunk);
+          this._reader.enqueue(encoded);
         }
-        const encoder = new TextEncoder();
-        return {
-          write: async (chunk) => {
-            if (chunk != null) {
-              await this._writer.write(encoder.encode(chunk));
-            }
-          },
-          close: () => this._writer.close(),
-          ready: resolved
-        };
+      },
+      close: () => {
+        var _a;
+        (_a = this._reader) == null ? void 0 : _a.close();
+        this.closed = true;
+      },
+      abort: (reason) => {
+        var _a;
+        (_a = this._reader) == null ? void 0 : _a.error(reason);
+        this.closed = true;
       }
-    };
+    });
   }
 };
 function createQwikCity(opts) {
   var _a;
-  globalThis.TextEncoderStream ||= TextEncoderStream;
+  globalThis.TextEncoderStream = TextEncoderStream || TextEncoderStream_polyfill;
   const qwikSerializer = {
     _deserializeData,
     _serializeData,
