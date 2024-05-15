@@ -21881,6 +21881,14 @@ function resetBuildContext(ctx) {
   }
 }
 function normalizeOptions(rootDir, viteBasePath, userOpts) {
+  if (!(viteBasePath.startsWith("/") && viteBasePath.endsWith("/"))) {
+    console.error(
+      `warning: vite's config.base must begin and end with /. This will be an error in v2. If you have a valid use case, please open an issue.`
+    );
+    if (!viteBasePath.endsWith("/")) {
+      viteBasePath += "/";
+    }
+  }
   const opts = { ...userOpts };
   if (typeof opts.routesDir !== "string") {
     opts.routesDir = (0, import_node_path3.resolve)(rootDir, "src", "routes");
@@ -21900,11 +21908,14 @@ function normalizeOptions(rootDir, viteBasePath, userOpts) {
   if (typeof opts.basePathname !== "string") {
     opts.basePathname = viteBasePath;
   }
-  const url = new URL(opts.basePathname, "https://qwik.builer.io/");
-  opts.basePathname = url.pathname;
   if (!opts.basePathname.endsWith("/")) {
+    console.error(
+      `Warning: qwik-city plugin basePathname must end with /. This will be an error in v2`
+    );
     opts.basePathname += "/";
   }
+  const url = new URL(opts.basePathname, "https://qwik.dev/");
+  opts.basePathname = url.pathname;
   if (typeof opts.trailingSlash !== "boolean") {
     opts.trailingSlash = true;
   }
