@@ -690,6 +690,11 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     const { type = "link", forceReload = path === void 0, replaceState = false, scroll = true } = typeof opt === "object" ? opt : {
       forceReload: opt
     };
+    if (typeof path === "number") {
+      if (isBrowser)
+        history.go(path);
+      return;
+    }
     const lastDest = routeInternal2.value.dest;
     const dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
     if (!isSameOrigin(dest, lastDest)) {

@@ -523,7 +523,7 @@ declare interface RouteModule<BODY = unknown> {
 }
 
 /** @public */
-export declare type RouteNavigate = QRL<(path?: string, options?: {
+export declare type RouteNavigate = QRL<(path?: string | number, options?: {
     type?: Exclude<NavigationType, 'initial'>;
     forceReload?: boolean;
     replaceState?: boolean;
