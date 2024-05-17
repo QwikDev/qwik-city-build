@@ -1,7 +1,8 @@
 // packages/qwik-city/middleware/bun/index.ts
 import {
   mergeHeadersCookies,
-  requestHandler
+  requestHandler,
+  _TextEncoderStream_polyfill
 } from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
@@ -62,40 +63,10 @@ var MIME_TYPES = {
 
 // packages/qwik-city/middleware/bun/index.ts
 import { join, extname } from "node:path";
-var TextEncoderStream_polyfill = class {
-  constructor() {
-    this._encoder = new TextEncoder();
-    this._reader = null;
-    this.ready = Promise.resolve();
-    this.closed = false;
-    this.readable = new ReadableStream({
-      start: (controller) => {
-        this._reader = controller;
-      }
-    });
-    this.writable = new WritableStream({
-      write: async (chunk) => {
-        if (chunk != null && this._reader) {
-          const encoded = this._encoder.encode(chunk);
-          this._reader.enqueue(encoded);
-        }
-      },
-      close: () => {
-        var _a;
-        (_a = this._reader) == null ? void 0 : _a.close();
-        this.closed = true;
-      },
-      abort: (reason) => {
-        var _a;
-        (_a = this._reader) == null ? void 0 : _a.error(reason);
-        this.closed = true;
-      }
-    });
-  }
-};
 function createQwikCity(opts) {
   var _a;
-  globalThis.TextEncoderStream = TextEncoderStream || TextEncoderStream_polyfill;
+  globalThis.TextEncoderStream ||= class TextEncoderStream extends _TextEncoderStream_polyfill {
+  };
   const qwikSerializer = {
     _deserializeData,
     _serializeData,

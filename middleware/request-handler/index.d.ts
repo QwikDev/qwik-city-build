@@ -653,4 +653,18 @@ declare type StatusCodes = InformationalCode | SuccessCode | ClientErrorCode | S
  */
 declare type SuccessCode = 200 | 201 | 202 | 203 | 204 | 205 | 206 | 207 | 208 | 226;
 
+/**
+ * TextEncoderStream polyfill based on Node.js' implementation
+ * https://github.com/nodejs/node/blob/3f3226c8e363a5f06c1e6a37abd59b6b8c1923f1/lib/internal/webstreams/encoding.js#L38-L119
+ * (MIT License)
+ */
+/** @internal */
+export declare class _TextEncoderStream_polyfill {
+    #private;
+    get encoding(): string;
+    get readable(): ReadableStream<Uint8Array>;
+    get writable(): WritableStream<string>;
+    get [Symbol.toStringTag](): string;
+}
+
 export { }

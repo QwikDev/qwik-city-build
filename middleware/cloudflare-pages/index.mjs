@@ -1,7 +1,8 @@
 // packages/qwik-city/middleware/cloudflare-pages/index.ts
 import {
   mergeHeadersCookies,
-  requestHandler
+  requestHandler,
+  _TextEncoderStream_polyfill
 } from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
@@ -11,7 +12,8 @@ function createQwikCity(opts) {
   try {
     new globalThis.TextEncoderStream();
   } catch (e) {
-    globalThis.TextEncoderStream = TextEncoderStream;
+    globalThis.TextEncoderStream = class TextEncoderStream extends _TextEncoderStream_polyfill {
+    };
   }
   const qwikSerializer = {
     _deserializeData,
@@ -97,34 +99,6 @@ function createQwikCity(opts) {
   }
   return onCloudflarePagesFetch;
 }
-var resolved = Promise.resolve();
-var TextEncoderStream = class {
-  constructor() {
-    this._writer = null;
-    this.readable = {
-      pipeTo: (writableStream) => {
-        this._writer = writableStream.getWriter();
-      }
-    };
-    this.writable = {
-      getWriter: () => {
-        if (!this._writer) {
-          throw new Error("No writable stream");
-        }
-        const encoder = new TextEncoder();
-        return {
-          write: async (chunk) => {
-            if (chunk != null) {
-              await this._writer.write(encoder.encode(chunk));
-            }
-          },
-          close: () => this._writer.close(),
-          ready: resolved
-        };
-      }
-    };
-  }
-};
 export {
   createQwikCity
 };
