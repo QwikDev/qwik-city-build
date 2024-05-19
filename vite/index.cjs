@@ -25678,8 +25678,7 @@ function recursiveScan(paramName, suffix, path3, pathStart, pathLength, route, r
   }
   let pathIdx = pathLength;
   const sep = suffix + "/";
-  let depthWatchdog = 5;
-  while (pathIdx >= pathStart && depthWatchdog--) {
+  while (pathIdx >= pathStart) {
     const match = matchRoutePart(route, routeStart, routeLength, path3, pathIdx, pathLength);
     if (match) {
       let value2 = path3.substring(pathStart, Math.min(pathIdx, pathLength));
@@ -25689,7 +25688,11 @@ function recursiveScan(paramName, suffix, path3, pathStart, pathLength, route, r
       match[paramName] = decodeURIComponent(value2);
       return match;
     }
-    pathIdx = lastIndexOf(path3, pathStart, sep, pathIdx, pathStart - 1) + sep.length;
+    const newPathIdx = lastIndexOf(path3, pathStart, sep, pathIdx, pathStart - 1) + sep.length;
+    if (pathIdx === newPathIdx) {
+      break;
+    }
+    pathIdx = newPathIdx;
   }
   return null;
 }
