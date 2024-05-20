@@ -253,7 +253,7 @@ function createQwikCity(opts) {
       if (!res.headersSent) {
         const origin = computeOrigin(req, opts);
         const url = getUrl(req, origin);
-        const notFoundHtml = getNotFound(url.pathname);
+        const notFoundHtml = isStaticPath(req.method || "GET", url) ? "Not Found" : getNotFound(url.pathname);
         res.writeHead(404, {
           "Content-Type": "text/html; charset=utf-8",
           "X-Not-Found": url.pathname
@@ -280,8 +280,9 @@ function createQwikCity(opts) {
         } else {
           filePath = join(staticFolder, pathname, "index.html");
         }
-        const stream = createReadStream(filePath);
         const ext = extname(filePath).replace(/^\./, "");
+        const stream = createReadStream(filePath);
+        stream.on("error", next);
         const contentType = MIME_TYPES[ext];
         if (contentType) {
           res.setHeader("Content-Type", contentType);
@@ -289,7 +290,6 @@ function createQwikCity(opts) {
         if ((_a2 = opts.static) == null ? void 0 : _a2.cacheControl) {
           res.setHeader("Cache-Control", opts.static.cacheControl);
         }
-        stream.on("error", next);
         stream.pipe(res);
         return;
       }

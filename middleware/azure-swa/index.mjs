@@ -198,6 +198,7 @@ import { setServerPlatform } from "@builder.io/qwik/server";
 import { requestHandler } from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
+import { isStaticPath } from "@qwik-city-static-paths";
 function createQwikCity(opts) {
   const qwikSerializer = {
     _deserializeData,
@@ -267,7 +268,7 @@ function createQwikCity(opts) {
           return response;
         }
       }
-      const notFoundHtml = getNotFound(url.pathname);
+      const notFoundHtml = isStaticPath(req.method || "GET", url) ? "Not Found" : getNotFound(url.pathname);
       return {
         status: 404,
         headers: { "Content-Type": "text/html; charset=utf-8", "X-Not-Found": url.pathname },

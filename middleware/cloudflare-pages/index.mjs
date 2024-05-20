@@ -84,7 +84,7 @@ function createQwikCity(opts) {
           return response;
         }
       }
-      const notFoundHtml = getNotFound(url.pathname);
+      const notFoundHtml = isStaticPath(request.method || "GET", url) ? "Not Found" : getNotFound(url.pathname);
       return new Response(notFoundHtml, {
         status: 404,
         headers: { "Content-Type": "text/html; charset=utf-8", "X-Not-Found": url.pathname }
