@@ -1343,6 +1343,16 @@ const serverQrl = (qrl, options) => {
           if (res.status === 500)
             throw obj;
           return obj;
+        } else if (contentType === "application/json") {
+          const obj = await res.json();
+          if (res.status === 500)
+            throw obj;
+          return obj;
+        } else if (contentType === "text/plain" || contentType === "text/html") {
+          const str = await res.text();
+          if (res.status === 500)
+            throw str;
+          return str;
         }
       }
     }, "serverQrl_rpc_SGytLJ8uq8I", [
