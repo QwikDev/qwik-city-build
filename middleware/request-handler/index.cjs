@@ -195,6 +195,7 @@ var Cookie = class {
   constructor(cookieString) {
     this[_a] = {};
     this[_b] = {};
+    this.appendCounter = 0;
     this[REQ_COOKIE] = parseCookieString(cookieString);
     this[LIVE_COOKIE] = { ...this[REQ_COOKIE] };
   }
@@ -229,6 +230,15 @@ var Cookie = class {
     this[LIVE_COOKIE][cookieName] = typeof cookieValue === "string" ? cookieValue : JSON.stringify(cookieValue);
     const resolvedValue = typeof cookieValue === "string" ? cookieValue : encodeURIComponent(JSON.stringify(cookieValue));
     this[RES_COOKIE][cookieName] = createSetCookieValue(cookieName, resolvedValue, options);
+  }
+  append(cookieName, cookieValue, options = {}) {
+    this[LIVE_COOKIE][cookieName] = typeof cookieValue === "string" ? cookieValue : JSON.stringify(cookieValue);
+    const resolvedValue = typeof cookieValue === "string" ? cookieValue : encodeURIComponent(JSON.stringify(cookieValue));
+    this[RES_COOKIE][++this.appendCounter] = createSetCookieValue(
+      cookieName,
+      resolvedValue,
+      options
+    );
   }
   delete(name, options) {
     this.set(name, "deleted", { ...options, maxAge: 0 });
