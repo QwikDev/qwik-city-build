@@ -24649,7 +24649,7 @@ function minimalHtmlResponse(status, message) {
   const color2 = status >= 500 ? COLOR_500 : COLOR_400;
   return `
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
   <meta http-equiv="Status" content="${status}">
   <title>${status} ${message}</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -26204,7 +26204,7 @@ function getUnmatchedRouteHtml(url, ctx) {
   return `
   <html>
     <head>
-      <meta charset="UTF-8">
+      <meta charset="utf-8">
       <meta http-equiv="Status" content="404">
       <title>404 Not Found</title>
       <meta name="viewport" content="width=device-width,initial-scale=1">
