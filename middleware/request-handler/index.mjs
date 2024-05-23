@@ -840,7 +840,7 @@ var RequestRouteName = "@routeName";
 var RequestEvSharedActionId = "@actionId";
 var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
-function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved2) {
   const { request, platform, env } = serverRequestEv;
   const sharedMap = /* @__PURE__ */ new Map();
   const cookie = new Cookie(request.headers.get("cookie"));
@@ -1034,7 +1034,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
           status,
           headers,
           cookie,
-          resolved,
+          resolved2,
           requestEv
         );
       }
@@ -1467,11 +1467,40 @@ var _TextEncoderStream_polyfill = class {
     return "TextEncoderStream";
   }
 };
+var resolved = Promise.resolve();
+var _TextEncoderStream_polyfill2 = class {
+  constructor() {
+    this._writer = null;
+    this.readable = {
+      pipeTo: (writableStream) => {
+        this._writer = writableStream.getWriter();
+      }
+    };
+    this.writable = {
+      getWriter: () => {
+        if (!this._writer) {
+          throw new Error("No writable stream");
+        }
+        const encoder2 = new TextEncoder();
+        return {
+          write: async (chunk) => {
+            if (chunk != null) {
+              await this._writer.write(encoder2.encode(chunk));
+            }
+          },
+          close: () => this._writer.close(),
+          ready: resolved
+        };
+      }
+    };
+  }
+};
 export {
   AbortMessage,
   RedirectMessage,
   ServerError,
   _TextEncoderStream_polyfill,
+  _TextEncoderStream_polyfill2,
   getErrorHtml,
   mergeHeadersCookies,
   requestHandler

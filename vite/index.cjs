@@ -24375,13 +24375,13 @@ async function updateBuildContext(ctx) {
         ctx.serverPlugins = serverPlugins;
         return walkRoutes(ctx.opts.routesDir);
       }).then((sourceFiles) => {
-        const resolved = resolveSourceFiles(ctx.opts, sourceFiles);
-        rewriteRoutes(ctx, resolved);
-        ctx.layouts = resolved.layouts;
-        ctx.routes = resolved.routes;
-        ctx.entries = resolved.entries;
-        ctx.serviceWorkers = resolved.serviceWorkers;
-        ctx.menus = resolved.menus;
+        const resolved2 = resolveSourceFiles(ctx.opts, sourceFiles);
+        rewriteRoutes(ctx, resolved2);
+        ctx.layouts = resolved2.layouts;
+        ctx.routes = resolved2.routes;
+        ctx.entries = resolved2.entries;
+        ctx.serviceWorkers = resolved2.serviceWorkers;
+        ctx.menus = resolved2.menus;
         resolve4();
       }, reject).finally(() => {
         ctx.activeBuild = null;
@@ -24390,11 +24390,11 @@ async function updateBuildContext(ctx) {
   }
   return ctx.activeBuild;
 }
-function rewriteRoutes(ctx, resolved) {
+function rewriteRoutes(ctx, resolved2) {
   if (ctx.opts.rewriteRoutes) {
     ctx.opts.rewriteRoutes.forEach((rewriteOpt, rewriteIndex) => {
       const rewriteFrom = Object.keys(rewriteOpt.paths || {});
-      const rewriteRoutes2 = (resolved.routes || []).filter(
+      const rewriteRoutes2 = (resolved2.routes || []).filter(
         (route) => rewriteFrom.some((from) => route.pathname.split("/").includes(from)) || rewriteOpt.prefix && route.pathname === "/"
       );
       const replacePath = (part) => (rewriteOpt.paths || {})[part] ?? part;
@@ -24434,8 +24434,8 @@ function rewriteRoutes(ctx, resolved) {
         }
         const translatedPath = translatedPathParts.join("/");
         const translatedRoute = translatedRouteParts.join("/");
-        const originalRouteIndex = resolved.routes.indexOf(rewriteRoute);
-        resolved.routes.splice(originalRouteIndex + 1, 0, {
+        const originalRouteIndex = resolved2.routes.indexOf(rewriteRoute);
+        resolved2.routes.splice(originalRouteIndex + 1, 0, {
           ...rewriteRoute,
           id: rewriteRoute.id + (idSuffix || rewriteIndex),
           pathname: pathnamePrefix + translatedPath,
@@ -25250,7 +25250,7 @@ var RequestRouteName = "@routeName";
 var RequestEvSharedActionId = "@actionId";
 var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
-function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved2) {
   const { request, platform, env: env2 } = serverRequestEv;
   const sharedMap = /* @__PURE__ */ new Map();
   const cookie = new Cookie(request.headers.get("cookie"));
@@ -25444,7 +25444,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
           status,
           headers,
           cookie,
-          resolved,
+          resolved2,
           requestEv
         );
       }
@@ -26555,6 +26555,11 @@ navigator.serviceWorker?.getRegistrations().then((regs) => {
 // packages/qwik-city/adapters/shared/vite/post-build.ts
 var import_node_fs7 = __toESM(require("node:fs"), 1);
 var import_node_path9 = require("node:path");
+
+// packages/qwik-city/middleware/request-handler/polyfill.ts
+var resolved = Promise.resolve();
+
+// packages/qwik-city/adapters/shared/vite/post-build.ts
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
   const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));

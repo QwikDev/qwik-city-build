@@ -65,8 +65,7 @@ var MIME_TYPES = {
 import { join, extname } from "node:path";
 function createQwikCity(opts) {
   var _a;
-  globalThis.TextEncoderStream ||= class TextEncoderStream extends _TextEncoderStream_polyfill {
-  };
+  globalThis.TextEncoderStream ||= _TextEncoderStream_polyfill;
   const qwikSerializer = {
     _deserializeData,
     _serializeData,

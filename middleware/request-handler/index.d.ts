@@ -675,4 +675,12 @@ export declare class _TextEncoderStream_polyfill {
     get [Symbol.toStringTag](): string;
 }
 
+/** @internal */
+export declare class _TextEncoderStream_polyfill2 {
+    _writer: any;
+    readable: any;
+    writable: any;
+    constructor();
+}
+
 export { }
