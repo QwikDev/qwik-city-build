@@ -21946,40 +21946,8 @@ async function validatePlugin(opts) {
   }
 }
 
-// packages/qwik-city/buildtime/routing/walk-routes-dir.ts
-var import_node_fs3 = __toESM(require("node:fs"), 1);
-var import_node_path5 = require("node:path");
-async function walkRoutes(routesDir) {
-  const sourceFiles = [];
-  await walkRouteDir(sourceFiles, normalizePath(routesDir), (0, import_node_path5.basename)(routesDir));
-  return sourceFiles;
-}
-async function walkRouteDir(sourceFiles, dirPath, dirName) {
-  const dirItemNames = await import_node_fs3.default.promises.readdir(dirPath);
-  await Promise.all(
-    dirItemNames.map(async (itemName) => {
-      const itemPath = normalizePath((0, import_node_path5.join)(dirPath, itemName));
-      const stat = await import_node_fs3.default.promises.stat(itemPath);
-      if (stat.isDirectory()) {
-        await walkRouteDir(sourceFiles, itemPath, itemName);
-      } else {
-        const sourceFileName = getSourceFile(itemName);
-        if (sourceFileName !== null) {
-          sourceFiles.push({
-            ...sourceFileName,
-            fileName: itemName,
-            filePath: itemPath,
-            dirName,
-            dirPath
-          });
-        }
-      }
-    })
-  );
-}
-
 // packages/qwik-city/buildtime/routing/resolve-source-file.ts
-var import_node_path6 = require("node:path");
+var import_node_path5 = require("node:path");
 
 // node_modules/.pnpm/marked@12.0.2/node_modules/marked/lib/marked.esm.js
 function _getDefaults() {
@@ -24269,7 +24237,7 @@ function resolveRoute(opts, appLayouts, sourceFile) {
     pathname += sourceFile.extlessName + ".html";
   }
   if (!layoutStop) {
-    let currentDir = normalizePath((0, import_node_path6.dirname)(filePath));
+    let currentDir = normalizePath((0, import_node_path5.dirname)(filePath));
     let hasFoundNamedLayout = false;
     const hasNamedLayout = layoutName !== "";
     for (let i = 0; i < 20; i++) {
@@ -24291,7 +24259,7 @@ function resolveRoute(opts, appLayouts, sourceFile) {
       if (currentDir === routesDir) {
         break;
       }
-      currentDir = normalizePath((0, import_node_path6.dirname)(currentDir));
+      currentDir = normalizePath((0, import_node_path5.dirname)(currentDir));
     }
   }
   const buildRoute = {
@@ -24326,6 +24294,38 @@ function resolveServiceWorkerEntry(opts, sourceFile) {
     ...parseRoutePathname(opts.basePathname, pathname)
   };
   return buildEntry;
+}
+
+// packages/qwik-city/buildtime/routing/walk-routes-dir.ts
+var import_node_fs3 = __toESM(require("node:fs"), 1);
+var import_node_path6 = require("node:path");
+async function walkRoutes(routesDir) {
+  const sourceFiles = [];
+  await walkRouteDir(sourceFiles, normalizePath(routesDir), (0, import_node_path6.basename)(routesDir));
+  return sourceFiles;
+}
+async function walkRouteDir(sourceFiles, dirPath, dirName) {
+  const dirItemNames = await import_node_fs3.default.promises.readdir(dirPath);
+  await Promise.all(
+    dirItemNames.map(async (itemName) => {
+      const itemPath = normalizePath((0, import_node_path6.join)(dirPath, itemName));
+      const stat = await import_node_fs3.default.promises.stat(itemPath);
+      if (stat.isDirectory()) {
+        await walkRouteDir(sourceFiles, itemPath, itemName);
+      } else {
+        const sourceFileName = getSourceFile(itemName);
+        if (sourceFileName !== null) {
+          sourceFiles.push({
+            ...sourceFileName,
+            fileName: itemName,
+            filePath: itemPath,
+            dirName,
+            dirPath
+          });
+        }
+      }
+    })
+  );
 }
 
 // packages/qwik-city/buildtime/routing/walk-server-plugins.ts
@@ -24390,62 +24390,79 @@ async function updateBuildContext(ctx) {
   }
   return ctx.activeBuild;
 }
-function rewriteRoutes(ctx, resolved2) {
-  if (ctx.opts.rewriteRoutes) {
-    ctx.opts.rewriteRoutes.forEach((rewriteOpt, rewriteIndex) => {
-      const rewriteFrom = Object.keys(rewriteOpt.paths || {});
-      const rewriteRoutes2 = (resolved2.routes || []).filter(
-        (route) => rewriteFrom.some((from) => route.pathname.split("/").includes(from)) || rewriteOpt.prefix && route.pathname === "/"
-      );
-      const replacePath = (part) => (rewriteOpt.paths || {})[part] ?? part;
-      rewriteRoutes2.forEach((rewriteRoute) => {
-        var _a2;
-        const pathnamePrefix = rewriteOpt.prefix ? "/" + rewriteOpt.prefix : "";
-        const routeNamePrefix = rewriteOpt.prefix ? rewriteOpt.prefix + "/" : "";
-        const idSuffix = (_a2 = rewriteOpt.prefix) == null ? void 0 : _a2.toUpperCase().replace(/-/g, "");
-        const patternInfix = rewriteOpt.prefix ? [rewriteOpt.prefix] : [];
-        const splittedPathName = rewriteRoute.pathname.split("/");
-        const translatedPathParts = splittedPathName.map(replacePath);
-        const splittedRouteName = rewriteRoute.routeName.split("/");
-        const translatedRouteParts = splittedRouteName.map(replacePath);
-        const splittedPattern = rewriteRoute.pattern.toString().split("\\/");
-        const [translatedPatternFirst, ...translatedPatternOthers] = splittedPattern.map(replacePath);
-        const translatedPatternParts = [
-          translatedPatternFirst,
-          ...patternInfix,
-          ...translatedPatternOthers
-        ];
-        const translatedPatternString = translatedPatternParts.join("\\/");
-        const translatedRegExp = translatedPatternString.substring(
-          1,
-          rewriteRoute.pathname === "/" ? translatedPatternString.length - 1 : translatedPatternString.length - 2
-        );
-        const translatedSegments = rewriteRoute.segments.map(
-          (segment) => segment.map((item) => ({ ...item, content: replacePath(item.content) }))
-        );
-        if (rewriteOpt.prefix) {
-          translatedSegments.splice(0, 0, [
-            {
-              content: rewriteOpt.prefix,
-              dynamic: false,
-              rest: false
-            }
-          ]);
-        }
-        const translatedPath = translatedPathParts.join("/");
-        const translatedRoute = translatedRouteParts.join("/");
-        const originalRouteIndex = resolved2.routes.indexOf(rewriteRoute);
-        resolved2.routes.splice(originalRouteIndex + 1, 0, {
-          ...rewriteRoute,
-          id: rewriteRoute.id + (idSuffix || rewriteIndex),
-          pathname: pathnamePrefix + translatedPath,
-          routeName: routeNamePrefix + (translatedRoute !== "/" ? translatedRoute : ""),
-          pattern: new RegExp(translatedRegExp),
-          segments: translatedSegments
-        });
-      });
-    });
+function rewriteRoutes(ctx, resolvedFiles) {
+  if (!ctx.opts.rewriteRoutes || !resolvedFiles.routes) {
+    return;
   }
+  const translatedRoutes = [];
+  let segmentsToTranslate = ctx.opts.rewriteRoutes.flatMap((rewriteConfig) => {
+    return Object.keys(rewriteConfig.paths || {});
+  });
+  segmentsToTranslate = Array.from(new Set(segmentsToTranslate));
+  resolvedFiles.routes.forEach((route) => {
+    translatedRoutes.push(route);
+    const currentRouteSegments = route.pathname.split("/");
+    const foundSegmentToTranslate = currentRouteSegments.some(
+      (segment) => segmentsToTranslate.includes(segment)
+    );
+    if (foundSegmentToTranslate || route.pathname === "/") {
+      ctx.opts.rewriteRoutes.forEach((config, configIndex) => {
+        if (route.pathname === "/" && !config.prefix) {
+          return;
+        }
+        const routeToPush = translateRoute(route, config, configIndex);
+        translatedRoutes.push(routeToPush);
+      });
+    }
+  });
+  resolvedFiles.routes = translatedRoutes;
+}
+function translateRoute(route, config, configIndex) {
+  var _a2;
+  const replacePath = (part) => (config.paths || {})[part] ?? part;
+  const pathnamePrefix = config.prefix ? "/" + config.prefix : "";
+  const routeNamePrefix = config.prefix ? config.prefix + "/" : "";
+  const idSuffix = (_a2 = config.prefix) == null ? void 0 : _a2.toUpperCase().replace(/-/g, "");
+  const patternInfix = config.prefix ? [config.prefix] : [];
+  const splittedPathName = route.pathname.split("/");
+  const translatedPathParts = splittedPathName.map(replacePath);
+  const splittedRouteName = route.routeName.split("/");
+  const translatedRouteParts = splittedRouteName.map(replacePath);
+  const splittedPattern = route.pattern.toString().split("\\/");
+  const [translatedPatternFirst, ...translatedPatternOthers] = splittedPattern.map(replacePath);
+  const translatedPatternParts = [
+    translatedPatternFirst,
+    ...patternInfix,
+    ...translatedPatternOthers
+  ];
+  const translatedPatternString = translatedPatternParts.join("\\/");
+  const translatedRegExp = translatedPatternString.substring(
+    1,
+    route.pathname === "/" ? translatedPatternString.length - 1 : translatedPatternString.length - 2
+  );
+  const translatedSegments = route.segments.map(
+    (segment) => segment.map((item) => ({ ...item, content: replacePath(item.content) }))
+  );
+  if (config.prefix) {
+    translatedSegments.splice(0, 0, [
+      {
+        content: config.prefix,
+        dynamic: false,
+        rest: false
+      }
+    ]);
+  }
+  const translatedPath = translatedPathParts.join("/");
+  const translatedRoute = translatedRouteParts.join("/");
+  const routeToPush = {
+    ...route,
+    id: route.id + (idSuffix || configIndex),
+    pathname: pathnamePrefix + translatedPath,
+    routeName: routeNamePrefix + (translatedRoute !== "/" ? translatedRoute : ""),
+    pattern: new RegExp(translatedRegExp),
+    segments: translatedSegments
+  };
+  return routeToPush;
 }
 function validateBuild(ctx) {
   const pathnames = Array.from(new Set(ctx.routes.map((r2) => r2.pathname))).sort();
