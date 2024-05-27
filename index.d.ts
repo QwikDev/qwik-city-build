@@ -534,7 +534,7 @@ export declare type RouteNavigate = QRL<(path?: string | number, options?: {
 export declare const RouterOutlet: Component<unknown>;
 
 /** @public */
-export declare const server$: <T extends ServerFunction>(first: T, options?: ServerConfig | undefined) => ServerQRL<T>;
+export declare const server$: <T extends ServerFunction>(qrl: T, options?: ServerConfig | undefined) => ServerQRL<T>;
 
 /** @public */
 declare interface ServerConfig {
