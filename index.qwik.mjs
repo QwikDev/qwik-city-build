@@ -1263,7 +1263,7 @@ const zod$ = /* @__PURE__ */ implicit$FirstArg(zodQrl);
 const deepFreeze = (obj) => {
   Object.getOwnPropertyNames(obj).forEach((prop) => {
     const value = obj[prop];
-    if (value && typeof value === "object")
+    if (value && typeof value === "object" && !Object.isFrozen(value))
       deepFreeze(value);
   });
   return Object.freeze(obj);
