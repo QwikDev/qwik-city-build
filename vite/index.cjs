@@ -24375,13 +24375,13 @@ async function updateBuildContext(ctx) {
         ctx.serverPlugins = serverPlugins;
         return walkRoutes(ctx.opts.routesDir);
       }).then((sourceFiles) => {
-        const resolved2 = resolveSourceFiles(ctx.opts, sourceFiles);
-        rewriteRoutes(ctx, resolved2);
-        ctx.layouts = resolved2.layouts;
-        ctx.routes = resolved2.routes;
-        ctx.entries = resolved2.entries;
-        ctx.serviceWorkers = resolved2.serviceWorkers;
-        ctx.menus = resolved2.menus;
+        const resolved = resolveSourceFiles(ctx.opts, sourceFiles);
+        rewriteRoutes(ctx, resolved);
+        ctx.layouts = resolved.layouts;
+        ctx.routes = resolved.routes;
+        ctx.entries = resolved.entries;
+        ctx.serviceWorkers = resolved.serviceWorkers;
+        ctx.menus = resolved.menus;
         resolve4();
       }, reject).finally(() => {
         ctx.activeBuild = null;
@@ -25267,7 +25267,7 @@ var RequestRouteName = "@routeName";
 var RequestEvSharedActionId = "@actionId";
 var RequestEvSharedActionFormData = "@actionFormData";
 var RequestEvSharedNonce = "@nonce";
-function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved2) {
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
   const { request, platform, env: env2 } = serverRequestEv;
   const sharedMap = /* @__PURE__ */ new Map();
   const cookie = new Cookie(request.headers.get("cookie"));
@@ -25461,7 +25461,7 @@ function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manif
           status,
           headers,
           cookie,
-          resolved2,
+          resolved,
           requestEv
         );
       }
@@ -26572,11 +26572,6 @@ navigator.serviceWorker?.getRegistrations().then((regs) => {
 // packages/qwik-city/adapters/shared/vite/post-build.ts
 var import_node_fs7 = __toESM(require("node:fs"), 1);
 var import_node_path9 = require("node:path");
-
-// packages/qwik-city/middleware/request-handler/polyfill.ts
-var resolved = Promise.resolve();
-
-// packages/qwik-city/adapters/shared/vite/post-build.ts
 async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
   const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
   const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));

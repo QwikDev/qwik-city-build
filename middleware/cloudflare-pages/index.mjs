@@ -2,7 +2,7 @@
 import {
   mergeHeadersCookies,
   requestHandler,
-  _TextEncoderStream_polyfill2
+  _TextEncoderStream_polyfill
 } from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
@@ -12,7 +12,7 @@ function createQwikCity(opts) {
   try {
     new globalThis.TextEncoderStream();
   } catch (e) {
-    globalThis.TextEncoderStream = _TextEncoderStream_polyfill2;
+    globalThis.TextEncoderStream = _TextEncoderStream_polyfill;
   }
   const qwikSerializer = {
     _deserializeData,
