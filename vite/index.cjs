@@ -26901,7 +26901,9 @@ function qwikCityPlugin(userOpts) {
     },
     getServiceWorkers: () => {
       return (ctx == null ? void 0 : ctx.serviceWorkers.slice()) ?? [];
-    }
+    },
+    getContext: () => Object.freeze(ctx),
+    getMdxTransformer: () => mdxTransform
   };
   const plugin = {
     name: "vite-plugin-qwik-city",
