@@ -5,24 +5,6 @@ import { ConfigEnv } from 'vite';
 import type { PluginOption } from 'vite';
 import { UserConfigExport } from 'vite';
 
-declare interface BuildContext {
-    rootDir: string;
-    opts: NormalizedPluginOptions;
-    routes: BuildRoute[];
-    serverPlugins: BuildServerPlugin[];
-    layouts: BuildLayout[];
-    entries: BuildEntry[];
-    serviceWorkers: BuildEntry[];
-    menus: BuildMenu[];
-    frontmatter: Map<string, FrontmatterAttrs>;
-    diagnostics: Diagnostic[];
-    target: 'ssr' | 'client' | undefined;
-    isDevServer: boolean;
-    isDevServerClientOnly: boolean;
-    isDirty: boolean;
-    activeBuild: Promise<void> | null;
-}
-
 declare interface BuildEntry extends ParsedPathname {
     id: string;
     chunkFileName: string;
@@ -37,11 +19,6 @@ declare interface BuildLayout {
     layoutName: string;
 }
 
-declare interface BuildMenu {
-    pathname: string;
-    filePath: string;
-}
-
 declare interface BuildRoute extends ParsedPathname {
     /** Unique id built from its relative file system path */
     id: string;
@@ -53,25 +30,8 @@ declare interface BuildRoute extends ParsedPathname {
     layouts: BuildLayout[];
 }
 
-declare interface BuildServerPlugin {
-    /** Unique id built from its relative file system path */
-    id: string;
-    /** Local file system path */
-    filePath: string;
-    ext: string;
-}
-
-declare interface Diagnostic {
-    type: 'error' | 'warn';
-    message: string;
-}
-
 /** @public */
 export declare function extendConfig(baseConfigExport: UserConfigExport, serverConfigExport: UserConfigExport): (env: ConfigEnv) => Promise<Record<string, any>>;
-
-declare interface FrontmatterAttrs {
-    [attrName: string]: Yaml;
-}
 
 /** @public */
 declare interface ImageOptimizationOptions {
@@ -96,14 +56,6 @@ declare interface MdxPlugins {
     remarkGfm: boolean;
     rehypeSyntaxHighlight: boolean;
     rehypeAutolinkHeadings: boolean;
-}
-
-declare type MdxTransform = (code: string, id: string) => Promise<{
-    code: string;
-    map: any;
-} | undefined>;
-
-declare interface NormalizedPluginOptions extends Required<PluginOptions> {
 }
 
 declare interface ParsedPathname {
@@ -161,8 +113,6 @@ declare interface QwikCityPluginApi {
     getBasePathname: () => string;
     getRoutes: () => BuildRoute[];
     getServiceWorkers: () => BuildEntry[];
-    getContext: () => BuildContext | null;
-    getMdxTransformer: () => MdxTransform | null;
 }
 
 /** @public */
@@ -178,9 +128,5 @@ declare interface RewriteRouteOption {
     prefix?: string;
     paths: Record<string, string>;
 }
-
-declare type Yaml = string | number | boolean | null | {
-    [attrName: string]: Yaml;
-} | Yaml[];
 
 export { }
