@@ -1,4 +1,4 @@
-import { createContextId, inlinedQrl, getPlatform, componentQrl, _jsxBranch, useServerData, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _wrapProp, _getContextEvent, _serializeData, _IMMUTABLE, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, inlinedQrl, getPlatform, componentQrl, useServerData, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _wrapProp, _getContextEvent, _serializeData, _IMMUTABLE, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -13,7 +13,7 @@ const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouteInternalContext = /* @__PURE__ */ createContextId("qc-ir");
-const spaInit = /* @__PURE__ */ inlinedQrl((currentScript) => {
+const spaInit = /* @__PURE__ */ inlinedQrl((container) => {
   const win = window;
   const currentPath = location.pathname + location.search;
   const spa = "_qCitySPA";
@@ -52,7 +52,6 @@ const spaInit = /* @__PURE__ */ inlinedQrl((currentScript) => {
       win[scrollEnabled] = false;
       clearTimeout(win[debounceTimeout]);
       if (currentPath !== location.pathname + location.search) {
-        const container = currentScript.closest("[q\\:container]");
         const link = container.querySelector("a[q\\:link]");
         if (link) {
           const container2 = link.closest("[q\\:container]");
@@ -159,31 +158,40 @@ const spaInit = /* @__PURE__ */ inlinedQrl((currentScript) => {
     }, 0);
   }
 }, "spa_init_DyVc0YBIqQU");
-const shim = () => {
+const shim = (base) => {
   if (isServer) {
     const [symbol, bundle] = getPlatform().chunkForSymbol(spaInit.getSymbol(), null);
-    return `(${shim$1.toString()})('${bundle}','${symbol}');`;
+    const args = [
+      base,
+      bundle,
+      symbol
+    ].map((x) => JSON.stringify(x)).join(",");
+    return `(${shim$1.toString()})(${args});`;
   }
 };
-const shim$1 = async (path, symbol) => {
+const shim$1 = async (base, path, symbol) => {
   if (!window._qcs && history.scrollRestoration === "manual") {
     window._qcs = true;
     const scrollState = history.state?._qCityScroll;
     if (scrollState)
       window.scrollTo(scrollState.x, scrollState.y);
-    const currentScript = document.currentScript;
-    const container = currentScript.closest("[q\\:container]");
-    const base = new URL(container.getAttribute("q:base"), document.baseURI);
-    const url = new URL(path, base);
-    if (isDev) {
-      const imp = new Function("url", "return import(url)");
-      (await imp(url.href))[symbol](currentScript);
-    } else
-      (await import(url.href))[symbol](currentScript);
+    const script = document.currentScript;
+    if (script) {
+      const container = script.closest("[q\\:container]");
+      const url = new URL(path, new URL(base, document.baseURI));
+      if (isDev) {
+        const imp = new Function("url", "return import(url)");
+        (await imp(url.href))[symbol](container);
+      } else
+        (await import(url.href))[symbol](container);
+    }
   }
 };
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
-  const shimScript = shim();
+  const serverData = useServerData("containerAttributes");
+  if (!serverData)
+    throw new Error("PrefetchServiceWorker component must be rendered on the server.");
+  const shimScript = shim(serverData["q:base"]);
   _jsxBranch();
   const nonce = useServerData("nonce");
   const context = useContext(ContentInternalContext);
