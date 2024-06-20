@@ -1289,7 +1289,7 @@ const serverQrl = (qrl, options) => {
   function rpc() {
     return /* @__PURE__ */ inlinedQrl(async function(...args) {
       const [fetchOptions2, headers2, method2, origin2, qrl2] = useLexicalScope();
-      const signal = args.length > 0 && args[0] instanceof AbortSignal ? args.shift() : void 0;
+      const abortSignal = args.length > 0 && args[0] instanceof AbortSignal ? args.shift() : void 0;
       if (isServer) {
         let requestEvent = globalThis.qcAsyncRequestStore?.getStore();
         if (!requestEvent) {
@@ -1303,7 +1303,7 @@ const serverQrl = (qrl, options) => {
         return qrl2.apply(requestEvent, isDev ? deepFreeze(args) : args);
       } else {
         const ctxElm = _getContextElement();
-        const filtered = args.map((arg) => {
+        const filteredArgs = args.map((arg) => {
           if (arg instanceof SubmitEvent && arg.target instanceof HTMLFormElement)
             return new FormData(arg.target);
           else if (arg instanceof Event)
@@ -1312,7 +1312,7 @@ const serverQrl = (qrl, options) => {
             return null;
           return arg;
         });
-        const hash = qrl2.getHash();
+        const qrlHash = qrl2.getHash();
         let query = "";
         const config = {
           ...fetchOptions2,
@@ -1321,27 +1321,27 @@ const serverQrl = (qrl, options) => {
             ...headers2,
             "Content-Type": "application/qwik-json",
             // Required so we don't call accidentally
-            "X-QRL": hash
+            "X-QRL": qrlHash
           },
-          signal
+          signal: abortSignal
         };
         const body = await _serializeData([
           qrl2,
-          ...filtered
+          ...filteredArgs
         ], false);
         if (method2 === "GET")
           query += `&${QDATA_KEY}=${encodeURIComponent(body)}`;
         else
           config.body = body;
-        const res = await fetch(`${origin2}?${QFN_KEY}=${hash}${query}`, config);
+        const res = await fetch(`${origin2}?${QFN_KEY}=${qrlHash}${query}`, config);
         const contentType = res.headers.get("Content-Type");
         if (res.ok && contentType === "text/qwik-json-stream" && res.body)
           return async function* () {
             try {
-              for await (const result of deserializeStream(res.body, ctxElm ?? document.documentElement, signal))
+              for await (const result of deserializeStream(res.body, ctxElm ?? document.documentElement, abortSignal))
                 yield result;
             } finally {
-              if (!signal?.aborted)
+              if (!abortSignal?.aborted)
                 await res.body.cancel();
             }
           }();
@@ -1403,12 +1403,12 @@ const getValidators = (rest, qrl) => {
     id
   };
 };
-const deserializeStream = async function* (stream, ctxElm, signal) {
+const deserializeStream = async function* (stream, ctxElm, abortSignal) {
   const reader = stream.getReader();
   try {
     let buffer = "";
     const decoder = new TextDecoder();
-    while (!signal?.aborted) {
+    while (!abortSignal?.aborted) {
       const result = await reader.read();
       if (result.done)
         break;
