@@ -1,4 +1,4 @@
-import { createContextId, inlinedQrl, getPlatform, componentQrl, useServerData, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _wrapProp, _getContextEvent, _serializeData, _IMMUTABLE, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, eventQrl, inlinedQrl, getPlatform, componentQrl, useServerData, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _wrapProp, _getContextEvent, _serializeData, _IMMUTABLE, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -13,7 +13,7 @@ const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouteInternalContext = /* @__PURE__ */ createContextId("qc-ir");
-const spaInit = /* @__PURE__ */ inlinedQrl((container) => {
+const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
   const win = window;
   const currentPath = location.pathname + location.search;
   const spa = "_qCitySPA";
@@ -157,10 +157,10 @@ const spaInit = /* @__PURE__ */ inlinedQrl((container) => {
         });
     }, 0);
   }
-}, "spa_init_DyVc0YBIqQU");
+}, "spa_init_event_1RJPKHqF8AQ"));
 const shim = (base) => {
   if (isServer) {
-    const [symbol, bundle] = getPlatform().chunkForSymbol(spaInit.getSymbol(), null);
+    const [symbol, bundle] = getPlatform().chunkForSymbol(spaInit.getSymbol(), null, spaInit.dev?.file);
     const args = [
       base,
       bundle,
