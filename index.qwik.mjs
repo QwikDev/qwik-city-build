@@ -439,32 +439,33 @@ function lastIndexOf(text, start, match, searchIdx, notFoundIdx) {
   return idx > start ? idx : notFoundIdx;
 }
 const loadRoute = async (routes, menus, cacheModules, pathname) => {
-  if (Array.isArray(routes))
-    for (const route of routes) {
-      const routeName = route[0];
-      const params = matchRoute(routeName, pathname);
-      if (params) {
-        const loaders = route[1];
-        const routeBundleNames = route[3];
-        const mods = new Array(loaders.length);
-        const pendingLoads = [];
-        const menuLoader = getMenuLoader(menus, pathname);
-        let menu = void 0;
-        loaders.forEach((moduleLoader, i) => {
-          loadModule(moduleLoader, pendingLoads, (routeModule) => mods[i] = routeModule, cacheModules);
-        });
-        loadModule(menuLoader, pendingLoads, (menuModule) => menu = menuModule?.default, cacheModules);
-        if (pendingLoads.length > 0)
-          await Promise.all(pendingLoads);
-        return [
-          routeName,
-          params,
-          mods,
-          menu,
-          routeBundleNames
-        ];
-      }
-    }
+  if (!Array.isArray(routes))
+    return null;
+  for (const routeData of routes) {
+    const routeName = routeData[0];
+    const params = matchRoute(routeName, pathname);
+    if (!params)
+      continue;
+    const loaders = routeData[1];
+    const routeBundleNames = routeData[3];
+    const modules = new Array(loaders.length);
+    const pendingLoads = [];
+    loaders.forEach((moduleLoader, i) => {
+      loadModule(moduleLoader, pendingLoads, (routeModule) => modules[i] = routeModule, cacheModules);
+    });
+    const menuLoader = getMenuLoader(menus, pathname);
+    let menu = void 0;
+    loadModule(menuLoader, pendingLoads, (menuModule) => menu = menuModule?.default, cacheModules);
+    if (pendingLoads.length > 0)
+      await Promise.all(pendingLoads);
+    return [
+      routeName,
+      params,
+      modules,
+      menu,
+      routeBundleNames
+    ];
+  }
   return null;
 };
 const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules) => {
@@ -473,15 +474,15 @@ const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules) => {
     if (loadedModule)
       moduleSetter(loadedModule);
     else {
-      const l = moduleLoader();
-      if (typeof l.then === "function")
-        pendingLoads.push(l.then((loadedModule2) => {
+      const moduleOrPromise = moduleLoader();
+      if (typeof moduleOrPromise.then === "function")
+        pendingLoads.push(moduleOrPromise.then((loadedModule2) => {
           if (cacheModules !== false)
             MODULE_CACHE.set(moduleLoader, loadedModule2);
           moduleSetter(loadedModule2);
         }));
-      else if (l)
-        moduleSetter(l);
+      else if (moduleOrPromise)
+        moduleSetter(moduleOrPromise);
     }
   }
 };
