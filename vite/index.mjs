@@ -26573,8 +26573,11 @@ navigator.serviceWorker?.getRegistrations().then((regs) => {
 // packages/qwik-city/adapters/shared/vite/post-build.ts
 import fs6 from "node:fs";
 import { join as join5 } from "node:path";
-async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
-  const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
+async function postBuild(clientOutDir, pathName, userStaticPaths, format, cleanStatic) {
+  if (pathName && !pathName.endsWith("/")) {
+    pathName += "/";
+  }
+  const ignorePathnames = /* @__PURE__ */ new Set([pathName + "build/", pathName + "assets/"]);
   const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));
   const notFounds = [];
   const loadItem = async (fsDir, fsName, pathname) => {
@@ -26606,10 +26609,10 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
     await Promise.all(itemNames.map((i) => loadItem(fsDir, i, pathname)));
   };
   if (fs6.existsSync(clientOutDir)) {
-    await loadDir(clientOutDir, basePathname);
+    await loadDir(clientOutDir, pathName);
   }
-  const notFoundPathsCode = createNotFoundPathsModule(basePathname, notFounds, format);
-  const staticPathsCode = createStaticPathsModule(basePathname, staticPaths, format);
+  const notFoundPathsCode = createNotFoundPathsModule(pathName, notFounds, format);
+  const staticPathsCode = createStaticPathsModule(pathName, staticPaths, format);
   return {
     notFoundPathsCode,
     staticPathsCode
@@ -27106,9 +27109,10 @@ function qwikCityPlugin(userOpts) {
             }
           }
           if (outDir && clientOutDir) {
+            const assetsDir = qwikPlugin.api.getAssetsDir();
             const { staticPathsCode, notFoundPathsCode } = await postBuild(
               clientOutDir,
-              api.getBasePathname(),
+              assetsDir ? join6(api.getBasePathname(), assetsDir) : api.getBasePathname(),
               [],
               ssrFormat,
               false

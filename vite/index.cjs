@@ -26578,8 +26578,11 @@ navigator.serviceWorker?.getRegistrations().then((regs) => {
 // packages/qwik-city/adapters/shared/vite/post-build.ts
 var import_node_fs7 = __toESM(require("node:fs"), 1);
 var import_node_path9 = require("node:path");
-async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
-  const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
+async function postBuild(clientOutDir, pathName, userStaticPaths, format, cleanStatic) {
+  if (pathName && !pathName.endsWith("/")) {
+    pathName += "/";
+  }
+  const ignorePathnames = /* @__PURE__ */ new Set([pathName + "build/", pathName + "assets/"]);
   const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));
   const notFounds = [];
   const loadItem = async (fsDir, fsName, pathname) => {
@@ -26611,10 +26614,10 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
     await Promise.all(itemNames.map((i) => loadItem(fsDir, i, pathname)));
   };
   if (import_node_fs7.default.existsSync(clientOutDir)) {
-    await loadDir(clientOutDir, basePathname);
+    await loadDir(clientOutDir, pathName);
   }
-  const notFoundPathsCode = createNotFoundPathsModule(basePathname, notFounds, format);
-  const staticPathsCode = createStaticPathsModule(basePathname, staticPaths, format);
+  const notFoundPathsCode = createNotFoundPathsModule(pathName, notFounds, format);
+  const staticPathsCode = createStaticPathsModule(pathName, staticPaths, format);
   return {
     notFoundPathsCode,
     staticPathsCode
@@ -27111,9 +27114,10 @@ function qwikCityPlugin(userOpts) {
             }
           }
           if (outDir && clientOutDir) {
+            const assetsDir = qwikPlugin.api.getAssetsDir();
             const { staticPathsCode, notFoundPathsCode } = await postBuild(
               clientOutDir,
-              api.getBasePathname(),
+              assetsDir ? (0, import_node_path11.join)(api.getBasePathname(), assetsDir) : api.getBasePathname(),
               [],
               ssrFormat,
               false

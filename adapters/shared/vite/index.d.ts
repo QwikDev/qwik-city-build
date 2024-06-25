@@ -105,6 +105,7 @@ declare interface ViteAdapterPluginOptions {
         serverOutDir: string;
         basePathname: string;
         routes: BuildRoute[];
+        assetsDir?: string;
         warn: (message: string) => void;
         error: (message: string) => void;
     }) => Promise<void>;

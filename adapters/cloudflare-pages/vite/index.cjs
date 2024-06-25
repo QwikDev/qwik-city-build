@@ -82,14 +82,15 @@ function cloudflarePagesAdapter(opts = {}) {
         publicDir: false
       };
     },
-    async generate({ clientOutDir, serverOutDir, basePathname }) {
+    async generate({ clientOutDir, serverOutDir, basePathname, assetsDir }) {
       const routesJsonPath = (0, import_node_path.join)(clientOutDir, "_routes.json");
       const hasRoutesJson = import_node_fs.default.existsSync(routesJsonPath);
       if (!hasRoutesJson && opts.functionRoutes !== false) {
+        const pathName = assetsDir ? (0, import_node_path.join)(basePathname, assetsDir) : basePathname;
         const routesJson = {
           version: 1,
-          include: [basePathname + "*"],
-          exclude: [basePathname + "build/*", basePathname + "assets/*"]
+          include: [pathName + "*"],
+          exclude: [pathName + "build/*", pathName + "assets/*"]
         };
         await import_node_fs.default.promises.writeFile(routesJsonPath, JSON.stringify(routesJson, void 0, 2));
       }

@@ -42,8 +42,11 @@ var import_node_path2 = require("node:path");
 var import_node_fs = __toESM(require("node:fs"), 1);
 var import_node_path = require("node:path");
 var import_request_handler = require("@builder.io/qwik-city/middleware/request-handler");
-async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cleanStatic) {
-  const ignorePathnames = /* @__PURE__ */ new Set([basePathname + "build/", basePathname + "assets/"]);
+async function postBuild(clientOutDir, pathName, userStaticPaths, format, cleanStatic) {
+  if (pathName && !pathName.endsWith("/")) {
+    pathName += "/";
+  }
+  const ignorePathnames = /* @__PURE__ */ new Set([pathName + "build/", pathName + "assets/"]);
   const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));
   const notFounds = [];
   const loadItem = async (fsDir, fsName, pathname) => {
@@ -75,10 +78,10 @@ async function postBuild(clientOutDir, basePathname, userStaticPaths, format, cl
     await Promise.all(itemNames.map((i) => loadItem(fsDir, i, pathname)));
   };
   if (import_node_fs.default.existsSync(clientOutDir)) {
-    await loadDir(clientOutDir, basePathname);
+    await loadDir(clientOutDir, pathName);
   }
-  const notFoundPathsCode = createNotFoundPathsModule(basePathname, notFounds, format);
-  const staticPathsCode = createStaticPathsModule(basePathname, staticPaths, format);
+  const notFoundPathsCode = createNotFoundPathsModule(pathName, notFounds, format);
+  const staticPathsCode = createStaticPathsModule(pathName, staticPaths, format);
   return {
     notFoundPathsCode,
     staticPathsCode
@@ -261,6 +264,7 @@ function viteAdapter(opts) {
           const basePathname = qwikCityPlugin.api.getBasePathname();
           const clientOutDir = qwikVitePlugin.api.getClientOutDir();
           const clientPublicOutDir = qwikVitePlugin.api.getClientPublicOutDir();
+          const assetsDir = qwikVitePlugin.api.getAssetsDir();
           const rootDir = qwikVitePlugin.api.getRootDir() ?? void 0;
           if (renderModulePath && qwikCityPlanModulePath && clientOutDir && clientPublicOutDir) {
             let ssgOrigin = ((_a = opts.ssg) == null ? void 0 : _a.origin) ?? opts.origin;
@@ -303,7 +307,7 @@ function viteAdapter(opts) {
             staticPaths.push(...staticGenerateResult.staticPaths);
             const { staticPathsCode, notFoundPathsCode } = await postBuild(
               clientPublicOutDir,
-              basePathname,
+              assetsDir ? (0, import_node_path2.join)(basePathname, assetsDir) : basePathname,
               staticPaths,
               format,
               !!opts.cleanStaticGenerated
@@ -323,6 +327,7 @@ function viteAdapter(opts) {
                 clientPublicOutDir,
                 basePathname,
                 routes,
+                assetsDir,
                 warn: (message) => this.warn(message),
                 error: (message) => this.error(message)
               });
