@@ -52,10 +52,13 @@ function cloudflarePagesAdapter(opts = {}) {
       const routesJsonPath = join(clientOutDir, "_routes.json");
       const hasRoutesJson = fs.existsSync(routesJsonPath);
       if (!hasRoutesJson && opts.functionRoutes !== false) {
-        const pathName = assetsDir ? join(basePathname, assetsDir) : basePathname;
+        let pathName = assetsDir ? join(basePathname, assetsDir) : basePathname;
+        if (!pathName.endsWith("/")) {
+          pathName += "/";
+        }
         const routesJson = {
           version: 1,
-          include: [pathName + "*"],
+          include: [basePathname + "*"],
           exclude: [pathName + "build/*", pathName + "assets/*"]
         };
         await fs.promises.writeFile(routesJsonPath, JSON.stringify(routesJson, void 0, 2));
