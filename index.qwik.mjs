@@ -795,7 +795,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         }
         const newHref = pageData.href;
         const newURL = new URL(newHref, trackUrl);
-        if (!isSamePathname(newURL, trackUrl)) {
+        if (!isSamePath(newURL, trackUrl)) {
           trackUrl = newURL;
           loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
         }
