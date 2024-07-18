@@ -982,19 +982,17 @@ var _resolveRequestHandlers = (routeLoaders, routeActions, requestHandlers, rout
       requestHandlers.push(...methodReqHandler);
     }
     if (collectActions) {
-      const loaders = Object.values(routeModule).filter(
-        (e) => checkBrand(e, "server_loader")
-      );
-      routeLoaders.push(...loaders);
-      const actions = Object.values(routeModule).filter(
-        (e) => checkBrand(e, "server_action")
-      );
-      routeActions.push(...actions);
+      for (const module of Object.values(routeModule)) {
+        if (typeof module === "function") {
+          if (module.__brand === "server_loader") {
+            routeLoaders.push(module);
+          } else if (module.__brand === "server_action") {
+            routeActions.push(module);
+          }
+        }
+      }
     }
   }
-};
-var checkBrand = (obj, brand) => {
-  return obj && typeof obj === "function" && obj.__brand === brand;
 };
 function actionsMiddleware(routeActions, routeLoaders) {
   return async (requestEv) => {
@@ -1217,7 +1215,8 @@ function getPathname(url, trailingSlash) {
       url.pathname = url.pathname.slice(0, -1);
     }
   }
-  return url.toString().substring(url.origin.length);
+  const search = url.search.slice(1).replaceAll(/&?q(action|data|func)=[^&]+/g, "");
+  return `${url.pathname}${search ? `?${search}` : ""}${url.hash}`;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
 function csrfCheckMiddleware(requestEv) {

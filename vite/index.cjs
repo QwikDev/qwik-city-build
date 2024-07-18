@@ -24844,14 +24844,15 @@ var _resolveRequestHandlers = (routeLoaders, routeActions, requestHandlers, rout
       requestHandlers.push(...methodReqHandler);
     }
     if (collectActions) {
-      const loaders = Object.values(routeModule).filter(
-        (e) => checkBrand(e, "server_loader")
-      );
-      routeLoaders.push(...loaders);
-      const actions = Object.values(routeModule).filter(
-        (e) => checkBrand(e, "server_action")
-      );
-      routeActions.push(...actions);
+      for (const module2 of Object.values(routeModule)) {
+        if (typeof module2 === "function") {
+          if (module2.__brand === "server_loader") {
+            routeLoaders.push(module2);
+          } else if (module2.__brand === "server_action") {
+            routeActions.push(module2);
+          }
+        }
+      }
     }
   }
 };
@@ -25079,7 +25080,8 @@ function getPathname(url, trailingSlash) {
       url.pathname = url.pathname.slice(0, -1);
     }
   }
-  return url.toString().substring(url.origin.length);
+  const search2 = url.search.slice(1).replaceAll(/&?q(action|data|func)=[^&]+/g, "");
+  return `${url.pathname}${search2 ? `?${search2}` : ""}${url.hash}`;
 }
 var encoder = /* @__PURE__ */ new TextEncoder();
 function csrfCheckMiddleware(requestEv) {
@@ -26294,7 +26296,7 @@ function staticDistMiddleware({ config }) {
       next();
       return;
     }
-    const relPath = url.pathname.slice(1);
+    const relPath = `${url.pathname.slice(1)}${url.search}`;
     const ext = getExtension(relPath);
     const contentType = STATIC_CONTENT_TYPES[ext];
     if (!contentType) {
@@ -26935,7 +26937,7 @@ function qwikCityPlugin(userOpts) {
       rootDir = (0, import_node_path11.resolve)(config.root);
       const target = ((_a2 = config.build) == null ? void 0 : _a2.ssr) || config.mode === "ssr" ? "ssr" : "client";
       ctx = createBuildContext(rootDir, config.base, userOpts, target);
-      ctx.isDevServer = config.command === "serve";
+      ctx.isDevServer = config.command === "serve" && config.mode !== "production";
       ctx.isDevServerClientOnly = ctx.isDevServer && config.mode !== "ssr";
       await validatePlugin(ctx.opts);
       mdxTransform = await createMdxTransformer(ctx);
@@ -26950,10 +26952,13 @@ function qwikCityPlugin(userOpts) {
     },
     configureServer(server) {
       return () => {
-        server.middlewares.use(staticDistMiddleware(server));
-        if (ctx) {
-          server.middlewares.use(ssrDevMiddleware(ctx, server));
+        if (!ctx) {
+          throw new Error("configureServer: Missing ctx from configResolved");
         }
+        if (!ctx.isDevServer) {
+          server.middlewares.use(staticDistMiddleware(server));
+        }
+        server.middlewares.use(ssrDevMiddleware(ctx, server));
       };
     },
     buildStart() {
