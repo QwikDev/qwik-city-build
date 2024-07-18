@@ -26095,6 +26095,20 @@ function ssrDevMiddleware(ctx, server) {
         next();
         return;
       }
+      const matchRouteName = url.pathname.slice(1);
+      const entry = ctx.entries.find((e) => e.routeName === matchRouteName);
+      if (entry) {
+        const entryContents = await server.transformRequest(
+          `/@fs${entry.filePath.startsWith("/") ? "" : "/"}${entry.filePath}`
+        );
+        if (entryContents) {
+          res.setHeader("Content-Type", "text/javascript");
+          res.end(entryContents.code);
+        } else {
+          next();
+        }
+        return;
+      }
       const routeModulePaths = /* @__PURE__ */ new WeakMap();
       try {
         const { serverPlugins, loadedRoute } = await resolveRoute2(routeModulePaths, url);
