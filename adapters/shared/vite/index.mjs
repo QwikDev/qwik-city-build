@@ -1,8 +1,8 @@
-// packages/qwik-city/adapters/shared/vite/index.ts
+// packages/qwik-city/src/adapters/shared/vite/index.ts
 import fs2 from "node:fs";
 import { basename, dirname, join as join2, resolve } from "node:path";
 
-// packages/qwik-city/adapters/shared/vite/post-build.ts
+// packages/qwik-city/src/adapters/shared/vite/post-build.ts
 import fs from "node:fs";
 import { join } from "node:path";
 import { getErrorHtml } from "../../../middleware/request-handler/index.mjs";
@@ -136,7 +136,7 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
   return c.join("\n");
 }
 
-// packages/qwik-city/adapters/shared/vite/index.ts
+// packages/qwik-city/src/adapters/shared/vite/index.ts
 function viteAdapter(opts) {
   let qwikCityPlugin = null;
   let qwikVitePlugin = null;

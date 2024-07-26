@@ -1,4 +1,4 @@
-// packages/qwik-city/middleware/firebase/index.ts
+// packages/qwik-city/src/middleware/firebase/index.ts
 import { createQwikCity as createQwikCityNode } from "@builder.io/qwik-city/middleware/node";
 function createQwikCity(opts) {
   const { staticFile, notFound, router } = createQwikCityNode({

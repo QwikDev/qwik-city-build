@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/middleware/request-handler/index.ts
+// packages/qwik-city/src/middleware/request-handler/index.ts
 var request_handler_exports = {};
 __export(request_handler_exports, {
   AbortMessage: () => AbortMessage,
@@ -40,7 +40,7 @@ __export(request_handler_exports, {
 });
 module.exports = __toCommonJS(request_handler_exports);
 
-// packages/qwik-city/middleware/request-handler/error-handler.ts
+// packages/qwik-city/src/middleware/request-handler/error-handler.ts
 var ServerError = class extends Error {
   constructor(status, data) {
     super();
@@ -110,7 +110,7 @@ var escapeHtml = (s) => {
 var COLOR_400 = "#006ce9";
 var COLOR_500 = "#713fc2";
 
-// packages/qwik-city/middleware/request-handler/cookie.ts
+// packages/qwik-city/src/middleware/request-handler/cookie.ts
 var SAMESITE = {
   lax: "Lax",
   Lax: "Lax",
@@ -261,19 +261,19 @@ var mergeHeadersCookies = (headers, cookies) => {
   return headers;
 };
 
-// packages/qwik-city/middleware/request-handler/redirect-handler.ts
+// packages/qwik-city/src/middleware/request-handler/redirect-handler.ts
 var AbortMessage = class {
 };
 var RedirectMessage = class extends AbortMessage {
 };
 
-// packages/qwik-city/runtime/src/constants.ts
+// packages/qwik-city/src/runtime/src/constants.ts
 var MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 var QACTION_KEY = "qaction";
 var QFN_KEY = "qfunc";
 var QDATA_KEY = "qdata";
 
-// packages/qwik-city/runtime/src/route-matcher.ts
+// packages/qwik-city/src/runtime/src/route-matcher.ts
 function matchRoute(route, path) {
   const routeIdx = startIdxSkipSlash(route);
   const routeLength = lengthNoTrailingSlash(route);
@@ -393,7 +393,7 @@ function lastIndexOf(text, start, match, searchIdx, notFoundIdx) {
   return idx > start ? idx : notFoundIdx;
 }
 
-// packages/qwik-city/runtime/src/routing.ts
+// packages/qwik-city/src/runtime/src/routing.ts
 var loadRoute = async (routes, menus, cacheModules, pathname) => {
   if (!Array.isArray(routes)) {
     return null;
@@ -465,7 +465,7 @@ var getMenuLoader = (menus, pathname) => {
   }
 };
 
-// packages/qwik-city/middleware/request-handler/cache-control.ts
+// packages/qwik-city/src/middleware/request-handler/cache-control.ts
 function createCacheControl(cacheControl) {
   const controls = [];
   if (cacheControl === "day") {
@@ -530,7 +530,7 @@ function createCacheControl(cacheControl) {
   return controls.join(", ");
 }
 
-// packages/qwik-city/middleware/request-handler/user-response.ts
+// packages/qwik-city/src/middleware/request-handler/user-response.ts
 var asyncStore;
 import("node:async_hooks").then((module2) => {
   const AsyncLocalStorage = module2.AsyncLocalStorage;
@@ -616,12 +616,12 @@ var IsQData = "@isQData";
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
 
-// packages/qwik-city/runtime/src/utils.ts
+// packages/qwik-city/src/runtime/src/utils.ts
 var isPromise = (value) => {
   return value && typeof value.then === "function";
 };
 
-// packages/qwik-city/middleware/request-handler/request-event.ts
+// packages/qwik-city/src/middleware/request-handler/request-event.ts
 var RequestEvLoaders = Symbol("RequestEvLoaders");
 var RequestEvMode = Symbol("RequestEvMode");
 var RequestEvRoute = Symbol("RequestEvRoute");
@@ -889,7 +889,7 @@ var formToObj = (formData) => {
   return values;
 };
 
-// packages/qwik-city/middleware/request-handler/response-page.ts
+// packages/qwik-city/src/middleware/request-handler/response-page.ts
 function getQwikCityServerData(requestEv) {
   const { url, params, request, status, locale } = requestEv;
   const requestHeaders = {};
@@ -932,7 +932,7 @@ function getQwikCityServerData(requestEv) {
   };
 }
 
-// packages/qwik-city/middleware/request-handler/resolve-request-handlers.ts
+// packages/qwik-city/src/middleware/request-handler/resolve-request-handlers.ts
 var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderHandler) => {
   const routeLoaders = [];
   const routeActions = [];
@@ -1423,7 +1423,7 @@ function isContentType(headers, ...types) {
   return types.includes(type);
 }
 
-// packages/qwik-city/middleware/request-handler/request-handler.ts
+// packages/qwik-city/src/middleware/request-handler/request-handler.ts
 async function requestHandler(serverRequestEv, opts, qwikSerializer) {
   const { render, qwikCityPlan, manifest, checkOrigin } = opts;
   const pathname = serverRequestEv.url.pathname;
@@ -1465,7 +1465,7 @@ async function loadRequestHandlers(qwikCityPlan, pathname, method, checkOrigin, 
   return null;
 }
 
-// packages/qwik-city/middleware/request-handler/polyfill.ts
+// packages/qwik-city/src/middleware/request-handler/polyfill.ts
 var _TextEncoderStream_polyfill = class {
   #pendingHighSurrogate = null;
   #handle = new TextEncoder();

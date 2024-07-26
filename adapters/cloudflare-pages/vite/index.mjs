@@ -1,9 +1,9 @@
-// packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
+// packages/qwik-city/src/adapters/cloudflare-pages/vite/index.ts
 import { viteAdapter } from "../../shared/vite/index.mjs";
 import fs from "node:fs";
 import { join, relative } from "node:path";
 
-// packages/qwik-city/utils/fs.ts
+// packages/qwik-city/src/utils/fs.ts
 function normalizePathSlash(path) {
   const isExtendedLengthPath = /^\\\\\?\\/.test(path);
   const hasNonAscii = /[^\u0000-\u0080]+/.test(path);
@@ -17,7 +17,7 @@ function normalizePathSlash(path) {
   return path;
 }
 
-// packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
+// packages/qwik-city/src/adapters/cloudflare-pages/vite/index.ts
 function cloudflarePagesAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return viteAdapter({

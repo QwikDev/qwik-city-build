@@ -192,7 +192,7 @@ var require_set_cookie = __commonJS({
   }
 });
 
-// packages/qwik-city/middleware/azure-swa/index.ts
+// packages/qwik-city/src/middleware/azure-swa/index.ts
 var import_set_cookie_parser = __toESM(require_set_cookie(), 1);
 import { setServerPlatform } from "@builder.io/qwik/server";
 import { requestHandler } from "../request-handler/index.mjs";

@@ -17,7 +17,7 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/adapters/bun-server/vite/index.ts
+// packages/qwik-city/src/adapters/bun-server/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
   bunServerAdapter: () => bunServerAdapter

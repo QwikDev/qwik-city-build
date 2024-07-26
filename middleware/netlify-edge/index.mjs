@@ -1,4 +1,4 @@
-// packages/qwik-city/middleware/netlify-edge/index.ts
+// packages/qwik-city/src/middleware/netlify-edge/index.ts
 import {
   mergeHeadersCookies,
   requestHandler

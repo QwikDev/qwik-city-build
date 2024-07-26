@@ -1,4 +1,4 @@
-// packages/qwik-city/static/deno/index.ts
+// packages/qwik-city/src/static/deno/index.ts
 async function generate(_opts) {
   console.error(`Deno not implemented`);
   Deno.exit(1);

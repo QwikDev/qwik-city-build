@@ -17,7 +17,7 @@ var __copyProps = (to, from, except, desc) => {
 };
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/static/index.ts
+// packages/qwik-city/src/static/index.ts
 var static_exports = {};
 __export(static_exports, {
   generate: () => generate

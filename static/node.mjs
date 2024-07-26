@@ -1,8 +1,8 @@
-// packages/qwik-city/static/node/node-system.ts
+// packages/qwik-city/src/static/node/node-system.ts
 import fs2 from "node:fs";
 import { dirname as dirname2, join } from "node:path";
 
-// packages/qwik-city/middleware/node/node-fetch.ts
+// packages/qwik-city/src/middleware/node/node-fetch.ts
 import {
   TextEncoderStream,
   TextDecoderStream,
@@ -32,16 +32,16 @@ function patchGlobalThis() {
   }
 }
 
-// packages/qwik-city/static/node/node-main.ts
+// packages/qwik-city/src/static/node/node-main.ts
 import fs from "node:fs";
 import { cpus as nodeCpus } from "node:os";
 import { Worker } from "node:worker_threads";
 import { isAbsolute, resolve } from "node:path";
 
-// packages/qwik-city/utils/fs.ts
+// packages/qwik-city/src/utils/fs.ts
 import { basename, dirname, normalize, relative } from "node:path";
 
-// packages/qwik-city/utils/format.ts
+// packages/qwik-city/src/utils/format.ts
 function msToString(ms) {
   if (ms < 1) {
     return ms.toFixed(2) + " ms";
@@ -55,7 +55,7 @@ function msToString(ms) {
   return (ms / 6e4).toFixed(1) + " m";
 }
 
-// packages/qwik-city/utils/pathname.ts
+// packages/qwik-city/src/utils/pathname.ts
 function getPathnameForDynamicRoute(originalPathname, paramNames, params) {
   let pathname = originalPathname;
   if (paramNames && params) {
@@ -70,7 +70,7 @@ function getPathnameForDynamicRoute(originalPathname, paramNames, params) {
   return pathname;
 }
 
-// packages/qwik-city/utils/fs.ts
+// packages/qwik-city/src/utils/fs.ts
 function normalizePath(path) {
   return normalizePathSlash(normalize(path));
 }
@@ -87,7 +87,7 @@ function normalizePathSlash(path) {
   return path;
 }
 
-// packages/qwik-city/static/worker-thread.ts
+// packages/qwik-city/src/static/worker-thread.ts
 import { requestHandler } from "../middleware/request-handler/index.mjs";
 import { pathToFileURL } from "node:url";
 import { WritableStream as WritableStream2 } from "node:stream/web";
@@ -341,7 +341,7 @@ var noopWritableStream = {
   }
 };
 
-// packages/qwik-city/static/node/node-main.ts
+// packages/qwik-city/src/static/node/node-main.ts
 async function createNodeMainProcess(sys, opts) {
   const ssgWorkers = [];
   const sitemapBuffer = [];
@@ -529,7 +529,7 @@ function ssgWorkerCompare(a, b) {
   return a.totalTasks < b.totalTasks ? -1 : 1;
 }
 
-// packages/qwik-city/static/node/node-worker.ts
+// packages/qwik-city/src/static/node/node-worker.ts
 import { parentPort } from "node:worker_threads";
 async function createNodeWorkerProcess(onMessage) {
   var _a;
@@ -539,7 +539,7 @@ async function createNodeWorkerProcess(onMessage) {
   });
 }
 
-// packages/qwik-city/static/node/node-system.ts
+// packages/qwik-city/src/static/node/node-system.ts
 async function createSystem(opts) {
   patchGlobalThis();
   const createWriteStream = (filePath) => {
@@ -625,10 +625,10 @@ var access = async (path) => {
   }
 };
 
-// packages/qwik-city/static/node/index.ts
+// packages/qwik-city/src/static/node/index.ts
 import { isMainThread, workerData } from "node:worker_threads";
 
-// packages/qwik-city/static/routes.ts
+// packages/qwik-city/src/static/routes.ts
 function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
   const includes = routesToRegExps(includeRoutes);
   const excludes = routesToRegExps(excludeRoutes);
@@ -675,7 +675,7 @@ function routeToRegExp(rule) {
   return new RegExp(transformedRule);
 }
 
-// packages/qwik-city/static/not-found.ts
+// packages/qwik-city/src/static/not-found.ts
 import { getErrorHtml } from "../middleware/request-handler/index.mjs";
 async function generateNotFoundPages(sys, opts, routes) {
   if (opts.emit404Pages !== false) {
@@ -695,7 +695,7 @@ async function generateNotFoundPages(sys, opts, routes) {
   }
 }
 
-// packages/qwik-city/static/main-thread.ts
+// packages/qwik-city/src/static/main-thread.ts
 import { pathToFileURL as pathToFileURL2 } from "node:url";
 import { relative as relative2 } from "node:path";
 
@@ -848,7 +848,7 @@ function generateCodeFrame(source, start = 0, end) {
   return res.join("\n");
 }
 
-// packages/qwik-city/buildtime/vite/format-error.ts
+// packages/qwik-city/src/buildtime/vite/format-error.ts
 import fs3 from "node:fs";
 function formatError(e) {
   if (e instanceof Error) {
@@ -874,10 +874,10 @@ function formatError(e) {
   return e;
 }
 
-// packages/qwik-city/static/main-thread.ts
+// packages/qwik-city/src/static/main-thread.ts
 import { buildErrorMessage } from "vite";
 
-// packages/qwik-city/static/extract-params.ts
+// packages/qwik-city/src/static/extract-params.ts
 function extractParamNames(routeName) {
   const params = [];
   let idx = 0;
@@ -895,7 +895,7 @@ function extractParamNames(routeName) {
   return params;
 }
 
-// packages/qwik-city/static/main-thread.ts
+// packages/qwik-city/src/static/main-thread.ts
 async function mainThread(sys) {
   const opts = sys.getOptions();
   validateOptions(opts);
@@ -1094,7 +1094,7 @@ function validateOptions(opts) {
   }
 }
 
-// packages/qwik-city/static/node/index.ts
+// packages/qwik-city/src/static/node/index.ts
 async function generate(opts) {
   if (isMainThread) {
     const sys = await createSystem(opts);
@@ -1105,7 +1105,6 @@ async function generate(opts) {
 }
 if (!isMainThread && workerData) {
   (async () => {
-    patchGlobalThis();
     const sys = await createSystem(workerData);
     await workerThread(sys);
   })();

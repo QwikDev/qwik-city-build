@@ -1,4 +1,4 @@
-// packages/qwik-city/adapters/deno-server/vite/index.ts
+// packages/qwik-city/src/adapters/deno-server/vite/index.ts
 import { viteAdapter } from "../../shared/vite/index.mjs";
 function denoServerAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;

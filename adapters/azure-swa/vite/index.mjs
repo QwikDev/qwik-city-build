@@ -1,4 +1,4 @@
-// packages/qwik-city/adapters/azure-swa/vite/index.ts
+// packages/qwik-city/src/adapters/azure-swa/vite/index.ts
 import { viteAdapter } from "../../shared/vite/index.mjs";
 import { join } from "node:path";
 import fs from "node:fs";

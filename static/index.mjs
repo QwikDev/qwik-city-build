@@ -6,7 +6,7 @@ var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require
   throw Error('Dynamic require of "' + x + '" is not supported');
 });
 
-// packages/qwik-city/static/index.ts
+// packages/qwik-city/src/static/index.ts
 async function generate(opts) {
   const ssgPlatform = await getEntryModule();
   const result = await ssgPlatform.generate(opts);

@@ -1,4 +1,4 @@
-// packages/qwik-city/middleware/deno/index.ts
+// packages/qwik-city/src/middleware/deno/index.ts
 import {
   mergeHeadersCookies,
   requestHandler
@@ -8,7 +8,7 @@ import { isStaticPath } from "@qwik-city-static-paths";
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 import { setServerPlatform } from "@builder.io/qwik/server";
 
-// packages/qwik-city/middleware/request-handler/mime-types.ts
+// packages/qwik-city/src/middleware/request-handler/mime-types.ts
 var MIME_TYPES = {
   "3gp": "video/3gpp",
   "3gpp": "video/3gpp",
@@ -60,7 +60,7 @@ var MIME_TYPES = {
   zip: "application/zip"
 };
 
-// packages/qwik-city/middleware/deno/index.ts
+// packages/qwik-city/src/middleware/deno/index.ts
 import { extname, fromFileUrl, join } from "https://deno.land/std/path/mod.ts";
 function createQwikCity(opts) {
   var _a;

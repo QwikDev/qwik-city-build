@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
+// packages/qwik-city/src/adapters/cloudflare-pages/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
   cloudflarePagesAdapter: () => cloudflarePagesAdapter
@@ -37,7 +37,7 @@ var import_vite = require("../../shared/vite/index.cjs");
 var import_node_fs = __toESM(require("node:fs"), 1);
 var import_node_path = require("node:path");
 
-// packages/qwik-city/utils/fs.ts
+// packages/qwik-city/src/utils/fs.ts
 function normalizePathSlash(path) {
   const isExtendedLengthPath = /^\\\\\?\\/.test(path);
   const hasNonAscii = /[^\u0000-\u0080]+/.test(path);
@@ -51,7 +51,7 @@ function normalizePathSlash(path) {
   return path;
 }
 
-// packages/qwik-city/adapters/cloudflare-pages/vite/index.ts
+// packages/qwik-city/src/adapters/cloudflare-pages/vite/index.ts
 function cloudflarePagesAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return (0, import_vite.viteAdapter)({

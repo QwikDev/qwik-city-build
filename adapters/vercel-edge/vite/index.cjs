@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/adapters/vercel-edge/vite/index.ts
+// packages/qwik-city/src/adapters/vercel-edge/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
   vercelEdgeAdapter: () => vercelEdgeAdapter

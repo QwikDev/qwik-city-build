@@ -27,18 +27,18 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/adapters/static/vite/index.ts
+// packages/qwik-city/src/adapters/static/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
   staticAdapter: () => staticAdapter
 });
 module.exports = __toCommonJS(vite_exports);
 
-// packages/qwik-city/adapters/shared/vite/index.ts
+// packages/qwik-city/src/adapters/shared/vite/index.ts
 var import_node_fs2 = __toESM(require("node:fs"), 1);
 var import_node_path2 = require("node:path");
 
-// packages/qwik-city/adapters/shared/vite/post-build.ts
+// packages/qwik-city/src/adapters/shared/vite/post-build.ts
 var import_node_fs = __toESM(require("node:fs"), 1);
 var import_node_path = require("node:path");
 var import_request_handler = require("@builder.io/qwik-city/middleware/request-handler");
@@ -172,7 +172,7 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
   return c.join("\n");
 }
 
-// packages/qwik-city/adapters/shared/vite/index.ts
+// packages/qwik-city/src/adapters/shared/vite/index.ts
 function viteAdapter(opts) {
   let qwikCityPlugin = null;
   let qwikVitePlugin = null;
@@ -344,7 +344,7 @@ var RESOLVED_STATIC_PATHS_ID = `${STATIC_PATHS_ID}.js`;
 var NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
 var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
 
-// packages/qwik-city/adapters/static/vite/index.ts
+// packages/qwik-city/src/adapters/static/vite/index.ts
 function staticAdapter(opts) {
   return viteAdapter({
     name: "static-generate",

@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/adapters/netlify-edge/vite/index.ts
+// packages/qwik-city/src/adapters/netlify-edge/vite/index.ts
 var vite_exports = {};
 __export(vite_exports, {
   netlifyEdgeAdapter: () => netlifyEdgeAdapter
@@ -37,10 +37,10 @@ var import_vite = require("../../shared/vite/index.cjs");
 var import_node_fs = __toESM(require("node:fs"), 1);
 var import_node_path = require("node:path");
 
-// packages/qwik-city/runtime/src/qwik-city-plan.ts
+// packages/qwik-city/src/runtime/src/qwik-city-plan.ts
 var basePathname = "/";
 
-// packages/qwik-city/adapters/netlify-edge/vite/index.ts
+// packages/qwik-city/src/adapters/netlify-edge/vite/index.ts
 function netlifyEdgeAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return (0, import_vite.viteAdapter)({

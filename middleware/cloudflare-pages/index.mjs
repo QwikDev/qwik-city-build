@@ -1,4 +1,4 @@
-// packages/qwik-city/middleware/cloudflare-pages/index.ts
+// packages/qwik-city/src/middleware/cloudflare-pages/index.ts
 import {
   mergeHeadersCookies,
   requestHandler,

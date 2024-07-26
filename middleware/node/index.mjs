@@ -1,4 +1,4 @@
-// packages/qwik-city/middleware/node/index.ts
+// packages/qwik-city/src/middleware/node/index.ts
 import { requestHandler } from "../request-handler/index.mjs";
 import { setServerPlatform } from "@builder.io/qwik/server";
 import { getNotFound } from "@qwik-city-not-found-paths";
@@ -7,7 +7,7 @@ import { createReadStream } from "node:fs";
 import { extname, join, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 
-// packages/qwik-city/middleware/node/http.ts
+// packages/qwik-city/src/middleware/node/http.ts
 import { Http2ServerRequest } from "node:http2";
 function computeOrigin(req, opts) {
   var _a;
@@ -126,7 +126,7 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
   return serverRequestEv;
 }
 
-// packages/qwik-city/middleware/request-handler/mime-types.ts
+// packages/qwik-city/src/middleware/request-handler/mime-types.ts
 var MIME_TYPES = {
   "3gp": "video/3gpp",
   "3gpp": "video/3gpp",
@@ -178,7 +178,7 @@ var MIME_TYPES = {
   zip: "application/zip"
 };
 
-// packages/qwik-city/middleware/node/node-fetch.ts
+// packages/qwik-city/src/middleware/node/node-fetch.ts
 import {
   TextEncoderStream,
   TextDecoderStream,
@@ -208,7 +208,7 @@ function patchGlobalThis() {
   }
 }
 
-// packages/qwik-city/middleware/node/index.ts
+// packages/qwik-city/src/middleware/node/index.ts
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 function createQwikCity(opts) {
   var _a;

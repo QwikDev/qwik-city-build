@@ -1,4 +1,4 @@
-// packages/qwik-city/adapters/vercel-edge/vite/index.ts
+// packages/qwik-city/src/adapters/vercel-edge/vite/index.ts
 import { getParentDir, viteAdapter } from "../../shared/vite/index.mjs";
 import fs from "node:fs";
 import { dirname, join } from "node:path";

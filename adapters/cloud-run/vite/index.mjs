@@ -1,4 +1,4 @@
-// packages/qwik-city/adapters/cloud-run/vite/index.ts
+// packages/qwik-city/src/adapters/cloud-run/vite/index.ts
 import { viteAdapter } from "../../shared/vite/index.mjs";
 function cloudRunAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;

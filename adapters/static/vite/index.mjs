@@ -1,8 +1,8 @@
-// packages/qwik-city/adapters/shared/vite/index.ts
+// packages/qwik-city/src/adapters/shared/vite/index.ts
 import fs2 from "node:fs";
 import { basename, dirname, join as join2, resolve } from "node:path";
 
-// packages/qwik-city/adapters/shared/vite/post-build.ts
+// packages/qwik-city/src/adapters/shared/vite/post-build.ts
 import fs from "node:fs";
 import { join } from "node:path";
 import { getErrorHtml } from "@builder.io/qwik-city/middleware/request-handler";
@@ -136,7 +136,7 @@ function createStaticPathsModule(basePathname, staticPaths, format) {
   return c.join("\n");
 }
 
-// packages/qwik-city/adapters/shared/vite/index.ts
+// packages/qwik-city/src/adapters/shared/vite/index.ts
 function viteAdapter(opts) {
   let qwikCityPlugin = null;
   let qwikVitePlugin = null;
@@ -308,7 +308,7 @@ var RESOLVED_STATIC_PATHS_ID = `${STATIC_PATHS_ID}.js`;
 var NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
 var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
 
-// packages/qwik-city/adapters/static/vite/index.ts
+// packages/qwik-city/src/adapters/static/vite/index.ts
 function staticAdapter(opts) {
   return viteAdapter({
     name: "static-generate",

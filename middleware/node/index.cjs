@@ -27,7 +27,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/middleware/node/index.ts
+// packages/qwik-city/src/middleware/node/index.ts
 var node_exports = {};
 __export(node_exports, {
   createQwikCity: () => createQwikCity
@@ -41,7 +41,7 @@ var import_node_fs = require("node:fs");
 var import_node_path = require("node:path");
 var import_node_url = require("node:url");
 
-// packages/qwik-city/middleware/node/http.ts
+// packages/qwik-city/src/middleware/node/http.ts
 var import_node_http2 = require("node:http2");
 function computeOrigin(req, opts) {
   var _a;
@@ -160,7 +160,7 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
   return serverRequestEv;
 }
 
-// packages/qwik-city/middleware/request-handler/mime-types.ts
+// packages/qwik-city/src/middleware/request-handler/mime-types.ts
 var MIME_TYPES = {
   "3gp": "video/3gpp",
   "3gpp": "video/3gpp",
@@ -212,7 +212,7 @@ var MIME_TYPES = {
   zip: "application/zip"
 };
 
-// packages/qwik-city/middleware/node/node-fetch.ts
+// packages/qwik-city/src/middleware/node/node-fetch.ts
 var import_web = require("node:stream/web");
 var import_undici = require("undici");
 var import_crypto = __toESM(require("crypto"), 1);
@@ -237,7 +237,7 @@ function patchGlobalThis() {
   }
 }
 
-// packages/qwik-city/middleware/node/index.ts
+// packages/qwik-city/src/middleware/node/index.ts
 var import_qwik = require("@builder.io/qwik");
 var import_meta = {};
 function createQwikCity(opts) {

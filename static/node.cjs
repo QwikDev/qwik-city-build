@@ -27,18 +27,18 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// packages/qwik-city/static/node/index.ts
+// packages/qwik-city/src/static/node/index.ts
 var node_exports = {};
 __export(node_exports, {
   generate: () => generate
 });
 module.exports = __toCommonJS(node_exports);
 
-// packages/qwik-city/static/node/node-system.ts
+// packages/qwik-city/src/static/node/node-system.ts
 var import_node_fs2 = __toESM(require("node:fs"), 1);
 var import_node_path3 = require("node:path");
 
-// packages/qwik-city/middleware/node/node-fetch.ts
+// packages/qwik-city/src/middleware/node/node-fetch.ts
 var import_web = require("node:stream/web");
 var import_undici = require("undici");
 var import_crypto = __toESM(require("crypto"), 1);
@@ -63,16 +63,16 @@ function patchGlobalThis() {
   }
 }
 
-// packages/qwik-city/static/node/node-main.ts
+// packages/qwik-city/src/static/node/node-main.ts
 var import_node_fs = __toESM(require("node:fs"), 1);
 var import_node_os = require("node:os");
 var import_node_worker_threads = require("node:worker_threads");
 var import_node_path2 = require("node:path");
 
-// packages/qwik-city/utils/fs.ts
+// packages/qwik-city/src/utils/fs.ts
 var import_node_path = require("node:path");
 
-// packages/qwik-city/utils/format.ts
+// packages/qwik-city/src/utils/format.ts
 function msToString(ms) {
   if (ms < 1) {
     return ms.toFixed(2) + " ms";
@@ -86,7 +86,7 @@ function msToString(ms) {
   return (ms / 6e4).toFixed(1) + " m";
 }
 
-// packages/qwik-city/utils/pathname.ts
+// packages/qwik-city/src/utils/pathname.ts
 function getPathnameForDynamicRoute(originalPathname, paramNames, params) {
   let pathname = originalPathname;
   if (paramNames && params) {
@@ -101,7 +101,7 @@ function getPathnameForDynamicRoute(originalPathname, paramNames, params) {
   return pathname;
 }
 
-// packages/qwik-city/utils/fs.ts
+// packages/qwik-city/src/utils/fs.ts
 function normalizePath(path) {
   return normalizePathSlash((0, import_node_path.normalize)(path));
 }
@@ -118,7 +118,7 @@ function normalizePathSlash(path) {
   return path;
 }
 
-// packages/qwik-city/static/worker-thread.ts
+// packages/qwik-city/src/static/worker-thread.ts
 var import_request_handler = require("../middleware/request-handler/index.cjs");
 var import_node_url = require("node:url");
 var import_web2 = require("node:stream/web");
@@ -372,7 +372,7 @@ var noopWritableStream = {
   }
 };
 
-// packages/qwik-city/static/node/node-main.ts
+// packages/qwik-city/src/static/node/node-main.ts
 var import_meta = {};
 async function createNodeMainProcess(sys, opts) {
   const ssgWorkers = [];
@@ -561,7 +561,7 @@ function ssgWorkerCompare(a, b) {
   return a.totalTasks < b.totalTasks ? -1 : 1;
 }
 
-// packages/qwik-city/static/node/node-worker.ts
+// packages/qwik-city/src/static/node/node-worker.ts
 var import_node_worker_threads2 = require("node:worker_threads");
 async function createNodeWorkerProcess(onMessage) {
   var _a;
@@ -571,7 +571,7 @@ async function createNodeWorkerProcess(onMessage) {
   });
 }
 
-// packages/qwik-city/static/node/node-system.ts
+// packages/qwik-city/src/static/node/node-system.ts
 async function createSystem(opts) {
   patchGlobalThis();
   const createWriteStream = (filePath) => {
@@ -657,10 +657,10 @@ var access = async (path) => {
   }
 };
 
-// packages/qwik-city/static/node/index.ts
+// packages/qwik-city/src/static/node/index.ts
 var import_node_worker_threads3 = require("node:worker_threads");
 
-// packages/qwik-city/static/routes.ts
+// packages/qwik-city/src/static/routes.ts
 function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
   const includes = routesToRegExps(includeRoutes);
   const excludes = routesToRegExps(excludeRoutes);
@@ -707,7 +707,7 @@ function routeToRegExp(rule) {
   return new RegExp(transformedRule);
 }
 
-// packages/qwik-city/static/not-found.ts
+// packages/qwik-city/src/static/not-found.ts
 var import_request_handler2 = require("../middleware/request-handler/index.cjs");
 async function generateNotFoundPages(sys, opts, routes) {
   if (opts.emit404Pages !== false) {
@@ -727,7 +727,7 @@ async function generateNotFoundPages(sys, opts, routes) {
   }
 }
 
-// packages/qwik-city/static/main-thread.ts
+// packages/qwik-city/src/static/main-thread.ts
 var import_node_url2 = require("node:url");
 var import_node_path4 = require("node:path");
 
@@ -880,7 +880,7 @@ function generateCodeFrame(source, start = 0, end) {
   return res.join("\n");
 }
 
-// packages/qwik-city/buildtime/vite/format-error.ts
+// packages/qwik-city/src/buildtime/vite/format-error.ts
 var import_node_fs3 = __toESM(require("node:fs"), 1);
 function formatError(e) {
   if (e instanceof Error) {
@@ -906,10 +906,10 @@ function formatError(e) {
   return e;
 }
 
-// packages/qwik-city/static/main-thread.ts
+// packages/qwik-city/src/static/main-thread.ts
 var import_vite = require("vite");
 
-// packages/qwik-city/static/extract-params.ts
+// packages/qwik-city/src/static/extract-params.ts
 function extractParamNames(routeName) {
   const params = [];
   let idx = 0;
@@ -927,7 +927,7 @@ function extractParamNames(routeName) {
   return params;
 }
 
-// packages/qwik-city/static/main-thread.ts
+// packages/qwik-city/src/static/main-thread.ts
 async function mainThread(sys) {
   const opts = sys.getOptions();
   validateOptions(opts);
@@ -1126,7 +1126,7 @@ function validateOptions(opts) {
   }
 }
 
-// packages/qwik-city/static/node/index.ts
+// packages/qwik-city/src/static/node/index.ts
 async function generate(opts) {
   if (import_node_worker_threads3.isMainThread) {
     const sys = await createSystem(opts);
@@ -1137,7 +1137,6 @@ async function generate(opts) {
 }
 if (!import_node_worker_threads3.isMainThread && import_node_worker_threads3.workerData) {
   (async () => {
-    patchGlobalThis();
     const sys = await createSystem(import_node_worker_threads3.workerData);
     await workerThread(sys);
   })();

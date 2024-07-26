@@ -1,4 +1,4 @@
-// packages/qwik-city/middleware/bun/index.ts
+// packages/qwik-city/src/middleware/bun/index.ts
 import {
   mergeHeadersCookies,
   requestHandler,
@@ -9,7 +9,7 @@ import { isStaticPath } from "@qwik-city-static-paths";
 import { _deserializeData, _serializeData, _verifySerializable } from "@builder.io/qwik";
 import { setServerPlatform } from "@builder.io/qwik/server";
 
-// packages/qwik-city/middleware/request-handler/mime-types.ts
+// packages/qwik-city/src/middleware/request-handler/mime-types.ts
 var MIME_TYPES = {
   "3gp": "video/3gpp",
   "3gpp": "video/3gpp",
@@ -61,7 +61,7 @@ var MIME_TYPES = {
   zip: "application/zip"
 };
 
-// packages/qwik-city/middleware/bun/index.ts
+// packages/qwik-city/src/middleware/bun/index.ts
 import { join, extname } from "node:path";
 function createQwikCity(opts) {
   var _a;
