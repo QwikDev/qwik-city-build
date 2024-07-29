@@ -1,19 +1,37 @@
-import { createContextId, eventQrl, inlinedQrl, getPlatform, componentQrl, useServerData, _jsxBranch, useContext, _jsxC, _jsxQ, SkipRender, withLocale, _deserializeData, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, untrack, _qrlSync, _jsxS, _wrapSignal, implicit$FirstArg, _wrapProp, _getContextEvent, _serializeData, _IMMUTABLE, _restProps, _fnSignal } from "@builder.io/qwik";
-import { Fragment } from "@builder.io/qwik/jsx-runtime";
-import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
-import * as qwikCity from "@qwik-city-plan";
-import swRegister from "@qwik-city-sw-register";
-import { z } from "zod";
-import { z as z2 } from "zod";
-const RouteStateContext = /* @__PURE__ */ createContextId("qc-s");
-const ContentContext = /* @__PURE__ */ createContextId("qc-c");
-const ContentInternalContext = /* @__PURE__ */ createContextId("qc-ic");
-const DocumentHeadContext = /* @__PURE__ */ createContextId("qc-h");
-const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
-const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
-const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
-const RouteInternalContext = /* @__PURE__ */ createContextId("qc-ir");
-const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
+"use strict";
+Object.defineProperty(exports, Symbol.toStringTag, { value: "Module" });
+const qwik = require("@builder.io/qwik");
+const jsxRuntime = require("@builder.io/qwik/jsx-runtime");
+const build = require("@builder.io/qwik/build");
+const qwikCity = require("@qwik-city-plan");
+const swRegister = require("@qwik-city-sw-register");
+const zod = require("zod");
+function _interopNamespaceDefault(e) {
+  const n = Object.create(null, { [Symbol.toStringTag]: { value: "Module" } });
+  if (e) {
+    for (const k in e) {
+      if (k !== "default") {
+        const d = Object.getOwnPropertyDescriptor(e, k);
+        Object.defineProperty(n, k, d.get ? d : {
+          enumerable: true,
+          get: () => e[k]
+        });
+      }
+    }
+  }
+  n.default = e;
+  return Object.freeze(n);
+}
+const qwikCity__namespace = /* @__PURE__ */ _interopNamespaceDefault(qwikCity);
+const RouteStateContext = /* @__PURE__ */ qwik.createContextId("qc-s");
+const ContentContext = /* @__PURE__ */ qwik.createContextId("qc-c");
+const ContentInternalContext = /* @__PURE__ */ qwik.createContextId("qc-ic");
+const DocumentHeadContext = /* @__PURE__ */ qwik.createContextId("qc-h");
+const RouteLocationContext = /* @__PURE__ */ qwik.createContextId("qc-l");
+const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
+const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
+const RouteInternalContext = /* @__PURE__ */ qwik.createContextId("qc-ir");
+const spaInit = qwik.eventQrl(/* @__PURE__ */ qwik.inlinedQrl((container) => {
   const win = window;
   const currentPath = location.pathname + location.search;
   const spa = "_qCitySPA";
@@ -80,7 +98,7 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
           state = {
             _data: state
           };
-          if (isDev)
+          if (build.isDev)
             console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
         }
         state._qCityScroll = state._qCityScroll || currentScrollState2();
@@ -159,8 +177,8 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
   }
 }, "spa_init_event_1RJPKHqF8AQ"));
 const shim = (base) => {
-  if (isServer) {
-    const [symbol, bundle] = getPlatform().chunkForSymbol(spaInit.getSymbol(), null, spaInit.dev?.file);
+  if (build.isServer) {
+    const [symbol, bundle] = qwik.getPlatform().chunkForSymbol(spaInit.getSymbol(), null, spaInit.dev?.file);
     const args = [
       base,
       bundle,
@@ -179,7 +197,7 @@ const shim$1 = async (base, path, symbol) => {
     if (script) {
       const container = script.closest("[q\\:container]");
       const url = new URL(path, new URL(base, document.baseURI));
-      if (isDev) {
+      if (build.isDev) {
         const imp = new Function("url", "return import(url)");
         (await imp(url.href))[symbol](container);
       } else
@@ -187,26 +205,26 @@ const shim$1 = async (base, path, symbol) => {
     }
   }
 };
-const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
-  const serverData = useServerData("containerAttributes");
+const RouterOutlet = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl(() => {
+  const serverData = qwik.useServerData("containerAttributes");
   if (!serverData)
     throw new Error("PrefetchServiceWorker component must be rendered on the server.");
   const shimScript = shim(serverData["q:base"]);
-  _jsxBranch();
-  const nonce = useServerData("nonce");
-  const context = useContext(ContentInternalContext);
+  qwik._jsxBranch();
+  const nonce = qwik.useServerData("nonce");
+  const context = qwik.useContext(ContentInternalContext);
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
     let cmp = null;
     for (let i = contentsLen - 1; i >= 0; i--)
       if (context.value[i].default)
-        cmp = _jsxC(context.value[i].default, {
+        cmp = qwik._jsxC(context.value[i].default, {
           children: cmp
         }, 1, "zl_0");
-    return /* @__PURE__ */ _jsxC(Fragment, {
+    return /* @__PURE__ */ qwik._jsxC(jsxRuntime.Fragment, {
       children: [
         cmp,
-        /* @__PURE__ */ _jsxQ("script", {
+        /* @__PURE__ */ qwik._jsxQ("script", {
           dangerouslySetInnerHTML: shimScript
         }, {
           nonce
@@ -214,7 +232,7 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
       ]
     }, 1, "zl_1");
   }
-  return SkipRender;
+  return qwik.SkipRender;
 }, "RouterOutlet_component_e0ssiDXoeAM"));
 const MODULE_CACHE = /* @__PURE__ */ new WeakMap();
 const CLIENT_DATA_CACHE = /* @__PURE__ */ new Map();
@@ -287,7 +305,7 @@ const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   };
   const headProps = {
     head,
-    withLocale: (fn) => withLocale(locale, fn),
+    withLocale: (fn) => qwik.withLocale(locale, fn),
     resolveValue: getData,
     ...routeLocation
   };
@@ -295,7 +313,7 @@ const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
     const contentModuleHead = contentModules[i] && contentModules[i].head;
     if (contentModuleHead) {
       if (typeof contentModuleHead === "function")
-        resolveDocumentHead(head, withLocale(locale, () => contentModuleHead(headProps)));
+        resolveDocumentHead(head, qwik.withLocale(locale, () => contentModuleHead(headProps)));
       else if (typeof contentModuleHead === "object")
         resolveDocumentHead(head, contentModuleHead);
     }
@@ -518,7 +536,7 @@ const newScrollState = () => {
   };
 };
 const prefetchSymbols = (path) => {
-  if (isBrowser) {
+  if (build.isBrowser) {
     path = path.endsWith("/") ? path : path + "/";
     if (!PREFETCHED_NAVIGATE_PATHS.has(path)) {
       PREFETCHED_NAVIGATE_PATHS.add(path);
@@ -557,7 +575,7 @@ const loadClientData = async (url, element, opts) => {
       }
       if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
-          const clientData = _deserializeData(text, element);
+          const clientData = qwik._deserializeData(text, element);
           if (!clientData) {
             location.href = url.href;
             return;
@@ -612,12 +630,12 @@ const getFetchOptions = (action) => {
       }
     };
 };
-const useContent = () => useContext(ContentContext);
-const useDocumentHead = () => useContext(DocumentHeadContext);
-const useLocation = () => useContext(RouteLocationContext);
-const useNavigate = () => useContext(RouteNavigateContext);
-const useAction = () => useContext(RouteActionContext);
-const useQwikCityEnv = () => noSerialize(useServerData("qwikcity"));
+const useContent = () => qwik.useContext(ContentContext);
+const useDocumentHead = () => qwik.useContext(DocumentHeadContext);
+const useLocation = () => qwik.useContext(RouteLocationContext);
+const useNavigate = () => qwik.useContext(RouteNavigateContext);
+const useAction = () => qwik.useContext(RouteActionContext);
+const useQwikCityEnv = () => qwik.noSerialize(qwik.useServerData("qwikcity"));
 const restoreScroll = (type, toUrl2, fromUrl, scroller, scrollState) => {
   if (type === "popstate" && scrollState)
     scroller.scrollTo(scrollState.x, scrollState.y);
@@ -654,16 +672,16 @@ const saveScrollHistory = (scrollState) => {
   history.replaceState(state, "");
 };
 const QWIK_CITY_SCROLLER = "_qCityScroller";
-const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
-  useStylesQrl(/* @__PURE__ */ inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
+const QwikCityProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
+  qwik.useStylesQrl(/* @__PURE__ */ qwik.inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
   const env = useQwikCityEnv();
   if (!env?.params)
     throw new Error(`Missing Qwik City Env Data for help visit https://github.com/QwikDev/qwik/issues/6237`);
-  const urlEnv = useServerData("url");
+  const urlEnv = qwik.useServerData("url");
   if (!urlEnv)
     throw new Error(`Missing Qwik URL Env Data`);
   const url = new URL(urlEnv);
-  const routeLocation = useStore({
+  const routeLocation = qwik.useStore({
     url,
     params: env.params,
     isNavigating: false,
@@ -672,25 +690,25 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     deep: false
   });
   const navResolver = {};
-  const loaderState = _weakSerialize(useStore(env.response.loaders, {
+  const loaderState = qwik._weakSerialize(qwik.useStore(env.response.loaders, {
     deep: false
   }));
-  const routeInternal = useSignal({
+  const routeInternal = qwik.useSignal({
     type: "initial",
     dest: url,
     forceReload: false,
     replaceState: false,
     scroll: true
   });
-  const documentHead = useStore(createDocumentHead);
-  const content = useStore({
+  const documentHead = qwik.useStore(createDocumentHead);
+  const content = qwik.useStore({
     headings: void 0,
     menu: void 0
   });
-  const contentInternal = useSignal();
+  const contentInternal = qwik.useSignal();
   const currentActionId = env.response.action;
   const currentAction = currentActionId ? env.response.loaders[currentActionId] : void 0;
-  const actionState = useSignal(currentAction ? {
+  const actionState = qwik.useSignal(currentAction ? {
     id: currentActionId,
     data: env.response.formData,
     output: {
@@ -698,25 +716,25 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       status: env.response.status
     }
   } : void 0);
-  const goto = /* @__PURE__ */ inlinedQrl(async (path, opt) => {
-    const [actionState2, navResolver2, routeInternal2, routeLocation2] = useLexicalScope();
+  const goto = /* @__PURE__ */ qwik.inlinedQrl(async (path, opt) => {
+    const [actionState2, navResolver2, routeInternal2, routeLocation2] = qwik.useLexicalScope();
     const { type = "link", forceReload = path === void 0, replaceState = false, scroll = true } = typeof opt === "object" ? opt : {
       forceReload: opt
     };
     if (typeof path === "number") {
-      if (isBrowser)
+      if (build.isBrowser)
         history.go(path);
       return;
     }
     const lastDest = routeInternal2.value.dest;
     const dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
     if (!isSameOrigin(dest, lastDest)) {
-      if (isBrowser)
+      if (build.isBrowser)
         location.href = dest.href;
       return;
     }
     if (!forceReload && isSamePath(dest, lastDest)) {
-      if (isBrowser) {
+      if (build.isBrowser) {
         if (type === "link" && dest.href !== location.href)
           history.pushState(null, "", dest);
         const scroller = document.getElementById(QWIK_CITY_SCROLLER) ?? document.documentElement;
@@ -733,9 +751,9 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       replaceState,
       scroll
     };
-    if (isBrowser) {
-      loadClientData(dest, _getContextElement());
-      loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, dest.pathname);
+    if (build.isBrowser) {
+      loadClientData(dest, qwik._getContextElement());
+      loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, dest.pathname);
     }
     actionState2.value = void 0;
     routeLocation2.isNavigating = true;
@@ -748,22 +766,22 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     routeInternal,
     routeLocation
   ]);
-  useContextProvider(ContentContext, content);
-  useContextProvider(ContentInternalContext, contentInternal);
-  useContextProvider(DocumentHeadContext, documentHead);
-  useContextProvider(RouteLocationContext, routeLocation);
-  useContextProvider(RouteNavigateContext, goto);
-  useContextProvider(RouteStateContext, loaderState);
-  useContextProvider(RouteActionContext, actionState);
-  useContextProvider(RouteInternalContext, routeInternal);
-  useTaskQrl(/* @__PURE__ */ inlinedQrl(({ track }) => {
-    const [actionState2, content2, contentInternal2, documentHead2, env2, goto2, loaderState2, navResolver2, props2, routeInternal2, routeLocation2] = useLexicalScope();
+  qwik.useContextProvider(ContentContext, content);
+  qwik.useContextProvider(ContentInternalContext, contentInternal);
+  qwik.useContextProvider(DocumentHeadContext, documentHead);
+  qwik.useContextProvider(RouteLocationContext, routeLocation);
+  qwik.useContextProvider(RouteNavigateContext, goto);
+  qwik.useContextProvider(RouteStateContext, loaderState);
+  qwik.useContextProvider(RouteActionContext, actionState);
+  qwik.useContextProvider(RouteInternalContext, routeInternal);
+  qwik.useTaskQrl(/* @__PURE__ */ qwik.inlinedQrl(({ track }) => {
+    const [actionState2, content2, contentInternal2, documentHead2, env2, goto2, loaderState2, navResolver2, props2, routeInternal2, routeLocation2] = qwik.useLexicalScope();
     async function run() {
       const [navigation, action] = track(() => [
         routeInternal2.value,
         actionState2.value
       ]);
-      const locale = getLocale("");
+      const locale = qwik.getLocale("");
       const prevUrl = routeLocation2.url;
       const navType = action ? "form" : navigation.type;
       const replaceState = navigation.replaceState;
@@ -771,19 +789,19 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       let clientPageData;
       let loadedRoute = null;
       let elm;
-      if (isServer) {
+      if (build.isServer) {
         trackUrl = new URL(navigation.dest, routeLocation2.url);
         loadedRoute = env2.loadedRoute;
         clientPageData = env2.response;
       } else {
         trackUrl = new URL(navigation.dest, location);
         if (trackUrl.pathname.endsWith("/")) {
-          if (!qwikCity.trailingSlash)
+          if (!qwikCity__namespace.trailingSlash)
             trackUrl.pathname = trackUrl.pathname.slice(0, -1);
-        } else if (qwikCity.trailingSlash)
+        } else if (qwikCity__namespace.trailingSlash)
           trackUrl.pathname += "/";
-        let loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
-        elm = _getContextElement();
+        let loadRoutePromise = loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, trackUrl.pathname);
+        elm = qwik._getContextElement();
         const pageData = clientPageData = await loadClientData(trackUrl, elm, {
           action,
           clearCache: true
@@ -799,7 +817,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         const newURL = new URL(newHref, trackUrl);
         if (!isSamePath(newURL, trackUrl)) {
           trackUrl = newURL;
-          loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
+          loadRoutePromise = loadRoute(qwikCity__namespace.routes, qwikCity__namespace.menus, qwikCity__namespace.cacheModules, trackUrl.pathname);
         }
         try {
           loadedRoute = await loadRoutePromise;
@@ -824,14 +842,14 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
         const resolvedHead = resolveHead(clientPageData, routeLocation2, contentModules, locale);
         content2.headings = pageModule.headings;
         content2.menu = menu;
-        contentInternal2.value = noSerialize(contentModules);
+        contentInternal2.value = qwik.noSerialize(contentModules);
         documentHead2.links = resolvedHead.links;
         documentHead2.meta = resolvedHead.meta;
         documentHead2.styles = resolvedHead.styles;
         documentHead2.scripts = resolvedHead.scripts;
         documentHead2.title = resolvedHead.title;
         documentHead2.frontmatter = resolvedHead.frontmatter;
-        if (isBrowser) {
+        if (build.isBrowser) {
           if (props2.viewTransition !== false)
             document.__q_view_transition__ = true;
           let scrollState;
@@ -868,7 +886,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
                   state = {
                     _data: state
                   };
-                  if (isDev)
+                  if (build.isDev)
                     console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
                 }
                 state._qCityScroll = state._qCityScroll || currentScrollState(scroller);
@@ -949,7 +967,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
             saveScrollHistory(scrollState2);
           }
           clientNavigate(window, navType, prevUrl, trackUrl, replaceState);
-          _waitUntilRendered(elm).then(() => {
+          qwik._waitUntilRendered(elm).then(() => {
             const container = getContainer(elm);
             container.setAttribute("q:route", routeName);
             const scrollState2 = currentScrollState(scroller);
@@ -962,7 +980,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       }
     }
     const promise = run();
-    if (isServer)
+    if (build.isServer)
       return promise;
     else
       return;
@@ -979,17 +997,17 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
     routeInternal,
     routeLocation
   ]));
-  return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_0");
+  return /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
 function getContainer(elm) {
   while (elm && elm.nodeType !== Node.ELEMENT_NODE)
     elm = elm.parentElement;
   return elm.closest("[q\\:container]");
 }
-const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
+const QwikCityMockProvider = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const urlEnv = props.url ?? "http://localhost/";
   const url = new URL(urlEnv);
-  const routeLocation = useStore({
+  const routeLocation = qwik.useStore({
     url,
     params: props.params ?? {},
     isNavigating: false,
@@ -997,47 +1015,47 @@ const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inline
   }, {
     deep: false
   });
-  const loaderState = useSignal({});
-  const routeInternal = useSignal({
+  const loaderState = qwik.useSignal({});
+  const routeInternal = qwik.useSignal({
     type: "initial",
     dest: url
   });
-  const goto = props.goto ?? /* @__PURE__ */ inlinedQrl(async () => {
+  const goto = props.goto ?? /* @__PURE__ */ qwik.inlinedQrl(async () => {
     console.warn("QwikCityMockProvider: goto not provided");
   }, "QwikCityMockProvider_component_goto_BUbtvTyvVRE");
-  const documentHead = useStore(createDocumentHead, {
+  const documentHead = qwik.useStore(createDocumentHead, {
     deep: false
   });
-  const content = useStore({
+  const content = qwik.useStore({
     headings: void 0,
     menu: void 0
   }, {
     deep: false
   });
-  const contentInternal = useSignal();
-  const actionState = useSignal();
-  useContextProvider(ContentContext, content);
-  useContextProvider(ContentInternalContext, contentInternal);
-  useContextProvider(DocumentHeadContext, documentHead);
-  useContextProvider(RouteLocationContext, routeLocation);
-  useContextProvider(RouteNavigateContext, goto);
-  useContextProvider(RouteStateContext, loaderState);
-  useContextProvider(RouteActionContext, actionState);
-  useContextProvider(RouteInternalContext, routeInternal);
-  return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_1");
+  const contentInternal = qwik.useSignal();
+  const actionState = qwik.useSignal();
+  qwik.useContextProvider(ContentContext, content);
+  qwik.useContextProvider(ContentInternalContext, contentInternal);
+  qwik.useContextProvider(DocumentHeadContext, documentHead);
+  qwik.useContextProvider(RouteLocationContext, routeLocation);
+  qwik.useContextProvider(RouteNavigateContext, goto);
+  qwik.useContextProvider(RouteStateContext, loaderState);
+  qwik.useContextProvider(RouteActionContext, actionState);
+  qwik.useContextProvider(RouteInternalContext, routeInternal);
+  return /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "qY_1");
 }, "QwikCityMockProvider_component_WmYC5H00wtI"));
-const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
+const Link = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
   const nav = useNavigate();
   const loc = useLocation();
   const { onClick$, prefetch: prefetchProp, reload, replaceState, scroll, ...linkProps } = /* @__PURE__ */ (() => props)();
-  const clientNavPath = untrack(() => getClientNavPath({
+  const clientNavPath = qwik.untrack(() => getClientNavPath({
     ...linkProps,
     reload
   }, loc));
   linkProps.href = clientNavPath || props.href;
-  const prefetchData = untrack(() => !!clientNavPath && prefetchProp !== false && prefetchProp !== "js" && shouldPrefetchData(clientNavPath, loc) || void 0);
-  const prefetch = untrack(() => prefetchData || !!clientNavPath && prefetchProp !== false && shouldPrefetchSymbols(clientNavPath, loc));
-  const handlePrefetch = prefetch ? /* @__PURE__ */ inlinedQrl((_, elm) => {
+  const prefetchData = qwik.untrack(() => !!clientNavPath && prefetchProp !== false && prefetchProp !== "js" && shouldPrefetchData(clientNavPath, loc) || void 0);
+  const prefetch = qwik.untrack(() => prefetchData || !!clientNavPath && prefetchProp !== false && shouldPrefetchSymbols(clientNavPath, loc));
+  const handlePrefetch = prefetch ? /* @__PURE__ */ qwik.inlinedQrl((_, elm) => {
     if (navigator.connection?.saveData)
       return;
     if (elm && elm.href) {
@@ -1050,12 +1068,12 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
         });
     }
   }, "Link_component_handlePrefetch_Osdg8FnYTw4") : void 0;
-  const preventDefault = clientNavPath ? _qrlSync((event, target) => {
+  const preventDefault = clientNavPath ? qwik._qrlSync((event, target) => {
     if (!(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey))
       event.preventDefault();
   }, "(event,target)=>{if(!(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)){event.preventDefault();}}") : void 0;
-  const handleClick = clientNavPath ? /* @__PURE__ */ inlinedQrl(async (event, elm) => {
-    const [nav2, reload2, replaceState2, scroll2] = useLexicalScope();
+  const handleClick = clientNavPath ? /* @__PURE__ */ qwik.inlinedQrl(async (event, elm) => {
+    const [nav2, reload2, replaceState2, scroll2] = qwik.useLexicalScope();
     if (event.defaultPrevented) {
       if (elm.hasAttribute("q:nbs"))
         await nav2(location.href, {
@@ -1077,11 +1095,11 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     replaceState,
     scroll
   ]) : void 0;
-  return /* @__PURE__ */ _jsxS("a", {
+  return /* @__PURE__ */ qwik._jsxS("a", {
     "q:link": !!clientNavPath,
     ...linkProps,
     "data-prefetch": prefetchData,
-    children: /* @__PURE__ */ _jsxC(Slot, null, 3, "AD_0"),
+    children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "AD_0"),
     onClick$: [
       preventDefault,
       onClick$,
@@ -1098,12 +1116,12 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
     // Don't prefetch on visible in dev mode
     onQVisible$: [
       linkProps.onQVisible$,
-      !isDev ? handlePrefetch : void 0
+      !build.isDev ? handlePrefetch : void 0
     ]
   }, null, 0, "AD_1");
 }, "Link_component_8gdLBszqbaM"));
-const ServiceWorkerRegister = (props) => _jsxQ("script", {
-  nonce: _wrapSignal(props, "nonce")
+const ServiceWorkerRegister = (props) => qwik._jsxQ("script", {
+  nonce: qwik._wrapSignal(props, "nonce")
 }, {
   dangerouslySetInnerHTML: swRegister
 }, null, 3, "1Z_0");
@@ -1120,7 +1138,7 @@ const routeActionQrl = (actionQrl, ...rest) => {
       value: void 0,
       formData: void 0
     };
-    const state = useStore(() => {
+    const state = qwik.useStore(() => {
       const value = currentAction.value;
       if (value && value?.id === id) {
         const data = value.data;
@@ -1134,9 +1152,9 @@ const routeActionQrl = (actionQrl, ...rest) => {
       }
       return initialState;
     });
-    const submit = /* @__PURE__ */ inlinedQrl((input = {}) => {
-      const [currentAction2, id2, loc2, state2] = useLexicalScope();
-      if (isServer)
+    const submit = /* @__PURE__ */ qwik.inlinedQrl((input = {}) => {
+      const [currentAction2, id2, loc2, state2] = qwik.useLexicalScope();
+      if (build.isServer)
         throw new Error(`Actions can not be invoked within the server during SSR.
 Action.run() can only be called on the browser, for example when a user clicks a button, or submits a form.`);
       let data;
@@ -1159,7 +1177,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
         currentAction2.value = {
           data,
           id: id2,
-          resolve: noSerialize(resolve)
+          resolve: qwik.noSerialize(resolve)
         };
       }).then(({ result, status }) => {
         state2.isRunning = false;
@@ -1202,19 +1220,19 @@ Action.run() can only be called on the browser, for example when a user clicks a
 };
 const globalActionQrl = (actionQrl, ...rest) => {
   const action = routeActionQrl(actionQrl, ...rest);
-  if (isServer) {
+  if (build.isServer) {
     if (typeof globalThis._qwikActionsMap === "undefined")
       globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
     globalThis._qwikActionsMap.set(action.__id, action);
   }
   return action;
 };
-const routeAction$ = /* @__PURE__ */ implicit$FirstArg(routeActionQrl);
-const globalAction$ = /* @__PURE__ */ implicit$FirstArg(globalActionQrl);
+const routeAction$ = /* @__PURE__ */ qwik.implicit$FirstArg(routeActionQrl);
+const globalAction$ = /* @__PURE__ */ qwik.implicit$FirstArg(globalActionQrl);
 const routeLoaderQrl = (loaderQrl, ...rest) => {
   const { id, validators } = getValidators(rest, loaderQrl);
   function loader() {
-    return useContext(RouteStateContext, (state) => {
+    return qwik.useContext(RouteStateContext, (state) => {
       if (!(id in state))
         throw new Error(`routeLoader$ "${loaderQrl.getSymbol()}" was invoked in a route where it was not declared.
     This is because the routeLoader$ was not exported in a 'layout.tsx' or 'index.tsx' file of the existing route.
@@ -1222,7 +1240,7 @@ const routeLoaderQrl = (loaderQrl, ...rest) => {
 
     If your are managing reusable logic or a library it is essential that this function is re-exported from within 'layout.tsx' or 'index.tsx file of the existing route otherwise it will not run or throw exception.
     For more information check: https://qwik.dev/docs/cookbook/re-exporting-loaders/`);
-      return _wrapProp(state, id);
+      return qwik._wrapProp(state, id);
     });
   }
   loader.__brand = "server_loader";
@@ -1232,33 +1250,33 @@ const routeLoaderQrl = (loaderQrl, ...rest) => {
   Object.freeze(loader);
   return loader;
 };
-const routeLoader$ = /* @__PURE__ */ implicit$FirstArg(routeLoaderQrl);
+const routeLoader$ = /* @__PURE__ */ qwik.implicit$FirstArg(routeLoaderQrl);
 const validatorQrl = (validator) => {
-  if (isServer)
+  if (build.isServer)
     return {
       validate: validator
     };
   return void 0;
 };
-const validator$ = /* @__PURE__ */ implicit$FirstArg(validatorQrl);
+const validator$ = /* @__PURE__ */ qwik.implicit$FirstArg(validatorQrl);
 const zodQrl = (qrl) => {
-  if (isServer)
+  if (build.isServer)
     return {
       async validate(ev, inputData) {
         const schema = qrl.resolve().then((obj) => {
           if (typeof obj === "function")
-            obj = obj(z, ev);
-          if (obj instanceof z.Schema)
+            obj = obj(zod.z, ev);
+          if (obj instanceof zod.z.Schema)
             return obj;
           else
-            return z.object(obj);
+            return zod.z.object(obj);
         });
         const data = inputData ?? await ev.parseBody();
         const result = await (await schema).safeParseAsync(data);
         if (result.success)
           return result;
         else {
-          if (isDev)
+          if (build.isDev)
             console.error("\nVALIDATION ERROR\naction$() zod validated failed", "\n  - Issues:", result.error.issues);
           const zodErrorsFlatten = result.error.flatten();
           const fieldErrors = flattenZodIssues(result.error.issues);
@@ -1294,7 +1312,7 @@ const flattenZodIssues = (issues) => {
     return acc;
   }, {});
 };
-const zod$ = /* @__PURE__ */ implicit$FirstArg(zodQrl);
+const zod$ = /* @__PURE__ */ qwik.implicit$FirstArg(zodQrl);
 const deepFreeze = (obj) => {
   Object.getOwnPropertyNames(obj).forEach((prop) => {
     const value = obj[prop];
@@ -1304,9 +1322,9 @@ const deepFreeze = (obj) => {
   return Object.freeze(obj);
 };
 const serverQrl = (qrl, options) => {
-  if (isServer) {
+  if (build.isServer) {
     const captured = qrl.getCaptured();
-    if (captured && captured.length > 0 && !_getContextElement())
+    if (captured && captured.length > 0 && !qwik._getContextElement())
       throw new Error("For security reasons, we cannot serialize QRLs that capture lexical scope.");
   }
   const method = options?.method?.toUpperCase?.() || "POST";
@@ -1314,22 +1332,22 @@ const serverQrl = (qrl, options) => {
   const origin = options?.origin || "";
   const fetchOptions = options?.fetchOptions || {};
   function rpc() {
-    return /* @__PURE__ */ inlinedQrl(async function(...args) {
-      const [fetchOptions2, headers2, method2, origin2, qrl2] = useLexicalScope();
+    return /* @__PURE__ */ qwik.inlinedQrl(async function(...args) {
+      const [fetchOptions2, headers2, method2, origin2, qrl2] = qwik.useLexicalScope();
       const abortSignal = args.length > 0 && args[0] instanceof AbortSignal ? args.shift() : void 0;
-      if (isServer) {
+      if (build.isServer) {
         let requestEvent = globalThis.qcAsyncRequestStore?.getStore();
         if (!requestEvent) {
           const contexts = [
             useQwikCityEnv()?.ev,
             this,
-            _getContextEvent()
+            qwik._getContextEvent()
           ];
           requestEvent = contexts.find((v) => v && Object.prototype.hasOwnProperty.call(v, "sharedMap") && Object.prototype.hasOwnProperty.call(v, "cookie"));
         }
-        return qrl2.apply(requestEvent, isDev ? deepFreeze(args) : args);
+        return qrl2.apply(requestEvent, build.isDev ? deepFreeze(args) : args);
       } else {
-        const ctxElm = _getContextElement();
+        const ctxElm = qwik._getContextElement();
         const filteredArgs = args.map((arg) => {
           if (arg instanceof SubmitEvent && arg.target instanceof HTMLFormElement)
             return new FormData(arg.target);
@@ -1352,7 +1370,7 @@ const serverQrl = (qrl, options) => {
           },
           signal: abortSignal
         };
-        const body = await _serializeData([
+        const body = await qwik._serializeData([
           qrl2,
           ...filteredArgs
         ], false);
@@ -1374,7 +1392,7 @@ const serverQrl = (qrl, options) => {
           }();
         else if (contentType === "application/qwik-json") {
           const str = await res.text();
-          const obj = await _deserializeData(str, ctxElm ?? document.documentElement);
+          const obj = await qwik._deserializeData(str, ctxElm ?? document.documentElement);
           if (res.status === 500)
             throw obj;
           return obj;
@@ -1400,7 +1418,7 @@ const serverQrl = (qrl, options) => {
   }
   return rpc();
 };
-const server$ = /* @__PURE__ */ implicit$FirstArg(serverQrl);
+const server$ = /* @__PURE__ */ qwik.implicit$FirstArg(serverQrl);
 const getValidators = (rest, qrl) => {
   let id;
   const validators = [];
@@ -1418,7 +1436,7 @@ const getValidators = (rest, qrl) => {
   } else if (rest.length > 1)
     validators.push(...rest.filter((v) => !!v));
   if (typeof id === "string") {
-    if (isDev) {
+    if (build.isDev) {
       if (!/^[\w/.-]+$/.test(id))
         throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
     }
@@ -1445,31 +1463,31 @@ const deserializeStream = async function* (stream, ctxElm, abortSignal) {
       const lines = buffer.split(/\n/);
       buffer = lines.pop();
       for (const line of lines)
-        yield await _deserializeData(line, ctxElm);
+        yield await qwik._deserializeData(line, ctxElm);
     }
   } finally {
     reader.releaseLock();
   }
 };
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
-  _jsxBranch();
+  qwik._jsxBranch();
   if (action) {
     const isArrayApi = Array.isArray(onSubmit$);
     if (isArrayApi)
-      return _jsxS("form", {
+      return qwik._jsxS("form", {
         ...rest,
         get action() {
           return action.actionPath;
         },
-        action: _wrapSignal(action, "actionPath"),
+        action: qwik._wrapSignal(action, "actionPath"),
         "preventdefault:submit": !reloadDocument,
         method: "post",
         ["data-spa-reset"]: spaReset ? "true" : void 0,
         onSubmit$: [
           ...onSubmit$,
           // action.submit "submitcompleted" event for onSubmitCompleted$ events
-          !reloadDocument ? /* @__PURE__ */ inlinedQrl((evt) => {
-            const [action2] = useLexicalScope();
+          !reloadDocument ? /* @__PURE__ */ qwik.inlinedQrl((evt) => {
+            const [action2] = qwik.useLexicalScope();
             if (!action2.submitted)
               return action2.submit(evt);
           }, "Form_form_onSubmit_uPHV2oGn4wc", [
@@ -1477,14 +1495,14 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
           ]) : void 0
         ]
       }, {
-        method: _IMMUTABLE
+        method: qwik._IMMUTABLE
       }, 0, key);
-    return _jsxS("form", {
+    return qwik._jsxS("form", {
       ...rest,
       get action() {
         return action.actionPath;
       },
-      action: _wrapSignal(action, "actionPath"),
+      action: qwik._wrapSignal(action, "actionPath"),
       "preventdefault:submit": !reloadDocument,
       method: "post",
       ["data-spa-reset"]: spaReset ? "true" : void 0,
@@ -1495,25 +1513,25 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
         onSubmit$
       ]
     }, {
-      method: _IMMUTABLE
+      method: qwik._IMMUTABLE
     }, 0, key);
   } else
-    return /* @__PURE__ */ _jsxC(GetForm, {
+    return /* @__PURE__ */ qwik._jsxC(GetForm, {
       spaReset,
       reloadDocument,
       onSubmit$,
       ...rest
     }, 0, key);
 };
-const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
-  const rest = _restProps(props, [
+const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQrl((props) => {
+  const rest = qwik._restProps(props, [
     "action",
     "spaReset",
     "reloadDocument",
     "onSubmit$"
   ]);
   const nav = useNavigate();
-  return /* @__PURE__ */ _jsxS("form", {
+  return /* @__PURE__ */ qwik._jsxS("form", {
     action: "get",
     get "preventdefault:submit"() {
       return !props.reloadDocument;
@@ -1522,13 +1540,13 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
       return props.spaReset ? "true" : void 0;
     },
     ...rest,
-    children: /* @__PURE__ */ _jsxC(Slot, null, 3, "BC_0"),
+    children: /* @__PURE__ */ qwik._jsxC(qwik.Slot, null, 3, "BC_0"),
     onSubmit$: [
       ...Array.isArray(props.onSubmit$) ? props.onSubmit$ : [
         props.onSubmit$
       ],
-      /* @__PURE__ */ inlinedQrl(async (_evt, form) => {
-        const [nav2] = useLexicalScope();
+      /* @__PURE__ */ qwik.inlinedQrl(async (_evt, form) => {
+        const [nav2] = qwik.useLexicalScope();
         const formData = new FormData(form);
         const params = new URLSearchParams();
         formData.forEach((value, key) => {
@@ -1542,7 +1560,7 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
       }, "GetForm_component_form_onSubmit_p9MSze0ojs4", [
         nav
       ]),
-      /* @__PURE__ */ inlinedQrl((_evt, form) => {
+      /* @__PURE__ */ qwik.inlinedQrl((_evt, form) => {
         if (form.getAttribute("data-spa-reset") === "true")
           form.reset();
         form.dispatchEvent(new CustomEvent("submitcompleted", {
@@ -1556,38 +1574,39 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
       }, "GetForm_component_form_onSubmit_1_KK5BfmKH4ZI")
     ]
   }, {
-    action: _IMMUTABLE,
-    "preventdefault:submit": _fnSignal((p0) => !p0.reloadDocument, [
+    action: qwik._IMMUTABLE,
+    "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
       props
     ], "!p0.reloadDocument"),
-    "data-spa-reset": _fnSignal((p0) => p0.spaReset ? "true" : void 0, [
+    "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
       props
     ], 'p0.spaReset?"true":undefined')
   }, 0, "BC_1");
 }, "GetForm_component_Nk9PlpjQm9Y"));
-export {
-  Form,
-  Link,
-  QWIK_CITY_SCROLLER,
-  QwikCityMockProvider,
-  QwikCityProvider,
-  RouterOutlet,
-  ServiceWorkerRegister,
-  globalAction$,
-  globalActionQrl,
-  routeAction$,
-  routeActionQrl,
-  routeLoader$,
-  routeLoaderQrl,
-  server$,
-  serverQrl,
-  useContent,
-  useDocumentHead,
-  useLocation,
-  useNavigate,
-  validator$,
-  validatorQrl,
-  z2 as z,
-  zod$,
-  zodQrl
-};
+Object.defineProperty(exports, "z", {
+  enumerable: true,
+  get: () => zod.z
+});
+exports.Form = Form;
+exports.Link = Link;
+exports.QWIK_CITY_SCROLLER = QWIK_CITY_SCROLLER;
+exports.QwikCityMockProvider = QwikCityMockProvider;
+exports.QwikCityProvider = QwikCityProvider;
+exports.RouterOutlet = RouterOutlet;
+exports.ServiceWorkerRegister = ServiceWorkerRegister;
+exports.globalAction$ = globalAction$;
+exports.globalActionQrl = globalActionQrl;
+exports.routeAction$ = routeAction$;
+exports.routeActionQrl = routeActionQrl;
+exports.routeLoader$ = routeLoader$;
+exports.routeLoaderQrl = routeLoaderQrl;
+exports.server$ = server$;
+exports.serverQrl = serverQrl;
+exports.useContent = useContent;
+exports.useDocumentHead = useDocumentHead;
+exports.useLocation = useLocation;
+exports.useNavigate = useNavigate;
+exports.validator$ = validator$;
+exports.validatorQrl = validatorQrl;
+exports.zod$ = zod$;
+exports.zodQrl = zodQrl;
