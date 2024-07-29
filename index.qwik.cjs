@@ -554,7 +554,7 @@ const loadClientData = async (url, element, opts) => {
   const pagePathname = url.pathname;
   const pageSearch = url.search;
   const clientDataPath = getClientDataPath(pagePathname, pageSearch, opts?.action);
-  let qData = void 0;
+  let qData;
   if (!opts?.action)
     qData = CLIENT_DATA_CACHE.get(clientDataPath);
   if (opts?.prefetchSymbols !== false)
@@ -565,11 +565,13 @@ const loadClientData = async (url, element, opts) => {
     if (opts?.action)
       opts.action.data = void 0;
     qData = fetch(clientDataPath, fetchOptions).then((rsp) => {
-      const redirectedURL = new URL(rsp.url);
-      const isQData = redirectedURL.pathname.endsWith("/q-data.json");
-      if (redirectedURL.origin !== location.origin || !isQData) {
-        location.href = redirectedURL.href;
-        return;
+      if (rsp.redirected) {
+        const redirectedURL = new URL(rsp.url);
+        const isQData = redirectedURL.pathname.endsWith("/q-data.json");
+        if (!isQData || redirectedURL.origin !== location.origin) {
+          location.href = redirectedURL.href;
+          return;
+        }
       }
       if ((rsp.headers.get("content-type") || "").includes("json"))
         return rsp.text().then((text) => {
