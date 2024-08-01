@@ -2,6 +2,7 @@ import type { BuiltinsWithOptionalParams } from 'svgo/plugins/plugins-types';
 import type { CompileOptions } from '@mdx-js/mdx';
 import type { Config } from 'svgo';
 import { ConfigEnv } from 'vite';
+import type { Plugin as Plugin_2 } from 'vite';
 import type { PluginOption } from 'vite';
 import { UserConfigExport } from 'vite';
 
@@ -58,6 +59,10 @@ declare interface MdxPlugins {
     rehypeAutolinkHeadings: boolean;
 }
 
+declare type P<T> = Plugin_2<T> & {
+    api: T;
+};
+
 declare interface ParsedPathname {
     routeName: string;
     pattern: RegExp;
@@ -103,9 +108,8 @@ declare interface PluginOptions {
 export declare function qwikCity(userOpts?: QwikCityVitePluginOptions): PluginOption[];
 
 /** @public */
-export declare interface QwikCityPlugin {
+export declare interface QwikCityPlugin extends P<QwikCityPluginApi> {
     name: 'vite-plugin-qwik-city';
-    api: QwikCityPluginApi;
 }
 
 /** @public */
