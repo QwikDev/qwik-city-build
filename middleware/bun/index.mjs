@@ -169,6 +169,12 @@ function createQwikCity(opts) {
       const url = new URL(request.url);
       if (isStaticPath(request.method || "GET", url)) {
         const { filePath, content } = await openStaticFile(url);
+        if (!await content.exists()) {
+          return new Response("Not Found", {
+            status: 404,
+            headers: { "Content-Type": "text/plain; charset=utf-8", "X-Not-Found": url.pathname }
+          });
+        }
         const ext = extname(filePath).replace(/^\./, "");
         return new Response(await content.stream(), {
           status: 200,
