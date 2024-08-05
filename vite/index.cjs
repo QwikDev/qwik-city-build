@@ -27129,20 +27129,26 @@ function imagePlugin(userOpts) {
               this.error(`Image '${id}' could not be optimized to JSX`);
             }
             const index = code3.indexOf("export default");
-            return code3.slice(0, index) + `
+            return {
+              code: code3.slice(0, index) + `
   import { _jsxQ } from '@builder.io/qwik';
   const PROPS = {srcSet, width, height};
   export default function (props, key, _, dev) {
     return _jsxQ('img', {...{decoding: 'async', loading: 'lazy'}, ...props}, PROPS, undefined, 3, key, dev);
-  }`;
+  }`,
+              map: null
+            };
           } else if (extension === ".svg") {
             const { svgAttributes } = optimizeSvg({ code: code3, path: pathId }, userOpts);
-            return `
+            return {
+              code: `
   import { _jsxQ } from '@builder.io/qwik';
   const PROPS = ${JSON.stringify(svgAttributes)};
   export default function (props, key, _, dev) {
     return _jsxQ('svg', props, PROPS, undefined, 3, key, dev);
-  }`;
+  }`,
+              map: null
+            };
           }
         }
         return null;
@@ -27353,7 +27359,7 @@ function qwikCityPlugin(userOpts) {
         const fileName = (0, import_node_path11.basename)(id);
         if (isMenuFileName(fileName)) {
           const menuCode = await transformMenu(ctx.opts, id, code3);
-          return menuCode;
+          return { code: menuCode, map: null };
         }
         if (mdxTransform) {
           try {
