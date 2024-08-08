@@ -270,9 +270,9 @@ var init_unist_util_visit = __esm({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/identity.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/identity.js
 var require_identity = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/identity.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/identity.js"(exports) {
     "use strict";
     var ALIAS = Symbol.for("yaml.alias");
     var DOC = Symbol.for("yaml.document");
@@ -327,9 +327,9 @@ var require_identity = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/visit.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/visit.js
 var require_visit = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/visit.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/visit.js"(exports) {
     "use strict";
     var identity = require_identity();
     var BREAK = Symbol("break visit");
@@ -486,9 +486,9 @@ var require_visit = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/directives.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/directives.js
 var require_directives = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/directives.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/directives.js"(exports) {
     "use strict";
     var identity = require_identity();
     var visit2 = require_visit();
@@ -657,9 +657,9 @@ var require_directives = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/anchors.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/anchors.js
 var require_anchors = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/anchors.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/anchors.js"(exports) {
     "use strict";
     var identity = require_identity();
     var visit2 = require_visit();
@@ -728,9 +728,9 @@ var require_anchors = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/applyReviver.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/applyReviver.js
 var require_applyReviver = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/applyReviver.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/applyReviver.js"(exports) {
     "use strict";
     function applyReviver(reviver, obj, key, val) {
       if (val && typeof val === "object") {
@@ -778,9 +778,9 @@ var require_applyReviver = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/toJS.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/toJS.js
 var require_toJS = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/toJS.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/toJS.js"(exports) {
     "use strict";
     var identity = require_identity();
     function toJS(value2, arg, ctx) {
@@ -808,9 +808,9 @@ var require_toJS = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Node.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Node.js
 var require_Node = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Node.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Node.js"(exports) {
     "use strict";
     var applyReviver = require_applyReviver();
     var identity = require_identity();
@@ -849,9 +849,9 @@ var require_Node = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Alias.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Alias.js
 var require_Alias = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Alias.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Alias.js"(exports) {
     "use strict";
     var anchors = require_anchors();
     var visit2 = require_visit();
@@ -951,9 +951,9 @@ var require_Alias = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Scalar.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Scalar.js
 var require_Scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Scalar.js"(exports) {
     "use strict";
     var identity = require_identity();
     var Node = require_Node();
@@ -981,9 +981,9 @@ var require_Scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/createNode.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/createNode.js
 var require_createNode = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/createNode.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/createNode.js"(exports) {
     "use strict";
     var Alias = require_Alias();
     var identity = require_identity();
@@ -1061,9 +1061,9 @@ var require_createNode = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Collection.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Collection.js
 var require_Collection = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Collection.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Collection.js"(exports) {
     "use strict";
     var createNode = require_createNode();
     var identity = require_identity();
@@ -1205,9 +1205,9 @@ var require_Collection = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyComment.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyComment.js
 var require_stringifyComment = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyComment.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyComment.js"(exports) {
     "use strict";
     var stringifyComment = (str) => str.replace(/^(?!$)(?: $)?/gm, "#");
     function indentComment(comment, indent2) {
@@ -1222,9 +1222,9 @@ var require_stringifyComment = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/foldFlowLines.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/foldFlowLines.js
 var require_foldFlowLines = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/foldFlowLines.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/foldFlowLines.js"(exports) {
     "use strict";
     var FOLD_FLOW = "flow";
     var FOLD_BLOCK = "block";
@@ -1356,9 +1356,9 @@ ${indent2}${text3.slice(fold + 1, end2)}`;
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyString.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyString.js
 var require_stringifyString = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyString.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyString.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var foldFlowLines = require_foldFlowLines();
@@ -1503,9 +1503,9 @@ ${indent2}`) + "'";
         return quotedString(value2, ctx);
       }
       const indent2 = ctx.indent || (ctx.forceBlockIndent || containsDocumentMarker(value2) ? "  " : "");
-      const literal = blockQuote === "literal" ? true : blockQuote === "folded" || type === Scalar.Scalar.BLOCK_FOLDED ? false : type === Scalar.Scalar.BLOCK_LITERAL ? true : !lineLengthOverLimit(value2, lineWidth, indent2.length);
+      const literal2 = blockQuote === "literal" ? true : blockQuote === "folded" || type === Scalar.Scalar.BLOCK_FOLDED ? false : type === Scalar.Scalar.BLOCK_LITERAL ? true : !lineLengthOverLimit(value2, lineWidth, indent2.length);
       if (!value2)
-        return literal ? "|\n" : ">\n";
+        return literal2 ? "|\n" : ">\n";
       let chomp;
       let endStart;
       for (endStart = value2.length; endStart > 0; --endStart) {
@@ -1548,13 +1548,13 @@ ${indent2}`) + "'";
         start = start.replace(/\n+/g, `$&${indent2}`);
       }
       const indentSize = indent2 ? "2" : "1";
-      let header = (literal ? "|" : ">") + (startWithSpace ? indentSize : "") + chomp;
+      let header = (literal2 ? "|" : ">") + (startWithSpace ? indentSize : "") + chomp;
       if (comment) {
         header += " " + commentString(comment.replace(/ ?[\r\n]+/g, " "));
         if (onComment)
           onComment();
       }
-      if (literal) {
+      if (literal2) {
         value2 = value2.replace(/\n+/g, `$&${indent2}`);
         return `${header}
 ${indent2}${start}${value2}${end}`;
@@ -1634,9 +1634,9 @@ ${indent2}`);
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringify.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringify.js
 var require_stringify = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringify.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringify.js"(exports) {
     "use strict";
     var anchors = require_anchors();
     var identity = require_identity();
@@ -1758,9 +1758,9 @@ ${ctx.indent}${str}`;
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyPair.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyPair.js
 var require_stringifyPair = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyPair.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyPair.js"(exports) {
     "use strict";
     var identity = require_identity();
     var Scalar = require_Scalar();
@@ -1773,7 +1773,7 @@ var require_stringifyPair = __commonJS({
         if (keyComment) {
           throw new Error("With simple keys, key nodes cannot have comments");
         }
-        if (identity.isCollection(key)) {
+        if (identity.isCollection(key) || !identity.isNode(key) && typeof key === "object") {
           const msg = "With simple keys, collection cannot be used as a key value";
           throw new Error(msg);
         }
@@ -1891,9 +1891,9 @@ ${ctx.indent}`;
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/log.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/log.js
 var require_log = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/log.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/log.js"(exports) {
     "use strict";
     function debug(logLevel, ...messages2) {
       if (logLevel === "debug")
@@ -1912,9 +1912,9 @@ var require_log = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/addPairToJSMap.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/addPairToJSMap.js
 var require_addPairToJSMap = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/addPairToJSMap.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/addPairToJSMap.js"(exports) {
     "use strict";
     var log = require_log();
     var stringify2 = require_stringify();
@@ -2006,9 +2006,9 @@ var require_addPairToJSMap = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Pair.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Pair.js
 var require_Pair = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/Pair.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/Pair.js"(exports) {
     "use strict";
     var createNode = require_createNode();
     var stringifyPair = require_stringifyPair();
@@ -2046,9 +2046,9 @@ var require_Pair = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyCollection.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyCollection.js
 var require_stringifyCollection = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyCollection.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyCollection.js"(exports) {
     "use strict";
     var identity = require_identity();
     var stringify2 = require_stringify();
@@ -2190,9 +2190,9 @@ ${indent2}${end}`;
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/YAMLMap.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/YAMLMap.js
 var require_YAMLMap = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/YAMLMap.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/YAMLMap.js"(exports) {
     "use strict";
     var stringifyCollection = require_stringifyCollection();
     var addPairToJSMap = require_addPairToJSMap();
@@ -2335,9 +2335,9 @@ var require_YAMLMap = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/common/map.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/common/map.js
 var require_map = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/common/map.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/common/map.js"(exports) {
     "use strict";
     var identity = require_identity();
     var YAMLMap = require_YAMLMap();
@@ -2357,9 +2357,9 @@ var require_map = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/YAMLSeq.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/YAMLSeq.js
 var require_YAMLSeq = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/nodes/YAMLSeq.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/nodes/YAMLSeq.js"(exports) {
     "use strict";
     var createNode = require_createNode();
     var stringifyCollection = require_stringifyCollection();
@@ -2473,9 +2473,9 @@ var require_YAMLSeq = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/common/seq.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/common/seq.js
 var require_seq = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/common/seq.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/common/seq.js"(exports) {
     "use strict";
     var identity = require_identity();
     var YAMLSeq = require_YAMLSeq();
@@ -2495,9 +2495,9 @@ var require_seq = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/common/string.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/common/string.js
 var require_string = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/common/string.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/common/string.js"(exports) {
     "use strict";
     var stringifyString = require_stringifyString();
     var string = {
@@ -2514,9 +2514,9 @@ var require_string = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/common/null.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/common/null.js
 var require_null = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/common/null.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/common/null.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var nullTag = {
@@ -2532,9 +2532,9 @@ var require_null = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/core/bool.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/core/bool.js
 var require_bool = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/core/bool.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/core/bool.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var boolTag = {
@@ -2556,9 +2556,9 @@ var require_bool = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyNumber.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyNumber.js
 var require_stringifyNumber = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyNumber.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyNumber.js"(exports) {
     "use strict";
     function stringifyNumber({ format, minFractionDigits, tag: tag2, value: value2 }) {
       if (typeof value2 === "bigint")
@@ -2583,9 +2583,9 @@ var require_stringifyNumber = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/core/float.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/core/float.js
 var require_float = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/core/float.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/core/float.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var stringifyNumber = require_stringifyNumber();
@@ -2593,7 +2593,7 @@ var require_float = __commonJS({
       identify: (value2) => typeof value2 === "number",
       default: true,
       tag: "tag:yaml.org,2002:float",
-      test: /^(?:[-+]?\.(?:inf|Inf|INF|nan|NaN|NAN))$/,
+      test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
       resolve: (str) => str.slice(-3).toLowerCase() === "nan" ? NaN : str[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
       stringify: stringifyNumber.stringifyNumber
     };
@@ -2629,9 +2629,9 @@ var require_float = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/core/int.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/core/int.js
 var require_int = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/core/int.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/core/int.js"(exports) {
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     var intIdentify = (value2) => typeof value2 === "bigint" || Number.isInteger(value2);
@@ -2674,9 +2674,9 @@ var require_int = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/core/schema.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/core/schema.js
 var require_schema = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/core/schema.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/core/schema.js"(exports) {
     "use strict";
     var map4 = require_map();
     var _null = require_null();
@@ -2702,9 +2702,9 @@ var require_schema = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/json/schema.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/json/schema.js
 var require_schema2 = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/json/schema.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/json/schema.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var map4 = require_map();
@@ -2769,9 +2769,9 @@ var require_schema2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/binary.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/binary.js
 var require_binary = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/binary.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/binary.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var stringifyString = require_stringifyString();
@@ -2833,9 +2833,9 @@ var require_binary = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/pairs.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/pairs.js
 var require_pairs = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/pairs.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/pairs.js"(exports) {
     "use strict";
     var identity = require_identity();
     var Pair = require_Pair();
@@ -2911,9 +2911,9 @@ ${cn.comment}` : item.comment;
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/omap.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/omap.js
 var require_omap = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/omap.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/omap.js"(exports) {
     "use strict";
     var identity = require_identity();
     var toJS = require_toJS();
@@ -2989,9 +2989,9 @@ var require_omap = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/bool.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/bool.js
 var require_bool2 = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/bool.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/bool.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     function boolStringify({ value: value2, source }, ctx) {
@@ -3021,9 +3021,9 @@ var require_bool2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/float.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/float.js
 var require_float2 = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/float.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/float.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var stringifyNumber = require_stringifyNumber();
@@ -3031,7 +3031,7 @@ var require_float2 = __commonJS({
       identify: (value2) => typeof value2 === "number",
       default: true,
       tag: "tag:yaml.org,2002:float",
-      test: /^[-+]?\.(?:inf|Inf|INF|nan|NaN|NAN)$/,
+      test: /^(?:[-+]?\.(?:inf|Inf|INF)|\.nan|\.NaN|\.NAN)$/,
       resolve: (str) => str.slice(-3).toLowerCase() === "nan" ? NaN : str[0] === "-" ? Number.NEGATIVE_INFINITY : Number.POSITIVE_INFINITY,
       stringify: stringifyNumber.stringifyNumber
     };
@@ -3070,9 +3070,9 @@ var require_float2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/int.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/int.js
 var require_int2 = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/int.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/int.js"(exports) {
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     var intIdentify = (value2) => typeof value2 === "bigint" || Number.isInteger(value2);
@@ -3149,9 +3149,9 @@ var require_int2 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/set.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/set.js
 var require_set = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/set.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/set.js"(exports) {
     "use strict";
     var identity = require_identity();
     var Pair = require_Pair();
@@ -3238,9 +3238,9 @@ var require_set = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js
 var require_timestamp = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/timestamp.js"(exports) {
     "use strict";
     var stringifyNumber = require_stringifyNumber();
     function parseSexagesimal(str, asBigInt) {
@@ -3326,9 +3326,9 @@ var require_timestamp = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/schema.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/schema.js
 var require_schema3 = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/yaml-1.1/schema.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/yaml-1.1/schema.js"(exports) {
     "use strict";
     var map4 = require_map();
     var _null = require_null();
@@ -3368,9 +3368,9 @@ var require_schema3 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/tags.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/tags.js
 var require_tags = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/tags.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/tags.js"(exports) {
     "use strict";
     var map4 = require_map();
     var _null = require_null();
@@ -3451,9 +3451,9 @@ var require_tags = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/Schema.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/Schema.js
 var require_Schema = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/schema/Schema.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/schema/Schema.js"(exports) {
     "use strict";
     var identity = require_identity();
     var map4 = require_map();
@@ -3484,9 +3484,9 @@ var require_Schema = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyDocument.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyDocument.js
 var require_stringifyDocument = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/stringify/stringifyDocument.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/stringify/stringifyDocument.js"(exports) {
     "use strict";
     var identity = require_identity();
     var stringify2 = require_stringify();
@@ -3565,9 +3565,9 @@ var require_stringifyDocument = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/Document.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/Document.js
 var require_Document = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/doc/Document.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/doc/Document.js"(exports) {
     "use strict";
     var Alias = require_Alias();
     var Collection = require_Collection();
@@ -3873,9 +3873,9 @@ var require_Document = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/errors.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/errors.js
 var require_errors = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/errors.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/errors.js"(exports) {
     "use strict";
     var YAMLError = class extends Error {
       constructor(name, pos, code3, message) {
@@ -3938,11 +3938,11 @@ ${pointer}
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-props.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-props.js
 var require_resolve_props = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-props.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-props.js"(exports) {
     "use strict";
-    function resolveProps(tokens, { flow, indicator, next, offset, onError, startOnNewline }) {
+    function resolveProps(tokens, { flow, indicator, next, offset, onError, parentIndent, startOnNewline }) {
       let spaceBefore = false;
       let atNewline = startOnNewline;
       let hasSpace = startOnNewline;
@@ -3951,6 +3951,7 @@ var require_resolve_props = __commonJS({
       let hasNewline = false;
       let hasNewlineAfterProp = false;
       let reqSpace = false;
+      let tab = null;
       let anchor = null;
       let tag2 = null;
       let comma = null;
@@ -3962,10 +3963,17 @@ var require_resolve_props = __commonJS({
             onError(token.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
           reqSpace = false;
         }
+        if (tab) {
+          if (atNewline && token.type !== "comment" && token.type !== "newline") {
+            onError(tab, "TAB_AS_INDENT", "Tabs are not allowed as indentation");
+          }
+          tab = null;
+        }
         switch (token.type) {
           case "space":
-            if (!flow && atNewline && indicator !== "doc-start" && token.source[0] === "	")
-              onError(token, "TAB_AS_INDENT", "Tabs are not allowed as indentation");
+            if (!flow && (indicator !== "doc-start" || (next == null ? void 0 : next.type) !== "flow-collection") && token.source.includes("	")) {
+              tab = token;
+            }
             hasSpace = true;
             break;
           case "comment": {
@@ -4023,7 +4031,7 @@ var require_resolve_props = __commonJS({
             if (found)
               onError(token, "UNEXPECTED_TOKEN", `Unexpected ${token.source} in ${flow ?? "collection"}`);
             found = token;
-            atNewline = false;
+            atNewline = indicator === "seq-item-ind" || indicator === "explicit-key-ind";
             hasSpace = false;
             break;
           case "comma":
@@ -4043,8 +4051,11 @@ var require_resolve_props = __commonJS({
       }
       const last = tokens[tokens.length - 1];
       const end = last ? last.offset + last.source.length : offset;
-      if (reqSpace && next && next.type !== "space" && next.type !== "newline" && next.type !== "comma" && (next.type !== "scalar" || next.source !== ""))
+      if (reqSpace && next && next.type !== "space" && next.type !== "newline" && next.type !== "comma" && (next.type !== "scalar" || next.source !== "")) {
         onError(next.offset, "MISSING_CHAR", "Tags and anchors must be separated from the next token by white space");
+      }
+      if (tab && (atNewline && tab.indent <= parentIndent || (next == null ? void 0 : next.type) === "block-map" || (next == null ? void 0 : next.type) === "block-seq"))
+        onError(tab, "TAB_AS_INDENT", "Tabs are not allowed as indentation");
       return {
         comma,
         found,
@@ -4062,9 +4073,9 @@ var require_resolve_props = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/util-contains-newline.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/util-contains-newline.js
 var require_util_contains_newline = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/util-contains-newline.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/util-contains-newline.js"(exports) {
     "use strict";
     function containsNewline(key) {
       if (!key)
@@ -4104,9 +4115,9 @@ var require_util_contains_newline = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/util-flow-indent-check.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/util-flow-indent-check.js
 var require_util_flow_indent_check = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/util-flow-indent-check.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/util-flow-indent-check.js"(exports) {
     "use strict";
     var utilContainsNewline = require_util_contains_newline();
     function flowIndentCheck(indent2, fc, onError) {
@@ -4122,9 +4133,9 @@ var require_util_flow_indent_check = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/util-map-includes.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/util-map-includes.js
 var require_util_map_includes = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/util-map-includes.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/util-map-includes.js"(exports) {
     "use strict";
     var identity = require_identity();
     function mapIncludes(ctx, items, search2) {
@@ -4138,9 +4149,9 @@ var require_util_map_includes = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-block-map.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-block-map.js
 var require_resolve_block_map = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-block-map.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-block-map.js"(exports) {
     "use strict";
     var Pair = require_Pair();
     var YAMLMap = require_YAMLMap();
@@ -4164,6 +4175,7 @@ var require_resolve_block_map = __commonJS({
           next: key ?? (sep == null ? void 0 : sep[0]),
           offset,
           onError,
+          parentIndent: bm.indent,
           startOnNewline: true
         });
         const implicitKey = !keyProps.found;
@@ -4201,6 +4213,7 @@ var require_resolve_block_map = __commonJS({
           next: value2,
           offset: keyNode.range[2],
           onError,
+          parentIndent: bm.indent,
           startOnNewline: !key || key.type === "block-scalar"
         });
         offset = valueProps.end;
@@ -4243,9 +4256,9 @@ var require_resolve_block_map = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-block-seq.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-block-seq.js
 var require_resolve_block_seq = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-block-seq.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-block-seq.js"(exports) {
     "use strict";
     var YAMLSeq = require_YAMLSeq();
     var resolveProps = require_resolve_props();
@@ -4263,6 +4276,7 @@ var require_resolve_block_seq = __commonJS({
           next: value2,
           offset,
           onError,
+          parentIndent: bs.indent,
           startOnNewline: true
         });
         if (!props.found) {
@@ -4291,9 +4305,9 @@ var require_resolve_block_seq = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-end.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-end.js
 var require_resolve_end = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-end.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-end.js"(exports) {
     "use strict";
     function resolveEnd(end, offset, reqSpace, onError) {
       let comment = "";
@@ -4334,9 +4348,9 @@ var require_resolve_end = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-flow-collection.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-flow-collection.js
 var require_resolve_flow_collection = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-flow-collection.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-flow-collection.js"(exports) {
     "use strict";
     var identity = require_identity();
     var Pair = require_Pair();
@@ -4367,6 +4381,7 @@ var require_resolve_flow_collection = __commonJS({
           next: key ?? (sep == null ? void 0 : sep[0]),
           offset,
           onError,
+          parentIndent: fc.indent,
           startOnNewline: false
         });
         if (!props.found) {
@@ -4442,6 +4457,7 @@ var require_resolve_flow_collection = __commonJS({
             next: value2,
             offset: keyNode.range[2],
             onError,
+            parentIndent: fc.indent,
             startOnNewline: false
           });
           if (valueProps.found) {
@@ -4521,9 +4537,9 @@ var require_resolve_flow_collection = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/compose-collection.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/compose-collection.js
 var require_compose_collection = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/compose-collection.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/compose-collection.js"(exports) {
     "use strict";
     var identity = require_identity();
     var Scalar = require_Scalar();
@@ -4578,14 +4594,14 @@ var require_compose_collection = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-block-scalar.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-block-scalar.js
 var require_resolve_block_scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-block-scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-block-scalar.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
-    function resolveBlockScalar(scalar, strict, onError) {
+    function resolveBlockScalar(ctx, scalar, onError) {
       const start = scalar.offset;
-      const header = parseBlockScalarHeader(scalar, strict, onError);
+      const header = parseBlockScalarHeader(scalar, ctx.options.strict, onError);
       if (!header)
         return { value: "", type: null, comment: "", range: [start, start, start] };
       const type = header.mode === ">" ? Scalar.Scalar.BLOCK_FOLDED : Scalar.Scalar.BLOCK_LITERAL;
@@ -4621,6 +4637,10 @@ var require_resolve_block_scalar = __commonJS({
           if (header.indent === 0)
             trimIndent = indent2.length;
           contentStart = i;
+          if (trimIndent === 0 && !ctx.atRoot) {
+            const message = "Block scalar values in collections must be indented";
+            onError(offset, "BAD_INDENT", message);
+          }
           break;
         }
         offset += indent2.length + content.length + 1;
@@ -4755,9 +4775,9 @@ var require_resolve_block_scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-flow-scalar.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-flow-scalar.js
 var require_resolve_flow_scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/resolve-flow-scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/resolve-flow-scalar.js"(exports) {
     "use strict";
     var Scalar = require_Scalar();
     var resolveEnd = require_resolve_end();
@@ -4972,16 +4992,16 @@ var require_resolve_flow_scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/compose-scalar.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/compose-scalar.js
 var require_compose_scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/compose-scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/compose-scalar.js"(exports) {
     "use strict";
     var identity = require_identity();
     var Scalar = require_Scalar();
     var resolveBlockScalar = require_resolve_block_scalar();
     var resolveFlowScalar = require_resolve_flow_scalar();
     function composeScalar(ctx, token, tagToken, onError) {
-      const { value: value2, type, comment, range: range2 } = token.type === "block-scalar" ? resolveBlockScalar.resolveBlockScalar(token, ctx.options.strict, onError) : resolveFlowScalar.resolveFlowScalar(token, ctx.options.strict, onError);
+      const { value: value2, type, comment, range: range2 } = token.type === "block-scalar" ? resolveBlockScalar.resolveBlockScalar(ctx, token, onError) : resolveFlowScalar.resolveFlowScalar(token, ctx.options.strict, onError);
       const tagName = tagToken ? ctx.directives.tagName(tagToken.source, (msg) => onError(tagToken, "TAG_RESOLVE_FAILED", msg)) : null;
       const tag2 = tagToken && tagName ? findScalarTagByName(ctx.schema, value2, tagName, tagToken, onError) : token.type === "scalar" ? findScalarTagByTest(ctx, value2, token, onError) : ctx.schema[identity.SCALAR];
       let scalar;
@@ -5052,9 +5072,9 @@ var require_compose_scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/util-empty-scalar-position.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/util-empty-scalar-position.js
 var require_util_empty_scalar_position = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/util-empty-scalar-position.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/util-empty-scalar-position.js"(exports) {
     "use strict";
     function emptyScalarPosition(offset, before, pos) {
       if (before) {
@@ -5083,9 +5103,9 @@ var require_util_empty_scalar_position = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/compose-node.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/compose-node.js
 var require_compose_node = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/compose-node.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/compose-node.js"(exports) {
     "use strict";
     var Alias = require_Alias();
     var composeCollection = require_compose_collection();
@@ -5178,9 +5198,9 @@ var require_compose_node = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/compose-doc.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/compose-doc.js
 var require_compose_doc = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/compose-doc.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/compose-doc.js"(exports) {
     "use strict";
     var Document = require_Document();
     var composeNode = require_compose_node();
@@ -5200,6 +5220,7 @@ var require_compose_doc = __commonJS({
         next: value2 ?? (end == null ? void 0 : end[0]),
         offset,
         onError,
+        parentIndent: 0,
         startOnNewline: true
       });
       if (props.found) {
@@ -5219,9 +5240,9 @@ var require_compose_doc = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/composer.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/composer.js
 var require_composer = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/compose/composer.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/compose/composer.js"(exports) {
     "use strict";
     var directives = require_directives();
     var Document = require_Document();
@@ -5425,9 +5446,9 @@ ${end.comment}` : end.comment;
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/cst-scalar.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/cst-scalar.js
 var require_cst_scalar = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/cst-scalar.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/cst-scalar.js"(exports) {
     "use strict";
     var resolveBlockScalar = require_resolve_block_scalar();
     var resolveFlowScalar = require_resolve_flow_scalar();
@@ -5448,7 +5469,7 @@ var require_cst_scalar = __commonJS({
           case "double-quoted-scalar":
             return resolveFlowScalar.resolveFlowScalar(token, strict, _onError);
           case "block-scalar":
-            return resolveBlockScalar.resolveBlockScalar(token, strict, _onError);
+            return resolveBlockScalar.resolveBlockScalar({ options: { strict } }, token, _onError);
         }
       }
       return null;
@@ -5610,9 +5631,9 @@ var require_cst_scalar = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/cst-stringify.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/cst-stringify.js
 var require_cst_stringify = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/cst-stringify.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/cst-stringify.js"(exports) {
     "use strict";
     var stringify2 = (cst) => "type" in cst ? stringifyToken(cst) : stringifyItem(cst);
     function stringifyToken(token) {
@@ -5671,9 +5692,9 @@ var require_cst_stringify = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/cst-visit.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/cst-visit.js
 var require_cst_visit = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/cst-visit.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/cst-visit.js"(exports) {
     "use strict";
     var BREAK = Symbol("break visit");
     var SKIP2 = Symbol("skip children");
@@ -5733,9 +5754,9 @@ var require_cst_visit = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/cst.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/cst.js
 var require_cst = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/cst.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/cst.js"(exports) {
     "use strict";
     var cstScalar = require_cst_scalar();
     var cstStringify = require_cst_stringify();
@@ -5835,9 +5856,9 @@ var require_cst = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/lexer.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/lexer.js
 var require_lexer = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/lexer.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/lexer.js"(exports) {
     "use strict";
     var cst = require_cst();
     function isEmpty(ch) {
@@ -5852,11 +5873,11 @@ var require_lexer = __commonJS({
           return false;
       }
     }
-    var hexDigits = "0123456789ABCDEFabcdef".split("");
-    var tagChars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-#;/?:@&=+$_.!~*'()".split("");
-    var invalidFlowScalarChars = ",[]{}".split("");
-    var invalidAnchorChars = " ,[]{}\n\r	".split("");
-    var isNotAnchorChar = (ch) => !ch || invalidAnchorChars.includes(ch);
+    var hexDigits = new Set("0123456789ABCDEFabcdef");
+    var tagChars = new Set("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-#;/?:@&=+$_.!~*'()");
+    var flowIndicatorChars = new Set(",[]{}");
+    var invalidAnchorChars = new Set(" ,[]{}\n\r	");
+    var isNotAnchorChar = (ch) => !ch || invalidAnchorChars.has(ch);
     var Lexer = class {
       constructor() {
         this.atEnd = false;
@@ -5879,6 +5900,8 @@ var require_lexer = __commonJS({
        */
       *lex(source, incomplete = false) {
         if (source) {
+          if (typeof source !== "string")
+            throw TypeError("source is not a string");
           this.buffer = this.buffer ? this.buffer + source : source;
           this.lineEndPos = null;
         }
@@ -5976,11 +5999,15 @@ var require_lexer = __commonJS({
         }
         if (line[0] === "%") {
           let dirEnd = line.length;
-          const cs = line.indexOf("#");
-          if (cs !== -1) {
+          let cs = line.indexOf("#");
+          while (cs !== -1) {
             const ch = line[cs - 1];
-            if (ch === " " || ch === "	")
+            if (ch === " " || ch === "	") {
               dirEnd = cs - 1;
+              break;
+            } else {
+              cs = line.indexOf("#", cs + 1);
+            }
           }
           while (true) {
             const ch = line[dirEnd - 1];
@@ -6204,17 +6231,17 @@ var require_lexer = __commonJS({
         let indent2 = 0;
         let ch;
         loop:
-          for (let i = this.pos; ch = this.buffer[i]; ++i) {
+          for (let i2 = this.pos; ch = this.buffer[i2]; ++i2) {
             switch (ch) {
               case " ":
                 indent2 += 1;
                 break;
               case "\n":
-                nl = i;
+                nl = i2;
                 indent2 = 0;
                 break;
               case "\r": {
-                const next = this.buffer[i + 1];
+                const next = this.buffer[i2 + 1];
                 if (!next && !this.atEnd)
                   return this.setNext("block-scalar");
                 if (next === "\n")
@@ -6229,8 +6256,9 @@ var require_lexer = __commonJS({
         if (indent2 >= this.indentNext) {
           if (this.blockScalarIndent === -1)
             this.indentNext = indent2;
-          else
-            this.indentNext += this.blockScalarIndent;
+          else {
+            this.indentNext = this.blockScalarIndent + (this.indentNext === 0 ? 1 : this.indentNext);
+          }
           do {
             const cs = this.continueScalar(nl + 1);
             if (cs === -1)
@@ -6243,17 +6271,25 @@ var require_lexer = __commonJS({
             nl = this.buffer.length;
           }
         }
-        if (!this.blockScalarKeep) {
+        let i = nl + 1;
+        ch = this.buffer[i];
+        while (ch === " ")
+          ch = this.buffer[++i];
+        if (ch === "	") {
+          while (ch === "	" || ch === " " || ch === "\r" || ch === "\n")
+            ch = this.buffer[++i];
+          nl = i - 1;
+        } else if (!this.blockScalarKeep) {
           do {
-            let i = nl - 1;
-            let ch2 = this.buffer[i];
+            let i2 = nl - 1;
+            let ch2 = this.buffer[i2];
             if (ch2 === "\r")
-              ch2 = this.buffer[--i];
-            const lastChar = i;
-            while (ch2 === " " || ch2 === "	")
-              ch2 = this.buffer[--i];
-            if (ch2 === "\n" && i >= this.pos && i + 1 + indent2 > lastChar)
-              nl = i;
+              ch2 = this.buffer[--i2];
+            const lastChar = i2;
+            while (ch2 === " ")
+              ch2 = this.buffer[--i2];
+            if (ch2 === "\n" && i2 >= this.pos && i2 + 1 + indent2 > lastChar)
+              nl = i2;
             else
               break;
           } while (true);
@@ -6270,7 +6306,7 @@ var require_lexer = __commonJS({
         while (ch = this.buffer[++i]) {
           if (ch === ":") {
             const next = this.buffer[i + 1];
-            if (isEmpty(next) || inFlow && next === ",")
+            if (isEmpty(next) || inFlow && flowIndicatorChars.has(next))
               break;
             end = i;
           } else if (isEmpty(ch)) {
@@ -6283,7 +6319,7 @@ var require_lexer = __commonJS({
               } else
                 end = i;
             }
-            if (next === "#" || inFlow && invalidFlowScalarChars.includes(next))
+            if (next === "#" || inFlow && flowIndicatorChars.has(next))
               break;
             if (ch === "\n") {
               const cs = this.continueScalar(i + 1);
@@ -6292,7 +6328,7 @@ var require_lexer = __commonJS({
               i = Math.max(i, cs - 2);
             }
           } else {
-            if (inFlow && invalidFlowScalarChars.includes(ch))
+            if (inFlow && flowIndicatorChars.has(ch))
               break;
             end = i;
           }
@@ -6332,7 +6368,7 @@ var require_lexer = __commonJS({
           case ":": {
             const inFlow = this.flowLevel > 0;
             const ch1 = this.charAt(1);
-            if (isEmpty(ch1) || inFlow && invalidFlowScalarChars.includes(ch1)) {
+            if (isEmpty(ch1) || inFlow && flowIndicatorChars.has(ch1)) {
               if (!inFlow)
                 this.indentNext = this.indentValue + 1;
               else if (this.flowKey)
@@ -6354,9 +6390,9 @@ var require_lexer = __commonJS({
           let i = this.pos + 1;
           let ch = this.buffer[i];
           while (ch) {
-            if (tagChars.includes(ch))
+            if (tagChars.has(ch))
               ch = this.buffer[++i];
-            else if (ch === "%" && hexDigits.includes(this.buffer[i + 1]) && hexDigits.includes(this.buffer[i + 2])) {
+            else if (ch === "%" && hexDigits.has(this.buffer[i + 1]) && hexDigits.has(this.buffer[i + 2])) {
               ch = this.buffer[i += 3];
             } else
               break;
@@ -6398,9 +6434,9 @@ var require_lexer = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/line-counter.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/line-counter.js
 var require_line_counter = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/line-counter.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/line-counter.js"(exports) {
     "use strict";
     var LineCounter = class {
       constructor() {
@@ -6429,9 +6465,9 @@ var require_line_counter = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/parser.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/parser.js
 var require_parser = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/parse/parser.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/parse/parser.js"(exports) {
     "use strict";
     var cst = require_cst();
     var lexer2 = require_lexer();
@@ -6688,7 +6724,7 @@ var require_parser = __commonJS({
                 it.value = token;
               } else {
                 Object.assign(it, { key: token, sep: [] });
-                this.onKeyLine = !includesToken(it.start, "explicit-key-ind");
+                this.onKeyLine = !it.explicitKey;
                 return;
               }
               break;
@@ -6878,7 +6914,8 @@ var require_parser = __commonJS({
             return;
         }
         if (this.indent >= map4.indent) {
-          const atNextItem = !this.onKeyLine && this.indent === map4.indent && it.sep && this.type !== "seq-item-ind";
+          const atMapIndent = !this.onKeyLine && this.indent === map4.indent;
+          const atNextItem = atMapIndent && (it.sep || it.explicitKey) && this.type !== "seq-item-ind";
           let start = [];
           if (atNextItem && it.sep && !it.value) {
             const nl = [];
@@ -6915,23 +6952,24 @@ var require_parser = __commonJS({
               }
               return;
             case "explicit-key-ind":
-              if (!it.sep && !includesToken(it.start, "explicit-key-ind")) {
+              if (!it.sep && !it.explicitKey) {
                 it.start.push(this.sourceToken);
+                it.explicitKey = true;
               } else if (atNextItem || it.value) {
                 start.push(this.sourceToken);
-                map4.items.push({ start });
+                map4.items.push({ start, explicitKey: true });
               } else {
                 this.stack.push({
                   type: "block-map",
                   offset: this.offset,
                   indent: this.indent,
-                  items: [{ start: [this.sourceToken] }]
+                  items: [{ start: [this.sourceToken], explicitKey: true }]
                 });
               }
               this.onKeyLine = true;
               return;
             case "map-value-ind":
-              if (includesToken(it.start, "explicit-key-ind")) {
+              if (it.explicitKey) {
                 if (!it.sep) {
                   if (includesToken(it.start, "newline")) {
                     Object.assign(it, { key: null, sep: [this.sourceToken] });
@@ -7007,7 +7045,7 @@ var require_parser = __commonJS({
             default: {
               const bv = this.startBlockValue(map4);
               if (bv) {
-                if (atNextItem && bv.type !== "block-seq" && includesToken(it.start, "explicit-key-ind")) {
+                if (atMapIndent && bv.type !== "block-seq") {
                   map4.items.push({ start });
                 }
                 this.stack.push(bv);
@@ -7219,7 +7257,7 @@ var require_parser = __commonJS({
               type: "block-map",
               offset: this.offset,
               indent: this.indent,
-              items: [{ start }]
+              items: [{ start, explicitKey: true }]
             };
           }
           case "map-value-ind": {
@@ -7282,9 +7320,9 @@ var require_parser = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/public-api.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/public-api.js
 var require_public_api = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/public-api.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/public-api.js"(exports) {
     "use strict";
     var composer = require_composer();
     var Document = require_Document();
@@ -7376,9 +7414,9 @@ var require_public_api = __commonJS({
   }
 });
 
-// node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/index.js
+// node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/index.js
 var require_dist = __commonJS({
-  "node_modules/.pnpm/yaml@2.4.2/node_modules/yaml/dist/index.js"(exports) {
+  "node_modules/.pnpm/yaml@2.4.5/node_modules/yaml/dist/index.js"(exports) {
     "use strict";
     var composer = require_composer();
     var Document = require_Document();
@@ -12845,7 +12883,7 @@ function tokenizeGfmFootnoteCall(effects, ok3, nok) {
 function tokenizeDefinitionStart(effects, ok3, nok) {
   const self2 = this;
   const defined = self2.parser.gfmFootnotes || (self2.parser.gfmFootnotes = []);
-  let identifier;
+  let identifier2;
   let size = 0;
   let data;
   return start;
@@ -12881,7 +12919,7 @@ function tokenizeDefinitionStart(effects, ok3, nok) {
     if (code3 === 93) {
       effects.exit("chunkString");
       const token = effects.exit("gfmFootnoteDefinitionLabelString");
-      identifier = normalizeIdentifier(self2.sliceSerialize(token));
+      identifier2 = normalizeIdentifier(self2.sliceSerialize(token));
       effects.enter("gfmFootnoteDefinitionLabelMarker");
       effects.consume(code3);
       effects.exit("gfmFootnoteDefinitionLabelMarker");
@@ -12908,8 +12946,8 @@ function tokenizeDefinitionStart(effects, ok3, nok) {
       effects.enter("definitionMarker");
       effects.consume(code3);
       effects.exit("definitionMarker");
-      if (!defined.includes(identifier)) {
-        defined.push(identifier);
+      if (!defined.includes(identifier2)) {
+        defined.push(identifier2);
       }
       return factorySpace(
         effects,
@@ -14312,139 +14350,401 @@ function slug(value2, maintainCase) {
   return value2.replace(regex, "").replace(/ /g, "-");
 }
 
-// node_modules/.pnpm/is-plain-obj@4.1.0/node_modules/is-plain-obj/index.js
-function isPlainObject(value2) {
-  if (typeof value2 !== "object" || value2 === null) {
-    return false;
-  }
-  const prototype = Object.getPrototypeOf(value2);
-  return (prototype === null || prototype === Object.prototype || Object.getPrototypeOf(prototype) === null) && !(Symbol.toStringTag in value2) && !(Symbol.iterator in value2);
+// node_modules/.pnpm/estree-util-value-to-estree@3.1.2/node_modules/estree-util-value-to-estree/dist/estree-util-value-to-estree.js
+function identifier(name) {
+  return { type: "Identifier", name };
 }
-
-// node_modules/.pnpm/estree-util-value-to-estree@3.0.1/node_modules/estree-util-value-to-estree/index.js
+function literal(value2) {
+  return { type: "Literal", value: value2 };
+}
+function methodCall(object, property, args) {
+  return {
+    type: "CallExpression",
+    optional: false,
+    callee: {
+      type: "MemberExpression",
+      computed: false,
+      optional: false,
+      object,
+      property: identifier(property)
+    },
+    arguments: args
+  };
+}
+function processNumber(number2) {
+  if (number2 < 0 || Object.is(number2, -0)) {
+    return {
+      type: "UnaryExpression",
+      operator: "-",
+      prefix: true,
+      argument: processNumber(-number2)
+    };
+  }
+  if (typeof number2 === "bigint") {
+    return { type: "Literal", bigint: String(number2) };
+  }
+  if (number2 === Number.POSITIVE_INFINITY || Number.isNaN(number2)) {
+    return identifier(String(number2));
+  }
+  return literal(number2);
+}
+function processNumberArray(numbers) {
+  const elements = [];
+  for (const value2 of numbers) {
+    elements.push(processNumber(value2));
+  }
+  return { type: "ArrayExpression", elements };
+}
+function isStringReconstructable(value2) {
+  return value2 instanceof URL || value2 instanceof URLSearchParams;
+}
+function isValueReconstructable(value2) {
+  return value2 instanceof Boolean || value2 instanceof Date || value2 instanceof Number || value2 instanceof String;
+}
+function isTypedArray(value2) {
+  return value2 instanceof BigInt64Array || value2 instanceof BigUint64Array || value2 instanceof Float32Array || value2 instanceof Float64Array || value2 instanceof Int8Array || value2 instanceof Int16Array || value2 instanceof Int32Array || value2 instanceof Uint8Array || value2 instanceof Uint8ClampedArray || value2 instanceof Uint16Array || value2 instanceof Uint32Array;
+}
+function compareContexts(a, b) {
+  const aReferencedByB = a.referencedBy.has(b.value);
+  const bReferencedByA = b.referencedBy.has(a.value);
+  if (aReferencedByB) {
+    if (bReferencedByA) {
+      return a.count - b.count;
+    }
+    return -1;
+  }
+  if (bReferencedByA) {
+    return 1;
+  }
+  return a.count - b.count;
+}
+function replaceAssignment(expression, assignment) {
+  if (!assignment || assignment.type !== "AssignmentExpression") {
+    return expression;
+  }
+  let node2 = assignment;
+  while (node2.right.type === "AssignmentExpression") {
+    node2 = node2.right;
+  }
+  node2.right = expression;
+  return assignment;
+}
 function valueToEstree(value2, options2 = {}) {
-  if (value2 === void 0 || value2 === Number.POSITIVE_INFINITY || Number.isNaN(value2)) {
-    return { type: "Identifier", name: String(value2) };
+  const stack = [];
+  const collectedContexts = /* @__PURE__ */ new Map();
+  const namedContexts = [];
+  function analyze(val) {
+    if (typeof val === "function") {
+      throw new TypeError(`Unsupported value: ${val}`, { cause: val });
+    }
+    if (typeof val !== "object") {
+      return;
+    }
+    if (val == null) {
+      return;
+    }
+    const context = collectedContexts.get(val);
+    if (context) {
+      if (options2.preserveReferences) {
+        context.count += 1;
+      }
+      for (const ancestor of stack) {
+        context.referencedBy.add(ancestor);
+      }
+      if (stack.includes(val)) {
+        if (!options2.preserveReferences) {
+          throw new Error(`Found circular reference: ${val}`, { cause: val });
+        }
+        const parent = stack.at(-1);
+        const parentContext = collectedContexts.get(parent);
+        parentContext.recursive = true;
+        context.recursive = true;
+      }
+      return;
+    }
+    collectedContexts.set(val, {
+      count: 1,
+      recursive: false,
+      referencedBy: new Set(stack),
+      value: val
+    });
+    if (isTypedArray(val)) {
+      return;
+    }
+    if (isStringReconstructable(val)) {
+      return;
+    }
+    if (isValueReconstructable(val)) {
+      return;
+    }
+    if (value2 instanceof RegExp) {
+      return;
+    }
+    stack.push(val);
+    if (val instanceof Map) {
+      for (const pair of val) {
+        analyze(pair[0]);
+        analyze(pair[1]);
+      }
+    } else if (Array.isArray(val) || val instanceof Set) {
+      for (const entry of val) {
+        analyze(entry);
+      }
+    } else {
+      const proto = Object.getPrototypeOf(val);
+      if (proto != null && proto !== Object.prototype && !options2.instanceAsObject) {
+        throw new TypeError(`Unsupported value: ${val}`, { cause: val });
+      }
+      for (const key of Reflect.ownKeys(val)) {
+        analyze(val[key]);
+      }
+    }
+    stack.pop();
   }
-  if (value2 == null || typeof value2 === "string" || typeof value2 === "boolean") {
-    return { type: "Literal", value: value2 };
-  }
-  if (typeof value2 === "bigint") {
-    return value2 >= 0 ? { type: "Literal", value: value2, bigint: String(value2) } : {
-      type: "UnaryExpression",
-      operator: "-",
-      prefix: true,
-      argument: valueToEstree(-value2, options2)
-    };
-  }
-  if (typeof value2 === "number") {
-    return value2 >= 0 && !Object.is(value2, -0) ? { type: "Literal", value: value2 } : {
-      type: "UnaryExpression",
-      operator: "-",
-      prefix: true,
-      argument: valueToEstree(-value2, options2)
-    };
-  }
-  if (typeof value2 === "symbol") {
-    if (value2.description && value2 === Symbol.for(value2.description)) {
+  function generate(val, isDeclaration) {
+    if (val === void 0) {
+      return identifier(String(val));
+    }
+    if (val == null || typeof val === "string" || typeof val === "boolean") {
+      return literal(val);
+    }
+    if (typeof val === "bigint" || typeof val === "number") {
+      return processNumber(val);
+    }
+    if (typeof val === "symbol") {
+      if (val.description && val === Symbol.for(val.description)) {
+        return methodCall(identifier("Symbol"), "for", [literal(val.description)]);
+      }
+      throw new TypeError(`Only global symbols are supported, got: ${String(val)}`, { cause: val });
+    }
+    const context = collectedContexts.get(val);
+    if (!isDeclaration && (context == null ? void 0 : context.name)) {
+      return identifier(context.name);
+    }
+    if (isValueReconstructable(val)) {
       return {
-        type: "CallExpression",
-        optional: false,
-        callee: {
-          type: "MemberExpression",
-          computed: false,
-          optional: false,
-          object: { type: "Identifier", name: "Symbol" },
-          property: { type: "Identifier", name: "for" }
-        },
-        arguments: [valueToEstree(value2.description, options2)]
+        type: "NewExpression",
+        callee: identifier(val.constructor.name),
+        arguments: [generate(val.valueOf())]
       };
     }
-    throw new TypeError(`Only global symbols are supported, got: ${String(value2)}`);
-  }
-  if (Array.isArray(value2)) {
-    const elements = [];
-    for (let i = 0; i < value2.length; i += 1) {
-      elements.push(i in value2 ? valueToEstree(value2[i], options2) : null);
+    if (val instanceof RegExp) {
+      return {
+        type: "Literal",
+        regex: { pattern: val.source, flags: val.flags }
+      };
     }
-    return { type: "ArrayExpression", elements };
-  }
-  if (value2 instanceof Boolean || value2 instanceof Number || value2 instanceof String) {
-    return {
-      type: "NewExpression",
-      callee: { type: "Identifier", name: value2.constructor.name },
-      arguments: [valueToEstree(value2.valueOf())]
-    };
-  }
-  if (value2 instanceof RegExp) {
-    return {
-      type: "Literal",
-      value: value2,
-      regex: { pattern: value2.source, flags: value2.flags }
-    };
-  }
-  if (value2 instanceof Date) {
-    return {
-      type: "NewExpression",
-      callee: { type: "Identifier", name: "Date" },
-      arguments: [valueToEstree(value2.getTime(), options2)]
-    };
-  }
-  if (typeof Buffer !== "undefined" && Buffer.isBuffer(value2)) {
-    return {
-      type: "CallExpression",
-      optional: false,
-      callee: {
-        type: "MemberExpression",
-        computed: false,
-        optional: false,
-        object: { type: "Identifier", name: "Buffer" },
-        property: { type: "Identifier", name: "from" }
-      },
-      arguments: [valueToEstree([...value2])]
-    };
-  }
-  if (value2 instanceof BigInt64Array || value2 instanceof BigUint64Array || value2 instanceof Float32Array || value2 instanceof Float64Array || value2 instanceof Int8Array || value2 instanceof Int16Array || value2 instanceof Int32Array || value2 instanceof Map || value2 instanceof Set || value2 instanceof Uint8Array || value2 instanceof Uint8ClampedArray || value2 instanceof Uint16Array || value2 instanceof Uint32Array) {
-    return {
-      type: "NewExpression",
-      callee: { type: "Identifier", name: value2.constructor.name },
-      arguments: [valueToEstree([...value2], options2)]
-    };
-  }
-  if (value2 instanceof URL || value2 instanceof URLSearchParams) {
-    return {
-      type: "NewExpression",
-      callee: { type: "Identifier", name: value2.constructor.name },
-      arguments: [valueToEstree(String(value2), options2)]
-    };
-  }
-  if (options2.instanceAsObject || isPlainObject(value2)) {
-    const properties = Reflect.ownKeys(value2).map((key) => ({
-      type: "Property",
-      method: false,
-      shorthand: false,
-      computed: typeof key !== "string",
-      kind: "init",
-      key: valueToEstree(key, options2),
-      value: valueToEstree(value2[key], options2)
-    }));
-    if (Object.getPrototypeOf(value2) == null) {
-      properties.unshift({
+    if (typeof Buffer !== "undefined" && Buffer.isBuffer(val)) {
+      return methodCall(identifier("Buffer"), "from", [processNumberArray(val)]);
+    }
+    if (isTypedArray(val)) {
+      return {
+        type: "NewExpression",
+        callee: identifier(val.constructor.name),
+        arguments: [processNumberArray(val)]
+      };
+    }
+    if (isStringReconstructable(val)) {
+      return {
+        type: "NewExpression",
+        callee: identifier(val.constructor.name),
+        arguments: [literal(String(val))]
+      };
+    }
+    if (Array.isArray(val)) {
+      const elements = Array.from({ length: val.length });
+      let trimmable;
+      for (let index = 0; index < val.length; index += 1) {
+        if (!(index in val)) {
+          elements[index] = null;
+          trimmable = void 0;
+          continue;
+        }
+        const child = val[index];
+        const childContext = collectedContexts.get(child);
+        if (context && childContext && namedContexts.indexOf(childContext) >= namedContexts.indexOf(context)) {
+          elements[index] = null;
+          trimmable ||= index;
+          childContext.assignment = {
+            type: "AssignmentExpression",
+            operator: "=",
+            left: {
+              type: "MemberExpression",
+              computed: true,
+              optional: false,
+              object: identifier(context.name),
+              property: literal(index)
+            },
+            right: childContext.assignment || identifier(childContext.name)
+          };
+        } else {
+          elements[index] = generate(child);
+          trimmable = void 0;
+        }
+      }
+      if (trimmable != null) {
+        elements.splice(trimmable);
+      }
+      return {
+        type: "ArrayExpression",
+        elements
+      };
+    }
+    if (val instanceof Set) {
+      const elements = [];
+      let finalizer;
+      for (const child of val) {
+        if (finalizer) {
+          finalizer = methodCall(finalizer, "add", [generate(child)]);
+        } else {
+          const childContext = collectedContexts.get(child);
+          if (context && childContext && namedContexts.indexOf(childContext) >= namedContexts.indexOf(context)) {
+            finalizer = methodCall(identifier(context.name), "add", [generate(child)]);
+          } else {
+            elements.push(generate(child));
+          }
+        }
+      }
+      if (context && finalizer) {
+        context.assignment = replaceAssignment(finalizer, context.assignment);
+      }
+      return {
+        type: "NewExpression",
+        callee: identifier("Set"),
+        arguments: elements.length ? [{ type: "ArrayExpression", elements }] : []
+      };
+    }
+    if (val instanceof Map) {
+      const elements = [];
+      let finalizer;
+      for (const [key, item] of val) {
+        if (finalizer) {
+          finalizer = methodCall(finalizer, "set", [generate(key), generate(item)]);
+        } else {
+          const keyContext = collectedContexts.get(key);
+          const itemContext = collectedContexts.get(item);
+          if (context && (keyContext && namedContexts.indexOf(keyContext) >= namedContexts.indexOf(context) || itemContext && namedContexts.indexOf(itemContext) >= namedContexts.indexOf(context))) {
+            finalizer = methodCall(identifier(context.name), "set", [
+              generate(key),
+              generate(item)
+            ]);
+          } else {
+            elements.push({
+              type: "ArrayExpression",
+              elements: [generate(key), generate(item)]
+            });
+          }
+        }
+      }
+      if (context && finalizer) {
+        context.assignment = replaceAssignment(finalizer, context.assignment);
+      }
+      return {
+        type: "NewExpression",
+        callee: identifier("Map"),
+        arguments: elements.length ? [{ type: "ArrayExpression", elements }] : []
+      };
+    }
+    const properties = [];
+    if (Object.getPrototypeOf(val) == null) {
+      properties.push({
         type: "Property",
         method: false,
         shorthand: false,
         computed: false,
         kind: "init",
-        key: { type: "Identifier", name: "__proto__" },
-        value: { type: "Literal", value: null }
+        key: identifier("__proto__"),
+        value: literal(null)
       });
+    }
+    const object = val;
+    for (const key of Reflect.ownKeys(val)) {
+      const computed = typeof key !== "string";
+      const keyExpression = generate(key);
+      const child = object[key];
+      const childContext = collectedContexts.get(child);
+      if (context && childContext && namedContexts.indexOf(childContext) >= namedContexts.indexOf(context)) {
+        childContext.assignment = {
+          type: "AssignmentExpression",
+          operator: "=",
+          left: {
+            type: "MemberExpression",
+            computed: true,
+            optional: false,
+            object: identifier(context.name),
+            property: keyExpression
+          },
+          right: childContext.assignment || generate(child)
+        };
+      } else {
+        properties.push({
+          type: "Property",
+          method: false,
+          shorthand: false,
+          computed,
+          kind: "init",
+          key: keyExpression,
+          value: generate(child)
+        });
+      }
     }
     return {
       type: "ObjectExpression",
       properties
     };
   }
-  throw new TypeError(`Unsupported value: ${String(value2)}`);
+  analyze(value2);
+  for (const [val, context] of collectedContexts) {
+    if (context.recursive || context.count > 1) {
+      context.name = `$${namedContexts.length}`;
+      namedContexts.push(context);
+    } else {
+      collectedContexts.delete(val);
+    }
+  }
+  if (!namedContexts.length) {
+    return generate(value2);
+  }
+  const declarations = namedContexts.sort(compareContexts).map((context) => ({
+    type: "VariableDeclarator",
+    id: identifier(context.name),
+    init: generate(context.value, true)
+  }));
+  const rootContext = collectedContexts.get(value2);
+  const finalizers = [];
+  for (const context of collectedContexts.values()) {
+    if (context !== rootContext && context.assignment) {
+      finalizers.push(context.assignment);
+    }
+  }
+  finalizers.push(rootContext ? rootContext.assignment || identifier(rootContext.name) : generate(value2));
+  return {
+    type: "CallExpression",
+    optional: false,
+    arguments: [],
+    callee: {
+      type: "ArrowFunctionExpression",
+      expression: false,
+      params: [],
+      body: {
+        type: "BlockStatement",
+        body: [
+          {
+            type: "VariableDeclaration",
+            kind: "const",
+            declarations
+          },
+          {
+            type: "ReturnStatement",
+            argument: {
+              type: "SequenceExpression",
+              expressions: finalizers
+            }
+          }
+        ]
+      }
+    }
+  };
 }
 
 // node_modules/.pnpm/hast-util-heading-rank@2.1.1/node_modules/hast-util-heading-rank/lib/index.js
@@ -15562,14 +15862,14 @@ function csharp(Prism2) {
     var nestedRound = nested(/\((?:[^()]|<<self>>)*\)/.source, 2);
     var name = /@?\b[A-Za-z_]\w*\b/.source;
     var genericName = replace2(/<<0>>(?:\s*<<1>>)?/.source, [name, generic]);
-    var identifier = replace2(/(?!<<0>>)<<1>>(?:\s*\.\s*<<1>>)*/.source, [
+    var identifier2 = replace2(/(?!<<0>>)<<1>>(?:\s*\.\s*<<1>>)*/.source, [
       nonTypeKeywords,
       genericName
     ]);
     var array = /\[\s*(?:,\s*)*\]/.source;
     var typeExpressionWithoutTuple = replace2(
       /<<0>>(?:\s*(?:\?\s*)?<<1>>)*(?:\s*\?)?/.source,
-      [identifier, array]
+      [identifier2, array]
     );
     var tupleElement = replace2(
       /[^,()<>[\];=+\-*/%&|^]|<<0>>|<<1>>|<<2>>/.source,
@@ -15578,7 +15878,7 @@ function csharp(Prism2) {
     var tuple = replace2(/\(<<0>>+(?:,<<0>>+)+\)/.source, [tupleElement]);
     var typeExpression = replace2(
       /(?:<<0>>|<<1>>)(?:\s*(?:\?\s*)?<<2>>)*(?:\s*\?)?/.source,
-      [tuple, identifier, array]
+      [tuple, identifier2, array]
     );
     var typeInside = {
       keyword: keywords,
@@ -15605,7 +15905,7 @@ function csharp(Prism2) {
           // Using static
           // using static System.Math;
           pattern: re(/(\busing\s+static\s+)<<0>>(?=\s*;)/.source, [
-            identifier
+            identifier2
           ]),
           lookbehind: true,
           inside: typeInside
@@ -15641,7 +15941,7 @@ function csharp(Prism2) {
           // Single catch exception declaration
           // catch(Foo)
           // (things like catch(Foo e) is covered by variable declaration)
-          pattern: re(/(\bcatch\s*\(\s*)<<0>>/.source, [identifier]),
+          pattern: re(/(\bcatch\s*\(\s*)<<0>>/.source, [identifier2]),
           lookbehind: true,
           inside: typeInside
         },
@@ -15719,7 +16019,7 @@ function csharp(Prism2) {
         // int Foo => 0; int Foo { get; set } = 0;
         pattern: re(
           /<<0>>(?=\s+(?:<<1>>\s*(?:=>|[({]|\.\s*this\s*\[)|this\s*\[))/.source,
-          [typeExpression, identifier]
+          [typeExpression, identifier2]
         ),
         inside: typeInside,
         alias: "class-name"
@@ -15812,7 +16112,7 @@ function csharp(Prism2) {
     );
     var attrTarget = /\b(?:assembly|event|field|method|module|param|property|return|type)\b/.source;
     var attr = replace2(/<<0>>(?:\s*\(<<1>>*\))?/.source, [
-      identifier,
+      identifier2,
       roundExpression
     ]);
     Prism3.languages.insertBefore("csharp", "class-name", {
@@ -15835,7 +16135,7 @@ function csharp(Prism2) {
             inside: Prism3.languages.csharp
           },
           "class-name": {
-            pattern: RegExp(identifier),
+            pattern: RegExp(identifier2),
             inside: {
               punctuation: /\./
             }
@@ -26824,20 +27124,26 @@ function imagePlugin(userOpts) {
               this.error(`Image '${id}' could not be optimized to JSX`);
             }
             const index = code3.indexOf("export default");
-            return code3.slice(0, index) + `
+            return {
+              code: code3.slice(0, index) + `
   import { _jsxQ } from '@builder.io/qwik';
   const PROPS = {srcSet, width, height};
   export default function (props, key, _, dev) {
     return _jsxQ('img', {...{decoding: 'async', loading: 'lazy'}, ...props}, PROPS, undefined, 3, key, dev);
-  }`;
+  }`,
+              map: null
+            };
           } else if (extension === ".svg") {
             const { svgAttributes } = optimizeSvg({ code: code3, path: pathId }, userOpts);
-            return `
+            return {
+              code: `
   import { _jsxQ } from '@builder.io/qwik';
   const PROPS = ${JSON.stringify(svgAttributes)};
   export default function (props, key, _, dev) {
     return _jsxQ('svg', props, PROPS, undefined, 3, key, dev);
-  }`;
+  }`,
+              map: null
+            };
           }
         }
         return null;
@@ -27048,7 +27354,7 @@ function qwikCityPlugin(userOpts) {
         const fileName = basename4(id);
         if (isMenuFileName(fileName)) {
           const menuCode = await transformMenu(ctx.opts, id, code3);
-          return menuCode;
+          return { code: menuCode, map: null };
         }
         if (mdxTransform) {
           try {

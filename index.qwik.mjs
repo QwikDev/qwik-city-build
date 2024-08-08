@@ -27,8 +27,7 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
   const debounceTimeout = "_qCityScrollDebounce";
   const scrollHistory = "_qCityScroll";
   const checkAndScroll = (scrollState) => {
-    if (scrollState)
-      win.scrollTo(scrollState.x, scrollState.y);
+    if (scrollState) win.scrollTo(scrollState.x, scrollState.y);
   };
   const currentScrollState2 = () => {
     const elm = document.documentElement;
@@ -47,8 +46,7 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
   if (!win[spa] && !win[initPopstate] && !win[initAnchors] && !win[initVisibility] && !win[initScroll]) {
     saveScrollState();
     win[initPopstate] = () => {
-      if (win[spa])
-        return;
+      if (win[spa]) return;
       win[scrollEnabled] = false;
       clearTimeout(win[debounceTimeout]);
       if (currentPath !== location.pathname + location.search) {
@@ -74,14 +72,12 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
       const pushState = history.pushState;
       const replaceState = history.replaceState;
       const prepareState = (state) => {
-        if (state === null || typeof state === "undefined")
-          state = {};
+        if (state === null || typeof state === "undefined") state = {};
         else if (state?.constructor !== Object) {
           state = {
             _data: state
           };
-          if (isDev)
-            console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
+          if (isDev) console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
         }
         state._qCityScroll = state._qCityScroll || currentScrollState2();
         return state;
@@ -96,8 +92,7 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
       };
     }
     win[initAnchors] = (event) => {
-      if (win[spa] || event.defaultPrevented)
-        return;
+      if (win[spa] || event.defaultPrevented) return;
       const target = event.target.closest("a[href]");
       if (target && !target.hasAttribute("preventdefault:click")) {
         const href = target.getAttribute("href");
@@ -107,11 +102,9 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
         const samePath = dest.pathname + dest.search === prev.pathname + prev.search;
         if (sameOrigin && samePath) {
           event.preventDefault();
-          if (dest.href !== prev.href)
-            history.pushState(null, "", dest);
+          if (dest.href !== prev.href) history.pushState(null, "", dest);
           if (!dest.hash) {
-            if (dest.href.endsWith("#"))
-              window.scrollTo(0, 0);
+            if (dest.href.endsWith("#")) window.scrollTo(0, 0);
             else {
               win[scrollEnabled] = false;
               clearTimeout(win[debounceTimeout]);
@@ -125,19 +118,16 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
           } else {
             const elmId = dest.hash.slice(1);
             const elm = document.getElementById(elmId);
-            if (elm)
-              elm.scrollIntoView();
+            if (elm) elm.scrollIntoView();
           }
         }
       }
     };
     win[initVisibility] = () => {
-      if (!win[spa] && win[scrollEnabled] && document.visibilityState === "hidden")
-        saveScrollState();
+      if (!win[spa] && win[scrollEnabled] && document.visibilityState === "hidden") saveScrollState();
     };
     win[initScroll] = () => {
-      if (win[spa] || !win[scrollEnabled])
-        return;
+      if (win[spa] || !win[scrollEnabled]) return;
       clearTimeout(win[debounceTimeout]);
       win[debounceTimeout] = setTimeout(() => {
         saveScrollState();
@@ -151,10 +141,9 @@ const spaInit = eventQrl(/* @__PURE__ */ inlinedQrl((container) => {
         passive: true
       });
       document.body.addEventListener("click", win[initAnchors]);
-      if (!win.navigation)
-        document.addEventListener("visibilitychange", win[initVisibility], {
-          passive: true
-        });
+      if (!win.navigation) document.addEventListener("visibilitychange", win[initVisibility], {
+        passive: true
+      });
     }, 0);
   }
 }, "spa_init_event_1RJPKHqF8AQ"));
@@ -173,8 +162,7 @@ const shim$1 = async (base, path, symbol) => {
   if (!window._qcs && history.scrollRestoration === "manual") {
     window._qcs = true;
     const scrollState = history.state?._qCityScroll;
-    if (scrollState)
-      window.scrollTo(scrollState.x, scrollState.y);
+    if (scrollState) window.scrollTo(scrollState.x, scrollState.y);
     const script = document.currentScript;
     if (script) {
       const container = script.closest("[q\\:container]");
@@ -182,15 +170,13 @@ const shim$1 = async (base, path, symbol) => {
       if (isDev) {
         const imp = new Function("url", "return import(url)");
         (await imp(url.href))[symbol](container);
-      } else
-        (await import(url.href))[symbol](container);
+      } else (await import(url.href))[symbol](container);
     }
   }
 };
 const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() => {
   const serverData = useServerData("containerAttributes");
-  if (!serverData)
-    throw new Error("PrefetchServiceWorker component must be rendered on the server.");
+  if (!serverData) throw new Error("PrefetchServiceWorker component must be rendered on the server.");
   const shimScript = shim(serverData["q:base"]);
   _jsxBranch();
   const nonce = useServerData("nonce");
@@ -198,11 +184,9 @@ const RouterOutlet = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl(() 
   if (context.value && context.value.length > 0) {
     const contentsLen = context.value.length;
     let cmp = null;
-    for (let i = contentsLen - 1; i >= 0; i--)
-      if (context.value[i].default)
-        cmp = _jsxC(context.value[i].default, {
-          children: cmp
-        }, 1, "zl_0");
+    for (let i = contentsLen - 1; i >= 0; i--) if (context.value[i].default) cmp = _jsxC(context.value[i].default, {
+      children: cmp
+    }, 1, "zl_0");
     return /* @__PURE__ */ _jsxC(Fragment, {
       children: [
         cmp,
@@ -234,23 +218,19 @@ const isSameSearchQuery = (a, b) => a.search === b.search;
 const isSamePath = (a, b) => isSameSearchQuery(a, b) && isSamePathname(a, b);
 const getClientDataPath = (pathname, pageSearch, action) => {
   let search = pageSearch ?? "";
-  if (action)
-    search += (search ? "&" : "?") + QACTION_KEY + "=" + encodeURIComponent(action.id);
+  if (action) search += (search ? "&" : "?") + QACTION_KEY + "=" + encodeURIComponent(action.id);
   return pathname + (pathname.endsWith("/") ? "" : "/") + "q-data.json" + search;
 };
 const getClientNavPath = (props, baseUrl) => {
   const href = props.href;
-  if (typeof href === "string" && typeof props.target !== "string" && !props.reload)
-    try {
-      const linkUrl = toUrl(href.trim(), baseUrl.url);
-      const currentUrl = toUrl("", baseUrl.url);
-      if (isSameOrigin(linkUrl, currentUrl))
-        return toPath(linkUrl);
-    } catch (e) {
-      console.error(e);
-    }
-  else if (props.reload)
-    return toPath(toUrl("", baseUrl.url));
+  if (typeof href === "string" && typeof props.target !== "string" && !props.reload) try {
+    const linkUrl = toUrl(href.trim(), baseUrl.url);
+    const currentUrl = toUrl("", baseUrl.url);
+    if (isSameOrigin(linkUrl, currentUrl)) return toPath(linkUrl);
+  } catch (e) {
+    console.error(e);
+  }
+  else if (props.reload) return toPath(toUrl("", baseUrl.url));
   return null;
 };
 const shouldPrefetchData = (clientNavPath, currentLoc) => {
@@ -277,12 +257,10 @@ const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   const getData = (loaderOrAction) => {
     const id = loaderOrAction.__id;
     if (loaderOrAction.__brand === "server_loader") {
-      if (!(id in endpoint.loaders))
-        throw new Error("You can not get the returned data of a loader that has not been executed for this request.");
+      if (!(id in endpoint.loaders)) throw new Error("You can not get the returned data of a loader that has not been executed for this request.");
     }
     const data = endpoint.loaders[id];
-    if (isPromise(data))
-      throw new Error("Loaders returning a promise can not be resolved for the head function.");
+    if (isPromise(data)) throw new Error("Loaders returning a promise can not be resolved for the head function.");
     return data;
   };
   const headProps = {
@@ -294,17 +272,14 @@ const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   for (let i = contentModules.length - 1; i >= 0; i--) {
     const contentModuleHead = contentModules[i] && contentModules[i].head;
     if (contentModuleHead) {
-      if (typeof contentModuleHead === "function")
-        resolveDocumentHead(head, withLocale(locale, () => contentModuleHead(headProps)));
-      else if (typeof contentModuleHead === "object")
-        resolveDocumentHead(head, contentModuleHead);
+      if (typeof contentModuleHead === "function") resolveDocumentHead(head, withLocale(locale, () => contentModuleHead(headProps)));
+      else if (typeof contentModuleHead === "object") resolveDocumentHead(head, contentModuleHead);
     }
   }
   return headProps.head;
 };
 const resolveDocumentHead = (resolvedHead, updatedHead) => {
-  if (typeof updatedHead.title === "string")
-    resolvedHead.title = updatedHead.title;
+  if (typeof updatedHead.title === "string") resolvedHead.title = updatedHead.title;
   mergeArray(resolvedHead.meta, updatedHead.meta);
   mergeArray(resolvedHead.links, updatedHead.links);
   mergeArray(resolvedHead.styles, updatedHead.styles);
@@ -312,17 +287,16 @@ const resolveDocumentHead = (resolvedHead, updatedHead) => {
   Object.assign(resolvedHead.frontmatter, updatedHead.frontmatter);
 };
 const mergeArray = (existingArr, newArr) => {
-  if (Array.isArray(newArr))
-    for (const newItem of newArr) {
-      if (typeof newItem.key === "string") {
-        const existingIndex = existingArr.findIndex((i) => i.key === newItem.key);
-        if (existingIndex > -1) {
-          existingArr[existingIndex] = newItem;
-          continue;
-        }
+  if (Array.isArray(newArr)) for (const newItem of newArr) {
+    if (typeof newItem.key === "string") {
+      const existingIndex = existingArr.findIndex((i) => i.key === newItem.key);
+      if (existingIndex > -1) {
+        existingArr[existingIndex] = newItem;
+        continue;
       }
-      existingArr.push(newItem);
     }
+    existingArr.push(newItem);
+  }
 };
 const createDocumentHead = () => ({
   title: "",
@@ -355,26 +329,22 @@ function matchRoutePart(route, routeIdx, routeLength, path, pathIdx, pathLength)
       const paramValueStart = pathIdx - 1;
       if (isMany) {
         const match = recursiveScan(paramName, suffix, path, paramValueStart, pathLength, route, routeIdx + suffix.length + 1, routeLength);
-        if (match)
-          return Object.assign(params || (params = {}), match);
+        if (match) return Object.assign(params || (params = {}), match);
       }
       const paramValueEnd = scan(path, paramValueStart, pathLength, 47, suffix);
-      if (paramValueEnd == -1)
-        return null;
+      if (paramValueEnd == -1) return null;
       const paramValue = path.substring(paramValueStart, paramValueEnd);
       if (!isMany && !suffix && !paramValue)
         return null;
       pathIdx = paramValueEnd;
       (params || (params = {}))[paramName] = decodeURIComponent(paramValue);
     } else if (routeCh !== pathCh) {
-      if (!(isNaN(pathCh) && isRestParameter(route, routeIdx)))
-        return null;
+      if (!(isNaN(pathCh) && isRestParameter(route, routeIdx))) return null;
     }
   }
   if (allConsumed(route, routeIdx) && allConsumed(path, pathIdx))
     return params || {};
-  else
-    return null;
+  else return null;
 }
 function isRestParameter(text, idx) {
   return text.charCodeAt(idx) === 91 && isThreeDots(text, idx + 1);
@@ -394,40 +364,27 @@ function isThreeDots(text, idx) {
   return text.charCodeAt(idx) === 46 && text.charCodeAt(idx + 1) === 46 && text.charCodeAt(idx + 2) === 46;
 }
 function scan(text, idx, end, ch, suffix = "") {
-  while (idx < end && text.charCodeAt(idx) !== ch)
-    idx++;
+  while (idx < end && text.charCodeAt(idx) !== ch) idx++;
   const suffixLength = suffix.length;
   for (let i = 0; i < suffixLength; i++) {
-    if (text.charCodeAt(idx - suffixLength + i) !== suffix.charCodeAt(i))
-      return -1;
+    if (text.charCodeAt(idx - suffixLength + i) !== suffix.charCodeAt(i)) return -1;
   }
   return idx - suffixLength;
 }
-let Char;
-(function(Char2) {
-  Char2[Char2["EOL"] = 0] = "EOL";
-  Char2[Char2["OPEN_BRACKET"] = 91] = "OPEN_BRACKET";
-  Char2[Char2["CLOSE_BRACKET"] = 93] = "CLOSE_BRACKET";
-  Char2[Char2["DOT"] = 46] = "DOT";
-  Char2[Char2["SLASH"] = 47] = "SLASH";
-})(Char || (Char = {}));
 function recursiveScan(paramName, suffix, path, pathStart, pathLength, route, routeStart, routeLength) {
-  if (path.charCodeAt(pathStart) === 47)
-    pathStart++;
+  if (path.charCodeAt(pathStart) === 47) pathStart++;
   let pathIdx = pathLength;
   const sep = suffix + "/";
   while (pathIdx >= pathStart) {
     const match = matchRoutePart(route, routeStart, routeLength, path, pathIdx, pathLength);
     if (match) {
       let value = path.substring(pathStart, Math.min(pathIdx, pathLength));
-      if (value.endsWith(sep))
-        value = value.substring(0, value.length - sep.length);
+      if (value.endsWith(sep)) value = value.substring(0, value.length - sep.length);
       match[paramName] = decodeURIComponent(value);
       return match;
     }
     const newPathIdx = lastIndexOf(path, pathStart, sep, pathIdx, pathStart - 1) + sep.length;
-    if (pathIdx === newPathIdx)
-      break;
+    if (pathIdx === newPathIdx) break;
     pathIdx = newPathIdx;
   }
   return null;
@@ -439,13 +396,11 @@ function lastIndexOf(text, start, match, searchIdx, notFoundIdx) {
   return idx > start ? idx : notFoundIdx;
 }
 const loadRoute = async (routes, menus, cacheModules, pathname) => {
-  if (!Array.isArray(routes))
-    return null;
+  if (!Array.isArray(routes)) return null;
   for (const routeData of routes) {
     const routeName = routeData[0];
     const params = matchRoute(routeName, pathname);
-    if (!params)
-      continue;
+    if (!params) continue;
     const loaders = routeData[1];
     const routeBundleNames = routeData[3];
     const modules = new Array(loaders.length);
@@ -456,8 +411,7 @@ const loadRoute = async (routes, menus, cacheModules, pathname) => {
     const menuLoader = getMenuLoader(menus, pathname);
     let menu = void 0;
     loadModule(menuLoader, pendingLoads, (menuModule) => menu = menuModule?.default, cacheModules);
-    if (pendingLoads.length > 0)
-      await Promise.all(pendingLoads);
+    if (pendingLoads.length > 0) await Promise.all(pendingLoads);
     return [
       routeName,
       params,
@@ -471,18 +425,14 @@ const loadRoute = async (routes, menus, cacheModules, pathname) => {
 const loadModule = (moduleLoader, pendingLoads, moduleSetter, cacheModules) => {
   if (typeof moduleLoader === "function") {
     const loadedModule = MODULE_CACHE.get(moduleLoader);
-    if (loadedModule)
-      moduleSetter(loadedModule);
+    if (loadedModule) moduleSetter(loadedModule);
     else {
       const moduleOrPromise = moduleLoader();
-      if (typeof moduleOrPromise.then === "function")
-        pendingLoads.push(moduleOrPromise.then((loadedModule2) => {
-          if (cacheModules !== false)
-            MODULE_CACHE.set(moduleLoader, loadedModule2);
-          moduleSetter(loadedModule2);
-        }));
-      else if (moduleOrPromise)
-        moduleSetter(moduleOrPromise);
+      if (typeof moduleOrPromise.then === "function") pendingLoads.push(moduleOrPromise.then((loadedModule2) => {
+        if (cacheModules !== false) MODULE_CACHE.set(moduleLoader, loadedModule2);
+        moduleSetter(loadedModule2);
+      }));
+      else if (moduleOrPromise) moduleSetter(moduleOrPromise);
     }
   }
 };
@@ -490,8 +440,7 @@ const getMenuLoader = (menus, pathname) => {
   if (menus) {
     pathname = pathname.endsWith("/") ? pathname : pathname + "/";
     const menu = menus.find((m) => m[0] === pathname || pathname.startsWith(m[0] + (pathname.endsWith("/") ? "" : "/")));
-    if (menu)
-      return menu[1];
+    if (menu) return menu[1];
   }
 };
 const clientNavigate = (win, navType, fromURL, toURL, replaceState = false) => {
@@ -502,8 +451,7 @@ const clientNavigate = (win, navType, fromURL, toURL, replaceState = false) => {
       const newState = {
         _qCityScroll: newScrollState()
       };
-      if (replaceState)
-        win.history.replaceState(newState, "", toPath(toURL));
+      if (replaceState) win.history.replaceState(newState, "", toPath(toURL));
       else
         win.history.pushState(newState, "", toPath(toURL));
     }
@@ -537,15 +485,12 @@ const loadClientData = async (url, element, opts) => {
   const pageSearch = url.search;
   const clientDataPath = getClientDataPath(pagePathname, pageSearch, opts?.action);
   let qData;
-  if (!opts?.action)
-    qData = CLIENT_DATA_CACHE.get(clientDataPath);
-  if (opts?.prefetchSymbols !== false)
-    prefetchSymbols(pagePathname);
+  if (!opts?.action) qData = CLIENT_DATA_CACHE.get(clientDataPath);
+  if (opts?.prefetchSymbols !== false) prefetchSymbols(pagePathname);
   let resolveFn;
   if (!qData) {
     const fetchOptions = getFetchOptions(opts?.action);
-    if (opts?.action)
-      opts.action.data = void 0;
+    if (opts?.action) opts.action.data = void 0;
     qData = fetch(clientDataPath, fetchOptions).then((rsp) => {
       if (rsp.redirected) {
         const redirectedURL = new URL(rsp.url);
@@ -562,8 +507,7 @@ const loadClientData = async (url, element, opts) => {
             location.href = url.href;
             return;
           }
-          if (opts?.clearCache)
-            CLIENT_DATA_CACHE.delete(clientDataPath);
+          if (opts?.clearCache) CLIENT_DATA_CACHE.delete(clientDataPath);
           if (clientData.redirect)
             location.href = clientData.redirect;
           else if (opts?.action) {
@@ -579,38 +523,32 @@ const loadClientData = async (url, element, opts) => {
           return clientData;
         });
       else {
-        if (opts?.isPrefetch !== true)
-          location.href = url.href;
+        if (opts?.isPrefetch !== true) location.href = url.href;
         return void 0;
       }
     });
-    if (!opts?.action)
-      CLIENT_DATA_CACHE.set(clientDataPath, qData);
+    if (!opts?.action) CLIENT_DATA_CACHE.set(clientDataPath, qData);
   }
   return qData.then((v) => {
-    if (!v)
-      CLIENT_DATA_CACHE.delete(clientDataPath);
+    if (!v) CLIENT_DATA_CACHE.delete(clientDataPath);
     resolveFn && resolveFn();
     return v;
   });
 };
 const getFetchOptions = (action) => {
   const actionData = action?.data;
-  if (!actionData)
-    return void 0;
-  if (actionData instanceof FormData)
-    return {
-      method: "POST",
-      body: actionData
-    };
-  else
-    return {
-      method: "POST",
-      body: JSON.stringify(actionData),
-      headers: {
-        "Content-Type": "application/json, charset=UTF-8"
-      }
-    };
+  if (!actionData) return void 0;
+  if (actionData instanceof FormData) return {
+    method: "POST",
+    body: actionData
+  };
+  else return {
+    method: "POST",
+    body: JSON.stringify(actionData),
+    headers: {
+      "Content-Type": "application/json, charset=UTF-8"
+    }
+  };
 };
 const useContent = () => useContext(ContentContext);
 const useDocumentHead = () => useContext(DocumentHeadContext);
@@ -619,11 +557,9 @@ const useNavigate = () => useContext(RouteNavigateContext);
 const useAction = () => useContext(RouteActionContext);
 const useQwikCityEnv = () => noSerialize(useServerData("qwikcity"));
 const restoreScroll = (type, toUrl2, fromUrl, scroller, scrollState) => {
-  if (type === "popstate" && scrollState)
-    scroller.scrollTo(scrollState.x, scrollState.y);
+  if (type === "popstate" && scrollState) scroller.scrollTo(scrollState.x, scrollState.y);
   else if (type === "link" || type === "form") {
-    if (!hashScroll(toUrl2, fromUrl))
-      scroller.scrollTo(0, 0);
+    if (!hashScroll(toUrl2, fromUrl)) scroller.scrollTo(0, 0);
   }
 };
 const hashScroll = (toUrl2, fromUrl) => {
@@ -657,11 +593,9 @@ const QWIK_CITY_SCROLLER = "_qCityScroller";
 const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   useStylesQrl(/* @__PURE__ */ inlinedQrl(`:root{view-transition-name:none}`, "QwikCityProvider_component_useStyles_RPDJAz33WLA"));
   const env = useQwikCityEnv();
-  if (!env?.params)
-    throw new Error(`Missing Qwik City Env Data for help visit https://github.com/QwikDev/qwik/issues/6237`);
+  if (!env?.params) throw new Error(`Missing Qwik City Env Data for help visit https://github.com/QwikDev/qwik/issues/6237`);
   const urlEnv = useServerData("url");
-  if (!urlEnv)
-    throw new Error(`Missing Qwik URL Env Data`);
+  if (!urlEnv) throw new Error(`Missing Qwik URL Env Data`);
   const url = new URL(urlEnv);
   const routeLocation = useStore({
     url,
@@ -704,25 +638,21 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       forceReload: opt
     };
     if (typeof path === "number") {
-      if (isBrowser)
-        history.go(path);
+      if (isBrowser) history.go(path);
       return;
     }
     const lastDest = routeInternal2.value.dest;
     const dest = path === void 0 ? lastDest : toUrl(path, routeLocation2.url);
     if (!isSameOrigin(dest, lastDest)) {
-      if (isBrowser)
-        location.href = dest.href;
+      if (isBrowser) location.href = dest.href;
       return;
     }
     if (!forceReload && isSamePath(dest, lastDest)) {
       if (isBrowser) {
-        if (type === "link" && dest.href !== location.href)
-          history.pushState(null, "", dest);
+        if (type === "link" && dest.href !== location.href) history.pushState(null, "", dest);
         const scroller = document.getElementById(QWIK_CITY_SCROLLER) ?? document.documentElement;
         restoreScroll(type, dest, new URL(location.href), scroller, getScrollHistory());
-        if (type === "popstate")
-          window._qCityScrollEnabled = true;
+        if (type === "popstate") window._qCityScrollEnabled = true;
       }
       return;
     }
@@ -778,10 +708,8 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       } else {
         trackUrl = new URL(navigation.dest, location);
         if (trackUrl.pathname.endsWith("/")) {
-          if (!qwikCity.trailingSlash)
-            trackUrl.pathname = trackUrl.pathname.slice(0, -1);
-        } else if (qwikCity.trailingSlash)
-          trackUrl.pathname += "/";
+          if (!qwikCity.trailingSlash) trackUrl.pathname = trackUrl.pathname.slice(0, -1);
+        } else if (qwikCity.trailingSlash) trackUrl.pathname += "/";
         let loadRoutePromise = loadRoute(qwikCity.routes, qwikCity.menus, qwikCity.cacheModules, trackUrl.pathname);
         elm = _getContextElement();
         const pageData = clientPageData = await loadClientData(trackUrl, elm, {
@@ -835,15 +763,13 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
           if (props2.viewTransition !== false)
             document.__q_view_transition__ = true;
           let scrollState;
-          if (navType === "popstate")
-            scrollState = getScrollHistory();
+          if (navType === "popstate") scrollState = getScrollHistory();
           const scroller = document.getElementById(QWIK_CITY_SCROLLER) ?? document.documentElement;
           if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate") || navType === "form" && !isSamePath(trackUrl, prevUrl))
             document.__q_scroll_restore__ = () => restoreScroll(navType, trackUrl, prevUrl, scroller, scrollState);
           const loaders = clientPageData?.loaders;
           const win = window;
-          if (loaders)
-            Object.assign(loaderState2, loaders);
+          if (loaders) Object.assign(loaderState2, loaders);
           CLIENT_DATA_CACHE.clear();
           if (!win._qCitySPA) {
             win._qCitySPA = true;
@@ -862,14 +788,12 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
               const pushState = history.pushState;
               const replaceState2 = history.replaceState;
               const prepareState = (state) => {
-                if (state === null || typeof state === "undefined")
-                  state = {};
+                if (state === null || typeof state === "undefined") state = {};
                 else if (state?.constructor !== Object) {
                   state = {
                     _data: state
                   };
-                  if (isDev)
-                    console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
+                  if (isDev) console.warn("In a Qwik SPA context, `history.state` is used to store scroll state. Direct calls to `pushState()` and `replaceState()` must supply an actual Object type. We need to be able to automatically attach the scroll state to your state object. A new state object has been created, your data has been moved to: `history.state._data`");
                 }
                 state._qCityScroll = state._qCityScroll || currentScrollState(scroller);
                 return state;
@@ -884,8 +808,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
               };
             }
             document.body.addEventListener("click", (event) => {
-              if (event.defaultPrevented)
-                return;
+              if (event.defaultPrevented) return;
               const target = event.target.closest("a[href]");
               if (target && !target.hasAttribute("preventdefault:click")) {
                 const href = target.getAttribute("href");
@@ -894,8 +817,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
                 if (isSameOrigin(dest, prev) && isSamePath(dest, prev)) {
                   event.preventDefault();
                   if (!dest.hash && !dest.href.endsWith("#")) {
-                    if (dest.href !== prev.href)
-                      history.pushState(null, "", dest);
+                    if (dest.href !== prev.href) history.pushState(null, "", dest);
                     win._qCityScrollEnabled = false;
                     clearTimeout(win._qCityScrollDebounce);
                     saveScrollHistory({
@@ -925,8 +847,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
               win._qCityInitVisibility = void 0;
             }
             win.addEventListener("scroll", () => {
-              if (!win._qCityScrollEnabled)
-                return;
+              if (!win._qCityScrollEnabled) return;
               clearTimeout(win._qCityScrollDebounce);
               win._qCityScrollDebounce = setTimeout(() => {
                 const scrollState2 = currentScrollState(scroller);
@@ -962,10 +883,8 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
       }
     }
     const promise = run();
-    if (isServer)
-      return promise;
-    else
-      return;
+    if (isServer) return promise;
+    else return;
   }, "QwikCityProvider_component_useTask_02wMImzEAbk", [
     actionState,
     content,
@@ -982,8 +901,7 @@ const QwikCityProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl
   return /* @__PURE__ */ _jsxC(Slot, null, 3, "qY_0");
 }, "QwikCityProvider_component_TxCFOy819ag"));
 function getContainer(elm) {
-  while (elm && elm.nodeType !== Node.ELEMENT_NODE)
-    elm = elm.parentElement;
+  while (elm && elm.nodeType !== Node.ELEMENT_NODE) elm = elm.parentElement;
   return elm.closest("[q\\:container]");
 }
 const QwikCityMockProvider = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
@@ -1038,21 +956,18 @@ const Link = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => 
   const prefetchData = untrack(() => !!clientNavPath && prefetchProp !== false && prefetchProp !== "js" && shouldPrefetchData(clientNavPath, loc) || void 0);
   const prefetch = untrack(() => prefetchData || !!clientNavPath && prefetchProp !== false && shouldPrefetchSymbols(clientNavPath, loc));
   const handlePrefetch = prefetch ? /* @__PURE__ */ inlinedQrl((_, elm) => {
-    if (navigator.connection?.saveData)
-      return;
+    if (navigator.connection?.saveData) return;
     if (elm && elm.href) {
       const url = new URL(elm.href);
       prefetchSymbols(url.pathname);
-      if (elm.hasAttribute("data-prefetch"))
-        loadClientData(url, elm, {
-          prefetchSymbols: false,
-          isPrefetch: true
-        });
+      if (elm.hasAttribute("data-prefetch")) loadClientData(url, elm, {
+        prefetchSymbols: false,
+        isPrefetch: true
+      });
     }
   }, "Link_component_handlePrefetch_Osdg8FnYTw4") : void 0;
   const preventDefault = clientNavPath ? _qrlSync((event, target) => {
-    if (!(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey))
-      event.preventDefault();
+    if (!(event.metaKey || event.ctrlKey || event.shiftKey || event.altKey)) event.preventDefault();
   }, "(event,target)=>{if(!(event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)){event.preventDefault();}}") : void 0;
   const handleClick = clientNavPath ? /* @__PURE__ */ inlinedQrl(async (event, elm) => {
     const [nav2, reload2, replaceState2, scroll2] = useLexicalScope();
@@ -1124,8 +1039,7 @@ const routeActionQrl = (actionQrl, ...rest) => {
       const value = currentAction.value;
       if (value && value?.id === id) {
         const data = value.data;
-        if (data instanceof FormData)
-          initialState.formData = data;
+        if (data instanceof FormData) initialState.formData = data;
         if (value.output) {
           const { status, result } = value.output;
           initialState.status = status;
@@ -1136,8 +1050,7 @@ const routeActionQrl = (actionQrl, ...rest) => {
     });
     const submit = /* @__PURE__ */ inlinedQrl((input = {}) => {
       const [currentAction2, id2, loc2, state2] = useLexicalScope();
-      if (isServer)
-        throw new Error(`Actions can not be invoked within the server during SSR.
+      if (isServer) throw new Error(`Actions can not be invoked within the server during SSR.
 Action.run() can only be called on the browser, for example when a user clicks a button, or submits a form.`);
       let data;
       let form;
@@ -1145,14 +1058,11 @@ Action.run() can only be called on the browser, for example when a user clicks a
         form = input.target;
         data = new FormData(form);
         if ((input.submitter instanceof HTMLInputElement || input.submitter instanceof HTMLButtonElement) && input.submitter.name) {
-          if (input.submitter.name)
-            data.append(input.submitter.name, input.submitter.value);
+          if (input.submitter.name) data.append(input.submitter.name, input.submitter.value);
         }
-      } else
-        data = input;
+      } else data = input;
       return new Promise((resolve) => {
-        if (data instanceof FormData)
-          state2.formData = data;
+        if (data instanceof FormData) state2.formData = data;
         state2.submitted = true;
         state2.isRunning = true;
         loc2.isNavigating = true;
@@ -1166,8 +1076,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
         state2.status = status;
         state2.value = result;
         if (form) {
-          if (form.getAttribute("data-spa-reset") === "true")
-            form.reset();
+          if (form.getAttribute("data-spa-reset") === "true") form.reset();
           const detail = {
             status,
             value: result
@@ -1203,8 +1112,7 @@ Action.run() can only be called on the browser, for example when a user clicks a
 const globalActionQrl = (actionQrl, ...rest) => {
   const action = routeActionQrl(actionQrl, ...rest);
   if (isServer) {
-    if (typeof globalThis._qwikActionsMap === "undefined")
-      globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
+    if (typeof globalThis._qwikActionsMap === "undefined") globalThis._qwikActionsMap = /* @__PURE__ */ new Map();
     globalThis._qwikActionsMap.set(action.__id, action);
   }
   return action;
@@ -1215,8 +1123,7 @@ const routeLoaderQrl = (loaderQrl, ...rest) => {
   const { id, validators } = getValidators(rest, loaderQrl);
   function loader() {
     return useContext(RouteStateContext, (state) => {
-      if (!(id in state))
-        throw new Error(`routeLoader$ "${loaderQrl.getSymbol()}" was invoked in a route where it was not declared.
+      if (!(id in state)) throw new Error(`routeLoader$ "${loaderQrl.getSymbol()}" was invoked in a route where it was not declared.
     This is because the routeLoader$ was not exported in a 'layout.tsx' or 'index.tsx' file of the existing route.
     For more information check: https://qwik.dev/qwikcity/route-loader/
 
@@ -1234,45 +1141,38 @@ const routeLoaderQrl = (loaderQrl, ...rest) => {
 };
 const routeLoader$ = /* @__PURE__ */ implicit$FirstArg(routeLoaderQrl);
 const validatorQrl = (validator) => {
-  if (isServer)
-    return {
-      validate: validator
-    };
+  if (isServer) return {
+    validate: validator
+  };
   return void 0;
 };
 const validator$ = /* @__PURE__ */ implicit$FirstArg(validatorQrl);
 const zodQrl = (qrl) => {
-  if (isServer)
-    return {
-      async validate(ev, inputData) {
-        const schema = qrl.resolve().then((obj) => {
-          if (typeof obj === "function")
-            obj = obj(z, ev);
-          if (obj instanceof z.Schema)
-            return obj;
-          else
-            return z.object(obj);
-        });
-        const data = inputData ?? await ev.parseBody();
-        const result = await (await schema).safeParseAsync(data);
-        if (result.success)
-          return result;
-        else {
-          if (isDev)
-            console.error("\nVALIDATION ERROR\naction$() zod validated failed", "\n  - Issues:", result.error.issues);
-          const zodErrorsFlatten = result.error.flatten();
-          const fieldErrors = flattenZodIssues(result.error.issues);
-          return {
-            success: false,
-            status: 400,
-            error: {
-              formErrors: zodErrorsFlatten.formErrors,
-              fieldErrors
-            }
-          };
-        }
+  if (isServer) return {
+    async validate(ev, inputData) {
+      const schema = qrl.resolve().then((obj) => {
+        if (typeof obj === "function") obj = obj(z, ev);
+        if (obj instanceof z.Schema) return obj;
+        else return z.object(obj);
+      });
+      const data = inputData ?? await ev.parseBody();
+      const result = await (await schema).safeParseAsync(data);
+      if (result.success) return result;
+      else {
+        if (isDev) console.error("\nVALIDATION ERROR\naction$() zod validated failed", "\n  - Issues:", result.error.issues);
+        const zodErrorsFlatten = result.error.flatten();
+        const fieldErrors = flattenZodIssues(result.error.issues);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            formErrors: zodErrorsFlatten.formErrors,
+            fieldErrors
+          }
+        };
       }
-    };
+    }
+  };
   return void 0;
 };
 const flattenZodIssues = (issues) => {
@@ -1286,11 +1186,9 @@ const flattenZodIssues = (issues) => {
       const keySuffix = "expected" in issue && issue.expected === "array" ? "[]" : "";
       const key = issue.path.map((path) => typeof path === "number" ? "*" : path).join(".").replace(/\.\*/g, "[]") + keySuffix;
       acc[key] = acc[key] || [];
-      if (Array.isArray(acc[key]))
-        acc[key].push(issue.message);
+      if (Array.isArray(acc[key])) acc[key].push(issue.message);
       return acc;
-    } else
-      acc[issue.path.join(".")] = issue.message;
+    } else acc[issue.path.join(".")] = issue.message;
     return acc;
   }, {});
 };
@@ -1298,16 +1196,14 @@ const zod$ = /* @__PURE__ */ implicit$FirstArg(zodQrl);
 const deepFreeze = (obj) => {
   Object.getOwnPropertyNames(obj).forEach((prop) => {
     const value = obj[prop];
-    if (value && typeof value === "object" && !Object.isFrozen(value))
-      deepFreeze(value);
+    if (value && typeof value === "object" && !Object.isFrozen(value)) deepFreeze(value);
   });
   return Object.freeze(obj);
 };
 const serverQrl = (qrl, options) => {
   if (isServer) {
     const captured = qrl.getCaptured();
-    if (captured && captured.length > 0 && !_getContextElement())
-      throw new Error("For security reasons, we cannot serialize QRLs that capture lexical scope.");
+    if (captured && captured.length > 0 && !_getContextElement()) throw new Error("For security reasons, we cannot serialize QRLs that capture lexical scope.");
   }
   const method = options?.method?.toUpperCase?.() || "POST";
   const headers = options?.headers || {};
@@ -1331,12 +1227,9 @@ const serverQrl = (qrl, options) => {
       } else {
         const ctxElm = _getContextElement();
         const filteredArgs = args.map((arg) => {
-          if (arg instanceof SubmitEvent && arg.target instanceof HTMLFormElement)
-            return new FormData(arg.target);
-          else if (arg instanceof Event)
-            return null;
-          else if (arg instanceof Node)
-            return null;
+          if (arg instanceof SubmitEvent && arg.target instanceof HTMLFormElement) return new FormData(arg.target);
+          else if (arg instanceof Event) return null;
+          else if (arg instanceof Node) return null;
           return arg;
         });
         const qrlHash = qrl2.getHash();
@@ -1356,37 +1249,30 @@ const serverQrl = (qrl, options) => {
           qrl2,
           ...filteredArgs
         ], false);
-        if (method2 === "GET")
-          query += `&${QDATA_KEY}=${encodeURIComponent(body)}`;
+        if (method2 === "GET") query += `&${QDATA_KEY}=${encodeURIComponent(body)}`;
         else
           config.body = body;
         const res = await fetch(`${origin2}?${QFN_KEY}=${qrlHash}${query}`, config);
         const contentType = res.headers.get("Content-Type");
-        if (res.ok && contentType === "text/qwik-json-stream" && res.body)
-          return async function* () {
-            try {
-              for await (const result of deserializeStream(res.body, ctxElm ?? document.documentElement, abortSignal))
-                yield result;
-            } finally {
-              if (!abortSignal?.aborted)
-                await res.body.cancel();
-            }
-          }();
+        if (res.ok && contentType === "text/qwik-json-stream" && res.body) return async function* () {
+          try {
+            for await (const result of deserializeStream(res.body, ctxElm ?? document.documentElement, abortSignal)) yield result;
+          } finally {
+            if (!abortSignal?.aborted) await res.body.cancel();
+          }
+        }();
         else if (contentType === "application/qwik-json") {
           const str = await res.text();
           const obj = await _deserializeData(str, ctxElm ?? document.documentElement);
-          if (res.status === 500)
-            throw obj;
+          if (res.status === 500) throw obj;
           return obj;
         } else if (contentType === "application/json") {
           const obj = await res.json();
-          if (res.status === 500)
-            throw obj;
+          if (res.status === 500) throw obj;
           return obj;
         } else if (contentType === "text/plain" || contentType === "text/html") {
           const str = await res.text();
-          if (res.status === 500)
-            throw str;
+          if (res.status === 500) throw str;
           return str;
         }
       }
@@ -1407,24 +1293,19 @@ const getValidators = (rest, qrl) => {
   if (rest.length === 1) {
     const options = rest[0];
     if (options && typeof options === "object") {
-      if ("validate" in options)
-        validators.push(options);
+      if ("validate" in options) validators.push(options);
       else {
         id = options.id;
-        if (options.validation)
-          validators.push(...options.validation);
+        if (options.validation) validators.push(...options.validation);
       }
     }
-  } else if (rest.length > 1)
-    validators.push(...rest.filter((v) => !!v));
+  } else if (rest.length > 1) validators.push(...rest.filter((v) => !!v));
   if (typeof id === "string") {
     if (isDev) {
-      if (!/^[\w/.-]+$/.test(id))
-        throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
+      if (!/^[\w/.-]+$/.test(id)) throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
     }
     id = `id_${id}`;
-  } else
-    id = qrl.getHash();
+  } else id = qrl.getHash();
   return {
     validators: validators.reverse(),
     id
@@ -1437,15 +1318,13 @@ const deserializeStream = async function* (stream, ctxElm, abortSignal) {
     const decoder = new TextDecoder();
     while (!abortSignal?.aborted) {
       const result = await reader.read();
-      if (result.done)
-        break;
+      if (result.done) break;
       buffer += decoder.decode(result.value, {
         stream: true
       });
       const lines = buffer.split(/\n/);
       buffer = lines.pop();
-      for (const line of lines)
-        yield await _deserializeData(line, ctxElm);
+      for (const line of lines) yield await _deserializeData(line, ctxElm);
     }
   } finally {
     reader.releaseLock();
@@ -1455,30 +1334,28 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
   _jsxBranch();
   if (action) {
     const isArrayApi = Array.isArray(onSubmit$);
-    if (isArrayApi)
-      return _jsxS("form", {
-        ...rest,
-        get action() {
-          return action.actionPath;
-        },
-        action: _wrapSignal(action, "actionPath"),
-        "preventdefault:submit": !reloadDocument,
-        method: "post",
-        ["data-spa-reset"]: spaReset ? "true" : void 0,
-        onSubmit$: [
-          ...onSubmit$,
-          // action.submit "submitcompleted" event for onSubmitCompleted$ events
-          !reloadDocument ? /* @__PURE__ */ inlinedQrl((evt) => {
-            const [action2] = useLexicalScope();
-            if (!action2.submitted)
-              return action2.submit(evt);
-          }, "Form_form_onSubmit_uPHV2oGn4wc", [
-            action
-          ]) : void 0
-        ]
-      }, {
-        method: _IMMUTABLE
-      }, 0, key);
+    if (isArrayApi) return _jsxS("form", {
+      ...rest,
+      get action() {
+        return action.actionPath;
+      },
+      action: _wrapSignal(action, "actionPath"),
+      "preventdefault:submit": !reloadDocument,
+      method: "post",
+      ["data-spa-reset"]: spaReset ? "true" : void 0,
+      onSubmit$: [
+        ...onSubmit$,
+        // action.submit "submitcompleted" event for onSubmitCompleted$ events
+        !reloadDocument ? /* @__PURE__ */ inlinedQrl((evt) => {
+          const [action2] = useLexicalScope();
+          if (!action2.submitted) return action2.submit(evt);
+        }, "Form_form_onSubmit_uPHV2oGn4wc", [
+          action
+        ]) : void 0
+      ]
+    }, {
+      method: _IMMUTABLE
+    }, 0, key);
     return _jsxS("form", {
       ...rest,
       get action() {
@@ -1497,13 +1374,12 @@ const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => 
     }, {
       method: _IMMUTABLE
     }, 0, key);
-  } else
-    return /* @__PURE__ */ _jsxC(GetForm, {
-      spaReset,
-      reloadDocument,
-      onSubmit$,
-      ...rest
-    }, 0, key);
+  } else return /* @__PURE__ */ _jsxC(GetForm, {
+    spaReset,
+    reloadDocument,
+    onSubmit$,
+    ...rest
+  }, 0, key);
 };
 const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) => {
   const rest = _restProps(props, [
@@ -1532,8 +1408,7 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
         const formData = new FormData(form);
         const params = new URLSearchParams();
         formData.forEach((value, key) => {
-          if (typeof value === "string")
-            params.append(key, value);
+          if (typeof value === "string") params.append(key, value);
         });
         await nav2("?" + params.toString(), {
           type: "form",
@@ -1543,8 +1418,7 @@ const GetForm = /* @__PURE__ */ componentQrl(/* @__PURE__ */ inlinedQrl((props) 
         nav
       ]),
       /* @__PURE__ */ inlinedQrl((_evt, form) => {
-        if (form.getAttribute("data-spa-reset") === "true")
-          form.reset();
+        if (form.getAttribute("data-spa-reset") === "true") form.reset();
         form.dispatchEvent(new CustomEvent("submitcompleted", {
           bubbles: false,
           cancelable: false,
