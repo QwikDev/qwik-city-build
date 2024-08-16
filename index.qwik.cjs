@@ -507,7 +507,7 @@ const loadClientData = async (url, element, opts) => {
   if (opts?.prefetchSymbols !== false) prefetchSymbols(pagePathname);
   let resolveFn;
   if (!qData) {
-    const fetchOptions = getFetchOptions(opts?.action);
+    const fetchOptions = getFetchOptions(opts?.action, opts?.clearCache);
     if (opts?.action) opts.action.data = void 0;
     qData = fetch(clientDataPath, fetchOptions).then((rsp) => {
       if (rsp.redirected) {
@@ -553,9 +553,18 @@ const loadClientData = async (url, element, opts) => {
     return v;
   });
 };
-const getFetchOptions = (action) => {
+const getFetchOptions = (action, noCache) => {
   const actionData = action?.data;
-  if (!actionData) return void 0;
+  if (!actionData) {
+    if (noCache) return {
+      cache: "no-cache",
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache"
+      }
+    };
+    return void 0;
+  }
   if (actionData instanceof FormData) return {
     method: "POST",
     body: actionData
