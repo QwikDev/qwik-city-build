@@ -1405,7 +1405,9 @@ const GetForm = /* @__PURE__ */ qwik.componentQrl(/* @__PURE__ */ qwik.inlinedQr
     "preventdefault:submit": qwik._fnSignal((p0) => !p0.reloadDocument, [
       props
     ], "!p0.reloadDocument"),
-    "data-spa-reset": props.spaReset ? "true" : void 0,
+    "data-spa-reset": qwik._fnSignal((p0) => p0.spaReset ? "true" : void 0, [
+      props
+    ], 'p0.spaReset?"true":undefined'),
     ...rest,
     onSubmit$: [
       ...Array.isArray(props.onSubmit$) ? props.onSubmit$ : [
