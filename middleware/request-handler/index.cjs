@@ -1217,11 +1217,14 @@ function fixTrailingSlash(ev) {
   if (!isQData && pathname !== basePathname && !pathname.endsWith(".html")) {
     if (trailingSlash) {
       if (!pathname.endsWith("/")) {
-        throw ev.redirect(302 /* Found */, pathname + "/" + url.search);
+        throw ev.redirect(301 /* MovedPermanently */, pathname + "/" + url.search);
       }
     } else {
       if (pathname.endsWith("/")) {
-        throw ev.redirect(302 /* Found */, pathname.slice(0, pathname.length - 1) + url.search);
+        throw ev.redirect(
+          301 /* MovedPermanently */,
+          pathname.slice(0, pathname.length - 1) + url.search
+        );
       }
     }
   }
