@@ -1049,6 +1049,76 @@ const ServiceWorkerRegister = (props) => qwik._jsxQ("script", {
 }, {
   dangerouslySetInnerHTML: swRegister
 }, null, 3, "1Z_0");
+var store;
+function getGlobalConfig(config2) {
+  return {
+    lang: config2?.lang ?? store?.lang,
+    message: config2?.message,
+    abortEarly: config2?.abortEarly ?? store?.abortEarly,
+    abortPipeEarly: config2?.abortPipeEarly ?? store?.abortPipeEarly
+  };
+}
+function getDotPath(issue) {
+  if (issue.path) {
+    let key = "";
+    for (const item of issue.path) {
+      if (typeof item.key === "string" || typeof item.key === "number") {
+        if (key) {
+          key += `.${item.key}`;
+        } else {
+          key += item.key;
+        }
+      } else {
+        return null;
+      }
+    }
+    return key;
+  }
+  return null;
+}
+function flatten(issues) {
+  const flatErrors = {};
+  for (const issue of issues) {
+    if (issue.path) {
+      const dotPath = getDotPath(issue);
+      if (dotPath) {
+        if (!flatErrors.nested) {
+          flatErrors.nested = {};
+        }
+        if (flatErrors.nested[dotPath]) {
+          flatErrors.nested[dotPath].push(issue.message);
+        } else {
+          flatErrors.nested[dotPath] = [issue.message];
+        }
+      } else {
+        if (flatErrors.other) {
+          flatErrors.other.push(issue.message);
+        } else {
+          flatErrors.other = [issue.message];
+        }
+      }
+    } else {
+      if (flatErrors.root) {
+        flatErrors.root.push(issue.message);
+      } else {
+        flatErrors.root = [issue.message];
+      }
+    }
+  }
+  return flatErrors;
+}
+async function safeParseAsync(schema, input, config2) {
+  const dataset = await schema._run(
+    { typed: false, value: input },
+    getGlobalConfig(config2)
+  );
+  return {
+    typed: dataset.typed,
+    success: !dataset.issues,
+    output: dataset.value,
+    issues: dataset.issues
+  };
+}
 const routeActionQrl = (actionQrl, ...rest) => {
   const { id, validators } = getValidators(rest, actionQrl);
   function action() {
@@ -1174,27 +1244,40 @@ const validatorQrl = (validator) => {
   return void 0;
 };
 const validator$ = /* @__PURE__ */ qwik.implicit$FirstArg(validatorQrl);
-const zodQrl = (qrl) => {
+const flattenValibotIssues = (issues) => {
+  return issues.reduce((acc, issue) => {
+    if (issue.path) {
+      const hasArrayType = issue.path.some((path) => path.type === "array");
+      if (hasArrayType) {
+        const keySuffix = issue.expected === "Array" ? "[]" : "";
+        const key = issue.path.map((item) => item.type === "array" ? "*" : item.key).join(".").replace(/\.\*/g, "[]") + keySuffix;
+        acc[key] = acc[key] || [];
+        if (Array.isArray(acc[key])) acc[key].push(issue.message);
+        return acc;
+      } else acc[issue.path.map((item) => item.key).join(".")] = issue.message;
+    }
+    return acc;
+  }, {});
+};
+const valibotQrl = (qrl) => {
   if (build.isServer) return {
+    __brand: "valibot",
     async validate(ev, inputData) {
-      const schema = qrl.resolve().then((obj) => {
-        if (typeof obj === "function") obj = obj(zod.z, ev);
-        if (obj instanceof zod.z.Schema) return obj;
-        else return zod.z.object(obj);
-      });
+      const schema = await qrl.resolve().then((obj) => typeof obj === "function" ? obj(ev) : obj);
       const data = inputData ?? await ev.parseBody();
-      const result = await (await schema).safeParseAsync(data);
-      if (result.success) return result;
+      const result = await safeParseAsync(schema, data);
+      if (result.success) return {
+        success: true,
+        data: result.output
+      };
       else {
-        if (build.isDev) console.error("\nVALIDATION ERROR\naction$() zod validated failed", "\n  - Issues:", result.error.issues);
-        const zodErrorsFlatten = result.error.flatten();
-        const fieldErrors = flattenZodIssues(result.error.issues);
+        if (build.isDev) console.error("ERROR: Valibot validation failed", result.issues);
         return {
           success: false,
           status: 400,
           error: {
-            formErrors: zodErrorsFlatten.formErrors,
-            fieldErrors
+            formErrors: flatten(result.issues).root ?? [],
+            fieldErrors: flattenValibotIssues(result.issues)
           }
         };
       }
@@ -1202,6 +1285,7 @@ const zodQrl = (qrl) => {
   };
   return void 0;
 };
+const valibot$ = /* @__PURE__ */ qwik.implicit$FirstArg(valibotQrl);
 const flattenZodIssues = (issues) => {
   issues = Array.isArray(issues) ? issues : [
     issues
@@ -1218,6 +1302,33 @@ const flattenZodIssues = (issues) => {
     } else acc[issue.path.join(".")] = issue.message;
     return acc;
   }, {});
+};
+const zodQrl = (qrl) => {
+  if (build.isServer) return {
+    __brand: "zod",
+    async validate(ev, inputData) {
+      const schema = await qrl.resolve().then((obj) => {
+        if (typeof obj === "function") obj = obj(zod.z, ev);
+        if (obj instanceof zod.z.Schema) return obj;
+        else return zod.z.object(obj);
+      });
+      const data = inputData ?? await ev.parseBody();
+      const result = await schema.safeParseAsync(data);
+      if (result.success) return result;
+      else {
+        if (build.isDev) console.error("ERROR: Zod validation failed", result.error.issues);
+        return {
+          success: false,
+          status: 400,
+          error: {
+            formErrors: result.error.flatten().formErrors,
+            fieldErrors: flattenZodIssues(result.error.issues)
+          }
+        };
+      }
+    }
+  };
+  return void 0;
 };
 const zod$ = /* @__PURE__ */ qwik.implicit$FirstArg(zodQrl);
 const deepFreeze = (obj) => {
@@ -1248,7 +1359,7 @@ const serverQrl = (qrl, options) => {
             this,
             qwik._getContextEvent()
           ];
-          requestEvent = contexts.find((v) => v && Object.prototype.hasOwnProperty.call(v, "sharedMap") && Object.prototype.hasOwnProperty.call(v, "cookie"));
+          requestEvent = contexts.find((v2) => v2 && Object.prototype.hasOwnProperty.call(v2, "sharedMap") && Object.prototype.hasOwnProperty.call(v2, "cookie"));
         }
         return qrl2.apply(requestEvent, build.isDev ? deepFreeze(args) : args);
       } else {
@@ -1326,7 +1437,7 @@ const getValidators = (rest, qrl) => {
         if (options.validation) validators.push(...options.validation);
       }
     }
-  } else if (rest.length > 1) validators.push(...rest.filter((v) => !!v));
+  } else if (rest.length > 1) validators.push(...rest.filter((v2) => !!v2));
   if (typeof id === "string") {
     if (build.isDev) {
       if (!/^[\w/.-]+$/.test(id)) throw new Error(`Invalid id: ${id}, id can only contain [a-zA-Z0-9_.-]`);
@@ -1489,6 +1600,8 @@ exports.useContent = useContent;
 exports.useDocumentHead = useDocumentHead;
 exports.useLocation = useLocation;
 exports.useNavigate = useNavigate;
+exports.valibot$ = valibot$;
+exports.valibotQrl = valibotQrl;
 exports.validator$ = validator$;
 exports.validatorQrl = validatorQrl;
 exports.zod$ = zod$;
