@@ -885,6 +885,9 @@ const QwikCityProvider = qwik.component$((props) => {
         const [routeName, params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
+        if (navigation.dest.search) {
+          trackUrl.search = navigation.dest.search;
+        }
         routeLocation.prevUrl = prevUrl;
         routeLocation.url = trackUrl;
         routeLocation.params = {
