@@ -1387,6 +1387,9 @@ const flattenValibotIssues = (issues) => {
   }, {});
 };
 const valibotQrl = (qrl) => {
+  if (!__EXPERIMENTAL__.valibot) {
+    throw new Error('Valibot is an experimental feature and is not enabled. Please enable the feature flag by adding `experimental: ["valibot"]` to your qwikVite plugin options.');
+  }
   if (isServer) {
     return {
       __brand: "valibot",
