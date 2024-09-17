@@ -1,10 +1,5 @@
 'use strict';
 
-const qBuildCacheName = 'QwikBuild';
-const existingPrefetchUrls = new Set();
-const awaitingRequests = new Map();
-const prefetchQueue = [];
-
 const getCacheToDelete = (appBundles, cachedUrls) => cachedUrls.filter((url) => !appBundles.some((appBundle) => url.endsWith(appBundle[0])));
 const useCache = (request, response) => !!response && !hasNoCacheHeader(response);
 const hasNoCacheHeader = (r) => {
@@ -105,25 +100,19 @@ const cachedFetch = (cache, fetch, awaitingRequests, request) => new Promise((pr
     }
 });
 
+const qBuildCacheName = 'QwikBuild';
+const existingPrefetchUrls = new Set();
+const awaitingRequests = new Map();
+const prefetchQueue = [];
+
 const prefetchBundleNames = (appBundles, qBuildCache, fetch, baseUrl, prefetchAppBundleNames, highPriority = false) => {
-    const drainQueue = () => {
-        while (prefetchQueue.length > 0 && awaitingRequests.size < 6) {
-            // do not prefetch more than 6 requests at a time to ensure
-            // the browser is able to handle a user request as soon as possible
-            const url = prefetchQueue.shift();
-            const request = new Request(url);
-            if (existingPrefetchUrls.has(url)) {
-                // already prefetched this url once before
-                // optimization to skip some async work
-                drainQueue();
-            }
-            else {
-                existingPrefetchUrls.add(url);
-                cachedFetch(qBuildCache, fetch, awaitingRequests, request).finally(drainQueue);
-            }
-        }
-    };
-    const prefetchAppBundle = (prefetchAppBundleName) => {
+    if (Array.isArray(prefetchAppBundleNames)) {
+        addBundlesToPrefetchQueue(prefetchAppBundleNames, appBundles, baseUrl, highPriority);
+    }
+    drainQueue(qBuildCache, fetch);
+};
+function addBundlesToPrefetchQueue(bundlesToPrefetch, appBundles, baseUrl, highPriority) {
+    for (const prefetchAppBundleName of bundlesToPrefetch) {
         try {
             const appBundle = getAppBundleByName(appBundles, prefetchAppBundleName);
             if (appBundle) {
@@ -147,19 +136,31 @@ const prefetchBundleNames = (appBundles, qBuildCache, fetch, baseUrl, prefetchAp
                         // add to the end of the queue
                         prefetchQueue.push(url);
                     }
+                    addBundlesToPrefetchQueue(importedBundleNames, appBundles, baseUrl, highPriority);
                 }
-                importedBundleNames.forEach(prefetchAppBundle);
             }
         }
         catch (e) {
             console.error(e);
         }
-    };
-    if (Array.isArray(prefetchAppBundleNames)) {
-        prefetchAppBundleNames.forEach(prefetchAppBundle);
     }
-    drainQueue();
-};
+}
+function drainQueue(qBuildCache, fetch) {
+    // do not prefetch more than 6 requests at a time to ensure
+    // the browser is able to handle a user request as soon as possible
+    while (prefetchQueue.length > 0 && awaitingRequests.size < 6) {
+        const url = prefetchQueue.shift();
+        if (!existingPrefetchUrls.has(url)) {
+            const request = new Request(url);
+            existingPrefetchUrls.add(url);
+            cachedFetch(qBuildCache, fetch, awaitingRequests, request)
+                .catch(() => {
+                existingPrefetchUrls.delete(url);
+            })
+                .finally(() => drainQueue(qBuildCache, fetch));
+        }
+    }
+}
 const prefetchLinkBundles = (appBundles, libraryBundleIds, linkBundles, qBuildCache, fetch, baseUrl, linkPathnames) => {
     try {
         prefetchBundleNames(appBundles, qBuildCache, fetch, baseUrl, getAppBundlesNamesFromIds(appBundles, libraryBundleIds));
@@ -185,31 +186,47 @@ const prefetchLinkBundles = (appBundles, libraryBundleIds, linkBundles, qBuildCa
 };
 const prefetchWaterfall = (appBundles, qBuildCache, fetch, requestedBuildUrl) => {
     try {
-        const segments = requestedBuildUrl.href.split('/');
-        const requestedBundleName = segments[segments.length - 1];
-        segments[segments.length - 1] = '';
-        const baseUrl = new URL(segments.join('/'));
+        const { baseUrl, requestedBundleName } = splitUrlToBaseAndBundle(requestedBuildUrl);
         prefetchBundleNames(appBundles, qBuildCache, fetch, baseUrl, [requestedBundleName], true);
     }
     catch (e) {
         console.error(e);
     }
 };
+function splitUrlToBaseAndBundle(fullUrl) {
+    const segments = fullUrl.href.split('/');
+    const requestedBundleName = segments[segments.length - 1];
+    segments[segments.length - 1] = '';
+    const baseUrl = new URL(segments.join('/'));
+    return {
+        baseUrl,
+        requestedBundleName,
+    };
+}
 
 const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBundles) => {
     const swFetch = swScope.fetch.bind(swScope);
     const appSymbols = computeAppSymbols(appBundles);
-    swScope.addEventListener('fetch', (ev) => {
-        const request = ev.request;
-        if (request.method === 'GET') {
-            const url = new URL(request.url);
-            if (isAppBundleRequest(appBundles, url.pathname)) {
-                ev.respondWith(swScope.caches.open(qBuildCacheName).then((qBuildCache) => {
-                    prefetchWaterfall(appBundles, qBuildCache, swFetch, url);
-                    return cachedFetch(qBuildCache, swFetch, awaitingRequests, request);
-                }));
+    swScope.addEventListener('activate', (event) => {
+        (async () => {
+            try {
+                // Delete any other caches that are not the current SW cache name
+                event.waitUntil(swScope.caches.keys().then((keys) => Promise.all(keys.map((key) => {
+                    if (key !== qBuildCacheName) {
+                        return caches.delete(key);
+                    }
+                }))));
+                // Delete old bundles
+                const qBuildCache = await swScope.caches.open(qBuildCacheName);
+                const cachedRequestKeys = await qBuildCache.keys();
+                const cachedUrls = cachedRequestKeys.map((r) => r.url);
+                const cachedRequestsToDelete = getCacheToDelete(appBundles, cachedUrls);
+                await Promise.all(cachedRequestsToDelete.map((r) => qBuildCache.delete(r)));
             }
-        }
+            catch (e) {
+                console.error(e);
+            }
+        })();
     });
     swScope.addEventListener('message', async ({ data }) => {
         if (data.type === 'qprefetch' && typeof data.base === 'string') {
@@ -226,19 +243,17 @@ const setupServiceWorkerScope = (swScope, appBundles, libraryBundleIds, linkBund
             }
         }
     });
-    swScope.addEventListener('activate', () => {
-        (async () => {
-            try {
-                const qBuildCache = await swScope.caches.open(qBuildCacheName);
-                const cachedRequestKeys = await qBuildCache.keys();
-                const cachedUrls = cachedRequestKeys.map((r) => r.url);
-                const cachedRequestsToDelete = getCacheToDelete(appBundles, cachedUrls);
-                await Promise.all(cachedRequestsToDelete.map((r) => qBuildCache.delete(r)));
+    swScope.addEventListener('fetch', (event) => {
+        const request = event.request;
+        if (request.method === 'GET') {
+            const url = new URL(request.url);
+            if (isAppBundleRequest(appBundles, url.pathname)) {
+                event.respondWith(swScope.caches.open(qBuildCacheName).then((qBuildCache) => {
+                    prefetchWaterfall(appBundles, qBuildCache, swFetch, url);
+                    return cachedFetch(qBuildCache, swFetch, awaitingRequests, request);
+                }));
             }
-            catch (e) {
-                console.error(e);
-            }
-        })();
+        }
     });
 };
 
