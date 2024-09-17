@@ -437,6 +437,19 @@ declare type Prettify<T> = {} & {
     [K in keyof T]: T[K];
 };
 
+/**
+ * @param url - The URL that the user is trying to navigate to, or a number to indicate the user is
+ *   trying to navigate back/forward in the application history. If it is missing, the event is sent
+ *   by the browser and the user is trying to reload or navigate away from the page. In this case,
+ *   the function should decide the answer synchronously.
+ * @returns `true` to prevent navigation, `false` to allow navigation, or a Promise that resolves to
+ *   `true` or `false`. For browser events, returning `true` or a Promise may show a confirmation
+ *   dialog, at the browser's discretion. If the user confirms, the navigation will still be
+ *   allowed.
+ * @public
+ */
+export declare type PreventNavigateCallback = (url?: number | URL) => ValueOrPromise<boolean>;
+
 /** @public */
 export declare const QWIK_CITY_SCROLLER = "_qCityScroller";
 
@@ -532,7 +545,7 @@ declare interface RouteModule<BODY = unknown> {
 }
 
 /** @public */
-export declare type RouteNavigate = QRL<(path?: string | number, options?: {
+export declare type RouteNavigate = QRL<(path?: string | number | URL, options?: {
     type?: Exclude<NavigationType, 'initial'>;
     forceReload?: boolean;
     replaceState?: boolean;
@@ -610,6 +623,45 @@ export declare const useLocation: () => RouteLocation;
 
 /** @public */
 export declare const useNavigate: () => RouteNavigate;
+
+/**
+ * Prevent navigation attempts. This hook registers a callback that will be called before SPA or
+ * browser navigation.
+ *
+ * Return `true` to prevent navigation.
+ *
+ * #### SPA Navigation
+ *
+ * For Single-Page-App (SPA) navigation (via `<Link />`, `const nav = useNavigate()`, and browser
+ * backwards/forwards inside SPA history), the callback will be provided with the target, either a
+ * URL or a number. It will only be a number if `nav(number)` was called to navigate forwards or
+ * backwards in SPA history.
+ *
+ * If you return a Promise, the navigation will be blocked until the promise resolves.
+ *
+ * This can be used to show a nice dialog to the user, and wait for the user to confirm, or to
+ * record the url, prevent the navigation, and navigate there later via `nav(url)`.
+ *
+ * #### Browser Navigation
+ *
+ * However, when the user navigates away by clicking on a regular `<a />`, reloading, or moving
+ * backwards/forwards outside SPA history, this callback will not be awaited. This is because the
+ * browser does not provide a way to asynchronously prevent these navigations.
+ *
+ * In this case, returning returning `true` will tell the browser to show a confirmation dialog,
+ * which cannot be customized. You are also not able to show your own `window.confirm()` dialog
+ * during the callback, the browser won't allow it. If you return a Promise, it will be considered
+ * as `true`.
+ *
+ * When the callback is called from the browser, no url will be provided. Use this to know whether
+ * you can show a dialog or just return `true` to prevent the navigation.
+ *
+ * @public
+ */
+export declare const usePreventNavigate$: (qrl: PreventNavigateCallback) => void;
+
+/** @internal Implementation of usePreventNavigate$ */
+export declare const usePreventNavigateQrl: (fn: QRL<PreventNavigateCallback>) => void;
 
 /** @alpha */
 export declare const valibot$: ValibotConstructor;

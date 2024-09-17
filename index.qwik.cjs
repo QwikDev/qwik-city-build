@@ -31,6 +31,7 @@ const RouteLocationContext = /* @__PURE__ */ qwik.createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
 const RouteInternalContext = /* @__PURE__ */ qwik.createContextId("qc-ir");
+const RoutePreventNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-p");
 const spaInit = qwik.event$((container) => {
   const win = window;
   const currentPath = location.pathname + location.search;
@@ -686,6 +687,14 @@ const useContent = () => qwik.useContext(ContentContext);
 const useDocumentHead = () => qwik.useContext(DocumentHeadContext);
 const useLocation = () => qwik.useContext(RouteLocationContext);
 const useNavigate = () => qwik.useContext(RouteNavigateContext);
+const usePreventNavigateQrl = (fn) => {
+  if (!__EXPERIMENTAL__.preventNavigate) {
+    throw new Error('usePreventNavigate$ is experimental and must be enabled with `experimental: ["preventNavigate"]` in the `qwikVite` plugin.');
+  }
+  const registerPreventNav = qwik.useContext(RoutePreventNavigateContext);
+  qwik.useVisibleTask$(() => registerPreventNav(fn));
+};
+const usePreventNavigate$ = qwik.implicit$FirstArg(usePreventNavigateQrl);
 const useAction = () => qwik.useContext(RouteActionContext);
 const useQwikCityEnv = () => qwik.noSerialize(qwik.useServerData("qwikcity"));
 const restoreScroll = (type, toUrl2, fromUrl, scroller, scrollState) => {
@@ -726,6 +735,10 @@ const saveScrollHistory = (scrollState) => {
   history.replaceState(state, "");
 };
 const QWIK_CITY_SCROLLER = "_qCityScroller";
+const preventNav = {};
+const internalState = {
+  navCount: 0
+};
 const QwikCityProvider = qwik.component$((props) => {
   qwik.useStyles$(`:root{view-transition-name:none}`);
   const env = useQwikCityEnv();
@@ -772,18 +785,61 @@ const QwikCityProvider = qwik.component$((props) => {
       status: env.response.status
     }
   } : void 0);
+  const registerPreventNav = qwik.$((fn$) => {
+    if (!build.isBrowser) {
+      return;
+    }
+    preventNav.$handler$ || (preventNav.$handler$ = (event) => {
+      internalState.navCount++;
+      if (!preventNav.$cbs$) {
+        return;
+      }
+      const prevents = [
+        ...preventNav.$cbs$.values()
+      ].map((cb) => cb.resolved ? cb.resolved() : cb());
+      if (prevents.some(Boolean)) {
+        event.preventDefault();
+        event.returnValue = true;
+      }
+    });
+    (preventNav.$cbs$ || (preventNav.$cbs$ = /* @__PURE__ */ new Set())).add(fn$);
+    fn$.resolve();
+    window.addEventListener("beforeunload", preventNav.$handler$);
+    return () => {
+      if (preventNav.$cbs$) {
+        preventNav.$cbs$.delete(fn$);
+        if (!preventNav.$cbs$.size) {
+          preventNav.$cbs$ = void 0;
+          window.removeEventListener("beforeunload", preventNav.$handler$);
+        }
+      }
+    };
+  });
   const goto = qwik.$(async (path, opt) => {
     const { type = "link", forceReload = path === void 0, replaceState = false, scroll = true } = typeof opt === "object" ? opt : {
       forceReload: opt
     };
-    if (typeof path === "number") {
+    internalState.navCount++;
+    const lastDest = routeInternal.value.dest;
+    const dest = path === void 0 ? lastDest : typeof path === "number" ? path : toUrl(path, routeLocation.url);
+    if (preventNav.$cbs$ && (forceReload || typeof dest === "number" || !isSamePath(dest, lastDest) || !isSameOrigin(dest, lastDest))) {
+      const ourNavId = internalState.navCount;
+      const prevents = await Promise.all([
+        ...preventNav.$cbs$.values()
+      ].map((cb) => cb(dest)));
+      if (ourNavId !== internalState.navCount || prevents.some(Boolean)) {
+        if (ourNavId === internalState.navCount && type === "popstate") {
+          history.pushState(null, "", lastDest);
+        }
+        return;
+      }
+    }
+    if (typeof dest === "number") {
       if (build.isBrowser) {
-        history.go(path);
+        history.go(dest);
       }
       return;
     }
-    const lastDest = routeInternal.value.dest;
-    const dest = path === void 0 ? lastDest : toUrl(path, routeLocation.url);
     if (!isSameOrigin(dest, lastDest)) {
       if (build.isBrowser) {
         location.href = dest.href;
@@ -828,6 +884,7 @@ const QwikCityProvider = qwik.component$((props) => {
   qwik.useContextProvider(RouteStateContext, loaderState);
   qwik.useContextProvider(RouteActionContext, actionState);
   qwik.useContextProvider(RouteInternalContext, routeInternal);
+  qwik.useContextProvider(RoutePreventNavigateContext, registerPreventNav);
   qwik.useTask$(({ track }) => {
     async function run() {
       const [navigation, action] = track(() => [
@@ -1769,6 +1826,8 @@ exports.useContent = useContent;
 exports.useDocumentHead = useDocumentHead;
 exports.useLocation = useLocation;
 exports.useNavigate = useNavigate;
+exports.usePreventNavigate$ = usePreventNavigate$;
+exports.usePreventNavigateQrl = usePreventNavigateQrl;
 exports.valibot$ = valibot$;
 exports.valibotQrl = valibotQrl;
 exports.validator$ = validator$;

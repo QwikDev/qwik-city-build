@@ -1,5 +1,5 @@
 import { jsxs, Fragment, jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
-import { createContextId, event$, getPlatform, component$, useServerData, _jsxBranch, useContext, jsx, SkipRender, withLocale, _deserializeData, noSerialize, useStyles$, useStore, _weakSerialize, useSignal, $, _getContextElement, useContextProvider, useTask$, Slot, getLocale, _waitUntilRendered, untrack, sync$, implicit$FirstArg, _wrapProp, _getContextEvent, _serializeData } from "@builder.io/qwik";
+import { createContextId, event$, getPlatform, component$, useServerData, _jsxBranch, useContext, jsx, SkipRender, withLocale, _deserializeData, implicit$FirstArg, useVisibleTask$, noSerialize, useStyles$, useStore, _weakSerialize, useSignal, $, _getContextElement, useContextProvider, useTask$, Slot, getLocale, _waitUntilRendered, untrack, sync$, _wrapProp, _getContextEvent, _serializeData } from "@builder.io/qwik";
 import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
@@ -13,6 +13,7 @@ const RouteLocationContext = /* @__PURE__ */ createContextId("qc-l");
 const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouteInternalContext = /* @__PURE__ */ createContextId("qc-ir");
+const RoutePreventNavigateContext = /* @__PURE__ */ createContextId("qc-p");
 const spaInit = event$((container) => {
   const win = window;
   const currentPath = location.pathname + location.search;
@@ -668,6 +669,14 @@ const useContent = () => useContext(ContentContext);
 const useDocumentHead = () => useContext(DocumentHeadContext);
 const useLocation = () => useContext(RouteLocationContext);
 const useNavigate = () => useContext(RouteNavigateContext);
+const usePreventNavigateQrl = (fn) => {
+  if (!__EXPERIMENTAL__.preventNavigate) {
+    throw new Error('usePreventNavigate$ is experimental and must be enabled with `experimental: ["preventNavigate"]` in the `qwikVite` plugin.');
+  }
+  const registerPreventNav = useContext(RoutePreventNavigateContext);
+  useVisibleTask$(() => registerPreventNav(fn));
+};
+const usePreventNavigate$ = implicit$FirstArg(usePreventNavigateQrl);
 const useAction = () => useContext(RouteActionContext);
 const useQwikCityEnv = () => noSerialize(useServerData("qwikcity"));
 const restoreScroll = (type, toUrl2, fromUrl, scroller, scrollState) => {
@@ -708,6 +717,10 @@ const saveScrollHistory = (scrollState) => {
   history.replaceState(state, "");
 };
 const QWIK_CITY_SCROLLER = "_qCityScroller";
+const preventNav = {};
+const internalState = {
+  navCount: 0
+};
 const QwikCityProvider = component$((props) => {
   useStyles$(`:root{view-transition-name:none}`);
   const env = useQwikCityEnv();
@@ -754,18 +767,61 @@ const QwikCityProvider = component$((props) => {
       status: env.response.status
     }
   } : void 0);
+  const registerPreventNav = $((fn$) => {
+    if (!isBrowser) {
+      return;
+    }
+    preventNav.$handler$ || (preventNav.$handler$ = (event) => {
+      internalState.navCount++;
+      if (!preventNav.$cbs$) {
+        return;
+      }
+      const prevents = [
+        ...preventNav.$cbs$.values()
+      ].map((cb) => cb.resolved ? cb.resolved() : cb());
+      if (prevents.some(Boolean)) {
+        event.preventDefault();
+        event.returnValue = true;
+      }
+    });
+    (preventNav.$cbs$ || (preventNav.$cbs$ = /* @__PURE__ */ new Set())).add(fn$);
+    fn$.resolve();
+    window.addEventListener("beforeunload", preventNav.$handler$);
+    return () => {
+      if (preventNav.$cbs$) {
+        preventNav.$cbs$.delete(fn$);
+        if (!preventNav.$cbs$.size) {
+          preventNav.$cbs$ = void 0;
+          window.removeEventListener("beforeunload", preventNav.$handler$);
+        }
+      }
+    };
+  });
   const goto = $(async (path, opt) => {
     const { type = "link", forceReload = path === void 0, replaceState = false, scroll = true } = typeof opt === "object" ? opt : {
       forceReload: opt
     };
-    if (typeof path === "number") {
+    internalState.navCount++;
+    const lastDest = routeInternal.value.dest;
+    const dest = path === void 0 ? lastDest : typeof path === "number" ? path : toUrl(path, routeLocation.url);
+    if (preventNav.$cbs$ && (forceReload || typeof dest === "number" || !isSamePath(dest, lastDest) || !isSameOrigin(dest, lastDest))) {
+      const ourNavId = internalState.navCount;
+      const prevents = await Promise.all([
+        ...preventNav.$cbs$.values()
+      ].map((cb) => cb(dest)));
+      if (ourNavId !== internalState.navCount || prevents.some(Boolean)) {
+        if (ourNavId === internalState.navCount && type === "popstate") {
+          history.pushState(null, "", lastDest);
+        }
+        return;
+      }
+    }
+    if (typeof dest === "number") {
       if (isBrowser) {
-        history.go(path);
+        history.go(dest);
       }
       return;
     }
-    const lastDest = routeInternal.value.dest;
-    const dest = path === void 0 ? lastDest : toUrl(path, routeLocation.url);
     if (!isSameOrigin(dest, lastDest)) {
       if (isBrowser) {
         location.href = dest.href;
@@ -810,6 +866,7 @@ const QwikCityProvider = component$((props) => {
   useContextProvider(RouteStateContext, loaderState);
   useContextProvider(RouteActionContext, actionState);
   useContextProvider(RouteInternalContext, routeInternal);
+  useContextProvider(RoutePreventNavigateContext, registerPreventNav);
   useTask$(({ track }) => {
     async function run() {
       const [navigation, action] = track(() => [
@@ -1748,6 +1805,8 @@ export {
   useDocumentHead,
   useLocation,
   useNavigate,
+  usePreventNavigate$,
+  usePreventNavigateQrl,
   valibot$,
   valibotQrl,
   validator$,
