@@ -1,4 +1,4 @@
-import { createContextId, eventQrl, inlinedQrl, getPlatform, componentQrl, useServerData, useContext, _jsxSorted, SkipRender, withLocale, _deserialize, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, _getQContainerElement, untrack, _qrlSync, _jsxSplit, implicit$FirstArg, _wrapProp, _getContextEvent, _serialize, _jsxBranch, _restProps, _fnSignal } from "@builder.io/qwik";
+import { createContextId, eventQrl, inlinedQrl, getPlatform, componentQrl, useServerData, useContext, _jsxSorted, SkipRender, withLocale, _deserialize, noSerialize, useStylesQrl, useStore, _weakSerialize, useSignal, useContextProvider, useTaskQrl, useLexicalScope, Slot, _getContextElement, getLocale, _waitUntilRendered, _getQContainerElement, untrack, _qrlSync, _jsxSplit, implicit$FirstArg, _wrapProp, _getContextEvent, _serialize, _restProps, _fnSignal } from "@builder.io/qwik";
 import { Fragment } from "@builder.io/qwik/jsx-runtime";
 import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
@@ -1332,7 +1332,6 @@ const deserializeStream = async function* (stream, ctxElm, abortSignal) {
   }
 };
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
-  _jsxBranch();
   if (action) {
     const isArrayApi = Array.isArray(onSubmit$);
     if (isArrayApi) return _jsxSplit("form", {

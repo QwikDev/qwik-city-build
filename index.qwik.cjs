@@ -1350,7 +1350,6 @@ const deserializeStream = async function* (stream, ctxElm, abortSignal) {
   }
 };
 const Form = ({ action, spaReset, reloadDocument, onSubmit$, ...rest }, key) => {
-  qwik._jsxBranch();
   if (action) {
     const isArrayApi = Array.isArray(onSubmit$);
     if (isArrayApi) return qwik._jsxSplit("form", {
