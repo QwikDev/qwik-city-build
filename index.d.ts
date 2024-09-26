@@ -20,9 +20,10 @@ import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-han
 import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-handler';
+import type * as v from 'valibot';
 import type { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
-import type * as zod from 'zod';
+import type * as z_2 from 'zod';
 
 /** @public */
 export declare type Action<RETURN, INPUT = Record<string, unknown>, OPTIONAL extends boolean = true> = {
@@ -36,20 +37,20 @@ export declare type Action<RETURN, INPUT = Record<string, unknown>, OPTIONAL ext
 
 /** @public */
 export declare type ActionConstructor = {
-    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: (data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: {
+    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: (data: GetValidatorOutputType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: {
         readonly id?: string;
         readonly validation: [VALIDATOR, ...REST];
-    }): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorType<VALIDATOR>>> | FailReturn<FailOfRest<REST>>>, GetValidatorType<VALIDATOR>, false>;
-    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator>(actionQrl: (data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: {
+    }): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorInputType<VALIDATOR>>> | FailReturn<FailOfRest<REST>>>, GetValidatorInputType<VALIDATOR>, false>;
+    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator>(actionQrl: (data: GetValidatorOutputType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: {
         readonly id?: string;
         readonly validation: [VALIDATOR];
-    }): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorType<VALIDATOR>>>>, GetValidatorType<VALIDATOR>, false>;
+    }): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorInputType<VALIDATOR>>>>, GetValidatorInputType<VALIDATOR>, false>;
     <OBJ extends Record<string, any> | void | null, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: (data: JSONObject, event: RequestEventAction) => ValueOrPromise<OBJ>, options: {
         readonly id?: string;
         readonly validation: REST;
     }): Action<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
-    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: (data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: VALIDATOR, ...rest: REST): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorType<VALIDATOR>>> | FailReturn<FailOfRest<REST>>>, GetValidatorType<VALIDATOR>, false>;
-    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator>(actionQrl: (data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: VALIDATOR): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorType<VALIDATOR>>>>, GetValidatorType<VALIDATOR>, false>;
+    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: (data: GetValidatorOutputType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: VALIDATOR, ...rest: REST): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorInputType<VALIDATOR>>> | FailReturn<FailOfRest<REST>>>, GetValidatorInputType<VALIDATOR>, false>;
+    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator>(actionQrl: (data: GetValidatorOutputType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>, options: VALIDATOR): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorInputType<VALIDATOR>>>>, GetValidatorInputType<VALIDATOR>, false>;
     <OBJ extends Record<string, any> | void | null, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: (form: JSONObject, event: RequestEventAction) => ValueOrPromise<OBJ>, ...rest: REST): Action<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
     <OBJ>(actionQrl: (form: JSONObject, event: RequestEventAction) => ValueOrPromise<OBJ>, options?: {
         readonly id?: string;
@@ -58,20 +59,20 @@ export declare type ActionConstructor = {
 
 /** @public */
 declare type ActionConstructorQRL = {
-    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: QRL<(data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: {
+    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: QRL<(data: GetValidatorOutputType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: {
         readonly id?: string;
         readonly validation: [VALIDATOR, ...REST];
-    }): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorType<VALIDATOR>>> | FailReturn<FailOfRest<REST>>>, GetValidatorType<VALIDATOR>, false>;
-    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator>(actionQrl: QRL<(data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: {
+    }): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorInputType<VALIDATOR>>> | FailReturn<FailOfRest<REST>>>, GetValidatorInputType<VALIDATOR>, false>;
+    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator>(actionQrl: QRL<(data: GetValidatorOutputType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: {
         readonly id?: string;
         readonly validation: [VALIDATOR];
-    }): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorType<VALIDATOR>>>>, GetValidatorType<VALIDATOR>, false>;
+    }): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorInputType<VALIDATOR>>>>, GetValidatorInputType<VALIDATOR>, false>;
     <OBJ extends Record<string, any> | void | null, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: QRL<(data: JSONObject, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: {
         readonly id?: string;
         readonly validation: REST;
     }): Action<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
-    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: QRL<(data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: VALIDATOR, ...rest: REST): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorType<VALIDATOR>>> | FailReturn<FailOfRest<REST>>>, GetValidatorType<VALIDATOR>, false>;
-    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator>(actionQrl: QRL<(data: GetValidatorType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: VALIDATOR): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorType<VALIDATOR>>>>, GetValidatorType<VALIDATOR>, false>;
+    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: QRL<(data: GetValidatorOutputType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: VALIDATOR, ...rest: REST): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorInputType<VALIDATOR>>> | FailReturn<FailOfRest<REST>>>, GetValidatorInputType<VALIDATOR>, false>;
+    <OBJ extends Record<string, any> | void | null, VALIDATOR extends TypedDataValidator>(actionQrl: QRL<(data: GetValidatorOutputType<VALIDATOR>, event: RequestEventAction) => ValueOrPromise<OBJ>>, options: VALIDATOR): Action<StrictUnion<OBJ | FailReturn<ValidatorErrorType<GetValidatorInputType<VALIDATOR>>>>, GetValidatorInputType<VALIDATOR>, false>;
     <OBJ extends Record<string, any> | void | null, REST extends [DataValidator, ...DataValidator[]]>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<OBJ>>, ...rest: REST): Action<StrictUnion<OBJ | FailReturn<FailOfRest<REST>>>>;
     <OBJ>(actionQrl: QRL<(form: JSONObject, event: RequestEventAction) => ValueOrPromise<OBJ>>, options?: {
         readonly id?: string;
@@ -319,13 +320,21 @@ export declare interface FormSubmitSuccessDetail<T> {
 }
 
 /** @public */
-export declare type GetValidatorType<VALIDATOR extends TypedDataValidator> = VALIDATOR extends TypedDataValidator<infer TYPE> ? zod.infer<TYPE> : never;
+export declare type GetValidatorInputType<VALIDATOR extends TypedDataValidator> = VALIDATOR extends ValibotDataValidator<infer TYPE> ? v.InferInput<TYPE> : VALIDATOR extends ZodDataValidator<infer TYPE> ? z_2.input<TYPE> : never;
+
+/** @public */
+export declare type GetValidatorOutputType<VALIDATOR extends TypedDataValidator> = VALIDATOR extends ValibotDataValidator<infer TYPE> ? v.InferOutput<TYPE> : VALIDATOR extends ZodDataValidator<infer TYPE> ? z_2.output<TYPE> : never;
+
+/** @public */
+export declare type GetValidatorType<VALIDATOR extends TypedDataValidator> = GetValidatorOutputType<VALIDATOR>;
 
 /** @public */
 export declare const globalAction$: ActionConstructor;
 
 /** @public */
 export declare const globalActionQrl: ActionConstructorQRL;
+
+declare type IsAny<Type> = 0 extends 1 & Type ? true : false;
 
 /** @public */
 export declare type JSONObject = {
@@ -428,6 +437,19 @@ declare type Prettify<T> = {} & {
     [K in keyof T]: T[K];
 };
 
+/**
+ * @param url - The URL that the user is trying to navigate to, or a number to indicate the user is
+ *   trying to navigate back/forward in the application history. If it is missing, the event is sent
+ *   by the browser and the user is trying to reload or navigate away from the page. In this case,
+ *   the function should decide the answer synchronously.
+ * @returns `true` to prevent navigation, `false` to allow navigation, or a Promise that resolves to
+ *   `true` or `false`. For browser events, returning `true` or a Promise may show a confirmation
+ *   dialog, at the browser's discretion. If the user confirms, the navigation will still be
+ *   allowed.
+ * @public
+ */
+export declare type PreventNavigateCallback = (url?: number | URL) => ValueOrPromise<boolean>;
+
 /** @public */
 export declare const QWIK_CITY_SCROLLER = "_qCityScroller";
 
@@ -523,7 +545,7 @@ declare interface RouteModule<BODY = unknown> {
 }
 
 /** @public */
-export declare type RouteNavigate = QRL<(path?: string | number, options?: {
+export declare type RouteNavigate = QRL<(path?: string | number | URL, options?: {
     type?: Exclude<NavigationType, 'initial'>;
     forceReload?: boolean;
     replaceState?: boolean;
@@ -582,10 +604,7 @@ export declare type StrictUnion<T> = Prettify<StrictUnionHelper<T, T>>;
 declare type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>> : never;
 
 /** @public */
-export declare type TypedDataValidator<T extends zod.ZodType = zod.ZodType> = {
-    __zod: zod.ZodSchema<T>;
-    validate(ev: RequestEvent, data: unknown): Promise<zod.SafeParseReturnType<T, T>>;
-};
+export declare type TypedDataValidator = ValibotDataValidator | ZodDataValidator;
 
 declare type UnionKeys<T> = T extends T ? keyof T : never;
 
@@ -605,6 +624,69 @@ export declare const useLocation: () => RouteLocation;
 /** @public */
 export declare const useNavigate: () => RouteNavigate;
 
+/**
+ * Prevent navigation attempts. This hook registers a callback that will be called before SPA or
+ * browser navigation.
+ *
+ * Return `true` to prevent navigation.
+ *
+ * #### SPA Navigation
+ *
+ * For Single-Page-App (SPA) navigation (via `<Link />`, `const nav = useNavigate()`, and browser
+ * backwards/forwards inside SPA history), the callback will be provided with the target, either a
+ * URL or a number. It will only be a number if `nav(number)` was called to navigate forwards or
+ * backwards in SPA history.
+ *
+ * If you return a Promise, the navigation will be blocked until the promise resolves.
+ *
+ * This can be used to show a nice dialog to the user, and wait for the user to confirm, or to
+ * record the url, prevent the navigation, and navigate there later via `nav(url)`.
+ *
+ * #### Browser Navigation
+ *
+ * However, when the user navigates away by clicking on a regular `<a />`, reloading, or moving
+ * backwards/forwards outside SPA history, this callback will not be awaited. This is because the
+ * browser does not provide a way to asynchronously prevent these navigations.
+ *
+ * In this case, returning returning `true` will tell the browser to show a confirmation dialog,
+ * which cannot be customized. You are also not able to show your own `window.confirm()` dialog
+ * during the callback, the browser won't allow it. If you return a Promise, it will be considered
+ * as `true`.
+ *
+ * When the callback is called from the browser, no url will be provided. Use this to know whether
+ * you can show a dialog or just return `true` to prevent the navigation.
+ *
+ * @public
+ */
+export declare const usePreventNavigate$: (qrl: PreventNavigateCallback) => void;
+
+/** @internal Implementation of usePreventNavigate$ */
+export declare const usePreventNavigateQrl: (fn: QRL<PreventNavigateCallback>) => void;
+
+/** @alpha */
+export declare const valibot$: ValibotConstructor;
+
+/** @alpha */
+declare type ValibotConstructor = {
+    <T extends v.GenericSchema | v.GenericSchemaAsync>(schema: T): ValibotDataValidator<T>;
+    <T extends v.GenericSchema | v.GenericSchemaAsync>(schema: (ev: RequestEvent) => T): ValibotDataValidator<T>;
+};
+
+/** @alpha */
+declare type ValibotConstructorQRL = {
+    <T extends v.GenericSchema | v.GenericSchemaAsync>(schema: QRL<T>): ValibotDataValidator<T>;
+    <T extends v.GenericSchema | v.GenericSchemaAsync>(schema: QRL<(ev: RequestEvent) => T>): ValibotDataValidator<T>;
+};
+
+/** @alpha */
+declare type ValibotDataValidator<T extends v.GenericSchema | v.GenericSchemaAsync = v.GenericSchema | v.GenericSchemaAsync> = {
+    readonly __brand: 'valibot';
+    validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn<ValidatorErrorType<v.InferInput<T>>>>;
+};
+
+/** @alpha */
+export declare const valibotQrl: ValibotConstructorQRL;
+
 /** @public */
 export declare const validator$: ValidatorConstructor;
 
@@ -617,8 +699,8 @@ declare type ValidatorConstructorQRL = {
 };
 
 /** @public */
-export declare type ValidatorErrorKeyDotNotation<T, Prefix extends string = ''> = T extends object ? {
-    [K in keyof T & string]: T[K] extends (infer U)[] ? U extends object ? `${Prefix}${K}[]` | `${Prefix}${K}[]${ValidatorErrorKeyDotNotation<U, '.'>}` : `${Prefix}${K}[]` : T[K] extends object ? ValidatorErrorKeyDotNotation<T[K], `${Prefix}${K}.`> : `${Prefix}${K}`;
+export declare type ValidatorErrorKeyDotNotation<T, Prefix extends string = ''> = IsAny<T> extends true ? never : T extends object ? {
+    [K in keyof T & string]: IsAny<T[K]> extends true ? never : T[K] extends (infer U)[] ? IsAny<U> extends true ? never : U extends object ? `${Prefix}${K}[]` | ValidatorErrorKeyDotNotation<U, `${Prefix}${K}[].`> : `${Prefix}${K}[]` : T[K] extends object ? ValidatorErrorKeyDotNotation<T[K], `${Prefix}${K}.`> : `${Prefix}${K}`;
 }[keyof T & string] : never;
 
 /** @public */
@@ -653,18 +735,24 @@ export declare const zod$: ZodConstructor;
 
 /** @public */
 export declare type ZodConstructor = {
-    <T extends zod.ZodRawShape>(schema: T): TypedDataValidator<zod.ZodObject<T>>;
-    <T extends zod.ZodRawShape>(schema: (z: typeof zod, ev: RequestEvent) => T): TypedDataValidator<zod.ZodObject<T>>;
-    <T extends zod.Schema>(schema: T): TypedDataValidator<T>;
-    <T extends zod.Schema>(schema: (z: typeof zod, ev: RequestEvent) => T): TypedDataValidator<T>;
+    <T extends z_2.ZodRawShape>(schema: T): ZodDataValidator<z_2.ZodObject<T>>;
+    <T extends z_2.ZodRawShape>(schema: (zod: typeof z_2.z, ev: RequestEvent) => T): ZodDataValidator<z_2.ZodObject<T>>;
+    <T extends z_2.Schema>(schema: T): ZodDataValidator<T>;
+    <T extends z_2.Schema>(schema: (zod: typeof z_2.z, ev: RequestEvent) => T): ZodDataValidator<T>;
 };
 
 /** @public */
 declare type ZodConstructorQRL = {
-    <T extends zod.ZodRawShape>(schema: QRL<T>): TypedDataValidator<zod.ZodObject<T>>;
-    <T extends zod.ZodRawShape>(schema: QRL<(zs: typeof zod, ev: RequestEvent) => T>): TypedDataValidator<zod.ZodObject<T>>;
-    <T extends zod.Schema>(schema: QRL<T>): TypedDataValidator<T>;
-    <T extends zod.Schema>(schema: QRL<(z: typeof zod, ev: RequestEvent) => T>): TypedDataValidator<T>;
+    <T extends z_2.ZodRawShape>(schema: QRL<T>): ZodDataValidator<z_2.ZodObject<T>>;
+    <T extends z_2.ZodRawShape>(schema: QRL<(zod: typeof z_2.z, ev: RequestEvent) => T>): ZodDataValidator<z_2.ZodObject<T>>;
+    <T extends z_2.Schema>(schema: QRL<T>): ZodDataValidator<T>;
+    <T extends z_2.Schema>(schema: QRL<(zod: typeof z_2.z, ev: RequestEvent) => T>): ZodDataValidator<T>;
+};
+
+/** @public */
+declare type ZodDataValidator<T extends z_2.ZodType = z_2.ZodType> = {
+    readonly __brand: 'zod';
+    validate(ev: RequestEvent, data: unknown): Promise<ValidatorReturn<ValidatorErrorType<z_2.input<T>>>>;
 };
 
 /** @public */

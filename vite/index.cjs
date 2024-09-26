@@ -24790,6 +24790,206 @@ ${foundRoutes.map((r2) => `  - ${r2.filePath}`).join("\n")}`
 var import_node_fs6 = __toESM(require("node:fs"), 1);
 var import_node_path8 = require("node:path");
 
+// packages/qwik-city/src/middleware/node/http.ts
+var import_node_http2 = require("node:http2");
+function computeOrigin(req, opts) {
+  var _a2;
+  return ((_a2 = opts == null ? void 0 : opts.getOrigin) == null ? void 0 : _a2.call(opts, req)) ?? (opts == null ? void 0 : opts.origin) ?? process.env.ORIGIN ?? fallbackOrigin(req);
+}
+function fallbackOrigin(req) {
+  const { PROTOCOL_HEADER, HOST_HEADER } = process.env;
+  const headers = req.headers;
+  const protocol = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
+  const hostHeader = HOST_HEADER ?? (req instanceof import_node_http2.Http2ServerRequest ? ":authority" : "host");
+  const host = headers[hostHeader];
+  return `${protocol}://${host}`;
+}
+function getUrl(req, origin) {
+  return normalizeUrl(req.originalUrl || req.url || "/", origin);
+}
+function isIgnoredError(message = "") {
+  const ignoredErrors = ["The stream has been destroyed", "write after end"];
+  return ignoredErrors.some((ignored) => message.includes(ignored));
+}
+var invalidHeadersPattern = /^:(method|scheme|authority|path)$/i;
+function normalizeUrl(url, base) {
+  const DOUBLE_SLASH_REG = /\/\/|\\\\/g;
+  return new URL(url.replace(DOUBLE_SLASH_REG, "/"), base);
+}
+async function fromNodeHttp(url, req, res, mode, getClientConn) {
+  const requestHeaders = new Headers();
+  const nodeRequestHeaders = req.headers;
+  try {
+    for (const [key, value2] of Object.entries(nodeRequestHeaders)) {
+      if (invalidHeadersPattern.test(key)) {
+        continue;
+      }
+      if (typeof value2 === "string") {
+        requestHeaders.set(key, value2);
+      } else if (Array.isArray(value2)) {
+        for (const v of value2) {
+          requestHeaders.append(key, v);
+        }
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  const getRequestBody = async function* () {
+    for await (const chunk of req) {
+      yield chunk;
+    }
+  };
+  const body = req.method === "HEAD" || req.method === "GET" ? void 0 : getRequestBody();
+  const controller = new AbortController();
+  const options2 = {
+    method: req.method,
+    headers: requestHeaders,
+    body,
+    signal: controller.signal,
+    duplex: "half"
+  };
+  res.on("close", () => {
+    controller.abort();
+  });
+  const serverRequestEv = {
+    mode,
+    url,
+    request: new Request(url.href, options2),
+    env: {
+      get(key) {
+        return process.env[key];
+      }
+    },
+    getWritableStream: (status, headers, cookies) => {
+      res.statusCode = status;
+      try {
+        for (const [key, value2] of headers) {
+          if (invalidHeadersPattern.test(key)) {
+            continue;
+          }
+          res.setHeader(key, value2);
+        }
+        const cookieHeaders = cookies.headers();
+        if (cookieHeaders.length > 0) {
+          res.setHeader("Set-Cookie", cookieHeaders);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+      return new WritableStream({
+        write(chunk) {
+          if (res.closed || res.destroyed) {
+            return;
+          }
+          res.write(chunk, (error) => {
+            if (error && !isIgnoredError(error.message)) {
+              console.error(error);
+            }
+          });
+        },
+        close() {
+          res.end();
+        }
+      });
+    },
+    getClientConn: () => {
+      return getClientConn ? getClientConn(req) : {
+        ip: req.socket.remoteAddress
+      };
+    },
+    platform: {
+      ssr: true,
+      incomingMessage: req,
+      node: process.versions.node
+      // Weirdly needed to make typecheck of insights happy
+    },
+    locale: void 0
+  };
+  return serverRequestEv;
+}
+
+// packages/qwik-city/src/runtime/src/constants.ts
+var QACTION_KEY = "qaction";
+var QFN_KEY = "qfunc";
+var QDATA_KEY = "qdata";
+
+// packages/qwik-city/src/middleware/request-handler/error-handler.ts
+var ServerError = class extends Error {
+  constructor(status, data) {
+    super();
+    this.status = status;
+    this.data = data;
+  }
+};
+var ErrorResponse = class extends Error {
+  constructor(status, message) {
+    super(message);
+    this.status = status;
+  }
+};
+function getErrorHtml(status, e) {
+  let message = "Server Error";
+  if (e != null) {
+    if (typeof e.message === "string") {
+      message = e.message;
+    } else {
+      message = String(e);
+    }
+  }
+  return `<html>` + minimalHtmlResponse(status, message) + `</html>`;
+}
+function minimalHtmlResponse(status, message) {
+  if (typeof status !== "number") {
+    status = 500;
+  }
+  if (typeof message === "string") {
+    message = escapeHtml(message);
+  } else {
+    message = "";
+  }
+  const width = typeof message === "string" ? "600px" : "300px";
+  const color2 = status >= 500 ? COLOR_500 : COLOR_400;
+  return `
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Status" content="${status}">
+  <title>${status} ${message}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body { color: ${color2}; background-color: #fafafa; padding: 30px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    p { max-width: ${width}; margin: 60px auto 30px auto; background: white; border-radius: 4px; box-shadow: 0px 0px 50px -20px ${color2}; overflow: hidden; }
+    strong { display: inline-block; padding: 15px; background: ${color2}; color: white; }
+    span { display: inline-block; padding: 15px; }
+  </style>
+</head>
+<body><p><strong>${status}</strong> <span>${message}</span></p></body>
+`;
+}
+var ESCAPE_HTML = /[&<>]/g;
+var escapeHtml = (s2) => {
+  return s2.replace(ESCAPE_HTML, (c2) => {
+    switch (c2) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      default:
+        return "";
+    }
+  });
+};
+var COLOR_400 = "#006ce9";
+var COLOR_500 = "#713fc2";
+
+// packages/qwik-city/src/middleware/request-handler/redirect-handler.ts
+var AbortMessage = class {
+};
+var RedirectMessage = class extends AbortMessage {
+};
+
 // packages/qwik-city/src/middleware/request-handler/cookie.ts
 var SAMESITE = {
   lax: "Lax",
@@ -24930,86 +25130,429 @@ var Cookie = class {
 };
 REQ_COOKIE, _a = RES_COOKIE, _b = LIVE_COOKIE;
 
-// packages/qwik-city/src/middleware/request-handler/error-handler.ts
-var ServerError = class extends Error {
-  constructor(status, data) {
-    super();
-    this.status = status;
-    this.data = data;
+// packages/qwik-city/src/middleware/request-handler/cache-control.ts
+function createCacheControl(cacheControl) {
+  const controls = [];
+  if (cacheControl === "day") {
+    cacheControl = 60 * 60 * 24;
+  } else if (cacheControl === "week") {
+    cacheControl = 60 * 60 * 24 * 7;
+  } else if (cacheControl === "month") {
+    cacheControl = 60 * 60 * 24 * 30;
+  } else if (cacheControl === "year") {
+    cacheControl = 60 * 60 * 24 * 365;
+  } else if (cacheControl === "private") {
+    cacheControl = {
+      private: true,
+      noCache: true
+    };
+  } else if (cacheControl === "immutable") {
+    cacheControl = {
+      public: true,
+      immutable: true,
+      maxAge: 60 * 60 * 24 * 365,
+      staleWhileRevalidate: 60 * 60 * 24 * 365
+    };
+  } else if (cacheControl === "no-cache") {
+    cacheControl = {
+      noCache: true
+    };
   }
-};
-var ErrorResponse = class extends Error {
-  constructor(status, message) {
-    super(message);
-    this.status = status;
+  if (typeof cacheControl === "number") {
+    cacheControl = {
+      maxAge: cacheControl,
+      sMaxAge: cacheControl,
+      staleWhileRevalidate: cacheControl
+    };
   }
+  if (cacheControl.immutable) {
+    controls.push("immutable");
+  }
+  if (cacheControl.maxAge) {
+    controls.push(`max-age=${cacheControl.maxAge}`);
+  }
+  if (cacheControl.sMaxAge) {
+    controls.push(`s-maxage=${cacheControl.sMaxAge}`);
+  }
+  if (cacheControl.noStore) {
+    controls.push("no-store");
+  }
+  if (cacheControl.noCache) {
+    controls.push("no-cache");
+  }
+  if (cacheControl.private) {
+    controls.push("private");
+  }
+  if (cacheControl.public) {
+    controls.push("public");
+  }
+  if (cacheControl.staleWhileRevalidate) {
+    controls.push(`stale-while-revalidate=${cacheControl.staleWhileRevalidate}`);
+  }
+  if (cacheControl.staleIfError) {
+    controls.push(`stale-if-error=${cacheControl.staleIfError}`);
+  }
+  return controls.join(", ");
+}
+
+// packages/qwik-city/src/middleware/request-handler/user-response.ts
+var asyncStore;
+import("node:async_hooks").then((module2) => {
+  const AsyncLocalStorage = module2.AsyncLocalStorage;
+  asyncStore = new AsyncLocalStorage();
+  globalThis.qcAsyncRequestStore = asyncStore;
+}).catch((err) => {
+  console.warn(
+    "AsyncLocalStorage not available, continuing without it. This might impact concurrent server calls.",
+    err
+  );
+});
+function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash = true, basePathname = "/", qwikSerializer) {
+  let resolve4;
+  const responsePromise = new Promise((r2) => resolve4 = r2);
+  const requestEv = createRequestEvent(
+    serverRequestEv,
+    loadedRoute,
+    requestHandlers,
+    manifest,
+    trailingSlash,
+    basePathname,
+    qwikSerializer,
+    resolve4
+  );
+  return {
+    response: responsePromise,
+    requestEv,
+    completion: asyncStore ? asyncStore.run(requestEv, runNext, requestEv, resolve4) : runNext(requestEv, resolve4)
+  };
+}
+async function runNext(requestEv, resolve4) {
+  try {
+    await requestEv.next();
+  } catch (e) {
+    if (e instanceof RedirectMessage) {
+      const stream = requestEv.getWritableStream();
+      await stream.close();
+    } else if (e instanceof ErrorResponse) {
+      console.error(e);
+      if (!requestEv.headersSent) {
+        const html5 = getErrorHtml(e.status, e);
+        const status = e.status;
+        requestEv.html(status, html5);
+      }
+    } else if (!(e instanceof AbortMessage)) {
+      if (getRequestMode(requestEv) !== "dev") {
+        try {
+          if (!requestEv.headersSent) {
+            requestEv.headers.set("content-type", "text/html; charset=utf-8");
+            requestEv.cacheControl({ noCache: true });
+            requestEv.status(500);
+          }
+          const stream = requestEv.getWritableStream();
+          if (!stream.locked) {
+            const writer = stream.getWriter();
+            await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
+            await writer.close();
+          }
+        } catch {
+          console.error("Unable to render error page");
+        }
+      }
+      return e;
+    }
+  } finally {
+    if (!requestEv.isDirty()) {
+      resolve4(null);
+    }
+  }
+  return void 0;
+}
+function getRouteMatchPathname(pathname, trailingSlash) {
+  if (pathname.endsWith(QDATA_JSON)) {
+    const trimEnd = pathname.length - QDATA_JSON_LEN + (trailingSlash ? 1 : 0);
+    pathname = pathname.slice(0, trimEnd);
+    if (pathname === "") {
+      pathname = "/";
+    }
+  }
+  return pathname;
+}
+var IsQData = "@isQData";
+var QDATA_JSON = "/q-data.json";
+var QDATA_JSON_LEN = QDATA_JSON.length;
+
+// packages/qwik-city/src/runtime/src/utils.ts
+var isPromise = (value2) => {
+  return value2 && typeof value2.then === "function";
 };
-function getErrorHtml(status, e) {
-  let message = "Server Error";
-  if (e != null) {
-    if (typeof e.message === "string") {
-      message = e.message;
+
+// packages/qwik-city/src/middleware/request-handler/request-event.ts
+var RequestEvLoaders = Symbol("RequestEvLoaders");
+var RequestEvMode = Symbol("RequestEvMode");
+var RequestEvRoute = Symbol("RequestEvRoute");
+var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
+var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
+var RequestRouteName = "@routeName";
+var RequestEvSharedActionId = "@actionId";
+var RequestEvSharedActionFormData = "@actionFormData";
+var RequestEvSharedNonce = "@nonce";
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
+  const { request, platform, env: env2 } = serverRequestEv;
+  const sharedMap = /* @__PURE__ */ new Map();
+  const cookie = new Cookie(request.headers.get("cookie"));
+  const headers = new Headers();
+  const url = new URL(request.url);
+  if (url.pathname.endsWith(QDATA_JSON)) {
+    url.pathname = url.pathname.slice(0, -QDATA_JSON_LEN);
+    if (trailingSlash && !url.pathname.endsWith("/")) {
+      url.pathname += "/";
+    }
+    sharedMap.set(IsQData, true);
+  }
+  sharedMap.set("@manifest", manifest);
+  let routeModuleIndex = -1;
+  let writableStream = null;
+  let requestData = void 0;
+  let locale = serverRequestEv.locale;
+  let status = 200;
+  const next = async () => {
+    routeModuleIndex++;
+    while (routeModuleIndex < requestHandlers.length) {
+      const moduleRequestHandler = requestHandlers[routeModuleIndex];
+      const asyncStore2 = globalThis.qcAsyncRequestStore;
+      const result = (asyncStore2 == null ? void 0 : asyncStore2.run) ? asyncStore2.run(requestEv, moduleRequestHandler, requestEv) : moduleRequestHandler(requestEv);
+      if (isPromise(result)) {
+        await result;
+      }
+      routeModuleIndex++;
+    }
+  };
+  const check = () => {
+    if (writableStream !== null) {
+      throw new Error("Response already sent");
+    }
+  };
+  const send = (statusOrResponse, body) => {
+    check();
+    if (typeof statusOrResponse === "number") {
+      status = statusOrResponse;
+      const writableStream2 = requestEv.getWritableStream();
+      const writer = writableStream2.getWriter();
+      writer.write(typeof body === "string" ? encoder.encode(body) : body);
+      writer.close();
     } else {
-      message = String(e);
+      status = statusOrResponse.status;
+      statusOrResponse.headers.forEach((value2, key) => {
+        headers.append(key, value2);
+      });
+      if (statusOrResponse.body) {
+        const writableStream2 = requestEv.getWritableStream();
+        statusOrResponse.body.pipeTo(writableStream2);
+      } else {
+        if (status >= 300 && status < 400) {
+          return new RedirectMessage();
+        } else {
+          requestEv.getWritableStream().getWriter().close();
+        }
+      }
     }
-  }
-  return `<html>` + minimalHtmlResponse(status, message) + `</html>`;
-}
-function minimalHtmlResponse(status, message) {
-  if (typeof status !== "number") {
-    status = 500;
-  }
-  if (typeof message === "string") {
-    message = escapeHtml(message);
-  } else {
-    message = "";
-  }
-  const width = typeof message === "string" ? "600px" : "300px";
-  const color2 = status >= 500 ? COLOR_500 : COLOR_400;
-  return `
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Status" content="${status}">
-  <title>${status} ${message}</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body { color: ${color2}; background-color: #fafafa; padding: 30px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
-    p { max-width: ${width}; margin: 60px auto 30px auto; background: white; border-radius: 4px; box-shadow: 0px 0px 50px -20px ${color2}; overflow: hidden; }
-    strong { display: inline-block; padding: 15px; background: ${color2}; color: white; }
-    span { display: inline-block; padding: 15px; }
-  </style>
-</head>
-<body><p><strong>${status}</strong> <span>${message}</span></p></body>
-`;
-}
-var ESCAPE_HTML = /[&<>]/g;
-var escapeHtml = (s2) => {
-  return s2.replace(ESCAPE_HTML, (c2) => {
-    switch (c2) {
-      case "&":
-        return "&amp;";
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      default:
-        return "";
+    return exit2();
+  };
+  const exit2 = () => {
+    routeModuleIndex = ABORT_INDEX;
+    return new AbortMessage();
+  };
+  const loaders = {};
+  const requestEv = {
+    [RequestEvLoaders]: loaders,
+    [RequestEvMode]: serverRequestEv.mode,
+    [RequestEvTrailingSlash]: trailingSlash,
+    [RequestEvRoute]: loadedRoute,
+    [RequestEvQwikSerializer]: qwikSerializer,
+    cookie,
+    headers,
+    env: env2,
+    method: request.method,
+    signal: request.signal,
+    params: (loadedRoute == null ? void 0 : loadedRoute[1]) ?? {},
+    pathname: url.pathname,
+    platform,
+    query: url.searchParams,
+    request,
+    url,
+    basePathname,
+    sharedMap,
+    get headersSent() {
+      return writableStream !== null;
+    },
+    get exited() {
+      return routeModuleIndex >= ABORT_INDEX;
+    },
+    get clientConn() {
+      return serverRequestEv.getClientConn();
+    },
+    next,
+    exit: exit2,
+    cacheControl: (cacheControl, target = "Cache-Control") => {
+      check();
+      headers.set(target, createCacheControl(cacheControl));
+    },
+    resolveValue: async (loaderOrAction) => {
+      const id = loaderOrAction.__id;
+      if (loaderOrAction.__brand === "server_loader") {
+        if (!(id in loaders)) {
+          throw new Error(
+            "You can not get the returned data of a loader that has not been executed for this request."
+          );
+        }
+      }
+      return loaders[id];
+    },
+    status: (statusCode) => {
+      if (typeof statusCode === "number") {
+        check();
+        status = statusCode;
+        return statusCode;
+      }
+      return status;
+    },
+    locale: (_locale) => {
+      if (typeof _locale === "string") {
+        locale = _locale;
+      }
+      return locale || "";
+    },
+    error: (statusCode, message) => {
+      status = statusCode;
+      headers.delete("Cache-Control");
+      return new ErrorResponse(statusCode, message);
+    },
+    redirect: (statusCode, url2) => {
+      check();
+      status = statusCode;
+      if (url2) {
+        const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
+        if (url2 !== fixedURL) {
+          console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+        }
+        headers.set("Location", fixedURL);
+      }
+      headers.delete("Cache-Control");
+      if (statusCode > 301) {
+        headers.set("Cache-Control", "no-store");
+      }
+      exit2();
+      return new RedirectMessage();
+    },
+    defer: (returnData) => {
+      return typeof returnData === "function" ? returnData : () => returnData;
+    },
+    fail: (statusCode, data) => {
+      check();
+      status = statusCode;
+      headers.delete("Cache-Control");
+      return {
+        failed: true,
+        ...data
+      };
+    },
+    text: (statusCode, text3) => {
+      headers.set("Content-Type", "text/plain; charset=utf-8");
+      return send(statusCode, text3);
+    },
+    html: (statusCode, html5) => {
+      headers.set("Content-Type", "text/html; charset=utf-8");
+      return send(statusCode, html5);
+    },
+    parseBody: async () => {
+      if (requestData !== void 0) {
+        return requestData;
+      }
+      return requestData = parseRequest(requestEv, sharedMap, qwikSerializer);
+    },
+    json: (statusCode, data) => {
+      headers.set("Content-Type", "application/json; charset=utf-8");
+      return send(statusCode, JSON.stringify(data));
+    },
+    send,
+    isDirty: () => {
+      return writableStream !== null;
+    },
+    getWritableStream: () => {
+      if (writableStream === null) {
+        if (serverRequestEv.mode === "dev") {
+          const serverTiming = sharedMap.get("@serverTiming");
+          if (serverTiming) {
+            headers.set("Server-Timing", serverTiming.map((a) => `${a[0]};dur=${a[1]}`).join(","));
+          }
+        }
+        writableStream = serverRequestEv.getWritableStream(
+          status,
+          headers,
+          cookie,
+          resolved,
+          requestEv
+        );
+      }
+      return writableStream;
     }
-  });
+  };
+  return Object.freeze(requestEv);
+}
+function getRequestLoaders(requestEv) {
+  return requestEv[RequestEvLoaders];
+}
+function getRequestTrailingSlash(requestEv) {
+  return requestEv[RequestEvTrailingSlash];
+}
+function getRequestRoute(requestEv) {
+  return requestEv[RequestEvRoute];
+}
+function getRequestMode(requestEv) {
+  return requestEv[RequestEvMode];
+}
+var ABORT_INDEX = Number.MAX_SAFE_INTEGER;
+var parseRequest = async ({ request, method, query }, sharedMap, qwikSerializer) => {
+  var _a2;
+  const type = ((_a2 = request.headers.get("content-type")) == null ? void 0 : _a2.split(/[;,]/, 1)[0].trim()) ?? "";
+  if (type === "application/x-www-form-urlencoded" || type === "multipart/form-data") {
+    const formData = await request.formData();
+    sharedMap.set(RequestEvSharedActionFormData, formData);
+    return formToObj(formData);
+  } else if (type === "application/json") {
+    const data = await request.json();
+    return data;
+  } else if (type === "application/qwik-json") {
+    if (method === "GET" && query.has(QDATA_KEY)) {
+      const data = query.get(QDATA_KEY);
+      if (data) {
+        try {
+          return qwikSerializer._deserialize(decodeURIComponent(data));
+        } catch (err) {
+        }
+      }
+    }
+    return qwikSerializer._deserialize(await request.text());
+  }
+  return void 0;
 };
-var COLOR_400 = "#006ce9";
-var COLOR_500 = "#713fc2";
-
-// packages/qwik-city/src/middleware/request-handler/redirect-handler.ts
-var AbortMessage = class {
+var formToObj = (formData) => {
+  const values = [...formData.entries()].reduce((values2, [name, value2]) => {
+    name.split(".").reduce((object, key, index, keys2) => {
+      if (key.endsWith("[]")) {
+        const arrayKey = key.slice(0, -2);
+        object[arrayKey] = object[arrayKey] || [];
+        return object[arrayKey] = [...object[arrayKey], value2];
+      }
+      if (index < keys2.length - 1) {
+        return object[key] = object[key] || (Number.isNaN(+keys2[index + 1]) ? {} : []);
+      }
+      return object[key] = value2;
+    }, values2);
+    return values2;
+  }, {});
+  return values;
 };
-var RedirectMessage = class extends AbortMessage {
-};
-
-// packages/qwik-city/src/runtime/src/constants.ts
-var QACTION_KEY = "qaction";
-var QFN_KEY = "qfunc";
-var QDATA_KEY = "qdata";
 
 // packages/qwik-city/src/middleware/request-handler/response-page.ts
 function getQwikCityServerData(requestEv) {
@@ -25342,11 +25885,14 @@ function fixTrailingSlash(ev) {
   if (!isQData && pathname !== basePathname && !pathname.endsWith(".html")) {
     if (trailingSlash) {
       if (!pathname.endsWith("/")) {
-        throw ev.redirect(302 /* Found */, pathname + "/" + url.search);
+        throw ev.redirect(301 /* MovedPermanently */, pathname + "/" + url.search);
       }
     } else {
       if (pathname.endsWith("/")) {
-        throw ev.redirect(302 /* Found */, pathname.slice(0, pathname.length - 1) + url.search);
+        throw ev.redirect(
+          301 /* MovedPermanently */,
+          pathname.slice(0, pathname.length - 1) + url.search
+        );
       }
     }
   }
@@ -25497,430 +26043,6 @@ function isContentType(headers, ...types) {
   return types.includes(type);
 }
 
-// packages/qwik-city/src/middleware/request-handler/cache-control.ts
-function createCacheControl(cacheControl) {
-  const controls = [];
-  if (cacheControl === "day") {
-    cacheControl = 60 * 60 * 24;
-  } else if (cacheControl === "week") {
-    cacheControl = 60 * 60 * 24 * 7;
-  } else if (cacheControl === "month") {
-    cacheControl = 60 * 60 * 24 * 30;
-  } else if (cacheControl === "year") {
-    cacheControl = 60 * 60 * 24 * 365;
-  } else if (cacheControl === "private") {
-    cacheControl = {
-      private: true,
-      noCache: true
-    };
-  } else if (cacheControl === "immutable") {
-    cacheControl = {
-      public: true,
-      immutable: true,
-      maxAge: 60 * 60 * 24 * 365,
-      staleWhileRevalidate: 60 * 60 * 24 * 365
-    };
-  } else if (cacheControl === "no-cache") {
-    cacheControl = {
-      noCache: true
-    };
-  }
-  if (typeof cacheControl === "number") {
-    cacheControl = {
-      maxAge: cacheControl,
-      sMaxAge: cacheControl,
-      staleWhileRevalidate: cacheControl
-    };
-  }
-  if (cacheControl.immutable) {
-    controls.push("immutable");
-  }
-  if (cacheControl.maxAge) {
-    controls.push(`max-age=${cacheControl.maxAge}`);
-  }
-  if (cacheControl.sMaxAge) {
-    controls.push(`s-maxage=${cacheControl.sMaxAge}`);
-  }
-  if (cacheControl.noStore) {
-    controls.push("no-store");
-  }
-  if (cacheControl.noCache) {
-    controls.push("no-cache");
-  }
-  if (cacheControl.private) {
-    controls.push("private");
-  }
-  if (cacheControl.public) {
-    controls.push("public");
-  }
-  if (cacheControl.staleWhileRevalidate) {
-    controls.push(`stale-while-revalidate=${cacheControl.staleWhileRevalidate}`);
-  }
-  if (cacheControl.staleIfError) {
-    controls.push(`stale-if-error=${cacheControl.staleIfError}`);
-  }
-  return controls.join(", ");
-}
-
-// packages/qwik-city/src/runtime/src/utils.ts
-var isPromise = (value2) => {
-  return value2 && typeof value2.then === "function";
-};
-
-// packages/qwik-city/src/middleware/request-handler/request-event.ts
-var RequestEvLoaders = Symbol("RequestEvLoaders");
-var RequestEvMode = Symbol("RequestEvMode");
-var RequestEvRoute = Symbol("RequestEvRoute");
-var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
-var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
-var RequestRouteName = "@routeName";
-var RequestEvSharedActionId = "@actionId";
-var RequestEvSharedActionFormData = "@actionFormData";
-var RequestEvSharedNonce = "@nonce";
-function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
-  const { request, platform, env: env2 } = serverRequestEv;
-  const sharedMap = /* @__PURE__ */ new Map();
-  const cookie = new Cookie(request.headers.get("cookie"));
-  const headers = new Headers();
-  const url = new URL(request.url);
-  if (url.pathname.endsWith(QDATA_JSON)) {
-    url.pathname = url.pathname.slice(0, -QDATA_JSON_LEN);
-    if (trailingSlash && !url.pathname.endsWith("/")) {
-      url.pathname += "/";
-    }
-    sharedMap.set(IsQData, true);
-  }
-  sharedMap.set("@manifest", manifest);
-  let routeModuleIndex = -1;
-  let writableStream = null;
-  let requestData = void 0;
-  let locale = serverRequestEv.locale;
-  let status = 200;
-  const next = async () => {
-    routeModuleIndex++;
-    while (routeModuleIndex < requestHandlers.length) {
-      const moduleRequestHandler = requestHandlers[routeModuleIndex];
-      const asyncStore2 = globalThis.qcAsyncRequestStore;
-      const result = (asyncStore2 == null ? void 0 : asyncStore2.run) ? asyncStore2.run(requestEv, moduleRequestHandler, requestEv) : moduleRequestHandler(requestEv);
-      if (isPromise(result)) {
-        await result;
-      }
-      routeModuleIndex++;
-    }
-  };
-  const check = () => {
-    if (writableStream !== null) {
-      throw new Error("Response already sent");
-    }
-  };
-  const send = (statusOrResponse, body) => {
-    check();
-    if (typeof statusOrResponse === "number") {
-      status = statusOrResponse;
-      const writableStream2 = requestEv.getWritableStream();
-      const writer = writableStream2.getWriter();
-      writer.write(typeof body === "string" ? encoder.encode(body) : body);
-      writer.close();
-    } else {
-      status = statusOrResponse.status;
-      statusOrResponse.headers.forEach((value2, key) => {
-        headers.append(key, value2);
-      });
-      if (statusOrResponse.body) {
-        const writableStream2 = requestEv.getWritableStream();
-        statusOrResponse.body.pipeTo(writableStream2);
-      } else {
-        if (status >= 300 && status < 400) {
-          return new RedirectMessage();
-        } else {
-          requestEv.getWritableStream().getWriter().close();
-        }
-      }
-    }
-    return exit2();
-  };
-  const exit2 = () => {
-    routeModuleIndex = ABORT_INDEX;
-    return new AbortMessage();
-  };
-  const loaders = {};
-  const requestEv = {
-    [RequestEvLoaders]: loaders,
-    [RequestEvMode]: serverRequestEv.mode,
-    [RequestEvTrailingSlash]: trailingSlash,
-    [RequestEvRoute]: loadedRoute,
-    [RequestEvQwikSerializer]: qwikSerializer,
-    cookie,
-    headers,
-    env: env2,
-    method: request.method,
-    signal: request.signal,
-    params: (loadedRoute == null ? void 0 : loadedRoute[1]) ?? {},
-    pathname: url.pathname,
-    platform,
-    query: url.searchParams,
-    request,
-    url,
-    basePathname,
-    sharedMap,
-    get headersSent() {
-      return writableStream !== null;
-    },
-    get exited() {
-      return routeModuleIndex >= ABORT_INDEX;
-    },
-    get clientConn() {
-      return serverRequestEv.getClientConn();
-    },
-    next,
-    exit: exit2,
-    cacheControl: (cacheControl, target = "Cache-Control") => {
-      check();
-      headers.set(target, createCacheControl(cacheControl));
-    },
-    resolveValue: async (loaderOrAction) => {
-      const id = loaderOrAction.__id;
-      if (loaderOrAction.__brand === "server_loader") {
-        if (!(id in loaders)) {
-          throw new Error(
-            "You can not get the returned data of a loader that has not been executed for this request."
-          );
-        }
-      }
-      return loaders[id];
-    },
-    status: (statusCode) => {
-      if (typeof statusCode === "number") {
-        check();
-        status = statusCode;
-        return statusCode;
-      }
-      return status;
-    },
-    locale: (_locale) => {
-      if (typeof _locale === "string") {
-        locale = _locale;
-      }
-      return locale || "";
-    },
-    error: (statusCode, message) => {
-      status = statusCode;
-      headers.delete("Cache-Control");
-      return new ErrorResponse(statusCode, message);
-    },
-    redirect: (statusCode, url2) => {
-      check();
-      status = statusCode;
-      if (url2) {
-        const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
-        if (url2 !== fixedURL) {
-          console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
-        }
-        headers.set("Location", fixedURL);
-      }
-      headers.delete("Cache-Control");
-      if (statusCode > 301) {
-        headers.set("Cache-Control", "no-store");
-      }
-      exit2();
-      return new RedirectMessage();
-    },
-    defer: (returnData) => {
-      return typeof returnData === "function" ? returnData : () => returnData;
-    },
-    fail: (statusCode, data) => {
-      check();
-      status = statusCode;
-      headers.delete("Cache-Control");
-      return {
-        failed: true,
-        ...data
-      };
-    },
-    text: (statusCode, text3) => {
-      headers.set("Content-Type", "text/plain; charset=utf-8");
-      return send(statusCode, text3);
-    },
-    html: (statusCode, html5) => {
-      headers.set("Content-Type", "text/html; charset=utf-8");
-      return send(statusCode, html5);
-    },
-    parseBody: async () => {
-      if (requestData !== void 0) {
-        return requestData;
-      }
-      return requestData = parseRequest(requestEv, sharedMap, qwikSerializer);
-    },
-    json: (statusCode, data) => {
-      headers.set("Content-Type", "application/json; charset=utf-8");
-      return send(statusCode, JSON.stringify(data));
-    },
-    send,
-    isDirty: () => {
-      return writableStream !== null;
-    },
-    getWritableStream: () => {
-      if (writableStream === null) {
-        if (serverRequestEv.mode === "dev") {
-          const serverTiming = sharedMap.get("@serverTiming");
-          if (serverTiming) {
-            headers.set("Server-Timing", serverTiming.map((a) => `${a[0]};dur=${a[1]}`).join(","));
-          }
-        }
-        writableStream = serverRequestEv.getWritableStream(
-          status,
-          headers,
-          cookie,
-          resolved,
-          requestEv
-        );
-      }
-      return writableStream;
-    }
-  };
-  return Object.freeze(requestEv);
-}
-function getRequestLoaders(requestEv) {
-  return requestEv[RequestEvLoaders];
-}
-function getRequestTrailingSlash(requestEv) {
-  return requestEv[RequestEvTrailingSlash];
-}
-function getRequestRoute(requestEv) {
-  return requestEv[RequestEvRoute];
-}
-function getRequestMode(requestEv) {
-  return requestEv[RequestEvMode];
-}
-var ABORT_INDEX = Number.MAX_SAFE_INTEGER;
-var parseRequest = async ({ request, method, query }, sharedMap, qwikSerializer) => {
-  var _a2;
-  const type = ((_a2 = request.headers.get("content-type")) == null ? void 0 : _a2.split(/[;,]/, 1)[0].trim()) ?? "";
-  if (type === "application/x-www-form-urlencoded" || type === "multipart/form-data") {
-    const formData = await request.formData();
-    sharedMap.set(RequestEvSharedActionFormData, formData);
-    return formToObj(formData);
-  } else if (type === "application/json") {
-    const data = await request.json();
-    return data;
-  } else if (type === "application/qwik-json") {
-    if (method === "GET" && query.has(QDATA_KEY)) {
-      const data = query.get(QDATA_KEY);
-      if (data) {
-        try {
-          return qwikSerializer._deserialize(decodeURIComponent(data));
-        } catch (err) {
-        }
-      }
-    }
-    return qwikSerializer._deserialize(await request.text());
-  }
-  return void 0;
-};
-var formToObj = (formData) => {
-  const values = [...formData.entries()].reduce((values2, [name, value2]) => {
-    name.split(".").reduce((object, key, index, keys2) => {
-      if (key.endsWith("[]")) {
-        const arrayKey = key.slice(0, -2);
-        object[arrayKey] = object[arrayKey] || [];
-        return object[arrayKey] = [...object[arrayKey], value2];
-      }
-      if (index < keys2.length - 1) {
-        return object[key] = object[key] || (Number.isNaN(+keys2[index + 1]) ? {} : []);
-      }
-      return object[key] = value2;
-    }, values2);
-    return values2;
-  }, {});
-  return values;
-};
-
-// packages/qwik-city/src/middleware/request-handler/user-response.ts
-var asyncStore;
-import("node:async_hooks").then((module2) => {
-  const AsyncLocalStorage = module2.AsyncLocalStorage;
-  asyncStore = new AsyncLocalStorage();
-  globalThis.qcAsyncRequestStore = asyncStore;
-}).catch((err) => {
-  console.warn(
-    "AsyncLocalStorage not available, continuing without it. This might impact concurrent server calls.",
-    err
-  );
-});
-function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash = true, basePathname = "/", qwikSerializer) {
-  let resolve4;
-  const responsePromise = new Promise((r2) => resolve4 = r2);
-  const requestEv = createRequestEvent(
-    serverRequestEv,
-    loadedRoute,
-    requestHandlers,
-    manifest,
-    trailingSlash,
-    basePathname,
-    qwikSerializer,
-    resolve4
-  );
-  return {
-    response: responsePromise,
-    requestEv,
-    completion: asyncStore ? asyncStore.run(requestEv, runNext, requestEv, resolve4) : runNext(requestEv, resolve4)
-  };
-}
-async function runNext(requestEv, resolve4) {
-  try {
-    await requestEv.next();
-  } catch (e) {
-    if (e instanceof RedirectMessage) {
-      const stream = requestEv.getWritableStream();
-      await stream.close();
-    } else if (e instanceof ErrorResponse) {
-      console.error(e);
-      if (!requestEv.headersSent) {
-        const html5 = getErrorHtml(e.status, e);
-        const status = e.status;
-        requestEv.html(status, html5);
-      }
-    } else if (!(e instanceof AbortMessage)) {
-      if (getRequestMode(requestEv) !== "dev") {
-        try {
-          if (!requestEv.headersSent) {
-            requestEv.headers.set("content-type", "text/html; charset=utf-8");
-            requestEv.cacheControl({ noCache: true });
-            requestEv.status(500);
-          }
-          const stream = requestEv.getWritableStream();
-          if (!stream.locked) {
-            const writer = stream.getWriter();
-            await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
-            await writer.close();
-          }
-        } catch {
-          console.error("Unable to render error page");
-        }
-      }
-      return e;
-    }
-  } finally {
-    if (!requestEv.isDirty()) {
-      resolve4(null);
-    }
-  }
-  return void 0;
-}
-function getRouteMatchPathname(pathname, trailingSlash) {
-  if (pathname.endsWith(QDATA_JSON)) {
-    const trimEnd = pathname.length - QDATA_JSON_LEN + (trailingSlash ? 1 : 0);
-    pathname = pathname.slice(0, trimEnd);
-    if (pathname === "") {
-      pathname = "/";
-    }
-  }
-  return pathname;
-}
-var IsQData = "@isQData";
-var QDATA_JSON = "/q-data.json";
-var QDATA_JSON_LEN = QDATA_JSON.length;
-
 // packages/qwik-city/src/runtime/src/route-matcher.ts
 function matchRoute(route, path3) {
   const routeIdx = startIdxSkipSlash(route);
@@ -26053,125 +26175,6 @@ var getMenuLoader = (menus, pathname) => {
     }
   }
 };
-
-// packages/qwik-city/src/middleware/node/http.ts
-var import_node_http2 = require("node:http2");
-function computeOrigin(req, opts) {
-  var _a2;
-  return ((_a2 = opts == null ? void 0 : opts.getOrigin) == null ? void 0 : _a2.call(opts, req)) ?? (opts == null ? void 0 : opts.origin) ?? process.env.ORIGIN ?? fallbackOrigin(req);
-}
-function fallbackOrigin(req) {
-  const { PROTOCOL_HEADER, HOST_HEADER } = process.env;
-  const headers = req.headers;
-  const protocol = PROTOCOL_HEADER && headers[PROTOCOL_HEADER] || (req.socket.encrypted || req.connection.encrypted ? "https" : "http");
-  const hostHeader = HOST_HEADER ?? (req instanceof import_node_http2.Http2ServerRequest ? ":authority" : "host");
-  const host = headers[hostHeader];
-  return `${protocol}://${host}`;
-}
-function getUrl(req, origin) {
-  return normalizeUrl(req.originalUrl || req.url || "/", origin);
-}
-function isIgnoredError(message = "") {
-  const ignoredErrors = ["The stream has been destroyed", "write after end"];
-  return ignoredErrors.some((ignored) => message.includes(ignored));
-}
-var invalidHeadersPattern = /^:(method|scheme|authority|path)$/i;
-function normalizeUrl(url, base) {
-  const DOUBLE_SLASH_REG = /\/\/|\\\\/g;
-  return new URL(url.replace(DOUBLE_SLASH_REG, "/"), base);
-}
-async function fromNodeHttp(url, req, res, mode, getClientConn) {
-  const requestHeaders = new Headers();
-  const nodeRequestHeaders = req.headers;
-  try {
-    for (const [key, value2] of Object.entries(nodeRequestHeaders)) {
-      if (invalidHeadersPattern.test(key)) {
-        continue;
-      }
-      if (typeof value2 === "string") {
-        requestHeaders.set(key, value2);
-      } else if (Array.isArray(value2)) {
-        for (const v of value2) {
-          requestHeaders.append(key, v);
-        }
-      }
-    }
-  } catch (err) {
-    console.error(err);
-  }
-  const getRequestBody = async function* () {
-    for await (const chunk of req) {
-      yield chunk;
-    }
-  };
-  const body = req.method === "HEAD" || req.method === "GET" ? void 0 : getRequestBody();
-  const controller = new AbortController();
-  const options2 = {
-    method: req.method,
-    headers: requestHeaders,
-    body,
-    signal: controller.signal,
-    duplex: "half"
-  };
-  res.on("close", () => {
-    controller.abort();
-  });
-  const serverRequestEv = {
-    mode,
-    url,
-    request: new Request(url.href, options2),
-    env: {
-      get(key) {
-        return process.env[key];
-      }
-    },
-    getWritableStream: (status, headers, cookies) => {
-      res.statusCode = status;
-      try {
-        for (const [key, value2] of headers) {
-          if (invalidHeadersPattern.test(key)) {
-            continue;
-          }
-          res.setHeader(key, value2);
-        }
-        const cookieHeaders = cookies.headers();
-        if (cookieHeaders.length > 0) {
-          res.setHeader("Set-Cookie", cookieHeaders);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-      return new WritableStream({
-        write(chunk) {
-          if (res.closed || res.destroyed) {
-            return;
-          }
-          res.write(chunk, (error) => {
-            if (error && !isIgnoredError(error.message)) {
-              console.error(error);
-            }
-          });
-        },
-        close() {
-          res.end();
-        }
-      });
-    },
-    getClientConn: () => {
-      return getClientConn ? getClientConn(req) : {
-        ip: req.socket.remoteAddress
-      };
-    },
-    platform: {
-      ssr: true,
-      incomingMessage: req,
-      node: process.versions.node
-      // Weirdly needed to make typecheck of insights happy
-    },
-    locale: void 0
-  };
-  return serverRequestEv;
-}
 
 // packages/qwik/src/optimizer/src/plugins/vite-utils.ts
 var findLocation = (e) => {
@@ -26393,7 +26396,7 @@ function ssrDevMiddleware(ctx, server) {
   return async (req, res, next) => {
     try {
       const url = getUrl(req, computeOrigin(req));
-      if (skipRequest(url.pathname) || isVitePing(url.pathname, req.headers)) {
+      if (shouldSkipRequest(url.pathname) || isVitePing(url.pathname, req.headers)) {
         next();
         return;
       }
@@ -26608,7 +26611,7 @@ function staticDistMiddleware({ config }) {
   );
   return async (req, res, next) => {
     const url = new URL(req.originalUrl, `http://${req.headers.host}`);
-    if (skipRequest(url.pathname)) {
+    if (shouldSkipRequest(url.pathname)) {
       next();
       return;
     }
@@ -26674,7 +26677,7 @@ var VALID_ID_PREFIX = `/@id/`;
 var VITE_PUBLIC_PATH = `/@vite/`;
 var internalPrefixes = [FS_PREFIX, VALID_ID_PREFIX, VITE_PUBLIC_PATH];
 var InternalPrefixRE = new RegExp(`^(?:${internalPrefixes.join("|")})`);
-function skipRequest(pathname) {
+function shouldSkipRequest(pathname) {
   if (pathname.startsWith("/@qwik-city-")) {
     return true;
   }
@@ -26760,18 +26763,18 @@ function prependManifestToServiceWorker(ctx, manifest, prefetch, swCode) {
   return [key, appBundlesCode, libraryBundlesCode, linkBundlesCode, swCode].join("\n");
 }
 function generateAppBundles(appBundles, manifest) {
-  for (const appBundleName in manifest.bundles) {
-    appBundles.push([appBundleName, []]);
-  }
-  for (const appBundle of appBundles) {
-    const appBundleName = appBundle[0];
-    const importedBundleIds = appBundle[1];
+  const sortedBundles = Object.keys(manifest.bundles).sort();
+  for (const appBundleName of sortedBundles) {
+    const appBundle = [appBundleName, []];
+    appBundles.push(appBundle);
     const symbolHashesInBundle = [];
     const manifestBundle = manifest.bundles[appBundleName];
     const importedBundleNames = Array.isArray(manifestBundle.imports) ? manifestBundle.imports : [];
+    const depsSet = new Set(importedBundleNames);
     for (const importedBundleName of importedBundleNames) {
-      importedBundleIds.push(getAppBundleId(appBundles, importedBundleName));
+      clearTransitiveDeps(depsSet, /* @__PURE__ */ new Set(), importedBundleName);
     }
+    appBundle[1] = Array.from(depsSet).map((dep) => sortedBundles.indexOf(dep));
     if (manifestBundle.symbols) {
       for (const manifestBundleSymbolName of manifestBundle.symbols) {
         const symbol = manifest.symbols[manifestBundleSymbolName];
@@ -26784,13 +26787,25 @@ function generateAppBundles(appBundles, manifest) {
       appBundle[2] = symbolHashesInBundle;
     }
   }
+  function clearTransitiveDeps(deps, seen, depName) {
+    const childBundle = manifest.bundles[depName];
+    for (const childDepImport of childBundle.imports || []) {
+      if (deps.has(childDepImport)) {
+        deps.delete(childDepImport);
+      }
+      if (!seen.has(childDepImport)) {
+        seen.add(childDepImport);
+        clearTransitiveDeps(deps, seen, childDepImport);
+      }
+    }
+  }
   return `const appBundles=${JSON.stringify(appBundles)};`;
 }
 function generateLibraryBundles(appBundles, manifest) {
   const libraryBundleIds = [];
   for (const [bundleName, bundle] of Object.entries(manifest.bundles)) {
     if (bundle.origins && bundle.origins.includes("@qwik-city-plan")) {
-      libraryBundleIds.push(getAppBundleId(appBundles, bundleName));
+      libraryBundleIds.push(getAppBundleIndex(appBundles, bundleName));
       break;
     }
   }
@@ -26850,14 +26865,14 @@ function generateLinkBundles(ctx, appBundles, manifest, prefetch) {
     }
     linkBundles.push(
       `[${r2.pattern.toString()},${JSON.stringify(
-        linkBundleNames.map((bundleName) => getAppBundleId(appBundles, bundleName))
+        linkBundleNames.map((bundleName) => getAppBundleIndex(appBundles, bundleName))
       )}]`
     );
     routeToBundles[r2.routeName] = linkBundleNames;
   }
   return [`const linkBundles=[${linkBundles.join(",")}];`, routeToBundles];
 }
-function getAppBundleId(appBundles, bundleName) {
+function getAppBundleIndex(appBundles, bundleName) {
   return appBundles.findIndex((b) => b[0] === bundleName);
 }
 var SW_UNREGISTER = `
