@@ -559,7 +559,7 @@ const loadClientData = async (url, element, opts) => {
   }
   let resolveFn;
   if (!qData) {
-    const fetchOptions = getFetchOptions(opts?.action, opts?.clearCache);
+    const fetchOptions = getFetchOptions(opts?.action);
     if (opts?.action) {
       opts.action.data = void 0;
     }
@@ -615,19 +615,16 @@ const loadClientData = async (url, element, opts) => {
     return v;
   });
 };
-const getFetchOptions = (action, noCache) => {
+const getFetchOptions = (action) => {
   const actionData = action?.data;
   if (!actionData) {
-    if (noCache) {
-      return {
-        cache: "no-cache",
-        headers: {
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache"
-        }
-      };
-    }
-    return void 0;
+    return {
+      cache: "no-cache",
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache"
+      }
+    };
   }
   if (actionData instanceof FormData) {
     return {
