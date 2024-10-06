@@ -32,39 +32,39 @@ const RouteNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ qwik.createContextId("qc-a");
 const RouteInternalContext = /* @__PURE__ */ qwik.createContextId("qc-ir");
 const RoutePreventNavigateContext = /* @__PURE__ */ qwik.createContextId("qc-p");
-const spaInit = qwik.event$((container) => {
+const spaInit = qwik.event$((_, el) => {
   const win = window;
-  const currentPath = location.pathname + location.search;
   const spa = "_qCitySPA";
-  const historyPatch = "_qCityHistoryPatch";
-  const bootstrap = "_qCityBootstrap";
   const initPopstate = "_qCityInitPopstate";
   const initAnchors = "_qCityInitAnchors";
   const initVisibility = "_qCityInitVisibility";
   const initScroll = "_qCityInitScroll";
-  const scrollEnabled = "_qCityScrollEnabled";
-  const debounceTimeout = "_qCityScrollDebounce";
-  const scrollHistory = "_qCityScroll";
-  const checkAndScroll = (scrollState) => {
-    if (scrollState) {
-      win.scrollTo(scrollState.x, scrollState.y);
-    }
-  };
-  const currentScrollState2 = () => {
-    const elm = document.documentElement;
-    return {
-      x: elm.scrollLeft,
-      y: elm.scrollTop,
-      w: Math.max(elm.scrollWidth, elm.clientWidth),
-      h: Math.max(elm.scrollHeight, elm.clientHeight)
-    };
-  };
-  const saveScrollState = (scrollState) => {
-    const state = history.state || {};
-    state[scrollHistory] = scrollState || currentScrollState2();
-    history.replaceState(state, "");
-  };
   if (!win[spa] && !win[initPopstate] && !win[initAnchors] && !win[initVisibility] && !win[initScroll]) {
+    const currentPath = location.pathname + location.search;
+    const historyPatch = "_qCityHistoryPatch";
+    const bootstrap = "_qCityBootstrap";
+    const scrollEnabled = "_qCityScrollEnabled";
+    const debounceTimeout = "_qCityScrollDebounce";
+    const scrollHistory = "_qCityScroll";
+    const checkAndScroll = (scrollState) => {
+      if (scrollState) {
+        win.scrollTo(scrollState.x, scrollState.y);
+      }
+    };
+    const currentScrollState2 = () => {
+      const elm = document.documentElement;
+      return {
+        x: elm.scrollLeft,
+        y: elm.scrollTop,
+        w: Math.max(elm.scrollWidth, elm.clientWidth),
+        h: Math.max(elm.scrollHeight, elm.clientHeight)
+      };
+    };
+    const saveScrollState = (scrollState) => {
+      const state = history.state || {};
+      state[scrollHistory] = scrollState || currentScrollState2();
+      history.replaceState(state, "");
+    };
     saveScrollState();
     win[initPopstate] = () => {
       if (win[spa]) {
@@ -73,13 +73,14 @@ const spaInit = qwik.event$((container) => {
       win[scrollEnabled] = false;
       clearTimeout(win[debounceTimeout]);
       if (currentPath !== location.pathname + location.search) {
-        const link = container.querySelector("a[q\\:link]");
+        const getContainer2 = (el2) => el2.closest("[q\\:container]");
+        const link = getContainer2(el)?.querySelector("a[q\\:link]");
         if (link) {
-          const container2 = link.closest("[q\\:container]");
+          const container = getContainer2(link);
           const bootstrapLink = link.cloneNode();
           bootstrapLink.setAttribute("q:nbs", "");
           bootstrapLink.style.display = "none";
-          container2.appendChild(bootstrapLink);
+          container.appendChild(bootstrapLink);
           win[bootstrap] = bootstrapLink;
           bootstrapLink.click();
         } else {
@@ -189,45 +190,12 @@ const spaInit = qwik.event$((container) => {
     }, 0);
   }
 });
-const shim = (base) => {
-  if (build.isServer) {
-    const [symbol, bundle] = qwik.getPlatform().chunkForSymbol(spaInit.getSymbol(), null, spaInit.dev?.file);
-    const args = [
-      base,
-      bundle,
-      symbol
-    ].map((x) => JSON.stringify(x)).join(",");
-    return `(${shim$1.toString()})(${args});`;
-  }
-};
-const shim$1 = async (base, path, symbol) => {
-  if (!window._qcs && history.scrollRestoration === "manual") {
-    window._qcs = true;
-    const scrollState = history.state?._qCityScroll;
-    if (scrollState) {
-      window.scrollTo(scrollState.x, scrollState.y);
-    }
-    const script = document.currentScript;
-    if (script) {
-      const container = script.closest("[q\\:container]");
-      const url = new URL(path, new URL(base, document.baseURI));
-      if (build.isDev) {
-        const imp = new Function("url", "return import(url)");
-        (await imp(url.href))[symbol](container);
-      } else {
-        (await import(url.href))[symbol](container);
-      }
-    }
-  }
-};
 const RouterOutlet = qwik.component$(() => {
   const serverData = qwik.useServerData("containerAttributes");
   if (!serverData) {
     throw new Error("PrefetchServiceWorker component must be rendered on the server.");
   }
-  const shimScript = shim(serverData["q:base"]);
   qwik._jsxBranch();
-  const nonce = qwik.useServerData("nonce");
   const { value } = qwik.useContext(ContentInternalContext);
   if (value && value.length > 0) {
     const contentsLen = value.length;
@@ -242,9 +210,20 @@ const RouterOutlet = qwik.component$(() => {
     return /* @__PURE__ */ jsxRuntime.jsxs(jsxRuntime.Fragment, {
       children: [
         cmp,
-        /* @__PURE__ */ jsxRuntime.jsx("script", {
-          dangerouslySetInnerHTML: shimScript,
-          nonce
+        !__EXPERIMENTAL__.noSPA && /* @__PURE__ */ jsxRuntime.jsx("script", {
+          "document:onQCInit$": spaInit,
+          "document:onQInit$": qwik.sync$(() => {
+            ((window1, history1) => {
+              if (!window1._qcs && history1.scrollRestoration === "manual") {
+                window1._qcs = true;
+                const scrollState = history1.state?._qCityScroll;
+                if (scrollState) {
+                  window1.scrollTo(scrollState.x, scrollState.y);
+                }
+                document.dispatchEvent(new Event("qcinit"));
+              }
+            })(window, history);
+          })
         })
       ]
     });
