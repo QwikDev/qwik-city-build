@@ -900,7 +900,8 @@ const QwikCityProvider = component$((props) => {
         const [routeName, params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
-        if (navigation.dest.search) {
+        const isRedirect = navType === "form" && !isSamePath(trackUrl, prevUrl);
+        if (navigation.dest.search && !isRedirect) {
           trackUrl.search = navigation.dest.search;
         }
         routeLocation.prevUrl = prevUrl;
@@ -931,7 +932,7 @@ const QwikCityProvider = component$((props) => {
             scrollState = getScrollHistory();
           }
           const scroller = document.getElementById(QWIK_CITY_SCROLLER) ?? document.documentElement;
-          if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate") || navType === "form" && !isSamePath(trackUrl, prevUrl)) {
+          if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate") || isRedirect) {
             document.__q_scroll_restore__ = () => restoreScroll(navType, trackUrl, prevUrl, scroller, scrollState);
           }
           const loaders = clientPageData?.loaders;
