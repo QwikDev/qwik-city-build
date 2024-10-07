@@ -213,12 +213,12 @@ const RouterOutlet = qwik.component$(() => {
         !__EXPERIMENTAL__.noSPA && /* @__PURE__ */ jsxRuntime.jsx("script", {
           "document:onQCInit$": spaInit,
           "document:onQInit$": qwik.sync$(() => {
-            ((window1, history1) => {
-              if (!window1._qcs && history1.scrollRestoration === "manual") {
-                window1._qcs = true;
-                const scrollState = history1.state?._qCityScroll;
-                if (scrollState) {
-                  window1.scrollTo(scrollState.x, scrollState.y);
+            ((w, h) => {
+              if (!w._qcs && h.scrollRestoration === "manual") {
+                w._qcs = true;
+                const s = h.state?._qCityScroll;
+                if (s) {
+                  w.scrollTo(s.x, s.y);
                 }
                 document.dispatchEvent(new Event("qcinit"));
               }
