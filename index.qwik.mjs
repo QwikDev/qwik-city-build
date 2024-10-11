@@ -1,6 +1,6 @@
 import { jsxs, Fragment, jsx as jsx$1 } from "@builder.io/qwik/jsx-runtime";
-import { createContextId, event$, getPlatform, component$, useServerData, useContext, jsx, SkipRender, withLocale, _deserialize, implicit$FirstArg, useVisibleTask$, noSerialize, useStyles$, useStore, _weakSerialize, useSignal, $, _getContextElement, useContextProvider, useTask$, Slot, getLocale, _waitUntilRendered, _getQContainerElement, untrack, sync$, _wrapProp, _getContextEvent, _serialize } from "@builder.io/qwik";
-import { isDev, isServer, isBrowser } from "@builder.io/qwik/build";
+import { createContextId, event$, component$, useServerData, useContext, jsx, sync$, SkipRender, withLocale, _deserialize, implicit$FirstArg, useVisibleTask$, noSerialize, useStyles$, useStore, _weakSerialize, useSignal, $, _getContextElement, useContextProvider, useTask$, Slot, getLocale, _waitUntilRendered, _getQContainerElement, untrack, _wrapProp, _getContextEvent, _serialize } from "@builder.io/qwik";
+import { isDev, isBrowser, isServer } from "@builder.io/qwik/build";
 import * as qwikCity from "@qwik-city-plan";
 import swRegister from "@qwik-city-sw-register";
 import { z } from "zod";
@@ -14,39 +14,39 @@ const RouteNavigateContext = /* @__PURE__ */ createContextId("qc-n");
 const RouteActionContext = /* @__PURE__ */ createContextId("qc-a");
 const RouteInternalContext = /* @__PURE__ */ createContextId("qc-ir");
 const RoutePreventNavigateContext = /* @__PURE__ */ createContextId("qc-p");
-const spaInit = event$((container) => {
+const spaInit = event$((_, el) => {
   const win = window;
-  const currentPath = location.pathname + location.search;
   const spa = "_qCitySPA";
-  const historyPatch = "_qCityHistoryPatch";
-  const bootstrap = "_qCityBootstrap";
   const initPopstate = "_qCityInitPopstate";
   const initAnchors = "_qCityInitAnchors";
   const initVisibility = "_qCityInitVisibility";
   const initScroll = "_qCityInitScroll";
-  const scrollEnabled = "_qCityScrollEnabled";
-  const debounceTimeout = "_qCityScrollDebounce";
-  const scrollHistory = "_qCityScroll";
-  const checkAndScroll = (scrollState) => {
-    if (scrollState) {
-      win.scrollTo(scrollState.x, scrollState.y);
-    }
-  };
-  const currentScrollState2 = () => {
-    const elm = document.documentElement;
-    return {
-      x: elm.scrollLeft,
-      y: elm.scrollTop,
-      w: Math.max(elm.scrollWidth, elm.clientWidth),
-      h: Math.max(elm.scrollHeight, elm.clientHeight)
-    };
-  };
-  const saveScrollState = (scrollState) => {
-    const state = history.state || {};
-    state[scrollHistory] = scrollState || currentScrollState2();
-    history.replaceState(state, "");
-  };
   if (!win[spa] && !win[initPopstate] && !win[initAnchors] && !win[initVisibility] && !win[initScroll]) {
+    const currentPath = location.pathname + location.search;
+    const historyPatch = "_qCityHistoryPatch";
+    const bootstrap = "_qCityBootstrap";
+    const scrollEnabled = "_qCityScrollEnabled";
+    const debounceTimeout = "_qCityScrollDebounce";
+    const scrollHistory = "_qCityScroll";
+    const checkAndScroll = (scrollState) => {
+      if (scrollState) {
+        win.scrollTo(scrollState.x, scrollState.y);
+      }
+    };
+    const currentScrollState2 = () => {
+      const elm = document.documentElement;
+      return {
+        x: elm.scrollLeft,
+        y: elm.scrollTop,
+        w: Math.max(elm.scrollWidth, elm.clientWidth),
+        h: Math.max(elm.scrollHeight, elm.clientHeight)
+      };
+    };
+    const saveScrollState = (scrollState) => {
+      const state = history.state || {};
+      state[scrollHistory] = scrollState || currentScrollState2();
+      history.replaceState(state, "");
+    };
     saveScrollState();
     win[initPopstate] = () => {
       if (win[spa]) {
@@ -55,14 +55,14 @@ const spaInit = event$((container) => {
       win[scrollEnabled] = false;
       clearTimeout(win[debounceTimeout]);
       if (currentPath !== location.pathname + location.search) {
-        const link = container.querySelector("a[q\\:link]");
+        const getContainer = (el2) => el2.closest("[q\\:container]:not([q\\:container=html]):not([q\\:container=text])");
+        const link = getContainer(el)?.querySelector("a[q\\:link]");
         if (link) {
-          const containerSelector = "[q\\:container]:not([q\\:container=html]):not([q\\:container=text])";
-          const container2 = link.closest(containerSelector);
+          const container = getContainer(link);
           const bootstrapLink = link.cloneNode();
           bootstrapLink.setAttribute("q:nbs", "");
           bootstrapLink.style.display = "none";
-          container2.appendChild(bootstrapLink);
+          container.appendChild(bootstrapLink);
           win[bootstrap] = bootstrapLink;
           bootstrapLink.click();
         } else {
@@ -172,44 +172,11 @@ const spaInit = event$((container) => {
     }, 0);
   }
 });
-const shim = (base) => {
-  if (isServer) {
-    const [symbol, bundle] = getPlatform().chunkForSymbol(spaInit.getSymbol(), null, spaInit.dev?.file);
-    const args = [
-      base,
-      bundle,
-      symbol
-    ].map((x) => JSON.stringify(x)).join(",");
-    return `(${shim$1.toString()})(${args});`;
-  }
-};
-const shim$1 = async (base, path, symbol) => {
-  if (!window._qcs && history.scrollRestoration === "manual") {
-    window._qcs = true;
-    const scrollState = history.state?._qCityScroll;
-    if (scrollState) {
-      window.scrollTo(scrollState.x, scrollState.y);
-    }
-    const script = document.currentScript;
-    if (script) {
-      const container = script.closest("[q\\:container]:not([q\\:container=html]):not([q\\:container=text])");
-      const url = new URL(path, new URL(base, document.baseURI));
-      if (isDev) {
-        const imp = new Function("url", "return import(url)");
-        (await imp(url.href))[symbol](container);
-      } else {
-        (await import(url.href))[symbol](container);
-      }
-    }
-  }
-};
 const RouterOutlet = component$(() => {
   const serverData = useServerData("containerAttributes");
   if (!serverData) {
     throw new Error("PrefetchServiceWorker component must be rendered on the server.");
   }
-  const shimScript = shim(serverData["q:base"]);
-  const nonce = useServerData("nonce");
   const { value } = useContext(ContentInternalContext);
   if (value && value.length > 0) {
     const contentsLen = value.length;
@@ -224,9 +191,20 @@ const RouterOutlet = component$(() => {
     return /* @__PURE__ */ jsxs(Fragment, {
       children: [
         cmp,
-        /* @__PURE__ */ jsx$1("script", {
-          dangerouslySetInnerHTML: shimScript,
-          nonce
+        !__EXPERIMENTAL__.noSPA && /* @__PURE__ */ jsx$1("script", {
+          "document:onQCInit$": spaInit,
+          "document:onQInit$": sync$(() => {
+            ((w, h) => {
+              if (!w._qcs && h.scrollRestoration === "manual") {
+                w._qcs = true;
+                const s = h.state?._qCityScroll;
+                if (s) {
+                  w.scrollTo(s.x, s.y);
+                }
+                document.dispatchEvent(new Event("qcinit"));
+              }
+            })(window, history);
+          })
         })
       ]
     });
@@ -580,7 +558,7 @@ const loadClientData = async (url, element, opts) => {
   }
   let resolveFn;
   if (!qData) {
-    const fetchOptions = getFetchOptions(opts?.action, opts?.clearCache);
+    const fetchOptions = getFetchOptions(opts?.action);
     if (opts?.action) {
       opts.action.data = void 0;
     }
@@ -636,19 +614,16 @@ const loadClientData = async (url, element, opts) => {
     return v;
   });
 };
-const getFetchOptions = (action, noCache) => {
+const getFetchOptions = (action) => {
   const actionData = action?.data;
   if (!actionData) {
-    if (noCache) {
-      return {
-        cache: "no-cache",
-        headers: {
-          "Cache-Control": "no-cache",
-          Pragma: "no-cache"
-        }
-      };
-    }
-    return void 0;
+    return {
+      cache: "no-cache",
+      headers: {
+        "Cache-Control": "no-cache",
+        Pragma: "no-cache"
+      }
+    };
   }
   if (actionData instanceof FormData) {
     return {
@@ -930,7 +905,8 @@ const QwikCityProvider = component$((props) => {
         const [routeName, params, mods, menu] = loadedRoute;
         const contentModules = mods;
         const pageModule = contentModules[contentModules.length - 1];
-        if (navigation.dest.search) {
+        const isRedirect = navType === "form" && !isSamePath(trackUrl, prevUrl);
+        if (navigation.dest.search && !isRedirect) {
           trackUrl.search = navigation.dest.search;
         }
         routeLocation.prevUrl = prevUrl;
@@ -961,7 +937,7 @@ const QwikCityProvider = component$((props) => {
             scrollState = getScrollHistory();
           }
           const scroller = document.getElementById(QWIK_CITY_SCROLLER) ?? document.documentElement;
-          if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate") || navType === "form" && !isSamePath(trackUrl, prevUrl)) {
+          if (navigation.scroll && (!navigation.forceReload || !isSamePath(trackUrl, prevUrl)) && (navType === "link" || navType === "popstate") || isRedirect) {
             document.__q_scroll_restore__ = () => restoreScroll(navType, trackUrl, prevUrl, scroller, scrollState);
           }
           const loaders = clientPageData?.loaders;
