@@ -351,6 +351,23 @@ function lastIndexOf(text, start, match, searchIdx, notFoundIdx) {
   return idx > start ? idx : notFoundIdx;
 }
 
+// packages/qwik-city/src/runtime/src/utils.ts
+var isPromise = (value) => {
+  return value && typeof value.then === "function";
+};
+var deepFreeze = (obj) => {
+  if (obj == null) {
+    return obj;
+  }
+  Object.getOwnPropertyNames(obj).forEach((prop) => {
+    const value = obj[prop];
+    if (value && typeof value === "object" && !Object.isFrozen(value)) {
+      deepFreeze(value);
+    }
+  });
+  return Object.freeze(obj);
+};
+
 // packages/qwik-city/src/runtime/src/routing.ts
 var loadRoute = async (routes, menus, cacheModules, pathname) => {
   if (!Array.isArray(routes)) {
@@ -385,7 +402,7 @@ var loadRoute = async (routes, menus, cacheModules, pathname) => {
     if (pendingLoads.length > 0) {
       await Promise.all(pendingLoads);
     }
-    return [routeName, params, modules, menu, routeBundleNames];
+    return [routeName, params, modules, deepFreeze(menu), routeBundleNames];
   }
   return null;
 };
@@ -573,11 +590,6 @@ function getRouteMatchPathname(pathname, trailingSlash) {
 var IsQData = "@isQData";
 var QDATA_JSON = "/q-data.json";
 var QDATA_JSON_LEN = QDATA_JSON.length;
-
-// packages/qwik-city/src/runtime/src/utils.ts
-var isPromise = (value) => {
-  return value && typeof value.then === "function";
-};
 
 // packages/qwik-city/src/middleware/request-handler/request-event.ts
 var RequestEvLoaders = Symbol("RequestEvLoaders");

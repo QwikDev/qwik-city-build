@@ -270,6 +270,18 @@ const shouldPrefetchSymbols = (clientNavPath, currentLoc) => {
 const isPromise = (value) => {
   return value && typeof value.then === "function";
 };
+const deepFreeze = (obj) => {
+  if (obj == null) {
+    return obj;
+  }
+  Object.getOwnPropertyNames(obj).forEach((prop) => {
+    const value = obj[prop];
+    if (value && typeof value === "object" && !Object.isFrozen(value)) {
+      deepFreeze(value);
+    }
+  });
+  return Object.freeze(obj);
+};
 const resolveHead = (endpoint, routeLocation, contentModules, locale) => {
   const head = createDocumentHead();
   const getData = (loaderOrAction) => {
@@ -471,7 +483,7 @@ const loadRoute = async (routes, menus, cacheModules, pathname) => {
       routeName,
       params,
       modules,
-      menu,
+      deepFreeze(menu),
       routeBundleNames
     ];
   }
@@ -1516,15 +1528,6 @@ const zodQrl = (qrl) => {
   return void 0;
 };
 const zod$ = /* @__PURE__ */ implicit$FirstArg(zodQrl);
-const deepFreeze = (obj) => {
-  Object.getOwnPropertyNames(obj).forEach((prop) => {
-    const value = obj[prop];
-    if (value && typeof value === "object" && !Object.isFrozen(value)) {
-      deepFreeze(value);
-    }
-  });
-  return Object.freeze(obj);
-};
 const serverQrl = (qrl, options) => {
   if (isServer) {
     const captured = qrl.getCaptured();
