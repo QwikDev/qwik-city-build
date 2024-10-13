@@ -21895,7 +21895,6 @@ function getLanguage(className) {
 }
 
 // packages/qwik-city/src/buildtime/markdown/mdx.ts
-var import_node_crypto = require("node:crypto");
 async function createMdxTransformer(ctx) {
   const { compile } = await import("@mdx-js/mdx");
   const { default: remarkFrontmatter2 } = await Promise.resolve().then(() => (init_remark_frontmatter(), remark_frontmatter_exports));
@@ -21943,13 +21942,12 @@ async function createMdxTransformer(ctx) {
       const file = new VFile({ value: code3, path: id });
       const compiled = await compile(file, options2);
       const output = String(compiled.value);
-      const hasher = (0, import_node_crypto.createHash)("sha256");
-      const key = hasher.update(output).digest("base64").slice(0, 8).replace("+", "-").replace("/", "_");
-      const addImport = `import { _jsxC, RenderOnce } from '@builder.io/qwik';
+      const addImport = `import { jsx } from '@builder.io/qwik';
 `;
       const newDefault = `
 const WrappedMdxContent = () => {
-  return _jsxC(RenderOnce, {children: _jsxC(_createMdxContent, {}, 3, null)}, 3, ${JSON.stringify(key)});
+  const content = _createMdxContent({});
+  return typeof MDXLayout === 'function' ? jsx(MDXLayout, {children: content}) : content;
 };
 export default WrappedMdxContent;
 `;
