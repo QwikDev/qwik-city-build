@@ -1,27 +1,27 @@
 /// <reference path="./modules.d.ts" />
 
-import { Component } from '@builder.io/qwik';
-import { Cookie } from '@builder.io/qwik-city/middleware/request-handler';
-import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler';
-import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
-import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
-import type { EnvGetter } from '@builder.io/qwik-city/middleware/request-handler';
-import { JSXNode } from '@builder.io/qwik';
-import { JSXOutput } from '@builder.io/qwik';
-import { QRL } from '@builder.io/qwik';
-import { QRLEventHandlerMulti } from '@builder.io/qwik';
-import { QwikIntrinsicElements } from '@builder.io/qwik';
-import { QwikJSX } from '@builder.io/qwik';
-import type { ReadonlySignal } from '@builder.io/qwik';
-import { RequestEvent } from '@builder.io/qwik-city/middleware/request-handler';
-import { RequestEventAction } from '@builder.io/qwik-city/middleware/request-handler';
-import { RequestEventBase } from '@builder.io/qwik-city/middleware/request-handler';
-import { RequestEventCommon } from '@builder.io/qwik-city/middleware/request-handler';
-import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-handler';
-import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
-import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-handler';
+import { Component } from '@qwik.dev/core';
+import { Cookie } from '@qwik.dev/city/middleware/request-handler';
+import { CookieOptions } from '@qwik.dev/city/middleware/request-handler';
+import { CookieValue } from '@qwik.dev/city/middleware/request-handler';
+import { DeferReturn } from '@qwik.dev/city/middleware/request-handler';
+import type { EnvGetter } from '@qwik.dev/city/middleware/request-handler';
+import { JSXNode } from '@qwik.dev/core';
+import { JSXOutput } from '@qwik.dev/core';
+import { QRL } from '@qwik.dev/core';
+import { QRLEventHandlerMulti } from '@qwik.dev/core';
+import { QwikIntrinsicElements } from '@qwik.dev/core';
+import { QwikJSX } from '@qwik.dev/core';
+import type { ReadonlySignal } from '@qwik.dev/core';
+import { RequestEvent } from '@qwik.dev/city/middleware/request-handler';
+import { RequestEventAction } from '@qwik.dev/city/middleware/request-handler';
+import { RequestEventBase } from '@qwik.dev/city/middleware/request-handler';
+import { RequestEventCommon } from '@qwik.dev/city/middleware/request-handler';
+import { RequestEventLoader } from '@qwik.dev/city/middleware/request-handler';
+import { RequestHandler } from '@qwik.dev/city/middleware/request-handler';
+import type { ResolveSyncValue } from '@qwik.dev/city/middleware/request-handler';
 import type * as v from 'valibot';
-import type { ValueOrPromise } from '@builder.io/qwik';
+import type { ValueOrPromise } from '@qwik.dev/core';
 import { z } from 'zod';
 import type * as z_2 from 'zod';
 
@@ -97,7 +97,7 @@ export declare type ActionStore<RETURN, INPUT, OPTIONAL extends boolean = true> 
      * Most of the time this property should not be used directly, instead use the `Form` component:
      *
      * ```tsx
-     * import {action$, Form} from '@builder.io/qwik-city';
+     * import {action$, Form} from '@qwik.dev/city';
      *
      * export const useAddUser = action$(() => { ... });
      *
@@ -422,6 +422,14 @@ declare type ModuleLoader = ContentModuleLoader | EndpointModuleLoader;
 /** @public */
 export declare type NavigationType = 'initial' | 'form' | 'link' | 'popstate';
 
+/**
+ * Creates a new object from `obj` by omitting a set of `keys`.
+ *
+ * @alpha
+ * @experimental
+ */
+export declare function omitProps<T, KEYS extends keyof T>(obj: T, keys: KEYS[]): Omit<T, KEYS>;
+
 /** @public */
 export declare interface PageModule extends RouteModule {
     readonly default: unknown;
@@ -607,6 +615,12 @@ declare type StrictUnionHelper<T, TAll> = T extends any ? T & Partial<Record<Exc
 export declare type TypedDataValidator = ValibotDataValidator | ZodDataValidator;
 
 declare type UnionKeys<T> = T extends T ? keyof T : never;
+
+/**
+ * @alpha
+ * @experimental
+ */
+export declare const untypedAppUrl: (route: string, params?: Record<string, string>, paramsPrefix?: string) => string;
 
 /** @public */
 export declare const useContent: () => ContentState;

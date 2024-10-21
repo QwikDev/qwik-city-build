@@ -33,9 +33,9 @@ __export(vite_exports, {
   azureSwaAdapter: () => azureSwaAdapter
 });
 module.exports = __toCommonJS(vite_exports);
-var import_vite = require("../../shared/vite/index.cjs");
-var import_node_path = require("node:path");
 var import_node_fs = __toESM(require("node:fs"), 1);
+var import_node_path = require("node:path");
+var import_vite = require("../../shared/vite/index.cjs");
 function azureSwaAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return (0, import_vite.viteAdapter)({

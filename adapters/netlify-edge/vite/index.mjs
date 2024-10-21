@@ -1,12 +1,10 @@
-// packages/qwik-city/src/adapters/netlify-edge/vite/index.ts
-import { getParentDir, viteAdapter } from "../../shared/vite/index.mjs";
-import fs, { existsSync } from "node:fs";
-import { join } from "node:path";
-
 // packages/qwik-city/src/runtime/src/qwik-city-plan.ts
 var basePathname = "/";
 
 // packages/qwik-city/src/adapters/netlify-edge/vite/index.ts
+import fs, { existsSync } from "node:fs";
+import { join } from "node:path";
+import { getParentDir, viteAdapter } from "../../shared/vite/index.mjs";
 function netlifyEdgeAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return viteAdapter({

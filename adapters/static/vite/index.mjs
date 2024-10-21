@@ -3,9 +3,9 @@ import fs2 from "node:fs";
 import { basename, dirname, join as join2, resolve } from "node:path";
 
 // packages/qwik-city/src/adapters/shared/vite/post-build.ts
+import { getErrorHtml } from "@qwik.dev/city/middleware/request-handler";
 import fs from "node:fs";
 import { join } from "node:path";
-import { getErrorHtml } from "@builder.io/qwik-city/middleware/request-handler";
 async function postBuild(clientOutDir, pathName, userStaticPaths, format, cleanStatic) {
   if (pathName && !pathName.endsWith("/")) {
     pathName += "/";

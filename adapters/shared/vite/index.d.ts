@@ -1,5 +1,5 @@
 import type { Plugin as Plugin_2 } from 'vite';
-import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
+import type { StaticGenerateRenderOptions } from '@qwik.dev/city/static';
 import type { UserConfig } from 'vite';
 
 /** @public */

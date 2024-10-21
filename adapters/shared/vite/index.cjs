@@ -42,9 +42,9 @@ var import_node_fs2 = __toESM(require("node:fs"), 1);
 var import_node_path2 = require("node:path");
 
 // packages/qwik-city/src/adapters/shared/vite/post-build.ts
+var import_request_handler = require("../../../middleware/request-handler/index.cjs");
 var import_node_fs = __toESM(require("node:fs"), 1);
 var import_node_path = require("node:path");
-var import_request_handler = require("../../../middleware/request-handler/index.cjs");
 async function postBuild(clientOutDir, pathName, userStaticPaths, format, cleanStatic) {
   if (pathName && !pathName.endsWith("/")) {
     pathName += "/";

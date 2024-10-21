@@ -1,12 +1,9 @@
 // packages/qwik-city/src/middleware/deno/index.ts
-import {
-  mergeHeadersCookies,
-  requestHandler
-} from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
-import { _deserialize, _serialize, _verifySerializable } from "@builder.io/qwik";
-import { setServerPlatform } from "@builder.io/qwik/server";
+import { mergeHeadersCookies, requestHandler } from "../request-handler/index.mjs";
+import { _deserialize, _serialize, _verifySerializable } from "@qwik.dev/core";
+import { setServerPlatform } from "@qwik.dev/core/server";
 
 // packages/qwik-city/src/middleware/request-handler/mime-types.ts
 var MIME_TYPES = {

@@ -1,5 +1,5 @@
 import { ServerAdapterOptions } from '../../shared/vite';
-import type { StaticGenerateRenderOptions } from '@builder.io/qwik-city/static';
+import type { StaticGenerateRenderOptions } from '@qwik.dev/city/static';
 
 /** @alpha */
 export declare function denoServerAdapter(opts?: DenoServerAdapterOptions): any;

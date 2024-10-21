@@ -1,13 +1,13 @@
 // packages/qwik-city/src/middleware/cloudflare-pages/index.ts
-import {
-  mergeHeadersCookies,
-  requestHandler,
-  _TextEncoderStream_polyfill
-} from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
-import { _deserialize, _serialize, _verifySerializable } from "@builder.io/qwik";
-import { setServerPlatform } from "@builder.io/qwik/server";
+import {
+  _TextEncoderStream_polyfill,
+  mergeHeadersCookies,
+  requestHandler
+} from "../request-handler/index.mjs";
+import { _deserialize, _serialize, _verifySerializable } from "@qwik.dev/core";
+import { setServerPlatform } from "@qwik.dev/core/server";
 function createQwikCity(opts) {
   try {
     new globalThis.TextEncoderStream();

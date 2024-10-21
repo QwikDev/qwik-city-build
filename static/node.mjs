@@ -59,9 +59,9 @@ function normalizePathSlash(path) {
 
 // packages/qwik-city/src/static/worker-thread.ts
 import { requestHandler } from "../middleware/request-handler/index.mjs";
-import { pathToFileURL } from "node:url";
+import { _deserialize, _serialize, _verifySerializable } from "@qwik.dev/core";
 import { WritableStream } from "node:stream/web";
-import { _deserialize, _serialize, _verifySerializable } from "@builder.io/qwik";
+import { pathToFileURL } from "node:url";
 async function workerThread(sys) {
   const ssgOpts = sys.getOptions();
   const pendingPromises = /* @__PURE__ */ new Set();
@@ -597,77 +597,6 @@ var access = async (path) => {
 // packages/qwik-city/src/static/node/index.ts
 import { isMainThread, workerData } from "node:worker_threads";
 
-// packages/qwik-city/src/static/routes.ts
-function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
-  const includes = routesToRegExps(includeRoutes);
-  const excludes = routesToRegExps(excludeRoutes);
-  return (pathname) => {
-    if (pathname.endsWith("404.html")) {
-      return true;
-    }
-    if (basePathname !== "/") {
-      pathname = pathname.slice(basePathname.length - 1);
-    }
-    for (const exclude of excludes) {
-      if (exclude.test(pathname)) {
-        return false;
-      }
-    }
-    for (const include of includes) {
-      if (include.test(pathname)) {
-        return true;
-      }
-    }
-    return false;
-  };
-}
-function routesToRegExps(routes) {
-  if (!Array.isArray(routes)) {
-    return [];
-  }
-  return routes.filter((r) => typeof r === "string").map(routeToRegExp);
-}
-function routeToRegExp(rule) {
-  let transformedRule;
-  if (rule === "/" || rule === "/*") {
-    transformedRule = rule;
-  } else if (rule.endsWith("/*")) {
-    transformedRule = `${rule.substring(0, rule.length - 2)}(/*)?`;
-  } else if (rule.endsWith("/")) {
-    transformedRule = `${rule.substring(0, rule.length - 1)}(/)?`;
-  } else if (rule.endsWith("*")) {
-    transformedRule = rule;
-  } else {
-    transformedRule = `${rule}(/)?`;
-  }
-  transformedRule = `^${transformedRule.replace(/\*/g, ".*")}$`;
-  return new RegExp(transformedRule);
-}
-
-// packages/qwik-city/src/static/not-found.ts
-import { getErrorHtml } from "../middleware/request-handler/index.mjs";
-async function generateNotFoundPages(sys, opts, routes) {
-  if (opts.emit404Pages !== false) {
-    const basePathname = opts.basePathname || "/";
-    const rootNotFoundPathname = basePathname + "404.html";
-    const hasRootNotFound = routes.some((r) => r[2] === rootNotFoundPathname);
-    if (!hasRootNotFound) {
-      const filePath = sys.getRouteFilePath(rootNotFoundPathname, true);
-      const html = getErrorHtml(404, "Resource Not Found");
-      await sys.ensureDir(filePath);
-      return new Promise((resolve2) => {
-        const writer = sys.createWriteStream(filePath);
-        writer.write(html);
-        writer.end(resolve2);
-      });
-    }
-  }
-}
-
-// packages/qwik-city/src/static/main-thread.ts
-import { pathToFileURL as pathToFileURL2 } from "node:url";
-import { relative as relative2 } from "node:path";
-
 // node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/colors.mjs
 var FORCE_COLOR;
 var NODE_DISABLE_COLORS;
@@ -716,6 +645,11 @@ var bgBlue = init(44, 49);
 var bgMagenta = init(45, 49);
 var bgCyan = init(46, 49);
 var bgWhite = init(47, 49);
+
+// packages/qwik-city/src/static/main-thread.ts
+import { relative as relative2 } from "node:path";
+import { pathToFileURL as pathToFileURL2 } from "node:url";
+import { buildErrorMessage } from "vite";
 
 // packages/qwik/src/optimizer/src/plugins/vite-utils.ts
 var findLocation = (e) => {
@@ -843,9 +777,6 @@ function formatError(e) {
   return e;
 }
 
-// packages/qwik-city/src/static/main-thread.ts
-import { buildErrorMessage } from "vite";
-
 // packages/qwik-city/src/static/extract-params.ts
 function extractParamNames(routeName) {
   const params = [];
@@ -862,6 +793,73 @@ function extractParamNames(routeName) {
     }
   }
   return params;
+}
+
+// packages/qwik-city/src/static/not-found.ts
+import { getErrorHtml } from "../middleware/request-handler/index.mjs";
+async function generateNotFoundPages(sys, opts, routes) {
+  if (opts.emit404Pages !== false) {
+    const basePathname = opts.basePathname || "/";
+    const rootNotFoundPathname = basePathname + "404.html";
+    const hasRootNotFound = routes.some((r) => r[2] === rootNotFoundPathname);
+    if (!hasRootNotFound) {
+      const filePath = sys.getRouteFilePath(rootNotFoundPathname, true);
+      const html = getErrorHtml(404, "Resource Not Found");
+      await sys.ensureDir(filePath);
+      return new Promise((resolve2) => {
+        const writer = sys.createWriteStream(filePath);
+        writer.write(html);
+        writer.end(resolve2);
+      });
+    }
+  }
+}
+
+// packages/qwik-city/src/static/routes.ts
+function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
+  const includes = routesToRegExps(includeRoutes);
+  const excludes = routesToRegExps(excludeRoutes);
+  return (pathname) => {
+    if (pathname.endsWith("404.html")) {
+      return true;
+    }
+    if (basePathname !== "/") {
+      pathname = pathname.slice(basePathname.length - 1);
+    }
+    for (const exclude of excludes) {
+      if (exclude.test(pathname)) {
+        return false;
+      }
+    }
+    for (const include of includes) {
+      if (include.test(pathname)) {
+        return true;
+      }
+    }
+    return false;
+  };
+}
+function routesToRegExps(routes) {
+  if (!Array.isArray(routes)) {
+    return [];
+  }
+  return routes.filter((r) => typeof r === "string").map(routeToRegExp);
+}
+function routeToRegExp(rule) {
+  let transformedRule;
+  if (rule === "/" || rule === "/*") {
+    transformedRule = rule;
+  } else if (rule.endsWith("/*")) {
+    transformedRule = `${rule.substring(0, rule.length - 2)}(/*)?`;
+  } else if (rule.endsWith("/")) {
+    transformedRule = `${rule.substring(0, rule.length - 1)}(/)?`;
+  } else if (rule.endsWith("*")) {
+    transformedRule = rule;
+  } else {
+    transformedRule = `${rule}(/)?`;
+  }
+  transformedRule = `^${transformedRule.replace(/\*/g, ".*")}$`;
+  return new RegExp(transformedRule);
 }
 
 // packages/qwik-city/src/static/main-thread.ts

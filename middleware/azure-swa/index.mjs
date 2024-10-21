@@ -194,11 +194,11 @@ var require_set_cookie = __commonJS({
 
 // packages/qwik-city/src/middleware/azure-swa/index.ts
 var import_set_cookie_parser = __toESM(require_set_cookie(), 1);
-import { setServerPlatform } from "@builder.io/qwik/server";
-import { requestHandler } from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
-import { _deserialize, _serialize, _verifySerializable } from "@builder.io/qwik";
 import { isStaticPath } from "@qwik-city-static-paths";
+import { requestHandler } from "../request-handler/index.mjs";
+import { _deserialize, _serialize, _verifySerializable } from "@qwik.dev/core";
+import { setServerPlatform } from "@qwik.dev/core/server";
 function createQwikCity(opts) {
   const qwikSerializer = {
     _deserialize,

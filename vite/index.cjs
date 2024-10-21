@@ -9762,14 +9762,14 @@ function create2(Constructor) {
   FormattedError.displayName = Constructor.displayName || Constructor.name;
   return FormattedError;
   function FormattedError(format, ...values) {
-    const reason = format ? (0, import_format2.default)(format, ...values) : format;
+    const reason = format ? (0, import_format3.default)(format, ...values) : format;
     return new Constructor(reason);
   }
 }
-var import_format2, fault;
+var import_format3, fault;
 var init_fault = __esm({
   "node_modules/.pnpm/fault@2.0.1/node_modules/fault/index.js"() {
-    import_format2 = __toESM(require_format(), 1);
+    import_format3 = __toESM(require_format(), 1);
     fault = Object.assign(create2(Error), {
       eval: create2(EvalError),
       range: create2(RangeError),
@@ -10801,7 +10801,7 @@ var init_markdown_table = __esm({
 });
 
 // node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/blockquote.js
-function blockquote(node2, _2, state, info) {
+function blockquote2(node2, _2, state, info) {
   const exit2 = state.enter("blockquote");
   const tracker = state.createTracker(info);
   tracker.move("> ");
@@ -11165,7 +11165,7 @@ var init_format_heading_as_setext = __esm({
 });
 
 // node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/heading.js
-function heading(node2, _2, state, info) {
+function heading2(node2, _2, state, info) {
   const rank = Math.max(Math.min(6, node2.depth || 1), 1);
   const tracker = state.createTracker(info);
   if (formatHeadingAsSetext(node2, state)) {
@@ -11212,7 +11212,7 @@ var init_heading = __esm({
 });
 
 // node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/html.js
-function html3(node2) {
+function html4(node2) {
   return node2.value || "";
 }
 function htmlPeek() {
@@ -11220,7 +11220,7 @@ function htmlPeek() {
 }
 var init_html = __esm({
   "node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/html.js"() {
-    html3.peek = htmlPeek;
+    html4.peek = htmlPeek;
   }
 });
 
@@ -11330,7 +11330,7 @@ var init_image_reference = __esm({
 });
 
 // node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/inline-code.js
-function inlineCode(node2, _2, state) {
+function inlineCode2(node2, _2, state) {
   let value2 = node2.value || "";
   let sequence = "`";
   let index = -1;
@@ -11361,7 +11361,7 @@ function inlineCodePeek() {
 }
 var init_inline_code = __esm({
   "node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/inline-code.js"() {
-    inlineCode.peek = inlineCodePeek;
+    inlineCode2.peek = inlineCodePeek;
   }
 });
 
@@ -11386,7 +11386,7 @@ var init_format_link_as_autolink = __esm({
 });
 
 // node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/link.js
-function link(node2, _2, state, info) {
+function link2(node2, _2, state, info) {
   const quote = checkQuote(state);
   const suffix = quote === '"' ? "Quote" : "Apostrophe";
   const tracker = state.createTracker(info);
@@ -11467,7 +11467,7 @@ var init_link = __esm({
   "node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/link.js"() {
     init_check_quote();
     init_format_link_as_autolink();
-    link.peek = linkPeek;
+    link2.peek = linkPeek;
   }
 });
 
@@ -11585,7 +11585,7 @@ var init_check_rule = __esm({
 });
 
 // node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/list.js
-function list(node2, parent, state, info) {
+function list2(node2, parent, state, info) {
   const exit2 = state.enter("list");
   const bulletCurrent = state.bulletCurrent;
   let bullet2 = node2.ordered ? checkBulletOrdered(state) : checkBullet(state);
@@ -11683,7 +11683,7 @@ var init_list_item = __esm({
 });
 
 // node_modules/.pnpm/mdast-util-to-markdown@2.1.0/node_modules/mdast-util-to-markdown/lib/handle/paragraph.js
-function paragraph(node2, _2, state, info) {
+function paragraph2(node2, _2, state, info) {
   const exit2 = state.enter("paragraph");
   const subexit = state.enter("phrasing");
   const value2 = state.containerPhrasing(node2, info);
@@ -11851,22 +11851,22 @@ var init_handle = __esm({
     init_text();
     init_thematic_break();
     handle = {
-      blockquote,
+      blockquote: blockquote2,
       break: hardBreak,
       code,
       definition,
       emphasis,
       hardBreak,
-      heading,
-      html: html3,
+      heading: heading2,
+      html: html4,
       image,
       imageReference,
-      inlineCode,
-      link,
+      inlineCode: inlineCode2,
+      link: link2,
       linkReference,
-      list,
+      list: list2,
       listItem,
-      paragraph,
+      paragraph: paragraph2,
       root,
       strong,
       text,
@@ -13246,7 +13246,7 @@ var init_infer = __esm({
 });
 
 // node_modules/.pnpm/micromark-extension-gfm-table@2.0.0/node_modules/micromark-extension-gfm-table/lib/syntax.js
-function gfmTable() {
+function gfmTable2() {
   return {
     flow: {
       null: {
@@ -13770,7 +13770,7 @@ function gfm(options2) {
     gfmAutolinkLiteral(),
     gfmFootnote(),
     gfmStrikethrough(options2),
-    gfmTable(),
+    gfmTable2(),
     gfmTaskListItem()
   ]);
 }
@@ -14302,8 +14302,4441 @@ function extendConfig(baseConfigExport, serverConfigExport) {
 // sw-reg:@qwik-city-sw-register-build
 var qwik_city_sw_register_build_default = '((i,r,a,o)=>{a=e=>{const t=document.querySelector("[q\\\\:base]");t&&r.active&&r.active.postMessage({type:"qprefetch",base:t.getAttribute("q:base"),...e})},document.addEventListener("qprefetch",e=>{const t=e.detail;r?a(t):i.push(t)}),"serviceWorker"in navigator?navigator.serviceWorker.register("__url").then(e=>{o=()=>{r=e,i.forEach(a),a({bundles:i})},e.installing?e.installing.addEventListener("statechange",t=>{t.target.state=="activated"&&o()}):e.active&&o()}).catch(e=>console.error(e)):console.log("Service worker not supported in this browser.")})([])';
 
+// packages/qwik-city/src/buildtime/vite/plugin.ts
+var import_node_fs9 = __toESM(require("node:fs"), 1);
+var import_node_path11 = require("node:path");
+var import_vite2 = require("vite");
+
+// packages/qwik-city/src/middleware/request-handler/error-handler.ts
+var ServerError = class extends Error {
+  constructor(status, data) {
+    super();
+    this.status = status;
+    this.data = data;
+  }
+};
+var ErrorResponse = class extends Error {
+  constructor(status, message) {
+    super(message);
+    this.status = status;
+  }
+};
+function getErrorHtml(status, e) {
+  let message = "Server Error";
+  if (e != null) {
+    if (typeof e.message === "string") {
+      message = e.message;
+    } else {
+      message = String(e);
+    }
+  }
+  return `<html>` + minimalHtmlResponse(status, message) + `</html>`;
+}
+function minimalHtmlResponse(status, message) {
+  if (typeof status !== "number") {
+    status = 500;
+  }
+  if (typeof message === "string") {
+    message = escapeHtml(message);
+  } else {
+    message = "";
+  }
+  const width = typeof message === "string" ? "600px" : "300px";
+  const color2 = status >= 500 ? COLOR_500 : COLOR_400;
+  return `
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Status" content="${status}">
+  <title>${status} ${message}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <style>
+    body { color: ${color2}; background-color: #fafafa; padding: 30px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
+    p { max-width: ${width}; margin: 60px auto 30px auto; background: white; border-radius: 4px; box-shadow: 0px 0px 50px -20px ${color2}; overflow: hidden; }
+    strong { display: inline-block; padding: 15px; background: ${color2}; color: white; }
+    span { display: inline-block; padding: 15px; }
+  </style>
+</head>
+<body><p><strong>${status}</strong> <span>${message}</span></p></body>
+`;
+}
+var ESCAPE_HTML = /[&<>]/g;
+var escapeHtml = (s2) => {
+  return s2.replace(ESCAPE_HTML, (c2) => {
+    switch (c2) {
+      case "&":
+        return "&amp;";
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      default:
+        return "";
+    }
+  });
+};
+var COLOR_400 = "#006ce9";
+var COLOR_500 = "#713fc2";
+
+// packages/qwik-city/src/middleware/request-handler/cookie.ts
+var SAMESITE = {
+  lax: "Lax",
+  Lax: "Lax",
+  None: "None",
+  none: "None",
+  strict: "Strict",
+  Strict: "Strict"
+};
+var UNIT = {
+  seconds: 1,
+  minutes: 1 * 60,
+  hours: 1 * 60 * 60,
+  days: 1 * 60 * 60 * 24,
+  weeks: 1 * 60 * 60 * 24 * 7
+};
+var createSetCookieValue = (cookieName, cookieValue, options2) => {
+  const c2 = [`${cookieName}=${cookieValue}`];
+  if (typeof options2.domain === "string") {
+    c2.push(`Domain=${options2.domain}`);
+  }
+  if (typeof options2.maxAge === "number") {
+    c2.push(`Max-Age=${options2.maxAge}`);
+  } else if (Array.isArray(options2.maxAge)) {
+    c2.push(`Max-Age=${options2.maxAge[0] * UNIT[options2.maxAge[1]]}`);
+  } else if (typeof options2.expires === "number" || typeof options2.expires == "string") {
+    c2.push(`Expires=${options2.expires}`);
+  } else if (options2.expires instanceof Date) {
+    c2.push(`Expires=${options2.expires.toUTCString()}`);
+  }
+  if (options2.httpOnly) {
+    c2.push("HttpOnly");
+  }
+  if (typeof options2.path === "string") {
+    c2.push(`Path=${options2.path}`);
+  }
+  const sameSite = resolveSameSite(options2.sameSite);
+  if (sameSite) {
+    c2.push(`SameSite=${sameSite}`);
+  }
+  if (options2.secure) {
+    c2.push("Secure");
+  }
+  return c2.join("; ");
+};
+function tryDecodeUriComponent(str) {
+  try {
+    return decodeURIComponent(str);
+  } catch {
+    return str;
+  }
+}
+var parseCookieString = (cookieString) => {
+  const cookie = {};
+  if (typeof cookieString === "string" && cookieString !== "") {
+    const cookieSegments = cookieString.split(";");
+    for (const cookieSegment of cookieSegments) {
+      const separatorIndex = cookieSegment.indexOf("=");
+      if (separatorIndex !== -1) {
+        cookie[tryDecodeUriComponent(cookieSegment.slice(0, separatorIndex).trim())] = tryDecodeUriComponent(cookieSegment.slice(separatorIndex + 1).trim());
+      }
+    }
+  }
+  return cookie;
+};
+function resolveSameSite(sameSite) {
+  if (sameSite === true) {
+    return "Strict";
+  }
+  if (sameSite === false) {
+    return "None";
+  }
+  if (sameSite) {
+    return SAMESITE[sameSite];
+  }
+  return void 0;
+}
+var REQ_COOKIE = Symbol("request-cookies");
+var RES_COOKIE = Symbol("response-cookies");
+var LIVE_COOKIE = Symbol("live-cookies");
+var _a, _b;
+var Cookie = class {
+  constructor(cookieString) {
+    this[_a] = {};
+    this[_b] = {};
+    this.appendCounter = 0;
+    this[REQ_COOKIE] = parseCookieString(cookieString);
+    this[LIVE_COOKIE] = { ...this[REQ_COOKIE] };
+  }
+  get(cookieName, live = true) {
+    const value2 = this[live ? LIVE_COOKIE : REQ_COOKIE][cookieName];
+    if (!value2) {
+      return null;
+    }
+    return {
+      value: value2,
+      json() {
+        return JSON.parse(value2);
+      },
+      number() {
+        return Number(value2);
+      }
+    };
+  }
+  getAll(live = true) {
+    return Object.keys(this[live ? LIVE_COOKIE : REQ_COOKIE]).reduce(
+      (cookies, cookieName) => {
+        cookies[cookieName] = this.get(cookieName);
+        return cookies;
+      },
+      {}
+    );
+  }
+  has(cookieName, live = true) {
+    return !!this[live ? LIVE_COOKIE : REQ_COOKIE][cookieName];
+  }
+  set(cookieName, cookieValue, options2 = {}) {
+    this[LIVE_COOKIE][cookieName] = typeof cookieValue === "string" ? cookieValue : JSON.stringify(cookieValue);
+    const resolvedValue = typeof cookieValue === "string" ? cookieValue : encodeURIComponent(JSON.stringify(cookieValue));
+    this[RES_COOKIE][cookieName] = createSetCookieValue(cookieName, resolvedValue, options2);
+  }
+  append(cookieName, cookieValue, options2 = {}) {
+    this[LIVE_COOKIE][cookieName] = typeof cookieValue === "string" ? cookieValue : JSON.stringify(cookieValue);
+    const resolvedValue = typeof cookieValue === "string" ? cookieValue : encodeURIComponent(JSON.stringify(cookieValue));
+    this[RES_COOKIE][++this.appendCounter] = createSetCookieValue(
+      cookieName,
+      resolvedValue,
+      options2
+    );
+  }
+  delete(name, options2) {
+    this.set(name, "deleted", { ...options2, maxAge: 0 });
+    this[LIVE_COOKIE][name] = null;
+  }
+  headers() {
+    return Object.values(this[RES_COOKIE]);
+  }
+};
+REQ_COOKIE, _a = RES_COOKIE, _b = LIVE_COOKIE;
+
+// packages/qwik-city/src/middleware/request-handler/redirect-handler.ts
+var AbortMessage = class {
+};
+var RedirectMessage = class extends AbortMessage {
+};
+
+// packages/qwik-city/src/runtime/src/constants.ts
+var QACTION_KEY = "qaction";
+var QFN_KEY = "qfunc";
+var QDATA_KEY = "qdata";
+
+// packages/qwik-city/src/runtime/src/route-matcher.ts
+function matchRoute(route, path3) {
+  const routeIdx = startIdxSkipSlash(route);
+  const routeLength = lengthNoTrailingSlash(route);
+  const pathIdx = startIdxSkipSlash(path3);
+  const pathLength = lengthNoTrailingSlash(path3);
+  return matchRoutePart(route, routeIdx, routeLength, path3, pathIdx, pathLength);
+}
+function matchRoutePart(route, routeIdx, routeLength, path3, pathIdx, pathLength) {
+  let params = null;
+  while (routeIdx < routeLength) {
+    const routeCh = route.charCodeAt(routeIdx++);
+    const pathCh = path3.charCodeAt(pathIdx++);
+    if (routeCh === 91 /* OPEN_BRACKET */) {
+      const isMany = isThreeDots(route, routeIdx);
+      const paramNameStart = routeIdx + (isMany ? 3 : 0);
+      const paramNameEnd = scan(route, paramNameStart, routeLength, 93 /* CLOSE_BRACKET */);
+      const paramName = route.substring(paramNameStart, paramNameEnd);
+      const paramSuffixEnd = scan(route, paramNameEnd + 1, routeLength, 47 /* SLASH */);
+      const suffix = route.substring(paramNameEnd + 1, paramSuffixEnd);
+      routeIdx = paramNameEnd + 1;
+      const paramValueStart = pathIdx - 1;
+      if (isMany) {
+        const match = recursiveScan(
+          paramName,
+          suffix,
+          path3,
+          paramValueStart,
+          pathLength,
+          route,
+          routeIdx + suffix.length + 1,
+          routeLength
+        );
+        if (match) {
+          return Object.assign(params || (params = {}), match);
+        }
+      }
+      const paramValueEnd = scan(path3, paramValueStart, pathLength, 47 /* SLASH */, suffix);
+      if (paramValueEnd == -1) {
+        return null;
+      }
+      const paramValue = path3.substring(paramValueStart, paramValueEnd);
+      if (!isMany && !suffix && !paramValue) {
+        return null;
+      }
+      pathIdx = paramValueEnd;
+      (params || (params = {}))[paramName] = decodeURIComponent(paramValue);
+    } else if (routeCh !== pathCh) {
+      if (!(isNaN(pathCh) && isRestParameter(route, routeIdx))) {
+        return null;
+      }
+    }
+  }
+  if (allConsumed(route, routeIdx) && allConsumed(path3, pathIdx)) {
+    return params || {};
+  } else {
+    return null;
+  }
+}
+function isRestParameter(text3, idx) {
+  return text3.charCodeAt(idx) === 91 /* OPEN_BRACKET */ && isThreeDots(text3, idx + 1);
+}
+function lengthNoTrailingSlash(text3) {
+  const length = text3.length;
+  return length > 1 && text3.charCodeAt(length - 1) === 47 /* SLASH */ ? length - 1 : length;
+}
+function allConsumed(text3, idx) {
+  const length = text3.length;
+  return idx >= length || idx == length - 1 && text3.charCodeAt(idx) === 47 /* SLASH */;
+}
+function startIdxSkipSlash(text3) {
+  return text3.charCodeAt(0) === 47 /* SLASH */ ? 1 : 0;
+}
+function isThreeDots(text3, idx) {
+  return text3.charCodeAt(idx) === 46 /* DOT */ && text3.charCodeAt(idx + 1) === 46 /* DOT */ && text3.charCodeAt(idx + 2) === 46 /* DOT */;
+}
+function scan(text3, idx, end, ch, suffix = "") {
+  while (idx < end && text3.charCodeAt(idx) !== ch) {
+    idx++;
+  }
+  const suffixLength = suffix.length;
+  for (let i = 0; i < suffixLength; i++) {
+    if (text3.charCodeAt(idx - suffixLength + i) !== suffix.charCodeAt(i)) {
+      return -1;
+    }
+  }
+  return idx - suffixLength;
+}
+function recursiveScan(paramName, suffix, path3, pathStart, pathLength, route, routeStart, routeLength) {
+  if (path3.charCodeAt(pathStart) === 47 /* SLASH */) {
+    pathStart++;
+  }
+  let pathIdx = pathLength;
+  const sep = suffix + "/";
+  while (pathIdx >= pathStart) {
+    const match = matchRoutePart(route, routeStart, routeLength, path3, pathIdx, pathLength);
+    if (match) {
+      let value2 = path3.substring(pathStart, Math.min(pathIdx, pathLength));
+      if (value2.endsWith(sep)) {
+        value2 = value2.substring(0, value2.length - sep.length);
+      }
+      match[paramName] = decodeURIComponent(value2);
+      return match;
+    }
+    const newPathIdx = lastIndexOf(path3, pathStart, sep, pathIdx, pathStart - 1) + sep.length;
+    if (pathIdx === newPathIdx) {
+      break;
+    }
+    pathIdx = newPathIdx;
+  }
+  return null;
+}
+function lastIndexOf(text3, start, match, searchIdx, notFoundIdx) {
+  let idx = text3.lastIndexOf(match, searchIdx);
+  if (idx == searchIdx - match.length) {
+    idx = text3.lastIndexOf(match, searchIdx - match.length - 1);
+  }
+  return idx > start ? idx : notFoundIdx;
+}
+
+// packages/qwik-city/src/runtime/src/utils.ts
+var isPromise = (value2) => {
+  return value2 && typeof value2.then === "function";
+};
+
+// packages/qwik-city/src/runtime/src/routing.ts
+var getMenuLoader = (menus, pathname) => {
+  if (menus) {
+    pathname = pathname.endsWith("/") ? pathname : pathname + "/";
+    const menu = menus.find(
+      (m) => m[0] === pathname || pathname.startsWith(m[0] + (pathname.endsWith("/") ? "" : "/"))
+    );
+    if (menu) {
+      return menu[1];
+    }
+  }
+};
+
+// packages/qwik-city/src/middleware/request-handler/cache-control.ts
+function createCacheControl(cacheControl) {
+  const controls = [];
+  if (cacheControl === "day") {
+    cacheControl = 60 * 60 * 24;
+  } else if (cacheControl === "week") {
+    cacheControl = 60 * 60 * 24 * 7;
+  } else if (cacheControl === "month") {
+    cacheControl = 60 * 60 * 24 * 30;
+  } else if (cacheControl === "year") {
+    cacheControl = 60 * 60 * 24 * 365;
+  } else if (cacheControl === "private") {
+    cacheControl = {
+      private: true,
+      noCache: true
+    };
+  } else if (cacheControl === "immutable") {
+    cacheControl = {
+      public: true,
+      immutable: true,
+      maxAge: 60 * 60 * 24 * 365,
+      staleWhileRevalidate: 60 * 60 * 24 * 365
+    };
+  } else if (cacheControl === "no-cache") {
+    cacheControl = {
+      noCache: true
+    };
+  }
+  if (typeof cacheControl === "number") {
+    cacheControl = {
+      maxAge: cacheControl,
+      sMaxAge: cacheControl,
+      staleWhileRevalidate: cacheControl
+    };
+  }
+  if (cacheControl.immutable) {
+    controls.push("immutable");
+  }
+  if (cacheControl.maxAge) {
+    controls.push(`max-age=${cacheControl.maxAge}`);
+  }
+  if (cacheControl.sMaxAge) {
+    controls.push(`s-maxage=${cacheControl.sMaxAge}`);
+  }
+  if (cacheControl.noStore) {
+    controls.push("no-store");
+  }
+  if (cacheControl.noCache) {
+    controls.push("no-cache");
+  }
+  if (cacheControl.private) {
+    controls.push("private");
+  }
+  if (cacheControl.public) {
+    controls.push("public");
+  }
+  if (cacheControl.staleWhileRevalidate) {
+    controls.push(`stale-while-revalidate=${cacheControl.staleWhileRevalidate}`);
+  }
+  if (cacheControl.staleIfError) {
+    controls.push(`stale-if-error=${cacheControl.staleIfError}`);
+  }
+  return controls.join(", ");
+}
+
+// packages/qwik-city/src/middleware/request-handler/user-response.ts
+var asyncStore;
+import("node:async_hooks").then((module2) => {
+  const AsyncLocalStorage = module2.AsyncLocalStorage;
+  asyncStore = new AsyncLocalStorage();
+  globalThis.qcAsyncRequestStore = asyncStore;
+}).catch((err) => {
+  console.warn(
+    "AsyncLocalStorage not available, continuing without it. This might impact concurrent server calls.",
+    err
+  );
+});
+function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash = true, basePathname = "/", qwikSerializer) {
+  let resolve4;
+  const responsePromise = new Promise((r2) => resolve4 = r2);
+  const requestEv = createRequestEvent(
+    serverRequestEv,
+    loadedRoute,
+    requestHandlers,
+    manifest,
+    trailingSlash,
+    basePathname,
+    qwikSerializer,
+    resolve4
+  );
+  return {
+    response: responsePromise,
+    requestEv,
+    completion: asyncStore ? asyncStore.run(requestEv, runNext, requestEv, resolve4) : runNext(requestEv, resolve4)
+  };
+}
+async function runNext(requestEv, resolve4) {
+  try {
+    await requestEv.next();
+  } catch (e) {
+    if (e instanceof RedirectMessage) {
+      const stream = requestEv.getWritableStream();
+      await stream.close();
+    } else if (e instanceof ErrorResponse) {
+      console.error(e);
+      if (!requestEv.headersSent) {
+        const html5 = getErrorHtml(e.status, e);
+        const status = e.status;
+        requestEv.html(status, html5);
+      }
+    } else if (!(e instanceof AbortMessage)) {
+      if (getRequestMode(requestEv) !== "dev") {
+        try {
+          if (!requestEv.headersSent) {
+            requestEv.headers.set("content-type", "text/html; charset=utf-8");
+            requestEv.cacheControl({ noCache: true });
+            requestEv.status(500);
+          }
+          const stream = requestEv.getWritableStream();
+          if (!stream.locked) {
+            const writer = stream.getWriter();
+            await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
+            await writer.close();
+          }
+        } catch {
+          console.error("Unable to render error page");
+        }
+      }
+      return e;
+    }
+  } finally {
+    if (!requestEv.isDirty()) {
+      resolve4(null);
+    }
+  }
+  return void 0;
+}
+function getRouteMatchPathname(pathname, trailingSlash) {
+  if (pathname.endsWith(QDATA_JSON)) {
+    const trimEnd = pathname.length - QDATA_JSON_LEN + (trailingSlash ? 1 : 0);
+    pathname = pathname.slice(0, trimEnd);
+    if (pathname === "") {
+      pathname = "/";
+    }
+  }
+  return pathname;
+}
+var IsQData = "@isQData";
+var QDATA_JSON = "/q-data.json";
+var QDATA_JSON_LEN = QDATA_JSON.length;
+
+// packages/qwik-city/src/middleware/request-handler/request-event.ts
+var RequestEvLoaders = Symbol("RequestEvLoaders");
+var RequestEvMode = Symbol("RequestEvMode");
+var RequestEvRoute = Symbol("RequestEvRoute");
+var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
+var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
+var RequestRouteName = "@routeName";
+var RequestEvSharedActionId = "@actionId";
+var RequestEvSharedActionFormData = "@actionFormData";
+var RequestEvSharedNonce = "@nonce";
+function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
+  const { request, platform, env: env2 } = serverRequestEv;
+  const sharedMap = /* @__PURE__ */ new Map();
+  const cookie = new Cookie(request.headers.get("cookie"));
+  const headers = new Headers();
+  const url = new URL(request.url);
+  if (url.pathname.endsWith(QDATA_JSON)) {
+    url.pathname = url.pathname.slice(0, -QDATA_JSON_LEN);
+    if (trailingSlash && !url.pathname.endsWith("/")) {
+      url.pathname += "/";
+    }
+    sharedMap.set(IsQData, true);
+  }
+  sharedMap.set("@manifest", manifest);
+  let routeModuleIndex = -1;
+  let writableStream = null;
+  let requestData = void 0;
+  let locale = serverRequestEv.locale;
+  let status = 200;
+  const next = async () => {
+    routeModuleIndex++;
+    while (routeModuleIndex < requestHandlers.length) {
+      const moduleRequestHandler = requestHandlers[routeModuleIndex];
+      const asyncStore2 = globalThis.qcAsyncRequestStore;
+      const result = (asyncStore2 == null ? void 0 : asyncStore2.run) ? asyncStore2.run(requestEv, moduleRequestHandler, requestEv) : moduleRequestHandler(requestEv);
+      if (isPromise(result)) {
+        await result;
+      }
+      routeModuleIndex++;
+    }
+  };
+  const check = () => {
+    if (writableStream !== null) {
+      throw new Error("Response already sent");
+    }
+  };
+  const send = (statusOrResponse, body) => {
+    check();
+    if (typeof statusOrResponse === "number") {
+      status = statusOrResponse;
+      const writableStream2 = requestEv.getWritableStream();
+      const writer = writableStream2.getWriter();
+      writer.write(typeof body === "string" ? encoder.encode(body) : body);
+      writer.close();
+    } else {
+      status = statusOrResponse.status;
+      statusOrResponse.headers.forEach((value2, key) => {
+        headers.append(key, value2);
+      });
+      if (statusOrResponse.body) {
+        const writableStream2 = requestEv.getWritableStream();
+        statusOrResponse.body.pipeTo(writableStream2);
+      } else {
+        if (status >= 300 && status < 400) {
+          return new RedirectMessage();
+        } else {
+          requestEv.getWritableStream().getWriter().close();
+        }
+      }
+    }
+    return exit2();
+  };
+  const exit2 = () => {
+    routeModuleIndex = ABORT_INDEX;
+    return new AbortMessage();
+  };
+  const loaders = {};
+  const requestEv = {
+    [RequestEvLoaders]: loaders,
+    [RequestEvMode]: serverRequestEv.mode,
+    [RequestEvTrailingSlash]: trailingSlash,
+    [RequestEvRoute]: loadedRoute,
+    [RequestEvQwikSerializer]: qwikSerializer,
+    cookie,
+    headers,
+    env: env2,
+    method: request.method,
+    signal: request.signal,
+    params: (loadedRoute == null ? void 0 : loadedRoute[1]) ?? {},
+    pathname: url.pathname,
+    platform,
+    query: url.searchParams,
+    request,
+    url,
+    basePathname,
+    sharedMap,
+    get headersSent() {
+      return writableStream !== null;
+    },
+    get exited() {
+      return routeModuleIndex >= ABORT_INDEX;
+    },
+    get clientConn() {
+      return serverRequestEv.getClientConn();
+    },
+    next,
+    exit: exit2,
+    cacheControl: (cacheControl, target = "Cache-Control") => {
+      check();
+      headers.set(target, createCacheControl(cacheControl));
+    },
+    resolveValue: async (loaderOrAction) => {
+      const id = loaderOrAction.__id;
+      if (loaderOrAction.__brand === "server_loader") {
+        if (!(id in loaders)) {
+          throw new Error(
+            "You can not get the returned data of a loader that has not been executed for this request."
+          );
+        }
+      }
+      return loaders[id];
+    },
+    status: (statusCode) => {
+      if (typeof statusCode === "number") {
+        check();
+        status = statusCode;
+        return statusCode;
+      }
+      return status;
+    },
+    locale: (_locale) => {
+      if (typeof _locale === "string") {
+        locale = _locale;
+      }
+      return locale || "";
+    },
+    error: (statusCode, message) => {
+      status = statusCode;
+      headers.delete("Cache-Control");
+      return new ErrorResponse(statusCode, message);
+    },
+    redirect: (statusCode, url2) => {
+      check();
+      status = statusCode;
+      if (url2) {
+        const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
+        if (url2 !== fixedURL) {
+          console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
+        }
+        headers.set("Location", fixedURL);
+      }
+      headers.delete("Cache-Control");
+      if (statusCode > 301) {
+        headers.set("Cache-Control", "no-store");
+      }
+      exit2();
+      return new RedirectMessage();
+    },
+    defer: (returnData) => {
+      return typeof returnData === "function" ? returnData : () => returnData;
+    },
+    fail: (statusCode, data) => {
+      check();
+      status = statusCode;
+      headers.delete("Cache-Control");
+      return {
+        failed: true,
+        ...data
+      };
+    },
+    text: (statusCode, text3) => {
+      headers.set("Content-Type", "text/plain; charset=utf-8");
+      return send(statusCode, text3);
+    },
+    html: (statusCode, html5) => {
+      headers.set("Content-Type", "text/html; charset=utf-8");
+      return send(statusCode, html5);
+    },
+    parseBody: async () => {
+      if (requestData !== void 0) {
+        return requestData;
+      }
+      return requestData = parseRequest(requestEv, sharedMap, qwikSerializer);
+    },
+    json: (statusCode, data) => {
+      headers.set("Content-Type", "application/json; charset=utf-8");
+      return send(statusCode, JSON.stringify(data));
+    },
+    send,
+    isDirty: () => {
+      return writableStream !== null;
+    },
+    getWritableStream: () => {
+      if (writableStream === null) {
+        if (serverRequestEv.mode === "dev") {
+          const serverTiming = sharedMap.get("@serverTiming");
+          if (serverTiming) {
+            headers.set("Server-Timing", serverTiming.map((a) => `${a[0]};dur=${a[1]}`).join(","));
+          }
+        }
+        writableStream = serverRequestEv.getWritableStream(
+          status,
+          headers,
+          cookie,
+          resolved,
+          requestEv
+        );
+      }
+      return writableStream;
+    }
+  };
+  return Object.freeze(requestEv);
+}
+function getRequestLoaders(requestEv) {
+  return requestEv[RequestEvLoaders];
+}
+function getRequestTrailingSlash(requestEv) {
+  return requestEv[RequestEvTrailingSlash];
+}
+function getRequestRoute(requestEv) {
+  return requestEv[RequestEvRoute];
+}
+function getRequestMode(requestEv) {
+  return requestEv[RequestEvMode];
+}
+var ABORT_INDEX = Number.MAX_SAFE_INTEGER;
+var parseRequest = async ({ request, method, query }, sharedMap, qwikSerializer) => {
+  var _a2;
+  const type = ((_a2 = request.headers.get("content-type")) == null ? void 0 : _a2.split(/[;,]/, 1)[0].trim()) ?? "";
+  if (type === "application/x-www-form-urlencoded" || type === "multipart/form-data") {
+    const formData = await request.formData();
+    sharedMap.set(RequestEvSharedActionFormData, formData);
+    return formToObj(formData);
+  } else if (type === "application/json") {
+    const data = await request.json();
+    return data;
+  } else if (type === "application/qwik-json") {
+    if (method === "GET" && query.has(QDATA_KEY)) {
+      const data = query.get(QDATA_KEY);
+      if (data) {
+        try {
+          return qwikSerializer._deserialize(decodeURIComponent(data));
+        } catch (err) {
+        }
+      }
+    }
+    return qwikSerializer._deserialize(await request.text());
+  }
+  return void 0;
+};
+var formToObj = (formData) => {
+  const values = [...formData.entries()].reduce((values2, [name, value2]) => {
+    name.split(".").reduce((object, key, index, keys2) => {
+      if (key.endsWith("[]")) {
+        const arrayKey = key.slice(0, -2);
+        object[arrayKey] = object[arrayKey] || [];
+        return object[arrayKey] = [...object[arrayKey], value2];
+      }
+      if (index < keys2.length - 1) {
+        return object[key] = object[key] || (Number.isNaN(+keys2[index + 1]) ? {} : []);
+      }
+      return object[key] = value2;
+    }, values2);
+    return values2;
+  }, {});
+  return values;
+};
+
+// packages/qwik-city/src/middleware/request-handler/response-page.ts
+function getQwikCityServerData(requestEv) {
+  const { url, params, request, status, locale } = requestEv;
+  const requestHeaders = {};
+  request.headers.forEach((value2, key) => requestHeaders[key] = value2);
+  const action = requestEv.sharedMap.get(RequestEvSharedActionId);
+  const formData = requestEv.sharedMap.get(RequestEvSharedActionFormData);
+  const routeName = requestEv.sharedMap.get(RequestRouteName);
+  const nonce = requestEv.sharedMap.get(RequestEvSharedNonce);
+  const headers = requestEv.request.headers;
+  const reconstructedUrl = new URL(url.pathname + url.search, url);
+  const host = headers.get("X-Forwarded-Host");
+  const protocol = headers.get("X-Forwarded-Proto");
+  if (host) {
+    reconstructedUrl.port = "";
+    reconstructedUrl.host = host;
+  }
+  if (protocol) {
+    reconstructedUrl.protocol = protocol;
+  }
+  return {
+    url: reconstructedUrl.href,
+    requestHeaders,
+    locale: locale(),
+    nonce,
+    containerAttributes: {
+      "q:route": routeName
+    },
+    qwikcity: {
+      routeName,
+      ev: requestEv,
+      params: { ...params },
+      loadedRoute: getRequestRoute(requestEv),
+      response: {
+        status: status(),
+        loaders: getRequestLoaders(requestEv),
+        action,
+        formData
+      }
+    }
+  };
+}
+
+// packages/qwik-city/src/middleware/request-handler/resolve-request-handlers.ts
+var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderHandler) => {
+  const routeLoaders = [];
+  const routeActions = [];
+  const requestHandlers = [];
+  const isPageRoute = !!(route && isLastModulePageRoute(route[2]));
+  if (serverPlugins) {
+    _resolveRequestHandlers(
+      routeLoaders,
+      routeActions,
+      requestHandlers,
+      serverPlugins,
+      isPageRoute,
+      method
+    );
+  }
+  if (route) {
+    const routeName = route[0];
+    if (checkOrigin && (method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE")) {
+      requestHandlers.unshift(csrfCheckMiddleware);
+    }
+    if (isPageRoute) {
+      if (method === "POST" || method === "GET") {
+        requestHandlers.push(pureServerFunction);
+      }
+      requestHandlers.push(fixTrailingSlash);
+      requestHandlers.push(renderQData);
+    }
+    const routeModules = route[2];
+    requestHandlers.push(handleRedirect);
+    _resolveRequestHandlers(
+      routeLoaders,
+      routeActions,
+      requestHandlers,
+      routeModules,
+      isPageRoute,
+      method
+    );
+    if (isPageRoute) {
+      requestHandlers.push((ev) => {
+        ev.sharedMap.set(RequestRouteName, routeName);
+      });
+      requestHandlers.push(actionsMiddleware(routeActions, routeLoaders));
+      requestHandlers.push(renderHandler);
+    }
+  }
+  return requestHandlers;
+};
+var _resolveRequestHandlers = (routeLoaders, routeActions, requestHandlers, routeModules, collectActions, method) => {
+  for (const routeModule of routeModules) {
+    if (typeof routeModule.onRequest === "function") {
+      requestHandlers.push(routeModule.onRequest);
+    } else if (Array.isArray(routeModule.onRequest)) {
+      requestHandlers.push(...routeModule.onRequest);
+    }
+    let methodReqHandler;
+    switch (method) {
+      case "GET": {
+        methodReqHandler = routeModule.onGet;
+        break;
+      }
+      case "POST": {
+        methodReqHandler = routeModule.onPost;
+        break;
+      }
+      case "PUT": {
+        methodReqHandler = routeModule.onPut;
+        break;
+      }
+      case "PATCH": {
+        methodReqHandler = routeModule.onPatch;
+        break;
+      }
+      case "DELETE": {
+        methodReqHandler = routeModule.onDelete;
+        break;
+      }
+      case "OPTIONS": {
+        methodReqHandler = routeModule.onOptions;
+        break;
+      }
+      case "HEAD": {
+        methodReqHandler = routeModule.onHead;
+        break;
+      }
+    }
+    if (typeof methodReqHandler === "function") {
+      requestHandlers.push(methodReqHandler);
+    } else if (Array.isArray(methodReqHandler)) {
+      requestHandlers.push(...methodReqHandler);
+    }
+    if (collectActions) {
+      for (const module2 of Object.values(routeModule)) {
+        if (typeof module2 === "function") {
+          if (module2.__brand === "server_loader") {
+            routeLoaders.push(module2);
+          } else if (module2.__brand === "server_action") {
+            routeActions.push(module2);
+          }
+        }
+      }
+    }
+  }
+};
+var checkBrand = (obj, brand) => {
+  return obj && typeof obj === "function" && obj.__brand === brand;
+};
+function actionsMiddleware(routeActions, routeLoaders) {
+  return async (requestEv) => {
+    if (requestEv.headersSent) {
+      requestEv.exit();
+      return;
+    }
+    const { method } = requestEv;
+    const loaders = getRequestLoaders(requestEv);
+    const isDev = getRequestMode(requestEv) === "dev";
+    const qwikSerializer = requestEv[RequestEvQwikSerializer];
+    if (isDev && method === "GET") {
+      if (requestEv.query.has(QACTION_KEY)) {
+        console.warn(
+          'Seems like you are submitting a Qwik Action via GET request. Qwik Actions should be submitted via POST request.\nMake sure your <form> has method="POST" attribute, like this: <form method="POST">'
+        );
+      }
+    }
+    if (method === "POST") {
+      const selectedActionId = requestEv.query.get(QACTION_KEY);
+      if (selectedActionId) {
+        const serverActionsMap = globalThis._qwikActionsMap;
+        const action = routeActions.find((action2) => action2.__id === selectedActionId) ?? (serverActionsMap == null ? void 0 : serverActionsMap.get(selectedActionId));
+        if (action) {
+          requestEv.sharedMap.set(RequestEvSharedActionId, selectedActionId);
+          const data = await requestEv.parseBody();
+          if (!data || typeof data !== "object") {
+            throw new Error(
+              `Expected request data for the action id ${selectedActionId} to be an object`
+            );
+          }
+          const result = await runValidators(requestEv, action.__validators, data, isDev);
+          if (!result.success) {
+            loaders[selectedActionId] = requestEv.fail(result.status ?? 500, result.error);
+          } else {
+            const actionResolved = isDev ? await measure(
+              requestEv,
+              action.__qrl.getSymbol().split("_", 1)[0],
+              () => action.__qrl.call(requestEv, result.data, requestEv)
+            ) : await action.__qrl.call(requestEv, result.data, requestEv);
+            if (isDev) {
+              verifySerializable(qwikSerializer, actionResolved, action.__qrl);
+            }
+            loaders[selectedActionId] = actionResolved;
+          }
+        }
+      }
+    }
+    if (routeLoaders.length > 0) {
+      const resolvedLoadersPromises = routeLoaders.map((loader) => {
+        const loaderId = loader.__id;
+        loaders[loaderId] = runValidators(
+          requestEv,
+          loader.__validators,
+          void 0,
+          // data
+          isDev
+        ).then((res) => {
+          if (res.success) {
+            if (isDev) {
+              return measure(
+                requestEv,
+                loader.__qrl.getSymbol().split("_", 1)[0],
+                () => loader.__qrl.call(requestEv, requestEv)
+              );
+            } else {
+              return loader.__qrl.call(requestEv, requestEv);
+            }
+          } else {
+            return requestEv.fail(res.status ?? 500, res.error);
+          }
+        }).then((resolvedLoader) => {
+          if (typeof resolvedLoader === "function") {
+            loaders[loaderId] = resolvedLoader();
+          } else {
+            if (isDev) {
+              verifySerializable(qwikSerializer, resolvedLoader, loader.__qrl);
+            }
+            loaders[loaderId] = resolvedLoader;
+          }
+          return resolvedLoader;
+        });
+        return loaders[loaderId];
+      });
+      await Promise.all(resolvedLoadersPromises);
+    }
+  };
+}
+async function runValidators(requestEv, validators, data, isDev) {
+  let lastResult = {
+    success: true,
+    data
+  };
+  if (validators) {
+    for (const validator of validators) {
+      if (isDev) {
+        lastResult = await measure(
+          requestEv,
+          `validator$`,
+          () => validator.validate(requestEv, data)
+        );
+      } else {
+        lastResult = await validator.validate(requestEv, data);
+      }
+      if (!lastResult.success) {
+        return lastResult;
+      } else {
+        data = lastResult.data;
+      }
+    }
+  }
+  return lastResult;
+}
+function isAsyncIterator(obj) {
+  return obj ? typeof obj === "object" && Symbol.asyncIterator in obj : false;
+}
+async function pureServerFunction(ev) {
+  const fn = ev.query.get(QFN_KEY);
+  if (fn && ev.request.headers.get("X-QRL") === fn && ev.request.headers.get("Content-Type") === "application/qwik-json") {
+    ev.exit();
+    const isDev = getRequestMode(ev) === "dev";
+    const qwikSerializer = ev[RequestEvQwikSerializer];
+    const data = await ev.parseBody();
+    if (Array.isArray(data)) {
+      const [qrl, ...args] = data;
+      if (isQrl(qrl) && qrl.getHash() === fn) {
+        let result;
+        try {
+          if (isDev) {
+            result = await measure(
+              ev,
+              `server_${qrl.getSymbol()}`,
+              () => qrl.apply(ev, args)
+            );
+          } else {
+            result = await qrl.apply(ev, args);
+          }
+        } catch (err) {
+          if (err instanceof ServerError) {
+            ev.headers.set("Content-Type", "application/qwik-json");
+            ev.send(err.status, await qwikSerializer._serialize([err.data]));
+            return;
+          }
+          ev.headers.set("Content-Type", "application/qwik-json");
+          ev.send(500, await qwikSerializer._serialize([err]));
+          return;
+        }
+        if (isAsyncIterator(result)) {
+          ev.headers.set("Content-Type", "text/qwik-json-stream");
+          const writable = ev.getWritableStream();
+          const stream = writable.getWriter();
+          for await (const item of result) {
+            if (isDev) {
+              verifySerializable(qwikSerializer, item, qrl);
+            }
+            const message = await qwikSerializer._serialize([item]);
+            if (ev.signal.aborted) {
+              break;
+            }
+            await stream.write(encoder.encode(`${message}
+`));
+          }
+          stream.close();
+        } else {
+          verifySerializable(qwikSerializer, result, qrl);
+          ev.headers.set("Content-Type", "application/qwik-json");
+          const message = await qwikSerializer._serialize([result]);
+          ev.send(200, message);
+        }
+        return;
+      }
+    }
+    throw ev.error(500, "Invalid request");
+  }
+}
+function fixTrailingSlash(ev) {
+  const trailingSlash = getRequestTrailingSlash(ev);
+  const { basePathname, pathname, url, sharedMap } = ev;
+  const isQData = sharedMap.has(IsQData);
+  if (!isQData && pathname !== basePathname && !pathname.endsWith(".html")) {
+    if (trailingSlash) {
+      if (!pathname.endsWith("/")) {
+        throw ev.redirect(301 /* MovedPermanently */, pathname + "/" + url.search);
+      }
+    } else {
+      if (pathname.endsWith("/")) {
+        throw ev.redirect(
+          301 /* MovedPermanently */,
+          pathname.slice(0, pathname.length - 1) + url.search
+        );
+      }
+    }
+  }
+}
+function verifySerializable(qwikSerializer, data, qrl) {
+  try {
+    qwikSerializer._verifySerializable(data, void 0);
+  } catch (e) {
+    if (e instanceof Error && qrl.dev) {
+      e.loc = qrl.dev;
+    }
+    throw e;
+  }
+}
+var isQrl = (value2) => {
+  return typeof value2 === "function" && typeof value2.getSymbol === "function";
+};
+function isLastModulePageRoute(routeModules) {
+  const lastRouteModule = routeModules[routeModules.length - 1];
+  return lastRouteModule && typeof lastRouteModule.default === "function";
+}
+function getPathname(url, trailingSlash) {
+  url = new URL(url);
+  if (url.pathname.endsWith(QDATA_JSON)) {
+    url.pathname = url.pathname.slice(0, -QDATA_JSON.length);
+  }
+  if (trailingSlash) {
+    if (!url.pathname.endsWith("/")) {
+      url.pathname += "/";
+    }
+  } else {
+    if (url.pathname.endsWith("/")) {
+      url.pathname = url.pathname.slice(0, -1);
+    }
+  }
+  const search2 = url.search.slice(1).replaceAll(/&?q(action|data|func)=[^&]+/g, "");
+  return `${url.pathname}${search2 ? `?${search2}` : ""}${url.hash}`;
+}
+var encoder = /* @__PURE__ */ new TextEncoder();
+function csrfCheckMiddleware(requestEv) {
+  const isForm = isContentType(
+    requestEv.request.headers,
+    "application/x-www-form-urlencoded",
+    "multipart/form-data",
+    "text/plain"
+  );
+  if (isForm) {
+    const inputOrigin = requestEv.request.headers.get("origin");
+    const origin = requestEv.url.origin;
+    const forbidden = inputOrigin !== origin;
+    if (forbidden) {
+      throw requestEv.error(
+        403,
+        `CSRF check failed. Cross-site ${requestEv.method} form submissions are forbidden.
+The request origin "${inputOrigin}" does not match the server origin "${origin}".`
+      );
+    }
+  }
+}
+async function handleRedirect(requestEv) {
+  const isPageDataReq = requestEv.sharedMap.has(IsQData);
+  if (!isPageDataReq) {
+    return;
+  }
+  try {
+    await requestEv.next();
+  } catch (err) {
+    if (!(err instanceof RedirectMessage)) {
+      throw err;
+    }
+  }
+  if (requestEv.headersSent) {
+    return;
+  }
+  const status = requestEv.status();
+  const location2 = requestEv.headers.get("Location");
+  const isRedirect = status >= 301 && status <= 308 && location2;
+  if (isRedirect) {
+    const adaptedLocation = makeQDataPath(location2);
+    if (adaptedLocation) {
+      requestEv.headers.set("Location", adaptedLocation);
+      requestEv.getWritableStream().close();
+      return;
+    } else {
+      requestEv.status(200);
+      requestEv.headers.delete("Location");
+    }
+  }
+}
+async function renderQData(requestEv) {
+  const isPageDataReq = requestEv.sharedMap.has(IsQData);
+  if (!isPageDataReq) {
+    return;
+  }
+  await requestEv.next();
+  if (requestEv.headersSent || requestEv.exited) {
+    return;
+  }
+  const status = requestEv.status();
+  const location2 = requestEv.headers.get("Location");
+  const trailingSlash = getRequestTrailingSlash(requestEv);
+  const requestHeaders = {};
+  requestEv.request.headers.forEach((value2, key) => requestHeaders[key] = value2);
+  requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
+  const qData = {
+    loaders: getRequestLoaders(requestEv),
+    action: requestEv.sharedMap.get(RequestEvSharedActionId),
+    status: status !== 200 ? status : 200,
+    href: getPathname(requestEv.url, trailingSlash),
+    redirect: location2 ?? void 0
+  };
+  const writer = requestEv.getWritableStream().getWriter();
+  const qwikSerializer = requestEv[RequestEvQwikSerializer];
+  const data = await qwikSerializer._serialize([qData]);
+  writer.write(encoder.encode(data));
+  requestEv.sharedMap.set("qData", qData);
+  writer.close();
+}
+function makeQDataPath(href) {
+  if (href.startsWith("/")) {
+    const append = QDATA_JSON;
+    const url = new URL(href, "http://localhost");
+    const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
+    return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
+  } else {
+    return void 0;
+  }
+}
+function now() {
+  return typeof performance !== "undefined" ? performance.now() : 0;
+}
+async function measure(requestEv, name, fn) {
+  const start = now();
+  try {
+    return await fn();
+  } finally {
+    const duration = now() - start;
+    let measurements = requestEv.sharedMap.get("@serverTiming");
+    if (!measurements) {
+      requestEv.sharedMap.set("@serverTiming", measurements = []);
+    }
+    measurements.push([name, duration]);
+  }
+}
+function isContentType(headers, ...types) {
+  var _a2;
+  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(/;,/, 1)[0].trim()) ?? "";
+  return types.includes(type);
+}
+
+// packages/qwik-city/src/adapters/shared/vite/post-build.ts
+var import_node_fs = __toESM(require("node:fs"), 1);
+var import_node_path = require("node:path");
+async function postBuild(clientOutDir, pathName, userStaticPaths, format, cleanStatic) {
+  if (pathName && !pathName.endsWith("/")) {
+    pathName += "/";
+  }
+  const ignorePathnames = /* @__PURE__ */ new Set([pathName + "build/", pathName + "assets/"]);
+  const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));
+  const notFounds = [];
+  const loadItem = async (fsDir, fsName, pathname) => {
+    pathname = normalizeTrailingSlash(pathname);
+    if (ignorePathnames.has(pathname)) {
+      return;
+    }
+    const fsPath = (0, import_node_path.join)(fsDir, fsName);
+    if (fsName === "index.html" || fsName === "q-data.json") {
+      if (!staticPaths.has(pathname) && cleanStatic) {
+        await import_node_fs.default.promises.unlink(fsPath);
+      }
+      return;
+    }
+    if (fsName === "404.html") {
+      const notFoundHtml = await import_node_fs.default.promises.readFile(fsPath, "utf-8");
+      notFounds.push([pathname, notFoundHtml]);
+      return;
+    }
+    const stat = await import_node_fs.default.promises.stat(fsPath);
+    if (stat.isDirectory()) {
+      await loadDir(fsPath, pathname + fsName + "/");
+    } else if (stat.isFile()) {
+      staticPaths.add(pathname + fsName);
+    }
+  };
+  const loadDir = async (fsDir, pathname) => {
+    const itemNames = await import_node_fs.default.promises.readdir(fsDir);
+    await Promise.all(itemNames.map((i) => loadItem(fsDir, i, pathname)));
+  };
+  if (import_node_fs.default.existsSync(clientOutDir)) {
+    await loadDir(clientOutDir, pathName);
+  }
+  const notFoundPathsCode = createNotFoundPathsModule(pathName, notFounds, format);
+  const staticPathsCode = createStaticPathsModule(pathName, staticPaths, format);
+  return {
+    notFoundPathsCode,
+    staticPathsCode
+  };
+}
+function normalizeTrailingSlash(pathname) {
+  if (!pathname.endsWith("/")) {
+    return pathname + "/";
+  }
+  return pathname;
+}
+function createNotFoundPathsModule(basePathname, notFounds, format) {
+  notFounds.sort((a, b) => {
+    if (a[0].length > b[0].length) {
+      return -1;
+    }
+    if (a[0].length < b[0].length) {
+      return 1;
+    }
+    if (a[0] < b[0]) {
+      return -1;
+    }
+    if (a[0] > b[0]) {
+      return 1;
+    }
+    return 0;
+  });
+  if (!notFounds.some((r2) => r2[0] === basePathname)) {
+    const html5 = getErrorHtml(404, "Resource Not Found");
+    notFounds.push([basePathname, html5]);
+  }
+  const c2 = [];
+  c2.push(`const notFounds = ${JSON.stringify(notFounds, null, 2)};`);
+  c2.push(`function getNotFound(p) {`);
+  c2.push(`  for (const r of notFounds) {`);
+  c2.push(`    if (p.startsWith(r[0])) {`);
+  c2.push(`      return r[1];`);
+  c2.push(`    }`);
+  c2.push(`  }`);
+  c2.push(`  return "Resource Not Found";`);
+  c2.push(`}`);
+  if (format === "cjs") {
+    c2.push("exports.getNotFound = getNotFound;");
+  } else {
+    c2.push("export { getNotFound };");
+  }
+  return c2.join("\n");
+}
+function createStaticPathsModule(basePathname, staticPaths, format) {
+  const assetsPath = basePathname + "assets/";
+  const baseBuildPath = basePathname + "build/";
+  const c2 = [];
+  c2.push(
+    `const staticPaths = new Set(${JSON.stringify(
+      Array.from(new Set(staticPaths)).sort()
+    )});`
+  );
+  c2.push(`function isStaticPath(method, url) {`);
+  c2.push(`  if (method.toUpperCase() !== 'GET') {`);
+  c2.push(`    return false;`);
+  c2.push(`  }`);
+  c2.push(`  const p = url.pathname;`);
+  c2.push(`  if (p.startsWith(${JSON.stringify(baseBuildPath)})) {`);
+  c2.push(`    return true;`);
+  c2.push(`  }`);
+  c2.push(`  if (p.startsWith(${JSON.stringify(assetsPath)})) {`);
+  c2.push(`    return true;`);
+  c2.push(`  }`);
+  c2.push(`  if (staticPaths.has(p)) {`);
+  c2.push(`    return true;`);
+  c2.push(`  }`);
+  c2.push(`  if (p.endsWith('/q-data.json')) {`);
+  c2.push(`    const pWithoutQdata = p.replace(/\\/q-data.json$/, '');`);
+  c2.push(`    if (staticPaths.has(pWithoutQdata + '/')) {`);
+  c2.push(`      return true;`);
+  c2.push(`    }`);
+  c2.push(`    if (staticPaths.has(pWithoutQdata)) {`);
+  c2.push(`      return true;`);
+  c2.push(`    }`);
+  c2.push(`  }`);
+  c2.push(`  return false;`);
+  c2.push(`}`);
+  if (format === "cjs") {
+    c2.push("exports.isStaticPath = isStaticPath;");
+  } else {
+    c2.push("export { isStaticPath };");
+  }
+  return c2.join("\n");
+}
+
+// packages/qwik-city/src/adapters/shared/vite/index.ts
+var STATIC_PATHS_ID = "@qwik-city-static-paths";
+var RESOLVED_STATIC_PATHS_ID = `${STATIC_PATHS_ID}.js`;
+var NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
+var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
+
+// packages/qwik-city/src/utils/fs.ts
+var import_node_path2 = require("node:path");
+
+// packages/qwik-city/src/utils/format.ts
+function toTitleCase(str) {
+  return str.replace(/\w\S*/g, (txt) => {
+    return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
+  });
+}
+function addError(ctx, e) {
+  ctx.diagnostics.push({
+    type: "error",
+    message: e ? String(e.stack || e) : "Error"
+  });
+}
+function addWarning(ctx, message) {
+  ctx.diagnostics.push({
+    type: "warn",
+    message: String(message)
+  });
+}
+
+// packages/qwik-city/src/utils/pathname.ts
+function normalizePathname(pathname, basePathname, trailingSlash) {
+  if (typeof pathname === "string") {
+    pathname = pathname.trim();
+    if (pathname !== "") {
+      try {
+        pathname = pathname.replace(/\/+/g, "/");
+        if (pathname.startsWith("/")) {
+          pathname = pathname.slice(1);
+        }
+        pathname = new URL(basePathname + pathname, `https://qwik.dev`).pathname;
+        if (pathname !== basePathname) {
+          if (trailingSlash) {
+            if (!pathname.endsWith("/")) {
+              const segments = pathname.split("/");
+              const lastSegment = segments[segments.length - 1];
+              if (!lastSegment.includes(".")) {
+                pathname += "/";
+              }
+            }
+          } else {
+            if (pathname.endsWith("/")) {
+              pathname = pathname.slice(0, pathname.length - 1);
+            }
+          }
+        }
+        return pathname;
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  }
+  return null;
+}
+function isSameOriginUrl(url) {
+  if (typeof url === "string") {
+    url = url.trim();
+    if (url !== "") {
+      const firstChar = url.charAt(0);
+      if (firstChar !== "/" && firstChar !== ".") {
+        if (firstChar === "#") {
+          return false;
+        }
+        const i = url.indexOf(":");
+        if (i > -1) {
+          const protocol = url.slice(0, i).toLowerCase();
+          return !PROTOCOLS[protocol];
+        }
+      }
+      return true;
+    }
+  }
+  return false;
+}
+var PROTOCOLS = {
+  https: true,
+  http: true,
+  about: true,
+  javascript: true,
+  file: true
+};
+
+// packages/qwik-city/src/utils/fs.ts
+function parseRouteIndexName(extlessName) {
+  let layoutName = "";
+  const layoutStop = extlessName.endsWith("!");
+  if (layoutStop) {
+    extlessName = extlessName.slice(0, extlessName.length - 1);
+  }
+  const namedLayoutParts = extlessName.split("@");
+  if (namedLayoutParts.length > 1) {
+    namedLayoutParts.shift();
+    layoutName = namedLayoutParts.join("@");
+  }
+  return { layoutName, layoutStop };
+}
+function getPathnameFromDirPath(opts, dirPath) {
+  const relFilePath = (0, import_node_path2.relative)(opts.routesDir, dirPath);
+  let pathname = normalizePath(relFilePath);
+  pathname = normalizePathname(pathname, opts.basePathname, opts.trailingSlash).split("/").filter((segment) => !isGroupedLayoutName(segment)).join("/");
+  if (pathname === "") {
+    return "/";
+  }
+  return pathname;
+}
+function getMenuPathname(opts, filePath) {
+  let pathname = normalizePath((0, import_node_path2.relative)(opts.routesDir, filePath));
+  pathname = `/` + normalizePath((0, import_node_path2.dirname)(pathname));
+  return normalizePathname(pathname, opts.basePathname, true);
+}
+function getExtension(fileName) {
+  if (typeof fileName === "string") {
+    const parts = fileName.trim().toLowerCase().split(".");
+    if (parts.length > 1) {
+      const ext = parts.pop().split("?")[0].split("#")[0];
+      if (ext === "ts" && parts.pop() === "d") {
+        return ".d.ts";
+      }
+      return "." + ext;
+    }
+  }
+  return "";
+}
+function removeExtension(fileName) {
+  if (typeof fileName === "string") {
+    fileName = fileName.trim();
+    const ext = getExtension(fileName);
+    return fileName.slice(0, fileName.length - ext.length);
+  }
+  return "";
+}
+function normalizePath(path3) {
+  return normalizePathSlash((0, import_node_path2.normalize)(path3));
+}
+function normalizePathSlash(path3) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(path3);
+  const hasNonAscii = /[^\u0000-\u0080]+/.test(path3);
+  if (isExtendedLengthPath || hasNonAscii) {
+    return path3;
+  }
+  path3 = path3.replace(/\\/g, "/");
+  if (path3.endsWith("/")) {
+    path3 = path3.slice(0, path3.length - 1);
+  }
+  return path3;
+}
+function createFileId(routesDir, fsPath, explicitFileType) {
+  const ids = [];
+  for (let i = 0; i < 25; i++) {
+    let baseName = removeExtension((0, import_node_path2.basename)(fsPath));
+    baseName = baseName.replace(/[\W_]+/g, "");
+    if (baseName === "") {
+      baseName = "Q" + i;
+    } else if (!isNaN(baseName.charAt(0))) {
+      baseName = "Q" + baseName;
+    }
+    ids.push(toTitleCase(baseName));
+    fsPath = normalizePath((0, import_node_path2.dirname)(fsPath));
+    if (fsPath === routesDir) {
+      break;
+    }
+  }
+  if (ids.length > 1 && ids[0] === "Index") {
+    ids.shift();
+  }
+  return ids.reverse().join("").concat(explicitFileType || "");
+}
+var PAGE_MODULE_EXTS = {
+  ".tsx": true,
+  ".jsx": true
+};
+var MODULE_EXTS = {
+  ".ts": true,
+  ".js": true
+};
+var MARKDOWN_EXTS = {
+  ".md": true,
+  ".mdx": true
+};
+function isIndexModule(extlessName) {
+  return /^index(|!|@.+)$/.test(extlessName);
+}
+function isPluginModule(extlessName) {
+  return /^plugin(|@.+)$/.test(extlessName);
+}
+function isLayoutModule(extlessName) {
+  return /^layout(|!|-.+)$/.test(extlessName);
+}
+function isPageModuleExt(ext) {
+  return ext in PAGE_MODULE_EXTS;
+}
+function isModuleExt(ext) {
+  return ext in MODULE_EXTS;
+}
+function isMarkdownExt(ext) {
+  return ext in MARKDOWN_EXTS;
+}
+function isPageExt(ext) {
+  return ext in PAGE_MODULE_EXTS || ext in MARKDOWN_EXTS;
+}
+function isMenuFileName(fileName) {
+  return fileName === "menu.md";
+}
+function isServiceWorkerName(extlessName) {
+  return extlessName === "service-worker";
+}
+function isEntryName(extlessName) {
+  return extlessName === "entry";
+}
+function isErrorName(extlessName) {
+  try {
+    const statusCode = parseInt(extlessName, 10);
+    return statusCode >= 400 && statusCode <= 599;
+  } catch (e) {
+  }
+  return false;
+}
+function isGroupedLayoutName(dirName, warn = true) {
+  if (dirName.startsWith("__")) {
+    if (warn) {
+      console.warn(
+        `Grouped (pathless) layout "${dirName}" should use the "(${dirName.slice(
+          2
+        )})" directory name instead. Prefixing a directory with "__" has been deprecated and will be removed in future versions.`
+      );
+    }
+    return true;
+  }
+  return dirName.startsWith("(") && dirName.endsWith(")");
+}
+
+// packages/qwik-city/src/buildtime/routing/resolve-source-file.ts
+var import_node_path4 = require("node:path");
+
+// node_modules/.pnpm/marked@12.0.2/node_modules/marked/lib/marked.esm.js
+function _getDefaults() {
+  return {
+    async: false,
+    breaks: false,
+    extensions: null,
+    gfm: true,
+    hooks: null,
+    pedantic: false,
+    renderer: null,
+    silent: false,
+    tokenizer: null,
+    walkTokens: null
+  };
+}
+var _defaults = _getDefaults();
+function changeDefaults(newDefaults) {
+  _defaults = newDefaults;
+}
+var escapeTest = /[&<>"']/;
+var escapeReplace = new RegExp(escapeTest.source, "g");
+var escapeTestNoEncode = /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/;
+var escapeReplaceNoEncode = new RegExp(escapeTestNoEncode.source, "g");
+var escapeReplacements = {
+  "&": "&amp;",
+  "<": "&lt;",
+  ">": "&gt;",
+  '"': "&quot;",
+  "'": "&#39;"
+};
+var getEscapeReplacement = (ch) => escapeReplacements[ch];
+function escape$1(html5, encode2) {
+  if (encode2) {
+    if (escapeTest.test(html5)) {
+      return html5.replace(escapeReplace, getEscapeReplacement);
+    }
+  } else {
+    if (escapeTestNoEncode.test(html5)) {
+      return html5.replace(escapeReplaceNoEncode, getEscapeReplacement);
+    }
+  }
+  return html5;
+}
+var unescapeTest = /&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig;
+function unescape(html5) {
+  return html5.replace(unescapeTest, (_2, n) => {
+    n = n.toLowerCase();
+    if (n === "colon")
+      return ":";
+    if (n.charAt(0) === "#") {
+      return n.charAt(1) === "x" ? String.fromCharCode(parseInt(n.substring(2), 16)) : String.fromCharCode(+n.substring(1));
+    }
+    return "";
+  });
+}
+var caret = /(^|[^\[])\^/g;
+function edit(regex3, opt) {
+  let source = typeof regex3 === "string" ? regex3 : regex3.source;
+  opt = opt || "";
+  const obj = {
+    replace: (name, val) => {
+      let valSource = typeof val === "string" ? val : val.source;
+      valSource = valSource.replace(caret, "$1");
+      source = source.replace(name, valSource);
+      return obj;
+    },
+    getRegex: () => {
+      return new RegExp(source, opt);
+    }
+  };
+  return obj;
+}
+function cleanUrl(href) {
+  try {
+    href = encodeURI(href).replace(/%25/g, "%");
+  } catch (e) {
+    return null;
+  }
+  return href;
+}
+var noopTest = { exec: () => null };
+function splitCells(tableRow, count) {
+  const row = tableRow.replace(/\|/g, (match, offset, str) => {
+    let escaped = false;
+    let curr = offset;
+    while (--curr >= 0 && str[curr] === "\\")
+      escaped = !escaped;
+    if (escaped) {
+      return "|";
+    } else {
+      return " |";
+    }
+  }), cells = row.split(/ \|/);
+  let i = 0;
+  if (!cells[0].trim()) {
+    cells.shift();
+  }
+  if (cells.length > 0 && !cells[cells.length - 1].trim()) {
+    cells.pop();
+  }
+  if (count) {
+    if (cells.length > count) {
+      cells.splice(count);
+    } else {
+      while (cells.length < count)
+        cells.push("");
+    }
+  }
+  for (; i < cells.length; i++) {
+    cells[i] = cells[i].trim().replace(/\\\|/g, "|");
+  }
+  return cells;
+}
+function rtrim(str, c2, invert) {
+  const l = str.length;
+  if (l === 0) {
+    return "";
+  }
+  let suffLen = 0;
+  while (suffLen < l) {
+    const currChar = str.charAt(l - suffLen - 1);
+    if (currChar === c2 && !invert) {
+      suffLen++;
+    } else if (currChar !== c2 && invert) {
+      suffLen++;
+    } else {
+      break;
+    }
+  }
+  return str.slice(0, l - suffLen);
+}
+function findClosingBracket(str, b) {
+  if (str.indexOf(b[1]) === -1) {
+    return -1;
+  }
+  let level = 0;
+  for (let i = 0; i < str.length; i++) {
+    if (str[i] === "\\") {
+      i++;
+    } else if (str[i] === b[0]) {
+      level++;
+    } else if (str[i] === b[1]) {
+      level--;
+      if (level < 0) {
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+function outputLink(cap2, link3, raw, lexer2) {
+  const href = link3.href;
+  const title = link3.title ? escape$1(link3.title) : null;
+  const text3 = cap2[1].replace(/\\([\[\]])/g, "$1");
+  if (cap2[0].charAt(0) !== "!") {
+    lexer2.state.inLink = true;
+    const token = {
+      type: "link",
+      raw,
+      href,
+      title,
+      text: text3,
+      tokens: lexer2.inlineTokens(text3)
+    };
+    lexer2.state.inLink = false;
+    return token;
+  }
+  return {
+    type: "image",
+    raw,
+    href,
+    title,
+    text: escape$1(text3)
+  };
+}
+function indentCodeCompensation(raw, text3) {
+  const matchIndentToCode = raw.match(/^(\s+)(?:```)/);
+  if (matchIndentToCode === null) {
+    return text3;
+  }
+  const indentToCode = matchIndentToCode[1];
+  return text3.split("\n").map((node2) => {
+    const matchIndentInNode = node2.match(/^\s+/);
+    if (matchIndentInNode === null) {
+      return node2;
+    }
+    const [indentInNode] = matchIndentInNode;
+    if (indentInNode.length >= indentToCode.length) {
+      return node2.slice(indentToCode.length);
+    }
+    return node2;
+  }).join("\n");
+}
+var _Tokenizer = class {
+  options;
+  rules;
+  // set by the lexer
+  lexer;
+  // set by the lexer
+  constructor(options2) {
+    this.options = options2 || _defaults;
+  }
+  space(src) {
+    const cap2 = this.rules.block.newline.exec(src);
+    if (cap2 && cap2[0].length > 0) {
+      return {
+        type: "space",
+        raw: cap2[0]
+      };
+    }
+  }
+  code(src) {
+    const cap2 = this.rules.block.code.exec(src);
+    if (cap2) {
+      const text3 = cap2[0].replace(/^ {1,4}/gm, "");
+      return {
+        type: "code",
+        raw: cap2[0],
+        codeBlockStyle: "indented",
+        text: !this.options.pedantic ? rtrim(text3, "\n") : text3
+      };
+    }
+  }
+  fences(src) {
+    const cap2 = this.rules.block.fences.exec(src);
+    if (cap2) {
+      const raw = cap2[0];
+      const text3 = indentCodeCompensation(raw, cap2[3] || "");
+      return {
+        type: "code",
+        raw,
+        lang: cap2[2] ? cap2[2].trim().replace(this.rules.inline.anyPunctuation, "$1") : cap2[2],
+        text: text3
+      };
+    }
+  }
+  heading(src) {
+    const cap2 = this.rules.block.heading.exec(src);
+    if (cap2) {
+      let text3 = cap2[2].trim();
+      if (/#$/.test(text3)) {
+        const trimmed = rtrim(text3, "#");
+        if (this.options.pedantic) {
+          text3 = trimmed.trim();
+        } else if (!trimmed || / $/.test(trimmed)) {
+          text3 = trimmed.trim();
+        }
+      }
+      return {
+        type: "heading",
+        raw: cap2[0],
+        depth: cap2[1].length,
+        text: text3,
+        tokens: this.lexer.inline(text3)
+      };
+    }
+  }
+  hr(src) {
+    const cap2 = this.rules.block.hr.exec(src);
+    if (cap2) {
+      return {
+        type: "hr",
+        raw: cap2[0]
+      };
+    }
+  }
+  blockquote(src) {
+    const cap2 = this.rules.block.blockquote.exec(src);
+    if (cap2) {
+      let text3 = cap2[0].replace(/\n {0,3}((?:=+|-+) *)(?=\n|$)/g, "\n    $1");
+      text3 = rtrim(text3.replace(/^ *>[ \t]?/gm, ""), "\n");
+      const top = this.lexer.state.top;
+      this.lexer.state.top = true;
+      const tokens = this.lexer.blockTokens(text3);
+      this.lexer.state.top = top;
+      return {
+        type: "blockquote",
+        raw: cap2[0],
+        tokens,
+        text: text3
+      };
+    }
+  }
+  list(src) {
+    let cap2 = this.rules.block.list.exec(src);
+    if (cap2) {
+      let bull = cap2[1].trim();
+      const isordered = bull.length > 1;
+      const list3 = {
+        type: "list",
+        raw: "",
+        ordered: isordered,
+        start: isordered ? +bull.slice(0, -1) : "",
+        loose: false,
+        items: []
+      };
+      bull = isordered ? `\\d{1,9}\\${bull.slice(-1)}` : `\\${bull}`;
+      if (this.options.pedantic) {
+        bull = isordered ? bull : "[*+-]";
+      }
+      const itemRegex = new RegExp(`^( {0,3}${bull})((?:[	 ][^\\n]*)?(?:\\n|$))`);
+      let raw = "";
+      let itemContents = "";
+      let endsWithBlankLine = false;
+      while (src) {
+        let endEarly = false;
+        if (!(cap2 = itemRegex.exec(src))) {
+          break;
+        }
+        if (this.rules.block.hr.test(src)) {
+          break;
+        }
+        raw = cap2[0];
+        src = src.substring(raw.length);
+        let line = cap2[2].split("\n", 1)[0].replace(/^\t+/, (t) => " ".repeat(3 * t.length));
+        let nextLine = src.split("\n", 1)[0];
+        let indent2 = 0;
+        if (this.options.pedantic) {
+          indent2 = 2;
+          itemContents = line.trimStart();
+        } else {
+          indent2 = cap2[2].search(/[^ ]/);
+          indent2 = indent2 > 4 ? 1 : indent2;
+          itemContents = line.slice(indent2);
+          indent2 += cap2[1].length;
+        }
+        let blankLine2 = false;
+        if (!line && /^ *$/.test(nextLine)) {
+          raw += nextLine + "\n";
+          src = src.substring(nextLine.length + 1);
+          endEarly = true;
+        }
+        if (!endEarly) {
+          const nextBulletRegex = new RegExp(`^ {0,${Math.min(3, indent2 - 1)}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`);
+          const hrRegex = new RegExp(`^ {0,${Math.min(3, indent2 - 1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`);
+          const fencesBeginRegex = new RegExp(`^ {0,${Math.min(3, indent2 - 1)}}(?:\`\`\`|~~~)`);
+          const headingBeginRegex = new RegExp(`^ {0,${Math.min(3, indent2 - 1)}}#`);
+          while (src) {
+            const rawLine = src.split("\n", 1)[0];
+            nextLine = rawLine;
+            if (this.options.pedantic) {
+              nextLine = nextLine.replace(/^ {1,4}(?=( {4})*[^ ])/g, "  ");
+            }
+            if (fencesBeginRegex.test(nextLine)) {
+              break;
+            }
+            if (headingBeginRegex.test(nextLine)) {
+              break;
+            }
+            if (nextBulletRegex.test(nextLine)) {
+              break;
+            }
+            if (hrRegex.test(src)) {
+              break;
+            }
+            if (nextLine.search(/[^ ]/) >= indent2 || !nextLine.trim()) {
+              itemContents += "\n" + nextLine.slice(indent2);
+            } else {
+              if (blankLine2) {
+                break;
+              }
+              if (line.search(/[^ ]/) >= 4) {
+                break;
+              }
+              if (fencesBeginRegex.test(line)) {
+                break;
+              }
+              if (headingBeginRegex.test(line)) {
+                break;
+              }
+              if (hrRegex.test(line)) {
+                break;
+              }
+              itemContents += "\n" + nextLine;
+            }
+            if (!blankLine2 && !nextLine.trim()) {
+              blankLine2 = true;
+            }
+            raw += rawLine + "\n";
+            src = src.substring(rawLine.length + 1);
+            line = nextLine.slice(indent2);
+          }
+        }
+        if (!list3.loose) {
+          if (endsWithBlankLine) {
+            list3.loose = true;
+          } else if (/\n *\n *$/.test(raw)) {
+            endsWithBlankLine = true;
+          }
+        }
+        let istask = null;
+        let ischecked;
+        if (this.options.gfm) {
+          istask = /^\[[ xX]\] /.exec(itemContents);
+          if (istask) {
+            ischecked = istask[0] !== "[ ] ";
+            itemContents = itemContents.replace(/^\[[ xX]\] +/, "");
+          }
+        }
+        list3.items.push({
+          type: "list_item",
+          raw,
+          task: !!istask,
+          checked: ischecked,
+          loose: false,
+          text: itemContents,
+          tokens: []
+        });
+        list3.raw += raw;
+      }
+      list3.items[list3.items.length - 1].raw = raw.trimEnd();
+      list3.items[list3.items.length - 1].text = itemContents.trimEnd();
+      list3.raw = list3.raw.trimEnd();
+      for (let i = 0; i < list3.items.length; i++) {
+        this.lexer.state.top = false;
+        list3.items[i].tokens = this.lexer.blockTokens(list3.items[i].text, []);
+        if (!list3.loose) {
+          const spacers = list3.items[i].tokens.filter((t) => t.type === "space");
+          const hasMultipleLineBreaks = spacers.length > 0 && spacers.some((t) => /\n.*\n/.test(t.raw));
+          list3.loose = hasMultipleLineBreaks;
+        }
+      }
+      if (list3.loose) {
+        for (let i = 0; i < list3.items.length; i++) {
+          list3.items[i].loose = true;
+        }
+      }
+      return list3;
+    }
+  }
+  html(src) {
+    const cap2 = this.rules.block.html.exec(src);
+    if (cap2) {
+      const token = {
+        type: "html",
+        block: true,
+        raw: cap2[0],
+        pre: cap2[1] === "pre" || cap2[1] === "script" || cap2[1] === "style",
+        text: cap2[0]
+      };
+      return token;
+    }
+  }
+  def(src) {
+    const cap2 = this.rules.block.def.exec(src);
+    if (cap2) {
+      const tag2 = cap2[1].toLowerCase().replace(/\s+/g, " ");
+      const href = cap2[2] ? cap2[2].replace(/^<(.*)>$/, "$1").replace(this.rules.inline.anyPunctuation, "$1") : "";
+      const title = cap2[3] ? cap2[3].substring(1, cap2[3].length - 1).replace(this.rules.inline.anyPunctuation, "$1") : cap2[3];
+      return {
+        type: "def",
+        tag: tag2,
+        raw: cap2[0],
+        href,
+        title
+      };
+    }
+  }
+  table(src) {
+    const cap2 = this.rules.block.table.exec(src);
+    if (!cap2) {
+      return;
+    }
+    if (!/[:|]/.test(cap2[2])) {
+      return;
+    }
+    const headers = splitCells(cap2[1]);
+    const aligns = cap2[2].replace(/^\||\| *$/g, "").split("|");
+    const rows = cap2[3] && cap2[3].trim() ? cap2[3].replace(/\n[ \t]*$/, "").split("\n") : [];
+    const item = {
+      type: "table",
+      raw: cap2[0],
+      header: [],
+      align: [],
+      rows: []
+    };
+    if (headers.length !== aligns.length) {
+      return;
+    }
+    for (const align of aligns) {
+      if (/^ *-+: *$/.test(align)) {
+        item.align.push("right");
+      } else if (/^ *:-+: *$/.test(align)) {
+        item.align.push("center");
+      } else if (/^ *:-+ *$/.test(align)) {
+        item.align.push("left");
+      } else {
+        item.align.push(null);
+      }
+    }
+    for (const header of headers) {
+      item.header.push({
+        text: header,
+        tokens: this.lexer.inline(header)
+      });
+    }
+    for (const row of rows) {
+      item.rows.push(splitCells(row, item.header.length).map((cell) => {
+        return {
+          text: cell,
+          tokens: this.lexer.inline(cell)
+        };
+      }));
+    }
+    return item;
+  }
+  lheading(src) {
+    const cap2 = this.rules.block.lheading.exec(src);
+    if (cap2) {
+      return {
+        type: "heading",
+        raw: cap2[0],
+        depth: cap2[2].charAt(0) === "=" ? 1 : 2,
+        text: cap2[1],
+        tokens: this.lexer.inline(cap2[1])
+      };
+    }
+  }
+  paragraph(src) {
+    const cap2 = this.rules.block.paragraph.exec(src);
+    if (cap2) {
+      const text3 = cap2[1].charAt(cap2[1].length - 1) === "\n" ? cap2[1].slice(0, -1) : cap2[1];
+      return {
+        type: "paragraph",
+        raw: cap2[0],
+        text: text3,
+        tokens: this.lexer.inline(text3)
+      };
+    }
+  }
+  text(src) {
+    const cap2 = this.rules.block.text.exec(src);
+    if (cap2) {
+      return {
+        type: "text",
+        raw: cap2[0],
+        text: cap2[0],
+        tokens: this.lexer.inline(cap2[0])
+      };
+    }
+  }
+  escape(src) {
+    const cap2 = this.rules.inline.escape.exec(src);
+    if (cap2) {
+      return {
+        type: "escape",
+        raw: cap2[0],
+        text: escape$1(cap2[1])
+      };
+    }
+  }
+  tag(src) {
+    const cap2 = this.rules.inline.tag.exec(src);
+    if (cap2) {
+      if (!this.lexer.state.inLink && /^<a /i.test(cap2[0])) {
+        this.lexer.state.inLink = true;
+      } else if (this.lexer.state.inLink && /^<\/a>/i.test(cap2[0])) {
+        this.lexer.state.inLink = false;
+      }
+      if (!this.lexer.state.inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(cap2[0])) {
+        this.lexer.state.inRawBlock = true;
+      } else if (this.lexer.state.inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(cap2[0])) {
+        this.lexer.state.inRawBlock = false;
+      }
+      return {
+        type: "html",
+        raw: cap2[0],
+        inLink: this.lexer.state.inLink,
+        inRawBlock: this.lexer.state.inRawBlock,
+        block: false,
+        text: cap2[0]
+      };
+    }
+  }
+  link(src) {
+    const cap2 = this.rules.inline.link.exec(src);
+    if (cap2) {
+      const trimmedUrl = cap2[2].trim();
+      if (!this.options.pedantic && /^</.test(trimmedUrl)) {
+        if (!/>$/.test(trimmedUrl)) {
+          return;
+        }
+        const rtrimSlash = rtrim(trimmedUrl.slice(0, -1), "\\");
+        if ((trimmedUrl.length - rtrimSlash.length) % 2 === 0) {
+          return;
+        }
+      } else {
+        const lastParenIndex = findClosingBracket(cap2[2], "()");
+        if (lastParenIndex > -1) {
+          const start = cap2[0].indexOf("!") === 0 ? 5 : 4;
+          const linkLen = start + cap2[1].length + lastParenIndex;
+          cap2[2] = cap2[2].substring(0, lastParenIndex);
+          cap2[0] = cap2[0].substring(0, linkLen).trim();
+          cap2[3] = "";
+        }
+      }
+      let href = cap2[2];
+      let title = "";
+      if (this.options.pedantic) {
+        const link3 = /^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(href);
+        if (link3) {
+          href = link3[1];
+          title = link3[3];
+        }
+      } else {
+        title = cap2[3] ? cap2[3].slice(1, -1) : "";
+      }
+      href = href.trim();
+      if (/^</.test(href)) {
+        if (this.options.pedantic && !/>$/.test(trimmedUrl)) {
+          href = href.slice(1);
+        } else {
+          href = href.slice(1, -1);
+        }
+      }
+      return outputLink(cap2, {
+        href: href ? href.replace(this.rules.inline.anyPunctuation, "$1") : href,
+        title: title ? title.replace(this.rules.inline.anyPunctuation, "$1") : title
+      }, cap2[0], this.lexer);
+    }
+  }
+  reflink(src, links) {
+    let cap2;
+    if ((cap2 = this.rules.inline.reflink.exec(src)) || (cap2 = this.rules.inline.nolink.exec(src))) {
+      const linkString = (cap2[2] || cap2[1]).replace(/\s+/g, " ");
+      const link3 = links[linkString.toLowerCase()];
+      if (!link3) {
+        const text3 = cap2[0].charAt(0);
+        return {
+          type: "text",
+          raw: text3,
+          text: text3
+        };
+      }
+      return outputLink(cap2, link3, cap2[0], this.lexer);
+    }
+  }
+  emStrong(src, maskedSrc, prevChar = "") {
+    let match = this.rules.inline.emStrongLDelim.exec(src);
+    if (!match)
+      return;
+    if (match[3] && prevChar.match(/[\p{L}\p{N}]/u))
+      return;
+    const nextChar = match[1] || match[2] || "";
+    if (!nextChar || !prevChar || this.rules.inline.punctuation.exec(prevChar)) {
+      const lLength = [...match[0]].length - 1;
+      let rDelim, rLength, delimTotal = lLength, midDelimTotal = 0;
+      const endReg = match[0][0] === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
+      endReg.lastIndex = 0;
+      maskedSrc = maskedSrc.slice(-1 * src.length + lLength);
+      while ((match = endReg.exec(maskedSrc)) != null) {
+        rDelim = match[1] || match[2] || match[3] || match[4] || match[5] || match[6];
+        if (!rDelim)
+          continue;
+        rLength = [...rDelim].length;
+        if (match[3] || match[4]) {
+          delimTotal += rLength;
+          continue;
+        } else if (match[5] || match[6]) {
+          if (lLength % 3 && !((lLength + rLength) % 3)) {
+            midDelimTotal += rLength;
+            continue;
+          }
+        }
+        delimTotal -= rLength;
+        if (delimTotal > 0)
+          continue;
+        rLength = Math.min(rLength, rLength + delimTotal + midDelimTotal);
+        const lastCharLength = [...match[0]][0].length;
+        const raw = src.slice(0, lLength + match.index + lastCharLength + rLength);
+        if (Math.min(lLength, rLength) % 2) {
+          const text4 = raw.slice(1, -1);
+          return {
+            type: "em",
+            raw,
+            text: text4,
+            tokens: this.lexer.inlineTokens(text4)
+          };
+        }
+        const text3 = raw.slice(2, -2);
+        return {
+          type: "strong",
+          raw,
+          text: text3,
+          tokens: this.lexer.inlineTokens(text3)
+        };
+      }
+    }
+  }
+  codespan(src) {
+    const cap2 = this.rules.inline.code.exec(src);
+    if (cap2) {
+      let text3 = cap2[2].replace(/\n/g, " ");
+      const hasNonSpaceChars = /[^ ]/.test(text3);
+      const hasSpaceCharsOnBothEnds = /^ /.test(text3) && / $/.test(text3);
+      if (hasNonSpaceChars && hasSpaceCharsOnBothEnds) {
+        text3 = text3.substring(1, text3.length - 1);
+      }
+      text3 = escape$1(text3, true);
+      return {
+        type: "codespan",
+        raw: cap2[0],
+        text: text3
+      };
+    }
+  }
+  br(src) {
+    const cap2 = this.rules.inline.br.exec(src);
+    if (cap2) {
+      return {
+        type: "br",
+        raw: cap2[0]
+      };
+    }
+  }
+  del(src) {
+    const cap2 = this.rules.inline.del.exec(src);
+    if (cap2) {
+      return {
+        type: "del",
+        raw: cap2[0],
+        text: cap2[2],
+        tokens: this.lexer.inlineTokens(cap2[2])
+      };
+    }
+  }
+  autolink(src) {
+    const cap2 = this.rules.inline.autolink.exec(src);
+    if (cap2) {
+      let text3, href;
+      if (cap2[2] === "@") {
+        text3 = escape$1(cap2[1]);
+        href = "mailto:" + text3;
+      } else {
+        text3 = escape$1(cap2[1]);
+        href = text3;
+      }
+      return {
+        type: "link",
+        raw: cap2[0],
+        text: text3,
+        href,
+        tokens: [
+          {
+            type: "text",
+            raw: text3,
+            text: text3
+          }
+        ]
+      };
+    }
+  }
+  url(src) {
+    var _a2;
+    let cap2;
+    if (cap2 = this.rules.inline.url.exec(src)) {
+      let text3, href;
+      if (cap2[2] === "@") {
+        text3 = escape$1(cap2[0]);
+        href = "mailto:" + text3;
+      } else {
+        let prevCapZero;
+        do {
+          prevCapZero = cap2[0];
+          cap2[0] = ((_a2 = this.rules.inline._backpedal.exec(cap2[0])) == null ? void 0 : _a2[0]) ?? "";
+        } while (prevCapZero !== cap2[0]);
+        text3 = escape$1(cap2[0]);
+        if (cap2[1] === "www.") {
+          href = "http://" + cap2[0];
+        } else {
+          href = cap2[0];
+        }
+      }
+      return {
+        type: "link",
+        raw: cap2[0],
+        text: text3,
+        href,
+        tokens: [
+          {
+            type: "text",
+            raw: text3,
+            text: text3
+          }
+        ]
+      };
+    }
+  }
+  inlineText(src) {
+    const cap2 = this.rules.inline.text.exec(src);
+    if (cap2) {
+      let text3;
+      if (this.lexer.state.inRawBlock) {
+        text3 = cap2[0];
+      } else {
+        text3 = escape$1(cap2[0]);
+      }
+      return {
+        type: "text",
+        raw: cap2[0],
+        text: text3
+      };
+    }
+  }
+};
+var newline = /^(?: *(?:\n|$))+/;
+var blockCode = /^( {4}[^\n]+(?:\n(?: *(?:\n|$))*)?)+/;
+var fences = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/;
+var hr = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/;
+var heading = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/;
+var bullet = /(?:[*+-]|\d{1,9}[.)])/;
+var lheading = edit(/^(?!bull |blockCode|fences|blockquote|heading|html)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html))+?)\n {0,3}(=+|-+) *(?:\n+|$)/).replace(/bull/g, bullet).replace(/blockCode/g, / {4}/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).getRegex();
+var _paragraph = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/;
+var blockText = /^[^\n]+/;
+var _blockLabel = /(?!\s*\])(?:\\.|[^\[\]\\])+/;
+var def = edit(/^ {0,3}\[(label)\]: *(?:\n *)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n *)?| *\n *)(title))? *(?:\n+|$)/).replace("label", _blockLabel).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex();
+var list = edit(/^( {0,3}bull)([ \t][^\n]+?)?(?:\n|$)/).replace(/bull/g, bullet).getRegex();
+var _tag = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
+var _comment = /<!--(?:-?>|[\s\S]*?(?:-->|$))/;
+var html = edit("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n *)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$))", "i").replace("comment", _comment).replace("tag", _tag).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex();
+var paragraph = edit(_paragraph).replace("hr", hr).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", _tag).getRegex();
+var blockquote = edit(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", paragraph).getRegex();
+var blockNormal = {
+  blockquote,
+  code: blockCode,
+  def,
+  fences,
+  heading,
+  hr,
+  html,
+  lheading,
+  list,
+  newline,
+  paragraph,
+  table: noopTest,
+  text: blockText
+};
+var gfmTable = edit("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", hr).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", " {4}[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", _tag).getRegex();
+var blockGfm = {
+  ...blockNormal,
+  table: gfmTable,
+  paragraph: edit(_paragraph).replace("hr", hr).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", gfmTable).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", _tag).getRegex()
+};
+var blockPedantic = {
+  ...blockNormal,
+  html: edit(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", _comment).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),
+  def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,
+  heading: /^(#{1,6})(.*)(?:\n+|$)/,
+  fences: noopTest,
+  // fences not supported
+  lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/,
+  paragraph: edit(_paragraph).replace("hr", hr).replace("heading", " *#{1,6} *[^\n]").replace("lheading", lheading).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex()
+};
+var escape = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/;
+var inlineCode = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/;
+var br = /^( {2,}|\\)\n(?!\s*$)/;
+var inlineText = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/;
+var _punctuation = "\\p{P}\\p{S}";
+var punctuation = edit(/^((?![*_])[\spunctuation])/, "u").replace(/punctuation/g, _punctuation).getRegex();
+var blockSkip = /\[[^[\]]*?\]\([^\(\)]*?\)|`[^`]*?`|<[^<>]*?>/g;
+var emStrongLDelim = edit(/^(?:\*+(?:((?!\*)[punct])|[^\s*]))|^_+(?:((?!_)[punct])|([^\s_]))/, "u").replace(/punct/g, _punctuation).getRegex();
+var emStrongRDelimAst = edit("^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)[punct](\\*+)(?=[\\s]|$)|[^punct\\s](\\*+)(?!\\*)(?=[punct\\s]|$)|(?!\\*)[punct\\s](\\*+)(?=[^punct\\s])|[\\s](\\*+)(?!\\*)(?=[punct])|(?!\\*)[punct](\\*+)(?!\\*)(?=[punct])|[^punct\\s](\\*+)(?=[^punct\\s])", "gu").replace(/punct/g, _punctuation).getRegex();
+var emStrongRDelimUnd = edit("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)[punct](_+)(?=[\\s]|$)|[^punct\\s](_+)(?!_)(?=[punct\\s]|$)|(?!_)[punct\\s](_+)(?=[^punct\\s])|[\\s](_+)(?!_)(?=[punct])|(?!_)[punct](_+)(?!_)(?=[punct])", "gu").replace(/punct/g, _punctuation).getRegex();
+var anyPunctuation = edit(/\\([punct])/, "gu").replace(/punct/g, _punctuation).getRegex();
+var autolink = edit(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex();
+var _inlineComment = edit(_comment).replace("(?:-->|$)", "-->").getRegex();
+var tag = edit("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", _inlineComment).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex();
+var _inlineLabel = /(?:\[(?:\\.|[^\[\]\\])*\]|\\.|`[^`]*`|[^\[\]\\`])*?/;
+var link = edit(/^!?\[(label)\]\(\s*(href)(?:\s+(title))?\s*\)/).replace("label", _inlineLabel).replace("href", /<(?:\\.|[^\n<>\\])+>|[^\s\x00-\x1f]*/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex();
+var reflink = edit(/^!?\[(label)\]\[(ref)\]/).replace("label", _inlineLabel).replace("ref", _blockLabel).getRegex();
+var nolink = edit(/^!?\[(ref)\](?:\[\])?/).replace("ref", _blockLabel).getRegex();
+var reflinkSearch = edit("reflink|nolink(?!\\()", "g").replace("reflink", reflink).replace("nolink", nolink).getRegex();
+var inlineNormal = {
+  _backpedal: noopTest,
+  // only used for GFM url
+  anyPunctuation,
+  autolink,
+  blockSkip,
+  br,
+  code: inlineCode,
+  del: noopTest,
+  emStrongLDelim,
+  emStrongRDelimAst,
+  emStrongRDelimUnd,
+  escape,
+  link,
+  nolink,
+  punctuation,
+  reflink,
+  reflinkSearch,
+  tag,
+  text: inlineText,
+  url: noopTest
+};
+var inlinePedantic = {
+  ...inlineNormal,
+  link: edit(/^!?\[(label)\]\((.*?)\)/).replace("label", _inlineLabel).getRegex(),
+  reflink: edit(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", _inlineLabel).getRegex()
+};
+var inlineGfm = {
+  ...inlineNormal,
+  escape: edit(escape).replace("])", "~|])").getRegex(),
+  url: edit(/^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/, "i").replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(),
+  _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/,
+  del: /^(~~?)(?=[^\s~])([\s\S]*?[^\s~])\1(?=[^~]|$)/,
+  text: /^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/
+};
+var inlineBreaks = {
+  ...inlineGfm,
+  br: edit(br).replace("{2,}", "*").getRegex(),
+  text: edit(inlineGfm.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex()
+};
+var block = {
+  normal: blockNormal,
+  gfm: blockGfm,
+  pedantic: blockPedantic
+};
+var inline = {
+  normal: inlineNormal,
+  gfm: inlineGfm,
+  breaks: inlineBreaks,
+  pedantic: inlinePedantic
+};
+var _Lexer = class __Lexer {
+  tokens;
+  options;
+  state;
+  tokenizer;
+  inlineQueue;
+  constructor(options2) {
+    this.tokens = [];
+    this.tokens.links = /* @__PURE__ */ Object.create(null);
+    this.options = options2 || _defaults;
+    this.options.tokenizer = this.options.tokenizer || new _Tokenizer();
+    this.tokenizer = this.options.tokenizer;
+    this.tokenizer.options = this.options;
+    this.tokenizer.lexer = this;
+    this.inlineQueue = [];
+    this.state = {
+      inLink: false,
+      inRawBlock: false,
+      top: true
+    };
+    const rules = {
+      block: block.normal,
+      inline: inline.normal
+    };
+    if (this.options.pedantic) {
+      rules.block = block.pedantic;
+      rules.inline = inline.pedantic;
+    } else if (this.options.gfm) {
+      rules.block = block.gfm;
+      if (this.options.breaks) {
+        rules.inline = inline.breaks;
+      } else {
+        rules.inline = inline.gfm;
+      }
+    }
+    this.tokenizer.rules = rules;
+  }
+  /**
+   * Expose Rules
+   */
+  static get rules() {
+    return {
+      block,
+      inline
+    };
+  }
+  /**
+   * Static Lex Method
+   */
+  static lex(src, options2) {
+    const lexer2 = new __Lexer(options2);
+    return lexer2.lex(src);
+  }
+  /**
+   * Static Lex Inline Method
+   */
+  static lexInline(src, options2) {
+    const lexer2 = new __Lexer(options2);
+    return lexer2.inlineTokens(src);
+  }
+  /**
+   * Preprocessing
+   */
+  lex(src) {
+    src = src.replace(/\r\n|\r/g, "\n");
+    this.blockTokens(src, this.tokens);
+    for (let i = 0; i < this.inlineQueue.length; i++) {
+      const next = this.inlineQueue[i];
+      this.inlineTokens(next.src, next.tokens);
+    }
+    this.inlineQueue = [];
+    return this.tokens;
+  }
+  blockTokens(src, tokens = []) {
+    if (this.options.pedantic) {
+      src = src.replace(/\t/g, "    ").replace(/^ +$/gm, "");
+    } else {
+      src = src.replace(/^( *)(\t+)/gm, (_2, leading, tabs) => {
+        return leading + "    ".repeat(tabs.length);
+      });
+    }
+    let token;
+    let lastToken;
+    let cutSrc;
+    let lastParagraphClipped;
+    while (src) {
+      if (this.options.extensions && this.options.extensions.block && this.options.extensions.block.some((extTokenizer) => {
+        if (token = extTokenizer.call({ lexer: this }, src, tokens)) {
+          src = src.substring(token.raw.length);
+          tokens.push(token);
+          return true;
+        }
+        return false;
+      })) {
+        continue;
+      }
+      if (token = this.tokenizer.space(src)) {
+        src = src.substring(token.raw.length);
+        if (token.raw.length === 1 && tokens.length > 0) {
+          tokens[tokens.length - 1].raw += "\n";
+        } else {
+          tokens.push(token);
+        }
+        continue;
+      }
+      if (token = this.tokenizer.code(src)) {
+        src = src.substring(token.raw.length);
+        lastToken = tokens[tokens.length - 1];
+        if (lastToken && (lastToken.type === "paragraph" || lastToken.type === "text")) {
+          lastToken.raw += "\n" + token.raw;
+          lastToken.text += "\n" + token.text;
+          this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
+        } else {
+          tokens.push(token);
+        }
+        continue;
+      }
+      if (token = this.tokenizer.fences(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.heading(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.hr(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.blockquote(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.list(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.html(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.def(src)) {
+        src = src.substring(token.raw.length);
+        lastToken = tokens[tokens.length - 1];
+        if (lastToken && (lastToken.type === "paragraph" || lastToken.type === "text")) {
+          lastToken.raw += "\n" + token.raw;
+          lastToken.text += "\n" + token.raw;
+          this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
+        } else if (!this.tokens.links[token.tag]) {
+          this.tokens.links[token.tag] = {
+            href: token.href,
+            title: token.title
+          };
+        }
+        continue;
+      }
+      if (token = this.tokenizer.table(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.lheading(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      cutSrc = src;
+      if (this.options.extensions && this.options.extensions.startBlock) {
+        let startIndex = Infinity;
+        const tempSrc = src.slice(1);
+        let tempStart;
+        this.options.extensions.startBlock.forEach((getStartIndex) => {
+          tempStart = getStartIndex.call({ lexer: this }, tempSrc);
+          if (typeof tempStart === "number" && tempStart >= 0) {
+            startIndex = Math.min(startIndex, tempStart);
+          }
+        });
+        if (startIndex < Infinity && startIndex >= 0) {
+          cutSrc = src.substring(0, startIndex + 1);
+        }
+      }
+      if (this.state.top && (token = this.tokenizer.paragraph(cutSrc))) {
+        lastToken = tokens[tokens.length - 1];
+        if (lastParagraphClipped && lastToken.type === "paragraph") {
+          lastToken.raw += "\n" + token.raw;
+          lastToken.text += "\n" + token.text;
+          this.inlineQueue.pop();
+          this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
+        } else {
+          tokens.push(token);
+        }
+        lastParagraphClipped = cutSrc.length !== src.length;
+        src = src.substring(token.raw.length);
+        continue;
+      }
+      if (token = this.tokenizer.text(src)) {
+        src = src.substring(token.raw.length);
+        lastToken = tokens[tokens.length - 1];
+        if (lastToken && lastToken.type === "text") {
+          lastToken.raw += "\n" + token.raw;
+          lastToken.text += "\n" + token.text;
+          this.inlineQueue.pop();
+          this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
+        } else {
+          tokens.push(token);
+        }
+        continue;
+      }
+      if (src) {
+        const errMsg = "Infinite loop on byte: " + src.charCodeAt(0);
+        if (this.options.silent) {
+          console.error(errMsg);
+          break;
+        } else {
+          throw new Error(errMsg);
+        }
+      }
+    }
+    this.state.top = true;
+    return tokens;
+  }
+  inline(src, tokens = []) {
+    this.inlineQueue.push({ src, tokens });
+    return tokens;
+  }
+  /**
+   * Lexing/Compiling
+   */
+  inlineTokens(src, tokens = []) {
+    let token, lastToken, cutSrc;
+    let maskedSrc = src;
+    let match;
+    let keepPrevChar, prevChar;
+    if (this.tokens.links) {
+      const links = Object.keys(this.tokens.links);
+      if (links.length > 0) {
+        while ((match = this.tokenizer.rules.inline.reflinkSearch.exec(maskedSrc)) != null) {
+          if (links.includes(match[0].slice(match[0].lastIndexOf("[") + 1, -1))) {
+            maskedSrc = maskedSrc.slice(0, match.index) + "[" + "a".repeat(match[0].length - 2) + "]" + maskedSrc.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex);
+          }
+        }
+      }
+    }
+    while ((match = this.tokenizer.rules.inline.blockSkip.exec(maskedSrc)) != null) {
+      maskedSrc = maskedSrc.slice(0, match.index) + "[" + "a".repeat(match[0].length - 2) + "]" + maskedSrc.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);
+    }
+    while ((match = this.tokenizer.rules.inline.anyPunctuation.exec(maskedSrc)) != null) {
+      maskedSrc = maskedSrc.slice(0, match.index) + "++" + maskedSrc.slice(this.tokenizer.rules.inline.anyPunctuation.lastIndex);
+    }
+    while (src) {
+      if (!keepPrevChar) {
+        prevChar = "";
+      }
+      keepPrevChar = false;
+      if (this.options.extensions && this.options.extensions.inline && this.options.extensions.inline.some((extTokenizer) => {
+        if (token = extTokenizer.call({ lexer: this }, src, tokens)) {
+          src = src.substring(token.raw.length);
+          tokens.push(token);
+          return true;
+        }
+        return false;
+      })) {
+        continue;
+      }
+      if (token = this.tokenizer.escape(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.tag(src)) {
+        src = src.substring(token.raw.length);
+        lastToken = tokens[tokens.length - 1];
+        if (lastToken && token.type === "text" && lastToken.type === "text") {
+          lastToken.raw += token.raw;
+          lastToken.text += token.text;
+        } else {
+          tokens.push(token);
+        }
+        continue;
+      }
+      if (token = this.tokenizer.link(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.reflink(src, this.tokens.links)) {
+        src = src.substring(token.raw.length);
+        lastToken = tokens[tokens.length - 1];
+        if (lastToken && token.type === "text" && lastToken.type === "text") {
+          lastToken.raw += token.raw;
+          lastToken.text += token.text;
+        } else {
+          tokens.push(token);
+        }
+        continue;
+      }
+      if (token = this.tokenizer.emStrong(src, maskedSrc, prevChar)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.codespan(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.br(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.del(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (token = this.tokenizer.autolink(src)) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      if (!this.state.inLink && (token = this.tokenizer.url(src))) {
+        src = src.substring(token.raw.length);
+        tokens.push(token);
+        continue;
+      }
+      cutSrc = src;
+      if (this.options.extensions && this.options.extensions.startInline) {
+        let startIndex = Infinity;
+        const tempSrc = src.slice(1);
+        let tempStart;
+        this.options.extensions.startInline.forEach((getStartIndex) => {
+          tempStart = getStartIndex.call({ lexer: this }, tempSrc);
+          if (typeof tempStart === "number" && tempStart >= 0) {
+            startIndex = Math.min(startIndex, tempStart);
+          }
+        });
+        if (startIndex < Infinity && startIndex >= 0) {
+          cutSrc = src.substring(0, startIndex + 1);
+        }
+      }
+      if (token = this.tokenizer.inlineText(cutSrc)) {
+        src = src.substring(token.raw.length);
+        if (token.raw.slice(-1) !== "_") {
+          prevChar = token.raw.slice(-1);
+        }
+        keepPrevChar = true;
+        lastToken = tokens[tokens.length - 1];
+        if (lastToken && lastToken.type === "text") {
+          lastToken.raw += token.raw;
+          lastToken.text += token.text;
+        } else {
+          tokens.push(token);
+        }
+        continue;
+      }
+      if (src) {
+        const errMsg = "Infinite loop on byte: " + src.charCodeAt(0);
+        if (this.options.silent) {
+          console.error(errMsg);
+          break;
+        } else {
+          throw new Error(errMsg);
+        }
+      }
+    }
+    return tokens;
+  }
+};
+var _Renderer = class {
+  options;
+  constructor(options2) {
+    this.options = options2 || _defaults;
+  }
+  code(code3, infostring, escaped) {
+    var _a2;
+    const lang = (_a2 = (infostring || "").match(/^\S*/)) == null ? void 0 : _a2[0];
+    code3 = code3.replace(/\n$/, "") + "\n";
+    if (!lang) {
+      return "<pre><code>" + (escaped ? code3 : escape$1(code3, true)) + "</code></pre>\n";
+    }
+    return '<pre><code class="language-' + escape$1(lang) + '">' + (escaped ? code3 : escape$1(code3, true)) + "</code></pre>\n";
+  }
+  blockquote(quote) {
+    return `<blockquote>
+${quote}</blockquote>
+`;
+  }
+  html(html5, block2) {
+    return html5;
+  }
+  heading(text3, level, raw) {
+    return `<h${level}>${text3}</h${level}>
+`;
+  }
+  hr() {
+    return "<hr>\n";
+  }
+  list(body, ordered, start) {
+    const type = ordered ? "ol" : "ul";
+    const startatt = ordered && start !== 1 ? ' start="' + start + '"' : "";
+    return "<" + type + startatt + ">\n" + body + "</" + type + ">\n";
+  }
+  listitem(text3, task, checked) {
+    return `<li>${text3}</li>
+`;
+  }
+  checkbox(checked) {
+    return "<input " + (checked ? 'checked="" ' : "") + 'disabled="" type="checkbox">';
+  }
+  paragraph(text3) {
+    return `<p>${text3}</p>
+`;
+  }
+  table(header, body) {
+    if (body)
+      body = `<tbody>${body}</tbody>`;
+    return "<table>\n<thead>\n" + header + "</thead>\n" + body + "</table>\n";
+  }
+  tablerow(content) {
+    return `<tr>
+${content}</tr>
+`;
+  }
+  tablecell(content, flags) {
+    const type = flags.header ? "th" : "td";
+    const tag2 = flags.align ? `<${type} align="${flags.align}">` : `<${type}>`;
+    return tag2 + content + `</${type}>
+`;
+  }
+  /**
+   * span level renderer
+   */
+  strong(text3) {
+    return `<strong>${text3}</strong>`;
+  }
+  em(text3) {
+    return `<em>${text3}</em>`;
+  }
+  codespan(text3) {
+    return `<code>${text3}</code>`;
+  }
+  br() {
+    return "<br>";
+  }
+  del(text3) {
+    return `<del>${text3}</del>`;
+  }
+  link(href, title, text3) {
+    const cleanHref = cleanUrl(href);
+    if (cleanHref === null) {
+      return text3;
+    }
+    href = cleanHref;
+    let out = '<a href="' + href + '"';
+    if (title) {
+      out += ' title="' + title + '"';
+    }
+    out += ">" + text3 + "</a>";
+    return out;
+  }
+  image(href, title, text3) {
+    const cleanHref = cleanUrl(href);
+    if (cleanHref === null) {
+      return text3;
+    }
+    href = cleanHref;
+    let out = `<img src="${href}" alt="${text3}"`;
+    if (title) {
+      out += ` title="${title}"`;
+    }
+    out += ">";
+    return out;
+  }
+  text(text3) {
+    return text3;
+  }
+};
+var _TextRenderer = class {
+  // no need for block level renderers
+  strong(text3) {
+    return text3;
+  }
+  em(text3) {
+    return text3;
+  }
+  codespan(text3) {
+    return text3;
+  }
+  del(text3) {
+    return text3;
+  }
+  html(text3) {
+    return text3;
+  }
+  text(text3) {
+    return text3;
+  }
+  link(href, title, text3) {
+    return "" + text3;
+  }
+  image(href, title, text3) {
+    return "" + text3;
+  }
+  br() {
+    return "";
+  }
+};
+var _Parser = class __Parser {
+  options;
+  renderer;
+  textRenderer;
+  constructor(options2) {
+    this.options = options2 || _defaults;
+    this.options.renderer = this.options.renderer || new _Renderer();
+    this.renderer = this.options.renderer;
+    this.renderer.options = this.options;
+    this.textRenderer = new _TextRenderer();
+  }
+  /**
+   * Static Parse Method
+   */
+  static parse(tokens, options2) {
+    const parser2 = new __Parser(options2);
+    return parser2.parse(tokens);
+  }
+  /**
+   * Static Parse Inline Method
+   */
+  static parseInline(tokens, options2) {
+    const parser2 = new __Parser(options2);
+    return parser2.parseInline(tokens);
+  }
+  /**
+   * Parse Loop
+   */
+  parse(tokens, top = true) {
+    let out = "";
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+      if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[token.type]) {
+        const genericToken = token;
+        const ret = this.options.extensions.renderers[genericToken.type].call({ parser: this }, genericToken);
+        if (ret !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "html", "paragraph", "text"].includes(genericToken.type)) {
+          out += ret || "";
+          continue;
+        }
+      }
+      switch (token.type) {
+        case "space": {
+          continue;
+        }
+        case "hr": {
+          out += this.renderer.hr();
+          continue;
+        }
+        case "heading": {
+          const headingToken = token;
+          out += this.renderer.heading(this.parseInline(headingToken.tokens), headingToken.depth, unescape(this.parseInline(headingToken.tokens, this.textRenderer)));
+          continue;
+        }
+        case "code": {
+          const codeToken = token;
+          out += this.renderer.code(codeToken.text, codeToken.lang, !!codeToken.escaped);
+          continue;
+        }
+        case "table": {
+          const tableToken = token;
+          let header = "";
+          let cell = "";
+          for (let j = 0; j < tableToken.header.length; j++) {
+            cell += this.renderer.tablecell(this.parseInline(tableToken.header[j].tokens), { header: true, align: tableToken.align[j] });
+          }
+          header += this.renderer.tablerow(cell);
+          let body = "";
+          for (let j = 0; j < tableToken.rows.length; j++) {
+            const row = tableToken.rows[j];
+            cell = "";
+            for (let k = 0; k < row.length; k++) {
+              cell += this.renderer.tablecell(this.parseInline(row[k].tokens), { header: false, align: tableToken.align[k] });
+            }
+            body += this.renderer.tablerow(cell);
+          }
+          out += this.renderer.table(header, body);
+          continue;
+        }
+        case "blockquote": {
+          const blockquoteToken = token;
+          const body = this.parse(blockquoteToken.tokens);
+          out += this.renderer.blockquote(body);
+          continue;
+        }
+        case "list": {
+          const listToken = token;
+          const ordered = listToken.ordered;
+          const start = listToken.start;
+          const loose = listToken.loose;
+          let body = "";
+          for (let j = 0; j < listToken.items.length; j++) {
+            const item = listToken.items[j];
+            const checked = item.checked;
+            const task = item.task;
+            let itemBody = "";
+            if (item.task) {
+              const checkbox = this.renderer.checkbox(!!checked);
+              if (loose) {
+                if (item.tokens.length > 0 && item.tokens[0].type === "paragraph") {
+                  item.tokens[0].text = checkbox + " " + item.tokens[0].text;
+                  if (item.tokens[0].tokens && item.tokens[0].tokens.length > 0 && item.tokens[0].tokens[0].type === "text") {
+                    item.tokens[0].tokens[0].text = checkbox + " " + item.tokens[0].tokens[0].text;
+                  }
+                } else {
+                  item.tokens.unshift({
+                    type: "text",
+                    text: checkbox + " "
+                  });
+                }
+              } else {
+                itemBody += checkbox + " ";
+              }
+            }
+            itemBody += this.parse(item.tokens, loose);
+            body += this.renderer.listitem(itemBody, task, !!checked);
+          }
+          out += this.renderer.list(body, ordered, start);
+          continue;
+        }
+        case "html": {
+          const htmlToken = token;
+          out += this.renderer.html(htmlToken.text, htmlToken.block);
+          continue;
+        }
+        case "paragraph": {
+          const paragraphToken = token;
+          out += this.renderer.paragraph(this.parseInline(paragraphToken.tokens));
+          continue;
+        }
+        case "text": {
+          let textToken = token;
+          let body = textToken.tokens ? this.parseInline(textToken.tokens) : textToken.text;
+          while (i + 1 < tokens.length && tokens[i + 1].type === "text") {
+            textToken = tokens[++i];
+            body += "\n" + (textToken.tokens ? this.parseInline(textToken.tokens) : textToken.text);
+          }
+          out += top ? this.renderer.paragraph(body) : body;
+          continue;
+        }
+        default: {
+          const errMsg = 'Token with "' + token.type + '" type was not found.';
+          if (this.options.silent) {
+            console.error(errMsg);
+            return "";
+          } else {
+            throw new Error(errMsg);
+          }
+        }
+      }
+    }
+    return out;
+  }
+  /**
+   * Parse Inline Tokens
+   */
+  parseInline(tokens, renderer) {
+    renderer = renderer || this.renderer;
+    let out = "";
+    for (let i = 0; i < tokens.length; i++) {
+      const token = tokens[i];
+      if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[token.type]) {
+        const ret = this.options.extensions.renderers[token.type].call({ parser: this }, token);
+        if (ret !== false || !["escape", "html", "link", "image", "strong", "em", "codespan", "br", "del", "text"].includes(token.type)) {
+          out += ret || "";
+          continue;
+        }
+      }
+      switch (token.type) {
+        case "escape": {
+          const escapeToken = token;
+          out += renderer.text(escapeToken.text);
+          break;
+        }
+        case "html": {
+          const tagToken = token;
+          out += renderer.html(tagToken.text);
+          break;
+        }
+        case "link": {
+          const linkToken = token;
+          out += renderer.link(linkToken.href, linkToken.title, this.parseInline(linkToken.tokens, renderer));
+          break;
+        }
+        case "image": {
+          const imageToken = token;
+          out += renderer.image(imageToken.href, imageToken.title, imageToken.text);
+          break;
+        }
+        case "strong": {
+          const strongToken = token;
+          out += renderer.strong(this.parseInline(strongToken.tokens, renderer));
+          break;
+        }
+        case "em": {
+          const emToken = token;
+          out += renderer.em(this.parseInline(emToken.tokens, renderer));
+          break;
+        }
+        case "codespan": {
+          const codespanToken = token;
+          out += renderer.codespan(codespanToken.text);
+          break;
+        }
+        case "br": {
+          out += renderer.br();
+          break;
+        }
+        case "del": {
+          const delToken = token;
+          out += renderer.del(this.parseInline(delToken.tokens, renderer));
+          break;
+        }
+        case "text": {
+          const textToken = token;
+          out += renderer.text(textToken.text);
+          break;
+        }
+        default: {
+          const errMsg = 'Token with "' + token.type + '" type was not found.';
+          if (this.options.silent) {
+            console.error(errMsg);
+            return "";
+          } else {
+            throw new Error(errMsg);
+          }
+        }
+      }
+    }
+    return out;
+  }
+};
+var _Hooks = class {
+  options;
+  constructor(options2) {
+    this.options = options2 || _defaults;
+  }
+  static passThroughHooks = /* @__PURE__ */ new Set([
+    "preprocess",
+    "postprocess",
+    "processAllTokens"
+  ]);
+  /**
+   * Process markdown before marked
+   */
+  preprocess(markdown2) {
+    return markdown2;
+  }
+  /**
+   * Process HTML after marked is finished
+   */
+  postprocess(html5) {
+    return html5;
+  }
+  /**
+   * Process all tokens before walk tokens
+   */
+  processAllTokens(tokens) {
+    return tokens;
+  }
+};
+var Marked = class {
+  defaults = _getDefaults();
+  options = this.setOptions;
+  parse = this.#parseMarkdown(_Lexer.lex, _Parser.parse);
+  parseInline = this.#parseMarkdown(_Lexer.lexInline, _Parser.parseInline);
+  Parser = _Parser;
+  Renderer = _Renderer;
+  TextRenderer = _TextRenderer;
+  Lexer = _Lexer;
+  Tokenizer = _Tokenizer;
+  Hooks = _Hooks;
+  constructor(...args) {
+    this.use(...args);
+  }
+  /**
+   * Run callback for every token
+   */
+  walkTokens(tokens, callback) {
+    var _a2, _b2;
+    let values = [];
+    for (const token of tokens) {
+      values = values.concat(callback.call(this, token));
+      switch (token.type) {
+        case "table": {
+          const tableToken = token;
+          for (const cell of tableToken.header) {
+            values = values.concat(this.walkTokens(cell.tokens, callback));
+          }
+          for (const row of tableToken.rows) {
+            for (const cell of row) {
+              values = values.concat(this.walkTokens(cell.tokens, callback));
+            }
+          }
+          break;
+        }
+        case "list": {
+          const listToken = token;
+          values = values.concat(this.walkTokens(listToken.items, callback));
+          break;
+        }
+        default: {
+          const genericToken = token;
+          if ((_b2 = (_a2 = this.defaults.extensions) == null ? void 0 : _a2.childTokens) == null ? void 0 : _b2[genericToken.type]) {
+            this.defaults.extensions.childTokens[genericToken.type].forEach((childTokens) => {
+              const tokens2 = genericToken[childTokens].flat(Infinity);
+              values = values.concat(this.walkTokens(tokens2, callback));
+            });
+          } else if (genericToken.tokens) {
+            values = values.concat(this.walkTokens(genericToken.tokens, callback));
+          }
+        }
+      }
+    }
+    return values;
+  }
+  use(...args) {
+    const extensions = this.defaults.extensions || { renderers: {}, childTokens: {} };
+    args.forEach((pack) => {
+      const opts = { ...pack };
+      opts.async = this.defaults.async || opts.async || false;
+      if (pack.extensions) {
+        pack.extensions.forEach((ext) => {
+          if (!ext.name) {
+            throw new Error("extension name required");
+          }
+          if ("renderer" in ext) {
+            const prevRenderer = extensions.renderers[ext.name];
+            if (prevRenderer) {
+              extensions.renderers[ext.name] = function(...args2) {
+                let ret = ext.renderer.apply(this, args2);
+                if (ret === false) {
+                  ret = prevRenderer.apply(this, args2);
+                }
+                return ret;
+              };
+            } else {
+              extensions.renderers[ext.name] = ext.renderer;
+            }
+          }
+          if ("tokenizer" in ext) {
+            if (!ext.level || ext.level !== "block" && ext.level !== "inline") {
+              throw new Error("extension level must be 'block' or 'inline'");
+            }
+            const extLevel = extensions[ext.level];
+            if (extLevel) {
+              extLevel.unshift(ext.tokenizer);
+            } else {
+              extensions[ext.level] = [ext.tokenizer];
+            }
+            if (ext.start) {
+              if (ext.level === "block") {
+                if (extensions.startBlock) {
+                  extensions.startBlock.push(ext.start);
+                } else {
+                  extensions.startBlock = [ext.start];
+                }
+              } else if (ext.level === "inline") {
+                if (extensions.startInline) {
+                  extensions.startInline.push(ext.start);
+                } else {
+                  extensions.startInline = [ext.start];
+                }
+              }
+            }
+          }
+          if ("childTokens" in ext && ext.childTokens) {
+            extensions.childTokens[ext.name] = ext.childTokens;
+          }
+        });
+        opts.extensions = extensions;
+      }
+      if (pack.renderer) {
+        const renderer = this.defaults.renderer || new _Renderer(this.defaults);
+        for (const prop in pack.renderer) {
+          if (!(prop in renderer)) {
+            throw new Error(`renderer '${prop}' does not exist`);
+          }
+          if (prop === "options") {
+            continue;
+          }
+          const rendererProp = prop;
+          const rendererFunc = pack.renderer[rendererProp];
+          const prevRenderer = renderer[rendererProp];
+          renderer[rendererProp] = (...args2) => {
+            let ret = rendererFunc.apply(renderer, args2);
+            if (ret === false) {
+              ret = prevRenderer.apply(renderer, args2);
+            }
+            return ret || "";
+          };
+        }
+        opts.renderer = renderer;
+      }
+      if (pack.tokenizer) {
+        const tokenizer = this.defaults.tokenizer || new _Tokenizer(this.defaults);
+        for (const prop in pack.tokenizer) {
+          if (!(prop in tokenizer)) {
+            throw new Error(`tokenizer '${prop}' does not exist`);
+          }
+          if (["options", "rules", "lexer"].includes(prop)) {
+            continue;
+          }
+          const tokenizerProp = prop;
+          const tokenizerFunc = pack.tokenizer[tokenizerProp];
+          const prevTokenizer = tokenizer[tokenizerProp];
+          tokenizer[tokenizerProp] = (...args2) => {
+            let ret = tokenizerFunc.apply(tokenizer, args2);
+            if (ret === false) {
+              ret = prevTokenizer.apply(tokenizer, args2);
+            }
+            return ret;
+          };
+        }
+        opts.tokenizer = tokenizer;
+      }
+      if (pack.hooks) {
+        const hooks = this.defaults.hooks || new _Hooks();
+        for (const prop in pack.hooks) {
+          if (!(prop in hooks)) {
+            throw new Error(`hook '${prop}' does not exist`);
+          }
+          if (prop === "options") {
+            continue;
+          }
+          const hooksProp = prop;
+          const hooksFunc = pack.hooks[hooksProp];
+          const prevHook = hooks[hooksProp];
+          if (_Hooks.passThroughHooks.has(prop)) {
+            hooks[hooksProp] = (arg) => {
+              if (this.defaults.async) {
+                return Promise.resolve(hooksFunc.call(hooks, arg)).then((ret2) => {
+                  return prevHook.call(hooks, ret2);
+                });
+              }
+              const ret = hooksFunc.call(hooks, arg);
+              return prevHook.call(hooks, ret);
+            };
+          } else {
+            hooks[hooksProp] = (...args2) => {
+              let ret = hooksFunc.apply(hooks, args2);
+              if (ret === false) {
+                ret = prevHook.apply(hooks, args2);
+              }
+              return ret;
+            };
+          }
+        }
+        opts.hooks = hooks;
+      }
+      if (pack.walkTokens) {
+        const walkTokens2 = this.defaults.walkTokens;
+        const packWalktokens = pack.walkTokens;
+        opts.walkTokens = function(token) {
+          let values = [];
+          values.push(packWalktokens.call(this, token));
+          if (walkTokens2) {
+            values = values.concat(walkTokens2.call(this, token));
+          }
+          return values;
+        };
+      }
+      this.defaults = { ...this.defaults, ...opts };
+    });
+    return this;
+  }
+  setOptions(opt) {
+    this.defaults = { ...this.defaults, ...opt };
+    return this;
+  }
+  lexer(src, options2) {
+    return _Lexer.lex(src, options2 ?? this.defaults);
+  }
+  parser(tokens, options2) {
+    return _Parser.parse(tokens, options2 ?? this.defaults);
+  }
+  #parseMarkdown(lexer2, parser2) {
+    return (src, options2) => {
+      const origOpt = { ...options2 };
+      const opt = { ...this.defaults, ...origOpt };
+      if (this.defaults.async === true && origOpt.async === false) {
+        if (!opt.silent) {
+          console.warn("marked(): The async option was set to true by an extension. The async: false option sent to parse will be ignored.");
+        }
+        opt.async = true;
+      }
+      const throwError = this.#onError(!!opt.silent, !!opt.async);
+      if (typeof src === "undefined" || src === null) {
+        return throwError(new Error("marked(): input parameter is undefined or null"));
+      }
+      if (typeof src !== "string") {
+        return throwError(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected"));
+      }
+      if (opt.hooks) {
+        opt.hooks.options = opt;
+      }
+      if (opt.async) {
+        return Promise.resolve(opt.hooks ? opt.hooks.preprocess(src) : src).then((src2) => lexer2(src2, opt)).then((tokens) => opt.hooks ? opt.hooks.processAllTokens(tokens) : tokens).then((tokens) => opt.walkTokens ? Promise.all(this.walkTokens(tokens, opt.walkTokens)).then(() => tokens) : tokens).then((tokens) => parser2(tokens, opt)).then((html5) => opt.hooks ? opt.hooks.postprocess(html5) : html5).catch(throwError);
+      }
+      try {
+        if (opt.hooks) {
+          src = opt.hooks.preprocess(src);
+        }
+        let tokens = lexer2(src, opt);
+        if (opt.hooks) {
+          tokens = opt.hooks.processAllTokens(tokens);
+        }
+        if (opt.walkTokens) {
+          this.walkTokens(tokens, opt.walkTokens);
+        }
+        let html5 = parser2(tokens, opt);
+        if (opt.hooks) {
+          html5 = opt.hooks.postprocess(html5);
+        }
+        return html5;
+      } catch (e) {
+        return throwError(e);
+      }
+    };
+  }
+  #onError(silent, async) {
+    return (e) => {
+      e.message += "\nPlease report this to https://github.com/markedjs/marked.";
+      if (silent) {
+        const msg = "<p>An error occurred:</p><pre>" + escape$1(e.message + "", true) + "</pre>";
+        if (async) {
+          return Promise.resolve(msg);
+        }
+        return msg;
+      }
+      if (async) {
+        return Promise.reject(e);
+      }
+      throw e;
+    };
+  }
+};
+var markedInstance = new Marked();
+function marked(src, opt) {
+  return markedInstance.parse(src, opt);
+}
+marked.options = marked.setOptions = function(options2) {
+  markedInstance.setOptions(options2);
+  marked.defaults = markedInstance.defaults;
+  changeDefaults(marked.defaults);
+  return marked;
+};
+marked.getDefaults = _getDefaults;
+marked.defaults = _defaults;
+marked.use = function(...args) {
+  markedInstance.use(...args);
+  marked.defaults = markedInstance.defaults;
+  changeDefaults(marked.defaults);
+  return marked;
+};
+marked.walkTokens = function(tokens, callback) {
+  return markedInstance.walkTokens(tokens, callback);
+};
+marked.parseInline = markedInstance.parseInline;
+marked.Parser = _Parser;
+marked.parser = _Parser.parse;
+marked.Renderer = _Renderer;
+marked.TextRenderer = _TextRenderer;
+marked.Lexer = _Lexer;
+marked.lexer = _Lexer.lex;
+marked.Tokenizer = _Tokenizer;
+marked.Hooks = _Hooks;
+marked.parse = marked;
+var options = marked.options;
+var setOptions = marked.setOptions;
+var use = marked.use;
+var walkTokens = marked.walkTokens;
+var parseInline = marked.parseInline;
+var parser = _Parser.parse;
+var lexer = _Lexer.lex;
+
+// packages/qwik-city/src/buildtime/markdown/markdown-url.ts
+var import_node_path3 = require("node:path");
+
+// packages/qwik-city/src/buildtime/routing/source-file.ts
+function getSourceFile(fileName) {
+  const ext = getExtension(fileName);
+  const extlessName = removeExtension(fileName);
+  const isPageModule = isPageModuleExt(ext);
+  const isModule = isModuleExt(ext);
+  const isMarkdown = isMarkdownExt(ext);
+  let type = null;
+  if ((isIndexModule(extlessName) || isErrorName(extlessName)) && (isPageModule || isModule || isMarkdown)) {
+    type = "route";
+  } else if (isLayoutModule(extlessName) && (isPageModule || isModule)) {
+    type = "layout";
+  } else if (isEntryName(extlessName) && isModule) {
+    type = "entry";
+  } else if (isMenuFileName(fileName)) {
+    type = "menu";
+  } else if (isModule && isServiceWorkerName(extlessName)) {
+    type = "service-worker";
+  }
+  if (type !== null) {
+    const sourceFileName = {
+      type,
+      extlessName,
+      ext
+    };
+    return sourceFileName;
+  }
+  return null;
+}
+
+// packages/qwik-city/src/buildtime/markdown/markdown-url.ts
+var import_node_fs2 = require("node:fs");
+function getMarkdownRelativeUrl(opts, containingFilePath, url, checkFileExists) {
+  if (typeof url !== "string" || !isSameOriginUrl(url)) {
+    return url;
+  }
+  const querySplit = url.split("?");
+  const hashSplit = url.split("#");
+  const strippedUrl = url.split("?")[0].split("#")[0];
+  const extension = getExtension(strippedUrl);
+  if (isMarkdownExt(extension)) {
+    const isAbsolute3 = strippedUrl.startsWith("/");
+    const parts = normalizePath(strippedUrl).split("/").filter((p) => p.length > 0);
+    const filePath = isAbsolute3 ? (0, import_node_path3.join)(opts.routesDir, ...parts) : (0, import_node_path3.join)((0, import_node_path3.dirname)(containingFilePath), ...parts);
+    if (checkFileExists && !(0, import_node_fs2.existsSync)(filePath)) {
+      console.warn(
+        `
+The link "${url}", found within "${containingFilePath}" does not have a matching source file.
+`
+      );
+    }
+    const fileName = (0, import_node_path3.basename)(filePath);
+    const sourceFileName = getSourceFile(fileName);
+    if (sourceFileName) {
+      const mdDirPath = (0, import_node_path3.dirname)(filePath);
+      let pathname = getPathnameFromDirPath(opts, mdDirPath);
+      if (querySplit.length > 1) {
+        pathname += "?" + querySplit[1];
+      } else if (hashSplit.length > 1) {
+        pathname += "#" + hashSplit[1];
+      }
+      return pathname;
+    }
+  } else if (extension === "") {
+    if (url.endsWith("/")) {
+      if (!opts.trailingSlash) {
+        url = url.slice(0, -1);
+      }
+    } else if (opts.trailingSlash) {
+      url += "/";
+    }
+  }
+  return url;
+}
+
+// packages/qwik-city/src/buildtime/markdown/menu.ts
+function createMenu(opts, filePath) {
+  const menu = {
+    pathname: getMenuPathname(opts, filePath),
+    filePath
+  };
+  return menu;
+}
+function resolveMenu(opts, menuSourceFile) {
+  return createMenu(opts, menuSourceFile.filePath);
+}
+async function transformMenu(opts, filePath, content) {
+  const parsedMenu = parseMenu(opts, filePath, content);
+  const id = createFileId(opts.routesDir, filePath);
+  const code3 = `const ${id} = ${JSON.stringify(parsedMenu, null, 2)};`;
+  return `${code3} export default ${id}`;
+}
+function parseMenu(opts, filePath, content, checkFileExists = true) {
+  const tokens = marked.lexer(content, {});
+  let currentDepth = 0;
+  const stack = [];
+  for (const t of tokens) {
+    if (t.type === "heading") {
+      const diff2 = currentDepth - t.depth;
+      if (diff2 >= 0) {
+        stack.length -= diff2 + 1;
+      }
+      if (diff2 < -1) {
+        throw new Error(
+          `Menu hierarchy skipped a level, went from <h${"#".repeat(
+            currentDepth
+          )}> to <h${"#".repeat(t.depth)}>, in menu: ${filePath}`
+        );
+      }
+      currentDepth = t.depth;
+      const parentNode = stack[stack.length - 1];
+      for (const h2Token of t.tokens || []) {
+        const lastNode = {
+          text: ""
+        };
+        if (h2Token.type === "text") {
+          lastNode.text = h2Token.text;
+        } else if (h2Token.type === "link") {
+          lastNode.text = h2Token.text;
+          lastNode.href = getMarkdownRelativeUrl(opts, filePath, h2Token.href, checkFileExists);
+        } else {
+          throw new Error(
+            `Headings can only be a text or link. Received "${h2Token.type}", value "${h2Token.raw}", in menu: ${filePath}`
+          );
+        }
+        if (parentNode) {
+          parentNode.items = parentNode.items || [];
+          parentNode.items.push(lastNode);
+        }
+        stack.push(lastNode);
+      }
+    } else if (t.type === "list") {
+      const parentNode = stack[stack.length - 1];
+      parentNode.items = parentNode.items || [];
+      for (const li of t.items) {
+        if (li.type === "list_item") {
+          for (const liToken of li.tokens) {
+            if (liToken.type === "text") {
+              for (const liItem of liToken.tokens) {
+                if (liItem.type === "text") {
+                  parentNode.items.push({ text: liItem.text });
+                } else if (liItem.type === "link") {
+                  parentNode.items.push({
+                    text: liItem.text,
+                    href: getMarkdownRelativeUrl(opts, filePath, liItem.href, checkFileExists)
+                  });
+                } else {
+                  throw new Error(
+                    `List items can only be a text or link. Received "${liItem.type}", value "${liItem.raw}", in menu: ${filePath}`
+                  );
+                }
+              }
+            } else if (liToken.type === "link") {
+              parentNode.items.push({
+                text: liToken.text,
+                href: getMarkdownRelativeUrl(opts, filePath, liToken.href, checkFileExists)
+              });
+            } else {
+              throw new Error(
+                `List items can only be a text or link. Received "${liToken.type}", value "${liToken.raw}", in menu: ${filePath}`
+              );
+            }
+          }
+        } else {
+          throw new Error(
+            `Only list items can be used in lists. Received "${li.type}", value "${li.raw}", in menu: ${filePath}`
+          );
+        }
+      }
+    } else if (t.type === "space") {
+      continue;
+    } else {
+      throw new Error(
+        `Menu has a "${t.type}" with the value "${t.raw}". However, only headings and lists can be used in the menu: ${filePath}`
+      );
+    }
+  }
+  if (stack.length === 0) {
+    throw new Error(`Menu must start with an h1 in the index: ${filePath}`);
+  }
+  return stack[0];
+}
+
+// packages/qwik-city/src/buildtime/routing/parse-pathname.ts
+function parseRoutePathname(basePathname, pathname) {
+  if (pathname === basePathname) {
+    return {
+      pattern: new RegExp("^" + pathname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$"),
+      routeName: pathname,
+      paramNames: [],
+      segments: [[{ content: "", dynamic: false, rest: false }]]
+    };
+  }
+  pathname = pathname.slice(1);
+  const segments = pathname.split("/");
+  const paramNames = [];
+  const pattern = new RegExp(
+    `^${segments.filter((segment) => segment.length > 0).map((s2) => {
+      const segment = decodeURI(s2);
+      const catchAll = /^\[\.\.\.(\w+)?\]$/.exec(segment);
+      if (catchAll) {
+        paramNames.push(catchAll[1]);
+        return "(?:/(.*))?";
+      }
+      return "/" + segment.split(DYNAMIC_SEGMENT).map((content, i) => {
+        if (i % 2) {
+          const rg = PARAM_PATTERN.exec(content);
+          if (rg) {
+            const [, rest, name] = rg;
+            paramNames.push(name);
+            return rest ? "(.*?)" : "([^/]+?)";
+          }
+        }
+        return encodeURI(content).normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }).join("");
+    }).join("")}/?$`
+    // always match with and without a trailing slash
+  );
+  return {
+    pattern,
+    routeName: pathname,
+    paramNames,
+    segments: segments.map((segment) => {
+      const parts = [];
+      segment.split(/\[(.+?)\]/).map((content, i) => {
+        if (content) {
+          const dynamic = !!(i % 2);
+          parts.push({
+            content,
+            dynamic,
+            rest: dynamic && content.startsWith("...")
+          });
+        }
+      });
+      return parts;
+    })
+  };
+}
+var PARAM_PATTERN = /^(\.\.\.)?(\w+)?$/;
+var DYNAMIC_SEGMENT = /\[(.+?)\]/;
+
+// packages/qwik-city/src/buildtime/routing/sort-routes.ts
+function routeSortCompare(a, b) {
+  const maxSegments = Math.max(a.segments.length, b.segments.length);
+  for (let i = 0; i < maxSegments; i += 1) {
+    const sa = a.segments[i];
+    const sb = b.segments[i];
+    if (!sa) {
+      return a.pathname.includes("[...") ? 1 : -1;
+    }
+    if (!sb) {
+      return b.pathname.includes("[...") ? -1 : 1;
+    }
+    const maxParts = Math.max(sa.length, sb.length);
+    for (let i2 = 0; i2 < maxParts; i2 += 1) {
+      const pa = sa[i2];
+      const pb = sb[i2];
+      if (pa === void 0) {
+        return pb.dynamic ? -1 : 1;
+      }
+      if (pb === void 0) {
+        return pa.dynamic ? 1 : -1;
+      }
+      if (pa.dynamic !== pb.dynamic) {
+        return pa.dynamic ? 1 : -1;
+      }
+      if (pa.dynamic) {
+        if (pa.rest !== pb.rest) {
+          return pa.rest ? 1 : -1;
+        }
+      }
+    }
+  }
+  if (a.pathname === b.pathname) {
+    return a.ext > b.ext ? -1 : 1;
+  }
+  return a.pathname < b.pathname ? -1 : 1;
+}
+
+// packages/qwik-city/src/buildtime/routing/resolve-source-file.ts
+function resolveSourceFiles(opts, sourceFiles) {
+  const layouts = sourceFiles.filter((s2) => s2.type === "layout").map((s2) => resolveLayout(opts, s2)).sort((a, b) => {
+    return a.id < b.id ? -1 : 1;
+  });
+  const routes = sourceFiles.filter((s2) => s2.type === "route").map((s2) => resolveRoute(opts, layouts, s2)).sort(routeSortCompare);
+  const entries = sourceFiles.filter((s2) => s2.type === "entry").map((s2) => resolveEntry(opts, s2)).sort((a, b) => {
+    return a.chunkFileName < b.chunkFileName ? -1 : 1;
+  });
+  const serviceWorkers = sourceFiles.filter((s2) => s2.type === "service-worker").map((p) => resolveServiceWorkerEntry(opts, p)).sort((a, b) => {
+    return a.chunkFileName < b.chunkFileName ? -1 : 1;
+  });
+  const menus = sourceFiles.filter((s2) => s2.type === "menu").map((p) => resolveMenu(opts, p)).sort((a, b) => {
+    return a.pathname < b.pathname ? -1 : 1;
+  });
+  let inc = 0;
+  const ids = /* @__PURE__ */ new Set();
+  const uniqueIds = (b) => {
+    for (const r2 of b) {
+      let id = r2.id;
+      while (ids.has(id)) {
+        id = `${r2.id}_${inc++}`;
+      }
+      r2.id = id;
+      ids.add(id);
+    }
+  };
+  uniqueIds(layouts);
+  uniqueIds(routes);
+  uniqueIds(entries);
+  uniqueIds(serviceWorkers);
+  return { layouts, routes, entries, menus, serviceWorkers };
+}
+function resolveLayout(opts, layoutSourceFile) {
+  let extlessName = layoutSourceFile.extlessName;
+  const filePath = layoutSourceFile.filePath;
+  const dirPath = layoutSourceFile.dirPath;
+  let layoutName;
+  let layoutType;
+  if (extlessName.endsWith(LAYOUT_TOP_SUFFIX)) {
+    layoutType = "top";
+    extlessName = extlessName.slice(0, extlessName.length - 1);
+  } else {
+    layoutType = "nested";
+  }
+  if (extlessName.startsWith(LAYOUT_NAMED_PREFIX)) {
+    layoutName = extlessName.slice(LAYOUT_NAMED_PREFIX.length);
+  } else {
+    layoutName = "";
+  }
+  const layout = {
+    id: createFileId(opts.routesDir, filePath),
+    filePath,
+    dirPath,
+    layoutType,
+    layoutName
+  };
+  return layout;
+}
+var LAYOUT_ID = "layout";
+var LAYOUT_NAMED_PREFIX = LAYOUT_ID + "-";
+var LAYOUT_TOP_SUFFIX = "!";
+function resolveRoute(opts, appLayouts, sourceFile) {
+  const filePath = sourceFile.filePath;
+  const layouts = [];
+  const routesDir = opts.routesDir;
+  const { layoutName, layoutStop } = parseRouteIndexName(sourceFile.extlessName);
+  let pathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
+  if (sourceFile.extlessName === "404") {
+    pathname += sourceFile.extlessName + ".html";
+  }
+  if (!layoutStop) {
+    let currentDir = normalizePath((0, import_node_path4.dirname)(filePath));
+    let hasFoundNamedLayout = false;
+    const hasNamedLayout = layoutName !== "";
+    for (let i = 0; i < 20; i++) {
+      let layout = void 0;
+      if (hasNamedLayout && !hasFoundNamedLayout) {
+        layout = appLayouts.find((l) => l.dirPath === currentDir && l.layoutName === layoutName);
+        if (layout) {
+          hasFoundNamedLayout = true;
+        }
+      } else {
+        layout = appLayouts.find((l) => l.dirPath === currentDir && l.layoutName === "");
+      }
+      if (layout) {
+        layouts.push(layout);
+        if (layout.layoutType === "top") {
+          break;
+        }
+      }
+      if (currentDir === routesDir) {
+        break;
+      }
+      currentDir = normalizePath((0, import_node_path4.dirname)(currentDir));
+    }
+  }
+  const buildRoute = {
+    id: createFileId(opts.routesDir, filePath, "Route"),
+    filePath,
+    pathname,
+    layouts: layouts.reverse(),
+    ext: sourceFile.ext,
+    ...parseRoutePathname(opts.basePathname, pathname)
+  };
+  return buildRoute;
+}
+function resolveEntry(opts, sourceFile) {
+  const pathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
+  const chunkFileName = pathname.slice(opts.basePathname.length);
+  const buildEntry = {
+    id: createFileId(opts.routesDir, sourceFile.filePath, "Route"),
+    filePath: sourceFile.filePath,
+    chunkFileName,
+    ...parseRoutePathname(opts.basePathname, pathname)
+  };
+  return buildEntry;
+}
+function resolveServiceWorkerEntry(opts, sourceFile) {
+  const dirPathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
+  const pathname = dirPathname + sourceFile.extlessName + ".js";
+  const chunkFileName = pathname.slice(opts.basePathname.length);
+  const buildEntry = {
+    id: createFileId(opts.routesDir, sourceFile.filePath, "ServiceWorker"),
+    filePath: sourceFile.filePath,
+    chunkFileName,
+    ...parseRoutePathname(opts.basePathname, pathname)
+  };
+  return buildEntry;
+}
+
+// packages/qwik-city/src/buildtime/routing/walk-routes-dir.ts
+var import_node_fs3 = __toESM(require("node:fs"), 1);
+var import_node_path5 = require("node:path");
+async function walkRoutes(routesDir) {
+  const sourceFiles = [];
+  await walkRouteDir(sourceFiles, normalizePath(routesDir), (0, import_node_path5.basename)(routesDir));
+  return sourceFiles;
+}
+async function walkRouteDir(sourceFiles, dirPath, dirName) {
+  const dirItemNames = await import_node_fs3.default.promises.readdir(dirPath);
+  await Promise.all(
+    dirItemNames.map(async (itemName) => {
+      const itemPath = normalizePath((0, import_node_path5.join)(dirPath, itemName));
+      const stat = await import_node_fs3.default.promises.stat(itemPath);
+      if (stat.isDirectory()) {
+        await walkRouteDir(sourceFiles, itemPath, itemName);
+      } else {
+        const sourceFileName = getSourceFile(itemName);
+        if (sourceFileName !== null) {
+          sourceFiles.push({
+            ...sourceFileName,
+            fileName: itemName,
+            filePath: itemPath,
+            dirName,
+            dirPath
+          });
+        }
+      }
+    })
+  );
+}
+
+// packages/qwik-city/src/buildtime/routing/walk-server-plugins.ts
+var import_node_fs4 = __toESM(require("node:fs"), 1);
+var import_node_path6 = require("node:path");
+async function walkServerPlugins(opts) {
+  const dirPath = opts.serverPluginsDir;
+  const dirItemNames = await import_node_fs4.default.promises.readdir(dirPath);
+  const sourceFiles = [];
+  await Promise.all(
+    dirItemNames.map(async (itemName) => {
+      const itemPath = normalizePath((0, import_node_path6.join)(dirPath, itemName));
+      const ext = getExtension(itemName);
+      const extlessName = removeExtension(itemName);
+      if ((isModuleExt(ext) || isPageModuleExt(ext)) && isPluginModule(extlessName)) {
+        sourceFiles.push({
+          id: createFileId(opts.serverPluginsDir, itemPath, "Plugin"),
+          filePath: itemPath,
+          ext
+        });
+      }
+    })
+  );
+  return sourceFiles;
+}
+
+// packages/qwik-city/src/buildtime/build.ts
+async function build(ctx) {
+  try {
+    await updateBuildContext(ctx);
+    validateBuild(ctx);
+  } catch (e) {
+    addError(ctx, e);
+  }
+  for (const d of ctx.diagnostics) {
+    if (d.type === "error") {
+      throw new Error(d.message);
+    } else {
+      console.warn(d.message);
+    }
+  }
+}
+async function updateBuildContext(ctx) {
+  if (!ctx.activeBuild) {
+    ctx.activeBuild = new Promise((resolve4, reject) => {
+      walkServerPlugins(ctx.opts).then((serverPlugins) => {
+        ctx.serverPlugins = serverPlugins;
+        return walkRoutes(ctx.opts.routesDir);
+      }).then((sourceFiles) => {
+        const resolved = resolveSourceFiles(ctx.opts, sourceFiles);
+        rewriteRoutes(ctx, resolved);
+        ctx.layouts = resolved.layouts;
+        ctx.routes = resolved.routes;
+        ctx.entries = resolved.entries;
+        ctx.serviceWorkers = resolved.serviceWorkers;
+        ctx.menus = resolved.menus;
+        resolve4();
+      }, reject).finally(() => {
+        ctx.activeBuild = null;
+      });
+    });
+  }
+  return ctx.activeBuild;
+}
+function rewriteRoutes(ctx, resolvedFiles) {
+  if (!ctx.opts.rewriteRoutes || !resolvedFiles.routes) {
+    return;
+  }
+  const translatedRoutes = [];
+  let segmentsToTranslate = ctx.opts.rewriteRoutes.flatMap((rewriteConfig) => {
+    return Object.keys(rewriteConfig.paths || {});
+  });
+  segmentsToTranslate = Array.from(new Set(segmentsToTranslate));
+  resolvedFiles.routes.forEach((route) => {
+    translatedRoutes.push(route);
+    const currentRouteSegments = route.pathname.split("/");
+    const foundSegmentToTranslate = currentRouteSegments.some(
+      (segment) => segmentsToTranslate.includes(segment)
+    );
+    if (foundSegmentToTranslate || route.pathname === "/") {
+      ctx.opts.rewriteRoutes.forEach((config, configIndex) => {
+        if (route.pathname === "/" && !config.prefix) {
+          return;
+        }
+        const routeToPush = translateRoute(route, config, configIndex);
+        translatedRoutes.push(routeToPush);
+      });
+    }
+  });
+  resolvedFiles.routes = translatedRoutes;
+}
+function translateRoute(route, config, configIndex) {
+  var _a2;
+  const replacePath = (part) => (config.paths || {})[part] ?? part;
+  const pathnamePrefix = config.prefix ? "/" + config.prefix : "";
+  const routeNamePrefix = config.prefix ? config.prefix + "/" : "";
+  const idSuffix = (_a2 = config.prefix) == null ? void 0 : _a2.toUpperCase().replace(/-/g, "");
+  const patternInfix = config.prefix ? [config.prefix] : [];
+  const splittedPathName = route.pathname.split("/");
+  const translatedPathParts = splittedPathName.map(replacePath);
+  const splittedRouteName = route.routeName.split("/");
+  const translatedRouteParts = splittedRouteName.map(replacePath);
+  const splittedPattern = route.pattern.toString().split("\\/");
+  const [translatedPatternFirst, ...translatedPatternOthers] = splittedPattern.map(replacePath);
+  const translatedPatternParts = [
+    translatedPatternFirst,
+    ...patternInfix,
+    ...translatedPatternOthers
+  ];
+  const translatedPatternString = translatedPatternParts.join("\\/");
+  const translatedRegExp = translatedPatternString.substring(
+    1,
+    route.pathname === "/" ? translatedPatternString.length - 1 : translatedPatternString.length - 2
+  );
+  const translatedSegments = route.segments.map(
+    (segment) => segment.map((item) => ({ ...item, content: replacePath(item.content) }))
+  );
+  if (config.prefix) {
+    translatedSegments.splice(0, 0, [
+      {
+        content: config.prefix,
+        dynamic: false,
+        rest: false
+      }
+    ]);
+  }
+  const translatedPath = translatedPathParts.join("/");
+  const translatedRoute = translatedRouteParts.join("/");
+  const routeToPush = {
+    ...route,
+    id: route.id + (idSuffix || configIndex),
+    pathname: pathnamePrefix + translatedPath,
+    routeName: routeNamePrefix + (translatedRoute !== "/" ? translatedRoute : ""),
+    pattern: new RegExp(translatedRegExp),
+    segments: translatedSegments
+  };
+  return routeToPush;
+}
+function validateBuild(ctx) {
+  const pathnames = Array.from(new Set(ctx.routes.map((r2) => r2.pathname))).sort();
+  for (const pathname of pathnames) {
+    const foundRoutes = ctx.routes.filter((r2) => r2.pathname === pathname);
+    if (foundRoutes.length > 1) {
+      addError(
+        ctx,
+        `More than one route has been found for pathname "${pathname}". Please narrow it down to only one of these:
+${foundRoutes.map((r2) => `  - ${r2.filePath}`).join("\n")}`
+      );
+    }
+  }
+  ctx.layouts.filter((l) => l.layoutType === "top").forEach((l) => {
+    addWarning(
+      ctx,
+      `The "top" layout feature, which is used by "${l.filePath}" has been deprecated and will be removed from future versions. In most cases the "group" layout feature can be used in its place: https://qwik.dev/qwikcity/layout/grouped/`
+    );
+  });
+}
+
+// packages/qwik-city/src/buildtime/context.ts
+var import_node_path7 = require("node:path");
+function createBuildContext(rootDir, viteBasePath, userOpts, target) {
+  const ctx = {
+    rootDir: normalizePath(rootDir),
+    opts: normalizeOptions(rootDir, viteBasePath, userOpts),
+    routes: [],
+    serverPlugins: [],
+    layouts: [],
+    entries: [],
+    serviceWorkers: [],
+    menus: [],
+    diagnostics: [],
+    frontmatter: /* @__PURE__ */ new Map(),
+    target: target || "ssr",
+    isDevServer: false,
+    isDevServerClientOnly: false,
+    isDirty: true,
+    activeBuild: null
+  };
+  return ctx;
+}
+function resetBuildContext(ctx) {
+  if (ctx) {
+    ctx.routes.length = 0;
+    ctx.layouts.length = 0;
+    ctx.entries.length = 0;
+    ctx.menus.length = 0;
+    ctx.diagnostics.length = 0;
+    ctx.frontmatter.clear();
+    ctx.isDirty = true;
+  }
+}
+function normalizeOptions(rootDir, viteBasePath, userOpts) {
+  if (!(viteBasePath.startsWith("/") && viteBasePath.endsWith("/"))) {
+    console.error(
+      `warning: vite's config.base must begin and end with /. This will be an error in v2. If you have a valid use case, please open an issue.`
+    );
+    if (!viteBasePath.endsWith("/")) {
+      viteBasePath += "/";
+    }
+  }
+  const opts = { ...userOpts };
+  if (typeof opts.routesDir !== "string") {
+    opts.routesDir = (0, import_node_path7.resolve)(rootDir, "src", "routes");
+  } else if (!(0, import_node_path7.isAbsolute)(opts.routesDir)) {
+    opts.routesDir = (0, import_node_path7.resolve)(rootDir, opts.routesDir);
+  }
+  opts.routesDir = normalizePath(opts.routesDir);
+  if (typeof opts.serverPluginsDir !== "string") {
+    opts.serverPluginsDir = opts.routesDir;
+  } else if (!(0, import_node_path7.isAbsolute)(opts.serverPluginsDir)) {
+    opts.serverPluginsDir = (0, import_node_path7.resolve)(rootDir, opts.serverPluginsDir);
+  }
+  opts.serverPluginsDir = normalizePath(opts.serverPluginsDir);
+  if (typeof opts.baseUrl === "string") {
+    opts.basePathname = opts.baseUrl;
+  }
+  if (typeof opts.basePathname !== "string") {
+    opts.basePathname = viteBasePath;
+  }
+  if (!opts.basePathname.endsWith("/")) {
+    console.error(
+      `Warning: qwik-city plugin basePathname must end with /. This will be an error in v2`
+    );
+    opts.basePathname += "/";
+  }
+  const url = new URL(opts.basePathname, "https://qwik.dev/");
+  opts.basePathname = url.pathname;
+  if (typeof opts.trailingSlash !== "boolean") {
+    opts.trailingSlash = true;
+  }
+  opts.mdx = opts.mdx || {};
+  opts.platform = opts.platform || {};
+  return opts;
+}
+
 // packages/qwik-city/src/buildtime/markdown/mdx.ts
 var import_source_map = require("source-map");
+
+// packages/qwik-city/src/buildtime/markdown/frontmatter.ts
+init_unist_util_visit();
+var import_yaml = __toESM(require_dist(), 1);
+function parseFrontmatter(ctx) {
+  return (mdast, vfile) => {
+    const attrs = {};
+    visit(mdast, "yaml", (node2) => {
+      const parsedAttrs = parseFrontmatterAttrs(node2.value);
+      for (const k in parsedAttrs) {
+        attrs[k] = parsedAttrs[k];
+      }
+    });
+    if (Object.keys(attrs).length > 0) {
+      ctx.frontmatter.set(normalizePath(vfile.path), attrs);
+    }
+  };
+}
+function parseFrontmatterAttrs(yaml2) {
+  if (typeof yaml2 === "string") {
+    yaml2 = yaml2.trim();
+    if (yaml2 !== "") {
+      return (0, import_yaml.parse)(yaml2);
+    }
+  }
+  return null;
+}
+var metaNames = {
+  author: true,
+  creator: true,
+  "color-scheme": true,
+  description: true,
+  generator: true,
+  keywords: true,
+  publisher: true,
+  referrer: true,
+  robots: true,
+  "theme-color": true,
+  viewport: true
+};
+function frontmatterAttrsToDocumentHead(attrs) {
+  var _a2;
+  if (attrs != null && typeof attrs === "object") {
+    const attrNames = Object.keys(attrs);
+    if (attrNames.length > 0) {
+      const head = {
+        title: "",
+        meta: [],
+        styles: [],
+        links: [],
+        scripts: [],
+        frontmatter: {}
+      };
+      for (const attrName of attrNames) {
+        const attrValue = attrs[attrName];
+        if (attrValue != null) {
+          if (attrName === "title") {
+            head.title = attrValue.toString();
+            head.title = head.title.replace(/\\@/g, "@");
+          } else if (attrName === "og" || attrName === "opengraph") {
+            if (typeof attrValue === "object") {
+              for (const opengraph of Array.isArray(attrValue) ? attrValue : [attrValue]) {
+                if (opengraph != null && typeof opengraph === "object" && !Array.isArray(opengraph)) {
+                  for (const [property, content] of Object.entries(opengraph)) {
+                    if ((property === "title" || property === "description") && content === true) {
+                      if (attrNames.includes(property)) {
+                        head.meta.push({
+                          property: `og:${property}`,
+                          content: (_a2 = attrs[property]) == null ? void 0 : _a2.toString()
+                        });
+                      }
+                    } else {
+                      head.meta.push({
+                        property: `og:${property}`,
+                        content: content == null ? void 0 : content.toString()
+                      });
+                    }
+                  }
+                }
+              }
+            }
+          } else if (metaNames[attrName]) {
+            head.meta.push({
+              name: attrName,
+              content: attrValue.toString()
+            });
+          } else {
+            head.frontmatter[attrName] = attrValue;
+          }
+        }
+      }
+      return head;
+    }
+  }
+  return null;
+}
 
 // node_modules/.pnpm/github-slugger@2.0.0/node_modules/github-slugger/regex.js
 var regex = /[\0-\x1F!-,\.\/:-@\[-\^`\{-\xA9\xAB-\xB4\xB6-\xB9\xBB-\xBF\xD7\xF7\u02C2-\u02C5\u02D2-\u02DF\u02E5-\u02EB\u02ED\u02EF-\u02FF\u0375\u0378\u0379\u037E\u0380-\u0385\u0387\u038B\u038D\u03A2\u03F6\u0482\u0530\u0557\u0558\u055A-\u055F\u0589-\u0590\u05BE\u05C0\u05C3\u05C6\u05C8-\u05CF\u05EB-\u05EE\u05F3-\u060F\u061B-\u061F\u066A-\u066D\u06D4\u06DD\u06DE\u06E9\u06FD\u06FE\u0700-\u070F\u074B\u074C\u07B2-\u07BF\u07F6-\u07F9\u07FB\u07FC\u07FE\u07FF\u082E-\u083F\u085C-\u085F\u086B-\u089F\u08B5\u08C8-\u08D2\u08E2\u0964\u0965\u0970\u0984\u098D\u098E\u0991\u0992\u09A9\u09B1\u09B3-\u09B5\u09BA\u09BB\u09C5\u09C6\u09C9\u09CA\u09CF-\u09D6\u09D8-\u09DB\u09DE\u09E4\u09E5\u09F2-\u09FB\u09FD\u09FF\u0A00\u0A04\u0A0B-\u0A0E\u0A11\u0A12\u0A29\u0A31\u0A34\u0A37\u0A3A\u0A3B\u0A3D\u0A43-\u0A46\u0A49\u0A4A\u0A4E-\u0A50\u0A52-\u0A58\u0A5D\u0A5F-\u0A65\u0A76-\u0A80\u0A84\u0A8E\u0A92\u0AA9\u0AB1\u0AB4\u0ABA\u0ABB\u0AC6\u0ACA\u0ACE\u0ACF\u0AD1-\u0ADF\u0AE4\u0AE5\u0AF0-\u0AF8\u0B00\u0B04\u0B0D\u0B0E\u0B11\u0B12\u0B29\u0B31\u0B34\u0B3A\u0B3B\u0B45\u0B46\u0B49\u0B4A\u0B4E-\u0B54\u0B58-\u0B5B\u0B5E\u0B64\u0B65\u0B70\u0B72-\u0B81\u0B84\u0B8B-\u0B8D\u0B91\u0B96-\u0B98\u0B9B\u0B9D\u0BA0-\u0BA2\u0BA5-\u0BA7\u0BAB-\u0BAD\u0BBA-\u0BBD\u0BC3-\u0BC5\u0BC9\u0BCE\u0BCF\u0BD1-\u0BD6\u0BD8-\u0BE5\u0BF0-\u0BFF\u0C0D\u0C11\u0C29\u0C3A-\u0C3C\u0C45\u0C49\u0C4E-\u0C54\u0C57\u0C5B-\u0C5F\u0C64\u0C65\u0C70-\u0C7F\u0C84\u0C8D\u0C91\u0CA9\u0CB4\u0CBA\u0CBB\u0CC5\u0CC9\u0CCE-\u0CD4\u0CD7-\u0CDD\u0CDF\u0CE4\u0CE5\u0CF0\u0CF3-\u0CFF\u0D0D\u0D11\u0D45\u0D49\u0D4F-\u0D53\u0D58-\u0D5E\u0D64\u0D65\u0D70-\u0D79\u0D80\u0D84\u0D97-\u0D99\u0DB2\u0DBC\u0DBE\u0DBF\u0DC7-\u0DC9\u0DCB-\u0DCE\u0DD5\u0DD7\u0DE0-\u0DE5\u0DF0\u0DF1\u0DF4-\u0E00\u0E3B-\u0E3F\u0E4F\u0E5A-\u0E80\u0E83\u0E85\u0E8B\u0EA4\u0EA6\u0EBE\u0EBF\u0EC5\u0EC7\u0ECE\u0ECF\u0EDA\u0EDB\u0EE0-\u0EFF\u0F01-\u0F17\u0F1A-\u0F1F\u0F2A-\u0F34\u0F36\u0F38\u0F3A-\u0F3D\u0F48\u0F6D-\u0F70\u0F85\u0F98\u0FBD-\u0FC5\u0FC7-\u0FFF\u104A-\u104F\u109E\u109F\u10C6\u10C8-\u10CC\u10CE\u10CF\u10FB\u1249\u124E\u124F\u1257\u1259\u125E\u125F\u1289\u128E\u128F\u12B1\u12B6\u12B7\u12BF\u12C1\u12C6\u12C7\u12D7\u1311\u1316\u1317\u135B\u135C\u1360-\u137F\u1390-\u139F\u13F6\u13F7\u13FE-\u1400\u166D\u166E\u1680\u169B-\u169F\u16EB-\u16ED\u16F9-\u16FF\u170D\u1715-\u171F\u1735-\u173F\u1754-\u175F\u176D\u1771\u1774-\u177F\u17D4-\u17D6\u17D8-\u17DB\u17DE\u17DF\u17EA-\u180A\u180E\u180F\u181A-\u181F\u1879-\u187F\u18AB-\u18AF\u18F6-\u18FF\u191F\u192C-\u192F\u193C-\u1945\u196E\u196F\u1975-\u197F\u19AC-\u19AF\u19CA-\u19CF\u19DA-\u19FF\u1A1C-\u1A1F\u1A5F\u1A7D\u1A7E\u1A8A-\u1A8F\u1A9A-\u1AA6\u1AA8-\u1AAF\u1AC1-\u1AFF\u1B4C-\u1B4F\u1B5A-\u1B6A\u1B74-\u1B7F\u1BF4-\u1BFF\u1C38-\u1C3F\u1C4A-\u1C4C\u1C7E\u1C7F\u1C89-\u1C8F\u1CBB\u1CBC\u1CC0-\u1CCF\u1CD3\u1CFB-\u1CFF\u1DFA\u1F16\u1F17\u1F1E\u1F1F\u1F46\u1F47\u1F4E\u1F4F\u1F58\u1F5A\u1F5C\u1F5E\u1F7E\u1F7F\u1FB5\u1FBD\u1FBF-\u1FC1\u1FC5\u1FCD-\u1FCF\u1FD4\u1FD5\u1FDC-\u1FDF\u1FED-\u1FF1\u1FF5\u1FFD-\u203E\u2041-\u2053\u2055-\u2070\u2072-\u207E\u2080-\u208F\u209D-\u20CF\u20F1-\u2101\u2103-\u2106\u2108\u2109\u2114\u2116-\u2118\u211E-\u2123\u2125\u2127\u2129\u212E\u213A\u213B\u2140-\u2144\u214A-\u214D\u214F-\u215F\u2189-\u24B5\u24EA-\u2BFF\u2C2F\u2C5F\u2CE5-\u2CEA\u2CF4-\u2CFF\u2D26\u2D28-\u2D2C\u2D2E\u2D2F\u2D68-\u2D6E\u2D70-\u2D7E\u2D97-\u2D9F\u2DA7\u2DAF\u2DB7\u2DBF\u2DC7\u2DCF\u2DD7\u2DDF\u2E00-\u2E2E\u2E30-\u3004\u3008-\u3020\u3030\u3036\u3037\u303D-\u3040\u3097\u3098\u309B\u309C\u30A0\u30FB\u3100-\u3104\u3130\u318F-\u319F\u31C0-\u31EF\u3200-\u33FF\u4DC0-\u4DFF\u9FFD-\u9FFF\uA48D-\uA4CF\uA4FE\uA4FF\uA60D-\uA60F\uA62C-\uA63F\uA673\uA67E\uA6F2-\uA716\uA720\uA721\uA789\uA78A\uA7C0\uA7C1\uA7CB-\uA7F4\uA828-\uA82B\uA82D-\uA83F\uA874-\uA87F\uA8C6-\uA8CF\uA8DA-\uA8DF\uA8F8-\uA8FA\uA8FC\uA92E\uA92F\uA954-\uA95F\uA97D-\uA97F\uA9C1-\uA9CE\uA9DA-\uA9DF\uA9FF\uAA37-\uAA3F\uAA4E\uAA4F\uAA5A-\uAA5F\uAA77-\uAA79\uAAC3-\uAADA\uAADE\uAADF\uAAF0\uAAF1\uAAF7-\uAB00\uAB07\uAB08\uAB0F\uAB10\uAB17-\uAB1F\uAB27\uAB2F\uAB5B\uAB6A-\uAB6F\uABEB\uABEE\uABEF\uABFA-\uABFF\uD7A4-\uD7AF\uD7C7-\uD7CA\uD7FC-\uD7FF\uE000-\uF8FF\uFA6E\uFA6F\uFADA-\uFAFF\uFB07-\uFB12\uFB18-\uFB1C\uFB29\uFB37\uFB3D\uFB3F\uFB42\uFB45\uFBB2-\uFBD2\uFD3E-\uFD4F\uFD90\uFD91\uFDC8-\uFDEF\uFDFC-\uFDFF\uFE10-\uFE1F\uFE30-\uFE32\uFE35-\uFE4C\uFE50-\uFE6F\uFE75\uFEFD-\uFF0F\uFF1A-\uFF20\uFF3B-\uFF3E\uFF40\uFF5B-\uFF65\uFFBF-\uFFC1\uFFC8\uFFC9\uFFD0\uFFD1\uFFD8\uFFD9\uFFDD-\uFFFF]|\uD800[\uDC0C\uDC27\uDC3B\uDC3E\uDC4E\uDC4F\uDC5E-\uDC7F\uDCFB-\uDD3F\uDD75-\uDDFC\uDDFE-\uDE7F\uDE9D-\uDE9F\uDED1-\uDEDF\uDEE1-\uDEFF\uDF20-\uDF2C\uDF4B-\uDF4F\uDF7B-\uDF7F\uDF9E\uDF9F\uDFC4-\uDFC7\uDFD0\uDFD6-\uDFFF]|\uD801[\uDC9E\uDC9F\uDCAA-\uDCAF\uDCD4-\uDCD7\uDCFC-\uDCFF\uDD28-\uDD2F\uDD64-\uDDFF\uDF37-\uDF3F\uDF56-\uDF5F\uDF68-\uDFFF]|\uD802[\uDC06\uDC07\uDC09\uDC36\uDC39-\uDC3B\uDC3D\uDC3E\uDC56-\uDC5F\uDC77-\uDC7F\uDC9F-\uDCDF\uDCF3\uDCF6-\uDCFF\uDD16-\uDD1F\uDD3A-\uDD7F\uDDB8-\uDDBD\uDDC0-\uDDFF\uDE04\uDE07-\uDE0B\uDE14\uDE18\uDE36\uDE37\uDE3B-\uDE3E\uDE40-\uDE5F\uDE7D-\uDE7F\uDE9D-\uDEBF\uDEC8\uDEE7-\uDEFF\uDF36-\uDF3F\uDF56-\uDF5F\uDF73-\uDF7F\uDF92-\uDFFF]|\uD803[\uDC49-\uDC7F\uDCB3-\uDCBF\uDCF3-\uDCFF\uDD28-\uDD2F\uDD3A-\uDE7F\uDEAA\uDEAD-\uDEAF\uDEB2-\uDEFF\uDF1D-\uDF26\uDF28-\uDF2F\uDF51-\uDFAF\uDFC5-\uDFDF\uDFF7-\uDFFF]|\uD804[\uDC47-\uDC65\uDC70-\uDC7E\uDCBB-\uDCCF\uDCE9-\uDCEF\uDCFA-\uDCFF\uDD35\uDD40-\uDD43\uDD48-\uDD4F\uDD74\uDD75\uDD77-\uDD7F\uDDC5-\uDDC8\uDDCD\uDDDB\uDDDD-\uDDFF\uDE12\uDE38-\uDE3D\uDE3F-\uDE7F\uDE87\uDE89\uDE8E\uDE9E\uDEA9-\uDEAF\uDEEB-\uDEEF\uDEFA-\uDEFF\uDF04\uDF0D\uDF0E\uDF11\uDF12\uDF29\uDF31\uDF34\uDF3A\uDF45\uDF46\uDF49\uDF4A\uDF4E\uDF4F\uDF51-\uDF56\uDF58-\uDF5C\uDF64\uDF65\uDF6D-\uDF6F\uDF75-\uDFFF]|\uD805[\uDC4B-\uDC4F\uDC5A-\uDC5D\uDC62-\uDC7F\uDCC6\uDCC8-\uDCCF\uDCDA-\uDD7F\uDDB6\uDDB7\uDDC1-\uDDD7\uDDDE-\uDDFF\uDE41-\uDE43\uDE45-\uDE4F\uDE5A-\uDE7F\uDEB9-\uDEBF\uDECA-\uDEFF\uDF1B\uDF1C\uDF2C-\uDF2F\uDF3A-\uDFFF]|\uD806[\uDC3B-\uDC9F\uDCEA-\uDCFE\uDD07\uDD08\uDD0A\uDD0B\uDD14\uDD17\uDD36\uDD39\uDD3A\uDD44-\uDD4F\uDD5A-\uDD9F\uDDA8\uDDA9\uDDD8\uDDD9\uDDE2\uDDE5-\uDDFF\uDE3F-\uDE46\uDE48-\uDE4F\uDE9A-\uDE9C\uDE9E-\uDEBF\uDEF9-\uDFFF]|\uD807[\uDC09\uDC37\uDC41-\uDC4F\uDC5A-\uDC71\uDC90\uDC91\uDCA8\uDCB7-\uDCFF\uDD07\uDD0A\uDD37-\uDD39\uDD3B\uDD3E\uDD48-\uDD4F\uDD5A-\uDD5F\uDD66\uDD69\uDD8F\uDD92\uDD99-\uDD9F\uDDAA-\uDEDF\uDEF7-\uDFAF\uDFB1-\uDFFF]|\uD808[\uDF9A-\uDFFF]|\uD809[\uDC6F-\uDC7F\uDD44-\uDFFF]|[\uD80A\uD80B\uD80E-\uD810\uD812-\uD819\uD824-\uD82B\uD82D\uD82E\uD830-\uD833\uD837\uD839\uD83D\uD83F\uD87B-\uD87D\uD87F\uD885-\uDB3F\uDB41-\uDBFF][\uDC00-\uDFFF]|\uD80D[\uDC2F-\uDFFF]|\uD811[\uDE47-\uDFFF]|\uD81A[\uDE39-\uDE3F\uDE5F\uDE6A-\uDECF\uDEEE\uDEEF\uDEF5-\uDEFF\uDF37-\uDF3F\uDF44-\uDF4F\uDF5A-\uDF62\uDF78-\uDF7C\uDF90-\uDFFF]|\uD81B[\uDC00-\uDE3F\uDE80-\uDEFF\uDF4B-\uDF4E\uDF88-\uDF8E\uDFA0-\uDFDF\uDFE2\uDFE5-\uDFEF\uDFF2-\uDFFF]|\uD821[\uDFF8-\uDFFF]|\uD823[\uDCD6-\uDCFF\uDD09-\uDFFF]|\uD82C[\uDD1F-\uDD4F\uDD53-\uDD63\uDD68-\uDD6F\uDEFC-\uDFFF]|\uD82F[\uDC6B-\uDC6F\uDC7D-\uDC7F\uDC89-\uDC8F\uDC9A-\uDC9C\uDC9F-\uDFFF]|\uD834[\uDC00-\uDD64\uDD6A-\uDD6C\uDD73-\uDD7A\uDD83\uDD84\uDD8C-\uDDA9\uDDAE-\uDE41\uDE45-\uDFFF]|\uD835[\uDC55\uDC9D\uDCA0\uDCA1\uDCA3\uDCA4\uDCA7\uDCA8\uDCAD\uDCBA\uDCBC\uDCC4\uDD06\uDD0B\uDD0C\uDD15\uDD1D\uDD3A\uDD3F\uDD45\uDD47-\uDD49\uDD51\uDEA6\uDEA7\uDEC1\uDEDB\uDEFB\uDF15\uDF35\uDF4F\uDF6F\uDF89\uDFA9\uDFC3\uDFCC\uDFCD]|\uD836[\uDC00-\uDDFF\uDE37-\uDE3A\uDE6D-\uDE74\uDE76-\uDE83\uDE85-\uDE9A\uDEA0\uDEB0-\uDFFF]|\uD838[\uDC07\uDC19\uDC1A\uDC22\uDC25\uDC2B-\uDCFF\uDD2D-\uDD2F\uDD3E\uDD3F\uDD4A-\uDD4D\uDD4F-\uDEBF\uDEFA-\uDFFF]|\uD83A[\uDCC5-\uDCCF\uDCD7-\uDCFF\uDD4C-\uDD4F\uDD5A-\uDFFF]|\uD83B[\uDC00-\uDDFF\uDE04\uDE20\uDE23\uDE25\uDE26\uDE28\uDE33\uDE38\uDE3A\uDE3C-\uDE41\uDE43-\uDE46\uDE48\uDE4A\uDE4C\uDE50\uDE53\uDE55\uDE56\uDE58\uDE5A\uDE5C\uDE5E\uDE60\uDE63\uDE65\uDE66\uDE6B\uDE73\uDE78\uDE7D\uDE7F\uDE8A\uDE9C-\uDEA0\uDEA4\uDEAA\uDEBC-\uDFFF]|\uD83C[\uDC00-\uDD2F\uDD4A-\uDD4F\uDD6A-\uDD6F\uDD8A-\uDFFF]|\uD83E[\uDC00-\uDFEF\uDFFA-\uDFFF]|\uD869[\uDEDE-\uDEFF]|\uD86D[\uDF35-\uDF3F]|\uD86E[\uDC1E\uDC1F]|\uD873[\uDEA2-\uDEAF]|\uD87A[\uDFE1-\uDFFF]|\uD87E[\uDE1E-\uDFFF]|\uD884[\uDF4B-\uDFFF]|\uDB40[\uDC00-\uDCFF\uDDF0-\uDFFF]/g;
@@ -14788,415 +19221,6 @@ function all(node2) {
 
 // packages/qwik-city/src/buildtime/markdown/rehype.ts
 init_unist_util_visit();
-
-// packages/qwik-city/src/utils/fs.ts
-var import_node_path = require("node:path");
-
-// packages/qwik-city/src/utils/format.ts
-function toTitleCase(str) {
-  return str.replace(/\w\S*/g, (txt) => {
-    return txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase();
-  });
-}
-function addError(ctx, e) {
-  ctx.diagnostics.push({
-    type: "error",
-    message: e ? String(e.stack || e) : "Error"
-  });
-}
-function addWarning(ctx, message) {
-  ctx.diagnostics.push({
-    type: "warn",
-    message: String(message)
-  });
-}
-
-// packages/qwik-city/src/utils/pathname.ts
-function normalizePathname(pathname, basePathname, trailingSlash) {
-  if (typeof pathname === "string") {
-    pathname = pathname.trim();
-    if (pathname !== "") {
-      try {
-        pathname = pathname.replace(/\/+/g, "/");
-        if (pathname.startsWith("/")) {
-          pathname = pathname.slice(1);
-        }
-        pathname = new URL(basePathname + pathname, `https://qwik.dev`).pathname;
-        if (pathname !== basePathname) {
-          if (trailingSlash) {
-            if (!pathname.endsWith("/")) {
-              const segments = pathname.split("/");
-              const lastSegment = segments[segments.length - 1];
-              if (!lastSegment.includes(".")) {
-                pathname += "/";
-              }
-            }
-          } else {
-            if (pathname.endsWith("/")) {
-              pathname = pathname.slice(0, pathname.length - 1);
-            }
-          }
-        }
-        return pathname;
-      } catch (e) {
-        console.error(e);
-      }
-    }
-  }
-  return null;
-}
-function isSameOriginUrl(url) {
-  if (typeof url === "string") {
-    url = url.trim();
-    if (url !== "") {
-      const firstChar = url.charAt(0);
-      if (firstChar !== "/" && firstChar !== ".") {
-        if (firstChar === "#") {
-          return false;
-        }
-        const i = url.indexOf(":");
-        if (i > -1) {
-          const protocol = url.slice(0, i).toLowerCase();
-          return !PROTOCOLS[protocol];
-        }
-      }
-      return true;
-    }
-  }
-  return false;
-}
-var PROTOCOLS = {
-  https: true,
-  http: true,
-  about: true,
-  javascript: true,
-  file: true
-};
-
-// packages/qwik-city/src/utils/fs.ts
-function parseRouteIndexName(extlessName) {
-  let layoutName = "";
-  const layoutStop = extlessName.endsWith("!");
-  if (layoutStop) {
-    extlessName = extlessName.slice(0, extlessName.length - 1);
-  }
-  const namedLayoutParts = extlessName.split("@");
-  if (namedLayoutParts.length > 1) {
-    namedLayoutParts.shift();
-    layoutName = namedLayoutParts.join("@");
-  }
-  return { layoutName, layoutStop };
-}
-function getPathnameFromDirPath(opts, dirPath) {
-  const relFilePath = (0, import_node_path.relative)(opts.routesDir, dirPath);
-  let pathname = normalizePath(relFilePath);
-  pathname = normalizePathname(pathname, opts.basePathname, opts.trailingSlash).split("/").filter((segment) => !isGroupedLayoutName(segment)).join("/");
-  if (pathname === "") {
-    return "/";
-  }
-  return pathname;
-}
-function getMenuPathname(opts, filePath) {
-  let pathname = normalizePath((0, import_node_path.relative)(opts.routesDir, filePath));
-  pathname = `/` + normalizePath((0, import_node_path.dirname)(pathname));
-  return normalizePathname(pathname, opts.basePathname, true);
-}
-function getExtension(fileName) {
-  if (typeof fileName === "string") {
-    const parts = fileName.trim().toLowerCase().split(".");
-    if (parts.length > 1) {
-      const ext = parts.pop().split("?")[0].split("#")[0];
-      if (ext === "ts" && parts.pop() === "d") {
-        return ".d.ts";
-      }
-      return "." + ext;
-    }
-  }
-  return "";
-}
-function removeExtension(fileName) {
-  if (typeof fileName === "string") {
-    fileName = fileName.trim();
-    const ext = getExtension(fileName);
-    return fileName.slice(0, fileName.length - ext.length);
-  }
-  return "";
-}
-function normalizePath(path3) {
-  return normalizePathSlash((0, import_node_path.normalize)(path3));
-}
-function normalizePathSlash(path3) {
-  const isExtendedLengthPath = /^\\\\\?\\/.test(path3);
-  const hasNonAscii = /[^\u0000-\u0080]+/.test(path3);
-  if (isExtendedLengthPath || hasNonAscii) {
-    return path3;
-  }
-  path3 = path3.replace(/\\/g, "/");
-  if (path3.endsWith("/")) {
-    path3 = path3.slice(0, path3.length - 1);
-  }
-  return path3;
-}
-function createFileId(routesDir, fsPath, explicitFileType) {
-  const ids = [];
-  for (let i = 0; i < 25; i++) {
-    let baseName = removeExtension((0, import_node_path.basename)(fsPath));
-    baseName = baseName.replace(/[\W_]+/g, "");
-    if (baseName === "") {
-      baseName = "Q" + i;
-    } else if (!isNaN(baseName.charAt(0))) {
-      baseName = "Q" + baseName;
-    }
-    ids.push(toTitleCase(baseName));
-    fsPath = normalizePath((0, import_node_path.dirname)(fsPath));
-    if (fsPath === routesDir) {
-      break;
-    }
-  }
-  if (ids.length > 1 && ids[0] === "Index") {
-    ids.shift();
-  }
-  return ids.reverse().join("").concat(explicitFileType || "");
-}
-var PAGE_MODULE_EXTS = {
-  ".tsx": true,
-  ".jsx": true
-};
-var MODULE_EXTS = {
-  ".ts": true,
-  ".js": true
-};
-var MARKDOWN_EXTS = {
-  ".md": true,
-  ".mdx": true
-};
-function isIndexModule(extlessName) {
-  return /^index(|!|@.+)$/.test(extlessName);
-}
-function isPluginModule(extlessName) {
-  return /^plugin(|@.+)$/.test(extlessName);
-}
-function isLayoutModule(extlessName) {
-  return /^layout(|!|-.+)$/.test(extlessName);
-}
-function isPageModuleExt(ext) {
-  return ext in PAGE_MODULE_EXTS;
-}
-function isModuleExt(ext) {
-  return ext in MODULE_EXTS;
-}
-function isMarkdownExt(ext) {
-  return ext in MARKDOWN_EXTS;
-}
-function isPageExt(ext) {
-  return ext in PAGE_MODULE_EXTS || ext in MARKDOWN_EXTS;
-}
-function isMenuFileName(fileName) {
-  return fileName === "menu.md";
-}
-function isServiceWorkerName(extlessName) {
-  return extlessName === "service-worker";
-}
-function isEntryName(extlessName) {
-  return extlessName === "entry";
-}
-function isErrorName(extlessName) {
-  try {
-    const statusCode = parseInt(extlessName, 10);
-    return statusCode >= 400 && statusCode <= 599;
-  } catch (e) {
-  }
-  return false;
-}
-function isGroupedLayoutName(dirName, warn = true) {
-  if (dirName.startsWith("__")) {
-    if (warn) {
-      console.warn(
-        `Grouped (pathless) layout "${dirName}" should use the "(${dirName.slice(
-          2
-        )})" directory name instead. Prefixing a directory with "__" has been deprecated and will be removed in future versions.`
-      );
-    }
-    return true;
-  }
-  return dirName.startsWith("(") && dirName.endsWith(")");
-}
-
-// packages/qwik-city/src/buildtime/markdown/frontmatter.ts
-init_unist_util_visit();
-var import_yaml = __toESM(require_dist(), 1);
-function parseFrontmatter(ctx) {
-  return (mdast, vfile) => {
-    const attrs = {};
-    visit(mdast, "yaml", (node2) => {
-      const parsedAttrs = parseFrontmatterAttrs(node2.value);
-      for (const k in parsedAttrs) {
-        attrs[k] = parsedAttrs[k];
-      }
-    });
-    if (Object.keys(attrs).length > 0) {
-      ctx.frontmatter.set(normalizePath(vfile.path), attrs);
-    }
-  };
-}
-function parseFrontmatterAttrs(yaml2) {
-  if (typeof yaml2 === "string") {
-    yaml2 = yaml2.trim();
-    if (yaml2 !== "") {
-      return (0, import_yaml.parse)(yaml2);
-    }
-  }
-  return null;
-}
-var metaNames = {
-  author: true,
-  creator: true,
-  "color-scheme": true,
-  description: true,
-  generator: true,
-  keywords: true,
-  publisher: true,
-  referrer: true,
-  robots: true,
-  "theme-color": true,
-  viewport: true
-};
-function frontmatterAttrsToDocumentHead(attrs) {
-  var _a2;
-  if (attrs != null && typeof attrs === "object") {
-    const attrNames = Object.keys(attrs);
-    if (attrNames.length > 0) {
-      const head = {
-        title: "",
-        meta: [],
-        styles: [],
-        links: [],
-        scripts: [],
-        frontmatter: {}
-      };
-      for (const attrName of attrNames) {
-        const attrValue = attrs[attrName];
-        if (attrValue != null) {
-          if (attrName === "title") {
-            head.title = attrValue.toString();
-            head.title = head.title.replace(/\\@/g, "@");
-          } else if (attrName === "og" || attrName === "opengraph") {
-            if (typeof attrValue === "object") {
-              for (const opengraph of Array.isArray(attrValue) ? attrValue : [attrValue]) {
-                if (opengraph != null && typeof opengraph === "object" && !Array.isArray(opengraph)) {
-                  for (const [property, content] of Object.entries(opengraph)) {
-                    if ((property === "title" || property === "description") && content === true) {
-                      if (attrNames.includes(property)) {
-                        head.meta.push({
-                          property: `og:${property}`,
-                          content: (_a2 = attrs[property]) == null ? void 0 : _a2.toString()
-                        });
-                      }
-                    } else {
-                      head.meta.push({
-                        property: `og:${property}`,
-                        content: content == null ? void 0 : content.toString()
-                      });
-                    }
-                  }
-                }
-              }
-            }
-          } else if (metaNames[attrName]) {
-            head.meta.push({
-              name: attrName,
-              content: attrValue.toString()
-            });
-          } else {
-            head.frontmatter[attrName] = attrValue;
-          }
-        }
-      }
-      return head;
-    }
-  }
-  return null;
-}
-
-// packages/qwik-city/src/buildtime/markdown/markdown-url.ts
-var import_node_path2 = require("node:path");
-
-// packages/qwik-city/src/buildtime/routing/source-file.ts
-function getSourceFile(fileName) {
-  const ext = getExtension(fileName);
-  const extlessName = removeExtension(fileName);
-  const isPageModule = isPageModuleExt(ext);
-  const isModule = isModuleExt(ext);
-  const isMarkdown = isMarkdownExt(ext);
-  let type = null;
-  if ((isIndexModule(extlessName) || isErrorName(extlessName)) && (isPageModule || isModule || isMarkdown)) {
-    type = "route";
-  } else if (isLayoutModule(extlessName) && (isPageModule || isModule)) {
-    type = "layout";
-  } else if (isEntryName(extlessName) && isModule) {
-    type = "entry";
-  } else if (isMenuFileName(fileName)) {
-    type = "menu";
-  } else if (isModule && isServiceWorkerName(extlessName)) {
-    type = "service-worker";
-  }
-  if (type !== null) {
-    const sourceFileName = {
-      type,
-      extlessName,
-      ext
-    };
-    return sourceFileName;
-  }
-  return null;
-}
-
-// packages/qwik-city/src/buildtime/markdown/markdown-url.ts
-var import_node_fs = require("node:fs");
-function getMarkdownRelativeUrl(opts, containingFilePath, url, checkFileExists) {
-  if (typeof url !== "string" || !isSameOriginUrl(url)) {
-    return url;
-  }
-  const querySplit = url.split("?");
-  const hashSplit = url.split("#");
-  const strippedUrl = url.split("?")[0].split("#")[0];
-  const extension = getExtension(strippedUrl);
-  if (isMarkdownExt(extension)) {
-    const isAbsolute3 = strippedUrl.startsWith("/");
-    const parts = normalizePath(strippedUrl).split("/").filter((p) => p.length > 0);
-    const filePath = isAbsolute3 ? (0, import_node_path2.join)(opts.routesDir, ...parts) : (0, import_node_path2.join)((0, import_node_path2.dirname)(containingFilePath), ...parts);
-    if (checkFileExists && !(0, import_node_fs.existsSync)(filePath)) {
-      console.warn(
-        `
-The link "${url}", found within "${containingFilePath}" does not have a matching source file.
-`
-      );
-    }
-    const fileName = (0, import_node_path2.basename)(filePath);
-    const sourceFileName = getSourceFile(fileName);
-    if (sourceFileName) {
-      const mdDirPath = (0, import_node_path2.dirname)(filePath);
-      let pathname = getPathnameFromDirPath(opts, mdDirPath);
-      if (querySplit.length > 1) {
-        pathname += "?" + querySplit[1];
-      } else if (hashSplit.length > 1) {
-        pathname += "#" + hashSplit[1];
-      }
-      return pathname;
-    }
-  } else if (extension === "") {
-    if (url.endsWith("/")) {
-      if (!opts.trailingSlash) {
-        url = url.slice(0, -1);
-      }
-    } else if (opts.trailingSlash) {
-      url += "/";
-    }
-  }
-  return url;
-}
-
-// packages/qwik-city/src/buildtime/markdown/rehype.ts
 function rehypeSlug() {
   return (ast) => {
     const mdast = ast;
@@ -19389,7 +23413,7 @@ var aria = create({
 });
 
 // node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/lib/html.js
-var html = create({
+var html2 = create({
   space: "html",
   attributes: {
     acceptcharset: "accept-charset",
@@ -20351,7 +24375,7 @@ function camelcase($0) {
 }
 
 // node_modules/.pnpm/property-information@6.5.0/node_modules/property-information/index.js
-var html2 = merge([xml, xlink, xmlns, aria, html], "html");
+var html3 = merge([xml, xlink, xmlns, aria, html2], "html");
 var svg2 = merge([xml, xlink, xmlns, aria, svg], "svg");
 
 // node_modules/.pnpm/hast-util-parse-selector@3.1.1/node_modules/hast-util-parse-selector/lib/index.js
@@ -20581,7 +24605,7 @@ function createAdjustMap(values) {
 }
 
 // node_modules/.pnpm/hastscript@7.2.0/node_modules/hastscript/lib/html.js
-var h = core(html2, "div");
+var h = core(html3, "div");
 
 // node_modules/.pnpm/character-entities-legacy@3.0.0/node_modules/character-entities-legacy/index.js
 var characterEntitiesLegacy = [
@@ -21920,7 +25944,7 @@ async function createMdxTransformer(ctx) {
   }
   const options2 = {
     SourceMapGenerator: import_source_map.SourceMapGenerator,
-    jsxImportSource: "@builder.io/qwik",
+    jsxImportSource: "@qwik.dev/core",
     ...userMdxOpts,
     elementAttributeNameCase: "html",
     remarkPlugins: [
@@ -21944,7 +25968,7 @@ async function createMdxTransformer(ctx) {
       const file = new VFile({ value: code3, path: id });
       const compiled = await compile(file, options2);
       const output = String(compiled.value);
-      const addImport = `import { jsx } from '@builder.io/qwik';
+      const addImport = `import { jsx } from '@qwik.dev/core';
 `;
       const newDefault = `
 const WrappedMdxContent = () => {
@@ -21965,10 +25989,6 @@ export default WrappedMdxContent;
     }
   };
 }
-
-// packages/qwik-city/src/buildtime/vite/plugin.ts
-var import_node_path11 = require("node:path");
-var import_vite2 = require("vite");
 
 // packages/qwik-city/src/buildtime/runtime-generation/generate-entries.ts
 function createEntries(ctx, c2) {
@@ -22147,2642 +26167,155 @@ function generateQwikCityPlan(ctx, qwikPlugin, isSSR) {
   return esmImports.join("\n") + c2.join("\n");
 }
 
-// packages/qwik-city/src/buildtime/context.ts
-var import_node_path3 = require("node:path");
-function createBuildContext(rootDir, viteBasePath, userOpts, target) {
-  const ctx = {
-    rootDir: normalizePath(rootDir),
-    opts: normalizeOptions(rootDir, viteBasePath, userOpts),
-    routes: [],
-    serverPlugins: [],
-    layouts: [],
-    entries: [],
-    serviceWorkers: [],
-    menus: [],
-    diagnostics: [],
-    frontmatter: /* @__PURE__ */ new Map(),
-    target: target || "ssr",
-    isDevServer: false,
-    isDevServerClientOnly: false,
-    isDirty: true,
-    activeBuild: null
-  };
-  return ctx;
-}
-function resetBuildContext(ctx) {
-  if (ctx) {
-    ctx.routes.length = 0;
-    ctx.layouts.length = 0;
-    ctx.entries.length = 0;
-    ctx.menus.length = 0;
-    ctx.diagnostics.length = 0;
-    ctx.frontmatter.clear();
-    ctx.isDirty = true;
-  }
-}
-function normalizeOptions(rootDir, viteBasePath, userOpts) {
-  if (!(viteBasePath.startsWith("/") && viteBasePath.endsWith("/"))) {
-    console.error(
-      `warning: vite's config.base must begin and end with /. This will be an error in v2. If you have a valid use case, please open an issue.`
-    );
-    if (!viteBasePath.endsWith("/")) {
-      viteBasePath += "/";
-    }
-  }
-  const opts = { ...userOpts };
-  if (typeof opts.routesDir !== "string") {
-    opts.routesDir = (0, import_node_path3.resolve)(rootDir, "src", "routes");
-  } else if (!(0, import_node_path3.isAbsolute)(opts.routesDir)) {
-    opts.routesDir = (0, import_node_path3.resolve)(rootDir, opts.routesDir);
-  }
-  opts.routesDir = normalizePath(opts.routesDir);
-  if (typeof opts.serverPluginsDir !== "string") {
-    opts.serverPluginsDir = opts.routesDir;
-  } else if (!(0, import_node_path3.isAbsolute)(opts.serverPluginsDir)) {
-    opts.serverPluginsDir = (0, import_node_path3.resolve)(rootDir, opts.serverPluginsDir);
-  }
-  opts.serverPluginsDir = normalizePath(opts.serverPluginsDir);
-  if (typeof opts.baseUrl === "string") {
-    opts.basePathname = opts.baseUrl;
-  }
-  if (typeof opts.basePathname !== "string") {
-    opts.basePathname = viteBasePath;
-  }
-  if (!opts.basePathname.endsWith("/")) {
-    console.error(
-      `Warning: qwik-city plugin basePathname must end with /. This will be an error in v2`
-    );
-    opts.basePathname += "/";
-  }
-  const url = new URL(opts.basePathname, "https://qwik.dev/");
-  opts.basePathname = url.pathname;
-  if (typeof opts.trailingSlash !== "boolean") {
-    opts.trailingSlash = true;
-  }
-  opts.mdx = opts.mdx || {};
-  opts.platform = opts.platform || {};
-  return opts;
-}
-
-// packages/qwik-city/src/buildtime/vite/validate-plugin.ts
-var import_node_fs2 = __toESM(require("node:fs"), 1);
-var import_node_path4 = require("node:path");
-async function validatePlugin(opts) {
-  if (typeof opts.routesDir !== "string") {
-    throw new Error(`qwikCity plugin "routesDir" option missing`);
-  }
-  if (!(0, import_node_path4.isAbsolute)(opts.routesDir)) {
-    throw new Error(
-      `qwikCity plugin "routesDir" option must be an absolute path: ${opts.routesDir}`
-    );
-  }
-  try {
-    const s2 = await import_node_fs2.default.promises.stat(opts.routesDir);
-    if (!s2.isDirectory()) {
-      throw new Error(`qwikCity plugin "routesDir" option must be a directory: ${opts.routesDir}`);
-    }
-  } catch (e) {
-    throw new Error(`qwikCity plugin "routesDir" not found: ${e}`);
-  }
-}
-
-// packages/qwik-city/src/buildtime/routing/resolve-source-file.ts
-var import_node_path5 = require("node:path");
-
-// node_modules/.pnpm/marked@12.0.2/node_modules/marked/lib/marked.esm.js
-function _getDefaults() {
-  return {
-    async: false,
-    breaks: false,
-    extensions: null,
-    gfm: true,
-    hooks: null,
-    pedantic: false,
-    renderer: null,
-    silent: false,
-    tokenizer: null,
-    walkTokens: null
-  };
-}
-var _defaults = _getDefaults();
-function changeDefaults(newDefaults) {
-  _defaults = newDefaults;
-}
-var escapeTest = /[&<>"']/;
-var escapeReplace = new RegExp(escapeTest.source, "g");
-var escapeTestNoEncode = /[<>"']|&(?!(#\d{1,7}|#[Xx][a-fA-F0-9]{1,6}|\w+);)/;
-var escapeReplaceNoEncode = new RegExp(escapeTestNoEncode.source, "g");
-var escapeReplacements = {
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#39;"
-};
-var getEscapeReplacement = (ch) => escapeReplacements[ch];
-function escape$1(html5, encode2) {
-  if (encode2) {
-    if (escapeTest.test(html5)) {
-      return html5.replace(escapeReplace, getEscapeReplacement);
-    }
+// packages/qwik-city/src/buildtime/runtime-generation/generate-service-worker.ts
+function generateServiceWorkerRegister(ctx, swRegister) {
+  let swReg;
+  if (ctx.isDevServer) {
+    swReg = SW_UNREGISTER;
   } else {
-    if (escapeTestNoEncode.test(html5)) {
-      return html5.replace(escapeReplaceNoEncode, getEscapeReplacement);
+    swReg = swRegister;
+    let swUrl = "/service-worker.js";
+    if (ctx.serviceWorkers.length > 0) {
+      const sw = ctx.serviceWorkers.sort(
+        (a, b) => a.chunkFileName.length < b.chunkFileName.length ? -1 : 1
+      )[0];
+      swUrl = ctx.opts.basePathname + sw.chunkFileName;
     }
+    swReg = swReg.replace("__url", swUrl);
   }
-  return html5;
+  return `export default ${JSON.stringify(swReg)};`;
 }
-var unescapeTest = /&(#(?:\d+)|(?:#x[0-9A-Fa-f]+)|(?:\w+));?/ig;
-function unescape(html5) {
-  return html5.replace(unescapeTest, (_2, n) => {
-    n = n.toLowerCase();
-    if (n === "colon")
-      return ":";
-    if (n.charAt(0) === "#") {
-      return n.charAt(1) === "x" ? String.fromCharCode(parseInt(n.substring(2), 16)) : String.fromCharCode(+n.substring(1));
-    }
-    return "";
-  });
-}
-var caret = /(^|[^\[])\^/g;
-function edit(regex3, opt) {
-  let source = typeof regex3 === "string" ? regex3 : regex3.source;
-  opt = opt || "";
-  const obj = {
-    replace: (name, val) => {
-      let valSource = typeof val === "string" ? val : val.source;
-      valSource = valSource.replace(caret, "$1");
-      source = source.replace(name, valSource);
-      return obj;
-    },
-    getRegex: () => {
-      return new RegExp(source, opt);
-    }
-  };
-  return obj;
-}
-function cleanUrl(href) {
-  try {
-    href = encodeURI(href).replace(/%25/g, "%");
-  } catch (e) {
+function prependManifestToServiceWorker(ctx, manifest, prefetch, swCode) {
+  const key = `/* Qwik Service Worker */`;
+  if (swCode.includes(key)) {
     return null;
   }
-  return href;
+  const appBundles = [];
+  const appBundlesCode = generateAppBundles(appBundles, manifest);
+  const libraryBundlesCode = generateLibraryBundles(appBundles, manifest);
+  const [linkBundlesCode] = generateLinkBundles(ctx, appBundles, manifest, prefetch);
+  return [key, appBundlesCode, libraryBundlesCode, linkBundlesCode, swCode].join("\n");
 }
-var noopTest = { exec: () => null };
-function splitCells(tableRow, count) {
-  const row = tableRow.replace(/\|/g, (match, offset, str) => {
-    let escaped = false;
-    let curr = offset;
-    while (--curr >= 0 && str[curr] === "\\")
-      escaped = !escaped;
-    if (escaped) {
-      return "|";
-    } else {
-      return " |";
+function generateAppBundles(appBundles, manifest) {
+  const sortedBundles = Object.keys(manifest.bundles).sort();
+  for (const appBundleName of sortedBundles) {
+    const appBundle = [appBundleName, []];
+    appBundles.push(appBundle);
+    const symbolHashesInBundle = [];
+    const manifestBundle = manifest.bundles[appBundleName];
+    const importedBundleNames = Array.isArray(manifestBundle.imports) ? manifestBundle.imports : [];
+    const depsSet = new Set(importedBundleNames);
+    for (const importedBundleName of importedBundleNames) {
+      clearTransitiveDeps(depsSet, /* @__PURE__ */ new Set(), importedBundleName);
     }
-  }), cells = row.split(/ \|/);
-  let i = 0;
-  if (!cells[0].trim()) {
-    cells.shift();
-  }
-  if (cells.length > 0 && !cells[cells.length - 1].trim()) {
-    cells.pop();
-  }
-  if (count) {
-    if (cells.length > count) {
-      cells.splice(count);
-    } else {
-      while (cells.length < count)
-        cells.push("");
+    appBundle[1] = Array.from(depsSet).map((dep) => sortedBundles.indexOf(dep));
+    if (manifestBundle.symbols) {
+      for (const manifestBundleSymbolName of manifestBundle.symbols) {
+        const symbol = manifest.symbols[manifestBundleSymbolName];
+        if ((symbol == null ? void 0 : symbol.hash) && !symbolHashesInBundle.includes(symbol.hash)) {
+          symbolHashesInBundle.push(symbol.hash);
+        }
+      }
+    }
+    if (symbolHashesInBundle.length > 0) {
+      appBundle[2] = symbolHashesInBundle;
     }
   }
-  for (; i < cells.length; i++) {
-    cells[i] = cells[i].trim().replace(/\\\|/g, "|");
+  function clearTransitiveDeps(deps, seen, depName) {
+    const childBundle = manifest.bundles[depName];
+    for (const childDepImport of childBundle.imports || []) {
+      if (deps.has(childDepImport)) {
+        deps.delete(childDepImport);
+      }
+      if (!seen.has(childDepImport)) {
+        seen.add(childDepImport);
+        clearTransitiveDeps(deps, seen, childDepImport);
+      }
+    }
   }
-  return cells;
+  return `const appBundles=${JSON.stringify(appBundles)};`;
 }
-function rtrim(str, c2, invert) {
-  const l = str.length;
-  if (l === 0) {
-    return "";
-  }
-  let suffLen = 0;
-  while (suffLen < l) {
-    const currChar = str.charAt(l - suffLen - 1);
-    if (currChar === c2 && !invert) {
-      suffLen++;
-    } else if (currChar !== c2 && invert) {
-      suffLen++;
-    } else {
+function generateLibraryBundles(appBundles, manifest) {
+  const libraryBundleIds = [];
+  for (const [bundleName, bundle] of Object.entries(manifest.bundles)) {
+    if (bundle.origins && bundle.origins.includes("@qwik-city-plan")) {
+      libraryBundleIds.push(getAppBundleIndex(appBundles, bundleName));
       break;
     }
   }
-  return str.slice(0, l - suffLen);
+  return `const libraryBundleIds=${JSON.stringify(libraryBundleIds)};`;
 }
-function findClosingBracket(str, b) {
-  if (str.indexOf(b[1]) === -1) {
-    return -1;
+function generateLinkBundles(ctx, appBundles, manifest, prefetch) {
+  var _a2, _b2;
+  const linkBundles = [];
+  const symbolToBundle = /* @__PURE__ */ new Map();
+  const routeToBundles = {};
+  for (const bundleName in manifest.bundles || []) {
+    (_a2 = manifest.bundles[bundleName].symbols) == null ? void 0 : _a2.forEach((symbol) => {
+      const idx = symbol.lastIndexOf("_");
+      symbolToBundle.set(idx === -1 ? symbol : symbol.substring(idx + 1), bundleName);
+    });
   }
-  let level = 0;
-  for (let i = 0; i < str.length; i++) {
-    if (str[i] === "\\") {
-      i++;
-    } else if (str[i] === b[0]) {
-      level++;
-    } else if (str[i] === b[1]) {
-      level--;
-      if (level < 0) {
-        return i;
-      }
-    }
-  }
-  return -1;
-}
-function outputLink(cap2, link3, raw, lexer2) {
-  const href = link3.href;
-  const title = link3.title ? escape$1(link3.title) : null;
-  const text3 = cap2[1].replace(/\\([\[\]])/g, "$1");
-  if (cap2[0].charAt(0) !== "!") {
-    lexer2.state.inLink = true;
-    const token = {
-      type: "link",
-      raw,
-      href,
-      title,
-      text: text3,
-      tokens: lexer2.inlineTokens(text3)
-    };
-    lexer2.state.inLink = false;
-    return token;
-  }
-  return {
-    type: "image",
-    raw,
-    href,
-    title,
-    text: escape$1(text3)
-  };
-}
-function indentCodeCompensation(raw, text3) {
-  const matchIndentToCode = raw.match(/^(\s+)(?:```)/);
-  if (matchIndentToCode === null) {
-    return text3;
-  }
-  const indentToCode = matchIndentToCode[1];
-  return text3.split("\n").map((node2) => {
-    const matchIndentInNode = node2.match(/^\s+/);
-    if (matchIndentInNode === null) {
-      return node2;
-    }
-    const [indentInNode] = matchIndentInNode;
-    if (indentInNode.length >= indentToCode.length) {
-      return node2.slice(indentToCode.length);
-    }
-    return node2;
-  }).join("\n");
-}
-var _Tokenizer = class {
-  options;
-  rules;
-  // set by the lexer
-  lexer;
-  // set by the lexer
-  constructor(options2) {
-    this.options = options2 || _defaults;
-  }
-  space(src) {
-    const cap2 = this.rules.block.newline.exec(src);
-    if (cap2 && cap2[0].length > 0) {
-      return {
-        type: "space",
-        raw: cap2[0]
-      };
-    }
-  }
-  code(src) {
-    const cap2 = this.rules.block.code.exec(src);
-    if (cap2) {
-      const text3 = cap2[0].replace(/^ {1,4}/gm, "");
-      return {
-        type: "code",
-        raw: cap2[0],
-        codeBlockStyle: "indented",
-        text: !this.options.pedantic ? rtrim(text3, "\n") : text3
-      };
-    }
-  }
-  fences(src) {
-    const cap2 = this.rules.block.fences.exec(src);
-    if (cap2) {
-      const raw = cap2[0];
-      const text3 = indentCodeCompensation(raw, cap2[3] || "");
-      return {
-        type: "code",
-        raw,
-        lang: cap2[2] ? cap2[2].trim().replace(this.rules.inline.anyPunctuation, "$1") : cap2[2],
-        text: text3
-      };
-    }
-  }
-  heading(src) {
-    const cap2 = this.rules.block.heading.exec(src);
-    if (cap2) {
-      let text3 = cap2[2].trim();
-      if (/#$/.test(text3)) {
-        const trimmed = rtrim(text3, "#");
-        if (this.options.pedantic) {
-          text3 = trimmed.trim();
-        } else if (!trimmed || / $/.test(trimmed)) {
-          text3 = trimmed.trim();
-        }
-      }
-      return {
-        type: "heading",
-        raw: cap2[0],
-        depth: cap2[1].length,
-        text: text3,
-        tokens: this.lexer.inline(text3)
-      };
-    }
-  }
-  hr(src) {
-    const cap2 = this.rules.block.hr.exec(src);
-    if (cap2) {
-      return {
-        type: "hr",
-        raw: cap2[0]
-      };
-    }
-  }
-  blockquote(src) {
-    const cap2 = this.rules.block.blockquote.exec(src);
-    if (cap2) {
-      let text3 = cap2[0].replace(/\n {0,3}((?:=+|-+) *)(?=\n|$)/g, "\n    $1");
-      text3 = rtrim(text3.replace(/^ *>[ \t]?/gm, ""), "\n");
-      const top = this.lexer.state.top;
-      this.lexer.state.top = true;
-      const tokens = this.lexer.blockTokens(text3);
-      this.lexer.state.top = top;
-      return {
-        type: "blockquote",
-        raw: cap2[0],
-        tokens,
-        text: text3
-      };
-    }
-  }
-  list(src) {
-    let cap2 = this.rules.block.list.exec(src);
-    if (cap2) {
-      let bull = cap2[1].trim();
-      const isordered = bull.length > 1;
-      const list3 = {
-        type: "list",
-        raw: "",
-        ordered: isordered,
-        start: isordered ? +bull.slice(0, -1) : "",
-        loose: false,
-        items: []
-      };
-      bull = isordered ? `\\d{1,9}\\${bull.slice(-1)}` : `\\${bull}`;
-      if (this.options.pedantic) {
-        bull = isordered ? bull : "[*+-]";
-      }
-      const itemRegex = new RegExp(`^( {0,3}${bull})((?:[	 ][^\\n]*)?(?:\\n|$))`);
-      let raw = "";
-      let itemContents = "";
-      let endsWithBlankLine = false;
-      while (src) {
-        let endEarly = false;
-        if (!(cap2 = itemRegex.exec(src))) {
-          break;
-        }
-        if (this.rules.block.hr.test(src)) {
-          break;
-        }
-        raw = cap2[0];
-        src = src.substring(raw.length);
-        let line = cap2[2].split("\n", 1)[0].replace(/^\t+/, (t) => " ".repeat(3 * t.length));
-        let nextLine = src.split("\n", 1)[0];
-        let indent2 = 0;
-        if (this.options.pedantic) {
-          indent2 = 2;
-          itemContents = line.trimStart();
-        } else {
-          indent2 = cap2[2].search(/[^ ]/);
-          indent2 = indent2 > 4 ? 1 : indent2;
-          itemContents = line.slice(indent2);
-          indent2 += cap2[1].length;
-        }
-        let blankLine2 = false;
-        if (!line && /^ *$/.test(nextLine)) {
-          raw += nextLine + "\n";
-          src = src.substring(nextLine.length + 1);
-          endEarly = true;
-        }
-        if (!endEarly) {
-          const nextBulletRegex = new RegExp(`^ {0,${Math.min(3, indent2 - 1)}}(?:[*+-]|\\d{1,9}[.)])((?:[ 	][^\\n]*)?(?:\\n|$))`);
-          const hrRegex = new RegExp(`^ {0,${Math.min(3, indent2 - 1)}}((?:- *){3,}|(?:_ *){3,}|(?:\\* *){3,})(?:\\n+|$)`);
-          const fencesBeginRegex = new RegExp(`^ {0,${Math.min(3, indent2 - 1)}}(?:\`\`\`|~~~)`);
-          const headingBeginRegex = new RegExp(`^ {0,${Math.min(3, indent2 - 1)}}#`);
-          while (src) {
-            const rawLine = src.split("\n", 1)[0];
-            nextLine = rawLine;
-            if (this.options.pedantic) {
-              nextLine = nextLine.replace(/^ {1,4}(?=( {4})*[^ ])/g, "  ");
-            }
-            if (fencesBeginRegex.test(nextLine)) {
-              break;
-            }
-            if (headingBeginRegex.test(nextLine)) {
-              break;
-            }
-            if (nextBulletRegex.test(nextLine)) {
-              break;
-            }
-            if (hrRegex.test(src)) {
-              break;
-            }
-            if (nextLine.search(/[^ ]/) >= indent2 || !nextLine.trim()) {
-              itemContents += "\n" + nextLine.slice(indent2);
-            } else {
-              if (blankLine2) {
-                break;
+  for (const r2 of ctx.routes) {
+    const linkBundleNames = [];
+    const addFileBundles = (filePath) => {
+      for (const [bundleName, bundle] of Object.entries(manifest.bundles)) {
+        if (bundle.origins) {
+          for (const bundleOrigin of bundle.origins) {
+            const srcPath = removeExtension(filePath);
+            const bundleOriginPath = removeExtension(bundleOrigin);
+            if (srcPath.endsWith(bundleOriginPath)) {
+              if (!linkBundleNames.includes(bundleName)) {
+                linkBundleNames.push(bundleName);
               }
-              if (line.search(/[^ ]/) >= 4) {
-                break;
-              }
-              if (fencesBeginRegex.test(line)) {
-                break;
-              }
-              if (headingBeginRegex.test(line)) {
-                break;
-              }
-              if (hrRegex.test(line)) {
-                break;
-              }
-              itemContents += "\n" + nextLine;
-            }
-            if (!blankLine2 && !nextLine.trim()) {
-              blankLine2 = true;
-            }
-            raw += rawLine + "\n";
-            src = src.substring(rawLine.length + 1);
-            line = nextLine.slice(indent2);
-          }
-        }
-        if (!list3.loose) {
-          if (endsWithBlankLine) {
-            list3.loose = true;
-          } else if (/\n *\n *$/.test(raw)) {
-            endsWithBlankLine = true;
-          }
-        }
-        let istask = null;
-        let ischecked;
-        if (this.options.gfm) {
-          istask = /^\[[ xX]\] /.exec(itemContents);
-          if (istask) {
-            ischecked = istask[0] !== "[ ] ";
-            itemContents = itemContents.replace(/^\[[ xX]\] +/, "");
-          }
-        }
-        list3.items.push({
-          type: "list_item",
-          raw,
-          task: !!istask,
-          checked: ischecked,
-          loose: false,
-          text: itemContents,
-          tokens: []
-        });
-        list3.raw += raw;
-      }
-      list3.items[list3.items.length - 1].raw = raw.trimEnd();
-      list3.items[list3.items.length - 1].text = itemContents.trimEnd();
-      list3.raw = list3.raw.trimEnd();
-      for (let i = 0; i < list3.items.length; i++) {
-        this.lexer.state.top = false;
-        list3.items[i].tokens = this.lexer.blockTokens(list3.items[i].text, []);
-        if (!list3.loose) {
-          const spacers = list3.items[i].tokens.filter((t) => t.type === "space");
-          const hasMultipleLineBreaks = spacers.length > 0 && spacers.some((t) => /\n.*\n/.test(t.raw));
-          list3.loose = hasMultipleLineBreaks;
-        }
-      }
-      if (list3.loose) {
-        for (let i = 0; i < list3.items.length; i++) {
-          list3.items[i].loose = true;
-        }
-      }
-      return list3;
-    }
-  }
-  html(src) {
-    const cap2 = this.rules.block.html.exec(src);
-    if (cap2) {
-      const token = {
-        type: "html",
-        block: true,
-        raw: cap2[0],
-        pre: cap2[1] === "pre" || cap2[1] === "script" || cap2[1] === "style",
-        text: cap2[0]
-      };
-      return token;
-    }
-  }
-  def(src) {
-    const cap2 = this.rules.block.def.exec(src);
-    if (cap2) {
-      const tag2 = cap2[1].toLowerCase().replace(/\s+/g, " ");
-      const href = cap2[2] ? cap2[2].replace(/^<(.*)>$/, "$1").replace(this.rules.inline.anyPunctuation, "$1") : "";
-      const title = cap2[3] ? cap2[3].substring(1, cap2[3].length - 1).replace(this.rules.inline.anyPunctuation, "$1") : cap2[3];
-      return {
-        type: "def",
-        tag: tag2,
-        raw: cap2[0],
-        href,
-        title
-      };
-    }
-  }
-  table(src) {
-    const cap2 = this.rules.block.table.exec(src);
-    if (!cap2) {
-      return;
-    }
-    if (!/[:|]/.test(cap2[2])) {
-      return;
-    }
-    const headers = splitCells(cap2[1]);
-    const aligns = cap2[2].replace(/^\||\| *$/g, "").split("|");
-    const rows = cap2[3] && cap2[3].trim() ? cap2[3].replace(/\n[ \t]*$/, "").split("\n") : [];
-    const item = {
-      type: "table",
-      raw: cap2[0],
-      header: [],
-      align: [],
-      rows: []
-    };
-    if (headers.length !== aligns.length) {
-      return;
-    }
-    for (const align of aligns) {
-      if (/^ *-+: *$/.test(align)) {
-        item.align.push("right");
-      } else if (/^ *:-+: *$/.test(align)) {
-        item.align.push("center");
-      } else if (/^ *:-+ *$/.test(align)) {
-        item.align.push("left");
-      } else {
-        item.align.push(null);
-      }
-    }
-    for (const header of headers) {
-      item.header.push({
-        text: header,
-        tokens: this.lexer.inline(header)
-      });
-    }
-    for (const row of rows) {
-      item.rows.push(splitCells(row, item.header.length).map((cell) => {
-        return {
-          text: cell,
-          tokens: this.lexer.inline(cell)
-        };
-      }));
-    }
-    return item;
-  }
-  lheading(src) {
-    const cap2 = this.rules.block.lheading.exec(src);
-    if (cap2) {
-      return {
-        type: "heading",
-        raw: cap2[0],
-        depth: cap2[2].charAt(0) === "=" ? 1 : 2,
-        text: cap2[1],
-        tokens: this.lexer.inline(cap2[1])
-      };
-    }
-  }
-  paragraph(src) {
-    const cap2 = this.rules.block.paragraph.exec(src);
-    if (cap2) {
-      const text3 = cap2[1].charAt(cap2[1].length - 1) === "\n" ? cap2[1].slice(0, -1) : cap2[1];
-      return {
-        type: "paragraph",
-        raw: cap2[0],
-        text: text3,
-        tokens: this.lexer.inline(text3)
-      };
-    }
-  }
-  text(src) {
-    const cap2 = this.rules.block.text.exec(src);
-    if (cap2) {
-      return {
-        type: "text",
-        raw: cap2[0],
-        text: cap2[0],
-        tokens: this.lexer.inline(cap2[0])
-      };
-    }
-  }
-  escape(src) {
-    const cap2 = this.rules.inline.escape.exec(src);
-    if (cap2) {
-      return {
-        type: "escape",
-        raw: cap2[0],
-        text: escape$1(cap2[1])
-      };
-    }
-  }
-  tag(src) {
-    const cap2 = this.rules.inline.tag.exec(src);
-    if (cap2) {
-      if (!this.lexer.state.inLink && /^<a /i.test(cap2[0])) {
-        this.lexer.state.inLink = true;
-      } else if (this.lexer.state.inLink && /^<\/a>/i.test(cap2[0])) {
-        this.lexer.state.inLink = false;
-      }
-      if (!this.lexer.state.inRawBlock && /^<(pre|code|kbd|script)(\s|>)/i.test(cap2[0])) {
-        this.lexer.state.inRawBlock = true;
-      } else if (this.lexer.state.inRawBlock && /^<\/(pre|code|kbd|script)(\s|>)/i.test(cap2[0])) {
-        this.lexer.state.inRawBlock = false;
-      }
-      return {
-        type: "html",
-        raw: cap2[0],
-        inLink: this.lexer.state.inLink,
-        inRawBlock: this.lexer.state.inRawBlock,
-        block: false,
-        text: cap2[0]
-      };
-    }
-  }
-  link(src) {
-    const cap2 = this.rules.inline.link.exec(src);
-    if (cap2) {
-      const trimmedUrl = cap2[2].trim();
-      if (!this.options.pedantic && /^</.test(trimmedUrl)) {
-        if (!/>$/.test(trimmedUrl)) {
-          return;
-        }
-        const rtrimSlash = rtrim(trimmedUrl.slice(0, -1), "\\");
-        if ((trimmedUrl.length - rtrimSlash.length) % 2 === 0) {
-          return;
-        }
-      } else {
-        const lastParenIndex = findClosingBracket(cap2[2], "()");
-        if (lastParenIndex > -1) {
-          const start = cap2[0].indexOf("!") === 0 ? 5 : 4;
-          const linkLen = start + cap2[1].length + lastParenIndex;
-          cap2[2] = cap2[2].substring(0, lastParenIndex);
-          cap2[0] = cap2[0].substring(0, linkLen).trim();
-          cap2[3] = "";
-        }
-      }
-      let href = cap2[2];
-      let title = "";
-      if (this.options.pedantic) {
-        const link3 = /^([^'"]*[^\s])\s+(['"])(.*)\2/.exec(href);
-        if (link3) {
-          href = link3[1];
-          title = link3[3];
-        }
-      } else {
-        title = cap2[3] ? cap2[3].slice(1, -1) : "";
-      }
-      href = href.trim();
-      if (/^</.test(href)) {
-        if (this.options.pedantic && !/>$/.test(trimmedUrl)) {
-          href = href.slice(1);
-        } else {
-          href = href.slice(1, -1);
-        }
-      }
-      return outputLink(cap2, {
-        href: href ? href.replace(this.rules.inline.anyPunctuation, "$1") : href,
-        title: title ? title.replace(this.rules.inline.anyPunctuation, "$1") : title
-      }, cap2[0], this.lexer);
-    }
-  }
-  reflink(src, links) {
-    let cap2;
-    if ((cap2 = this.rules.inline.reflink.exec(src)) || (cap2 = this.rules.inline.nolink.exec(src))) {
-      const linkString = (cap2[2] || cap2[1]).replace(/\s+/g, " ");
-      const link3 = links[linkString.toLowerCase()];
-      if (!link3) {
-        const text3 = cap2[0].charAt(0);
-        return {
-          type: "text",
-          raw: text3,
-          text: text3
-        };
-      }
-      return outputLink(cap2, link3, cap2[0], this.lexer);
-    }
-  }
-  emStrong(src, maskedSrc, prevChar = "") {
-    let match = this.rules.inline.emStrongLDelim.exec(src);
-    if (!match)
-      return;
-    if (match[3] && prevChar.match(/[\p{L}\p{N}]/u))
-      return;
-    const nextChar = match[1] || match[2] || "";
-    if (!nextChar || !prevChar || this.rules.inline.punctuation.exec(prevChar)) {
-      const lLength = [...match[0]].length - 1;
-      let rDelim, rLength, delimTotal = lLength, midDelimTotal = 0;
-      const endReg = match[0][0] === "*" ? this.rules.inline.emStrongRDelimAst : this.rules.inline.emStrongRDelimUnd;
-      endReg.lastIndex = 0;
-      maskedSrc = maskedSrc.slice(-1 * src.length + lLength);
-      while ((match = endReg.exec(maskedSrc)) != null) {
-        rDelim = match[1] || match[2] || match[3] || match[4] || match[5] || match[6];
-        if (!rDelim)
-          continue;
-        rLength = [...rDelim].length;
-        if (match[3] || match[4]) {
-          delimTotal += rLength;
-          continue;
-        } else if (match[5] || match[6]) {
-          if (lLength % 3 && !((lLength + rLength) % 3)) {
-            midDelimTotal += rLength;
-            continue;
-          }
-        }
-        delimTotal -= rLength;
-        if (delimTotal > 0)
-          continue;
-        rLength = Math.min(rLength, rLength + delimTotal + midDelimTotal);
-        const lastCharLength = [...match[0]][0].length;
-        const raw = src.slice(0, lLength + match.index + lastCharLength + rLength);
-        if (Math.min(lLength, rLength) % 2) {
-          const text4 = raw.slice(1, -1);
-          return {
-            type: "em",
-            raw,
-            text: text4,
-            tokens: this.lexer.inlineTokens(text4)
-          };
-        }
-        const text3 = raw.slice(2, -2);
-        return {
-          type: "strong",
-          raw,
-          text: text3,
-          tokens: this.lexer.inlineTokens(text3)
-        };
-      }
-    }
-  }
-  codespan(src) {
-    const cap2 = this.rules.inline.code.exec(src);
-    if (cap2) {
-      let text3 = cap2[2].replace(/\n/g, " ");
-      const hasNonSpaceChars = /[^ ]/.test(text3);
-      const hasSpaceCharsOnBothEnds = /^ /.test(text3) && / $/.test(text3);
-      if (hasNonSpaceChars && hasSpaceCharsOnBothEnds) {
-        text3 = text3.substring(1, text3.length - 1);
-      }
-      text3 = escape$1(text3, true);
-      return {
-        type: "codespan",
-        raw: cap2[0],
-        text: text3
-      };
-    }
-  }
-  br(src) {
-    const cap2 = this.rules.inline.br.exec(src);
-    if (cap2) {
-      return {
-        type: "br",
-        raw: cap2[0]
-      };
-    }
-  }
-  del(src) {
-    const cap2 = this.rules.inline.del.exec(src);
-    if (cap2) {
-      return {
-        type: "del",
-        raw: cap2[0],
-        text: cap2[2],
-        tokens: this.lexer.inlineTokens(cap2[2])
-      };
-    }
-  }
-  autolink(src) {
-    const cap2 = this.rules.inline.autolink.exec(src);
-    if (cap2) {
-      let text3, href;
-      if (cap2[2] === "@") {
-        text3 = escape$1(cap2[1]);
-        href = "mailto:" + text3;
-      } else {
-        text3 = escape$1(cap2[1]);
-        href = text3;
-      }
-      return {
-        type: "link",
-        raw: cap2[0],
-        text: text3,
-        href,
-        tokens: [
-          {
-            type: "text",
-            raw: text3,
-            text: text3
-          }
-        ]
-      };
-    }
-  }
-  url(src) {
-    var _a2;
-    let cap2;
-    if (cap2 = this.rules.inline.url.exec(src)) {
-      let text3, href;
-      if (cap2[2] === "@") {
-        text3 = escape$1(cap2[0]);
-        href = "mailto:" + text3;
-      } else {
-        let prevCapZero;
-        do {
-          prevCapZero = cap2[0];
-          cap2[0] = ((_a2 = this.rules.inline._backpedal.exec(cap2[0])) == null ? void 0 : _a2[0]) ?? "";
-        } while (prevCapZero !== cap2[0]);
-        text3 = escape$1(cap2[0]);
-        if (cap2[1] === "www.") {
-          href = "http://" + cap2[0];
-        } else {
-          href = cap2[0];
-        }
-      }
-      return {
-        type: "link",
-        raw: cap2[0],
-        text: text3,
-        href,
-        tokens: [
-          {
-            type: "text",
-            raw: text3,
-            text: text3
-          }
-        ]
-      };
-    }
-  }
-  inlineText(src) {
-    const cap2 = this.rules.inline.text.exec(src);
-    if (cap2) {
-      let text3;
-      if (this.lexer.state.inRawBlock) {
-        text3 = cap2[0];
-      } else {
-        text3 = escape$1(cap2[0]);
-      }
-      return {
-        type: "text",
-        raw: cap2[0],
-        text: text3
-      };
-    }
-  }
-};
-var newline = /^(?: *(?:\n|$))+/;
-var blockCode = /^( {4}[^\n]+(?:\n(?: *(?:\n|$))*)?)+/;
-var fences = /^ {0,3}(`{3,}(?=[^`\n]*(?:\n|$))|~{3,})([^\n]*)(?:\n|$)(?:|([\s\S]*?)(?:\n|$))(?: {0,3}\1[~`]* *(?=\n|$)|$)/;
-var hr = /^ {0,3}((?:-[\t ]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})(?:\n+|$)/;
-var heading2 = /^ {0,3}(#{1,6})(?=\s|$)(.*)(?:\n+|$)/;
-var bullet = /(?:[*+-]|\d{1,9}[.)])/;
-var lheading = edit(/^(?!bull |blockCode|fences|blockquote|heading|html)((?:.|\n(?!\s*?\n|bull |blockCode|fences|blockquote|heading|html))+?)\n {0,3}(=+|-+) *(?:\n+|$)/).replace(/bull/g, bullet).replace(/blockCode/g, / {4}/).replace(/fences/g, / {0,3}(?:`{3,}|~{3,})/).replace(/blockquote/g, / {0,3}>/).replace(/heading/g, / {0,3}#{1,6}/).replace(/html/g, / {0,3}<[^\n>]+>\n/).getRegex();
-var _paragraph = /^([^\n]+(?:\n(?!hr|heading|lheading|blockquote|fences|list|html|table| +\n)[^\n]+)*)/;
-var blockText = /^[^\n]+/;
-var _blockLabel = /(?!\s*\])(?:\\.|[^\[\]\\])+/;
-var def = edit(/^ {0,3}\[(label)\]: *(?:\n *)?([^<\s][^\s]*|<.*?>)(?:(?: +(?:\n *)?| *\n *)(title))? *(?:\n+|$)/).replace("label", _blockLabel).replace("title", /(?:"(?:\\"?|[^"\\])*"|'[^'\n]*(?:\n[^'\n]+)*\n?'|\([^()]*\))/).getRegex();
-var list2 = edit(/^( {0,3}bull)([ \t][^\n]+?)?(?:\n|$)/).replace(/bull/g, bullet).getRegex();
-var _tag = "address|article|aside|base|basefont|blockquote|body|caption|center|col|colgroup|dd|details|dialog|dir|div|dl|dt|fieldset|figcaption|figure|footer|form|frame|frameset|h[1-6]|head|header|hr|html|iframe|legend|li|link|main|menu|menuitem|meta|nav|noframes|ol|optgroup|option|p|param|search|section|summary|table|tbody|td|tfoot|th|thead|title|tr|track|ul";
-var _comment = /<!--(?:-?>|[\s\S]*?(?:-->|$))/;
-var html4 = edit("^ {0,3}(?:<(script|pre|style|textarea)[\\s>][\\s\\S]*?(?:</\\1>[^\\n]*\\n+|$)|comment[^\\n]*(\\n+|$)|<\\?[\\s\\S]*?(?:\\?>\\n*|$)|<![A-Z][\\s\\S]*?(?:>\\n*|$)|<!\\[CDATA\\[[\\s\\S]*?(?:\\]\\]>\\n*|$)|</?(tag)(?: +|\\n|/?>)[\\s\\S]*?(?:(?:\\n *)+\\n|$)|<(?!script|pre|style|textarea)([a-z][\\w-]*)(?:attribute)*? */?>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$)|</(?!script|pre|style|textarea)[a-z][\\w-]*\\s*>(?=[ \\t]*(?:\\n|$))[\\s\\S]*?(?:(?:\\n *)+\\n|$))", "i").replace("comment", _comment).replace("tag", _tag).replace("attribute", / +[a-zA-Z:_][\w.:-]*(?: *= *"[^"\n]*"| *= *'[^'\n]*'| *= *[^\s"'=<>`]+)?/).getRegex();
-var paragraph2 = edit(_paragraph).replace("hr", hr).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("|table", "").replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", _tag).getRegex();
-var blockquote2 = edit(/^( {0,3}> ?(paragraph|[^\n]*)(?:\n|$))+/).replace("paragraph", paragraph2).getRegex();
-var blockNormal = {
-  blockquote: blockquote2,
-  code: blockCode,
-  def,
-  fences,
-  heading: heading2,
-  hr,
-  html: html4,
-  lheading,
-  list: list2,
-  newline,
-  paragraph: paragraph2,
-  table: noopTest,
-  text: blockText
-};
-var gfmTable2 = edit("^ *([^\\n ].*)\\n {0,3}((?:\\| *)?:?-+:? *(?:\\| *:?-+:? *)*(?:\\| *)?)(?:\\n((?:(?! *\\n|hr|heading|blockquote|code|fences|list|html).*(?:\\n|$))*)\\n*|$)").replace("hr", hr).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("blockquote", " {0,3}>").replace("code", " {4}[^\\n]").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", _tag).getRegex();
-var blockGfm = {
-  ...blockNormal,
-  table: gfmTable2,
-  paragraph: edit(_paragraph).replace("hr", hr).replace("heading", " {0,3}#{1,6}(?:\\s|$)").replace("|lheading", "").replace("table", gfmTable2).replace("blockquote", " {0,3}>").replace("fences", " {0,3}(?:`{3,}(?=[^`\\n]*\\n)|~{3,})[^\\n]*\\n").replace("list", " {0,3}(?:[*+-]|1[.)]) ").replace("html", "</?(?:tag)(?: +|\\n|/?>)|<(?:script|pre|style|textarea|!--)").replace("tag", _tag).getRegex()
-};
-var blockPedantic = {
-  ...blockNormal,
-  html: edit(`^ *(?:comment *(?:\\n|\\s*$)|<(tag)[\\s\\S]+?</\\1> *(?:\\n{2,}|\\s*$)|<tag(?:"[^"]*"|'[^']*'|\\s[^'"/>\\s]*)*?/?> *(?:\\n{2,}|\\s*$))`).replace("comment", _comment).replace(/tag/g, "(?!(?:a|em|strong|small|s|cite|q|dfn|abbr|data|time|code|var|samp|kbd|sub|sup|i|b|u|mark|ruby|rt|rp|bdi|bdo|span|br|wbr|ins|del|img)\\b)\\w+(?!:|[^\\w\\s@]*@)\\b").getRegex(),
-  def: /^ *\[([^\]]+)\]: *<?([^\s>]+)>?(?: +(["(][^\n]+[")]))? *(?:\n+|$)/,
-  heading: /^(#{1,6})(.*)(?:\n+|$)/,
-  fences: noopTest,
-  // fences not supported
-  lheading: /^(.+?)\n {0,3}(=+|-+) *(?:\n+|$)/,
-  paragraph: edit(_paragraph).replace("hr", hr).replace("heading", " *#{1,6} *[^\n]").replace("lheading", lheading).replace("|table", "").replace("blockquote", " {0,3}>").replace("|fences", "").replace("|list", "").replace("|html", "").replace("|tag", "").getRegex()
-};
-var escape = /^\\([!"#$%&'()*+,\-./:;<=>?@\[\]\\^_`{|}~])/;
-var inlineCode2 = /^(`+)([^`]|[^`][\s\S]*?[^`])\1(?!`)/;
-var br = /^( {2,}|\\)\n(?!\s*$)/;
-var inlineText = /^(`+|[^`])(?:(?= {2,}\n)|[\s\S]*?(?:(?=[\\<!\[`*_]|\b_|$)|[^ ](?= {2,}\n)))/;
-var _punctuation = "\\p{P}\\p{S}";
-var punctuation = edit(/^((?![*_])[\spunctuation])/, "u").replace(/punctuation/g, _punctuation).getRegex();
-var blockSkip = /\[[^[\]]*?\]\([^\(\)]*?\)|`[^`]*?`|<[^<>]*?>/g;
-var emStrongLDelim = edit(/^(?:\*+(?:((?!\*)[punct])|[^\s*]))|^_+(?:((?!_)[punct])|([^\s_]))/, "u").replace(/punct/g, _punctuation).getRegex();
-var emStrongRDelimAst = edit("^[^_*]*?__[^_*]*?\\*[^_*]*?(?=__)|[^*]+(?=[^*])|(?!\\*)[punct](\\*+)(?=[\\s]|$)|[^punct\\s](\\*+)(?!\\*)(?=[punct\\s]|$)|(?!\\*)[punct\\s](\\*+)(?=[^punct\\s])|[\\s](\\*+)(?!\\*)(?=[punct])|(?!\\*)[punct](\\*+)(?!\\*)(?=[punct])|[^punct\\s](\\*+)(?=[^punct\\s])", "gu").replace(/punct/g, _punctuation).getRegex();
-var emStrongRDelimUnd = edit("^[^_*]*?\\*\\*[^_*]*?_[^_*]*?(?=\\*\\*)|[^_]+(?=[^_])|(?!_)[punct](_+)(?=[\\s]|$)|[^punct\\s](_+)(?!_)(?=[punct\\s]|$)|(?!_)[punct\\s](_+)(?=[^punct\\s])|[\\s](_+)(?!_)(?=[punct])|(?!_)[punct](_+)(?!_)(?=[punct])", "gu").replace(/punct/g, _punctuation).getRegex();
-var anyPunctuation = edit(/\\([punct])/, "gu").replace(/punct/g, _punctuation).getRegex();
-var autolink = edit(/^<(scheme:[^\s\x00-\x1f<>]*|email)>/).replace("scheme", /[a-zA-Z][a-zA-Z0-9+.-]{1,31}/).replace("email", /[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+(@)[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)+(?![-_])/).getRegex();
-var _inlineComment = edit(_comment).replace("(?:-->|$)", "-->").getRegex();
-var tag = edit("^comment|^</[a-zA-Z][\\w:-]*\\s*>|^<[a-zA-Z][\\w-]*(?:attribute)*?\\s*/?>|^<\\?[\\s\\S]*?\\?>|^<![a-zA-Z]+\\s[\\s\\S]*?>|^<!\\[CDATA\\[[\\s\\S]*?\\]\\]>").replace("comment", _inlineComment).replace("attribute", /\s+[a-zA-Z:_][\w.:-]*(?:\s*=\s*"[^"]*"|\s*=\s*'[^']*'|\s*=\s*[^\s"'=<>`]+)?/).getRegex();
-var _inlineLabel = /(?:\[(?:\\.|[^\[\]\\])*\]|\\.|`[^`]*`|[^\[\]\\`])*?/;
-var link2 = edit(/^!?\[(label)\]\(\s*(href)(?:\s+(title))?\s*\)/).replace("label", _inlineLabel).replace("href", /<(?:\\.|[^\n<>\\])+>|[^\s\x00-\x1f]*/).replace("title", /"(?:\\"?|[^"\\])*"|'(?:\\'?|[^'\\])*'|\((?:\\\)?|[^)\\])*\)/).getRegex();
-var reflink = edit(/^!?\[(label)\]\[(ref)\]/).replace("label", _inlineLabel).replace("ref", _blockLabel).getRegex();
-var nolink = edit(/^!?\[(ref)\](?:\[\])?/).replace("ref", _blockLabel).getRegex();
-var reflinkSearch = edit("reflink|nolink(?!\\()", "g").replace("reflink", reflink).replace("nolink", nolink).getRegex();
-var inlineNormal = {
-  _backpedal: noopTest,
-  // only used for GFM url
-  anyPunctuation,
-  autolink,
-  blockSkip,
-  br,
-  code: inlineCode2,
-  del: noopTest,
-  emStrongLDelim,
-  emStrongRDelimAst,
-  emStrongRDelimUnd,
-  escape,
-  link: link2,
-  nolink,
-  punctuation,
-  reflink,
-  reflinkSearch,
-  tag,
-  text: inlineText,
-  url: noopTest
-};
-var inlinePedantic = {
-  ...inlineNormal,
-  link: edit(/^!?\[(label)\]\((.*?)\)/).replace("label", _inlineLabel).getRegex(),
-  reflink: edit(/^!?\[(label)\]\s*\[([^\]]*)\]/).replace("label", _inlineLabel).getRegex()
-};
-var inlineGfm = {
-  ...inlineNormal,
-  escape: edit(escape).replace("])", "~|])").getRegex(),
-  url: edit(/^((?:ftp|https?):\/\/|www\.)(?:[a-zA-Z0-9\-]+\.?)+[^\s<]*|^email/, "i").replace("email", /[A-Za-z0-9._+-]+(@)[a-zA-Z0-9-_]+(?:\.[a-zA-Z0-9-_]*[a-zA-Z0-9])+(?![-_])/).getRegex(),
-  _backpedal: /(?:[^?!.,:;*_'"~()&]+|\([^)]*\)|&(?![a-zA-Z0-9]+;$)|[?!.,:;*_'"~)]+(?!$))+/,
-  del: /^(~~?)(?=[^\s~])([\s\S]*?[^\s~])\1(?=[^~]|$)/,
-  text: /^([`~]+|[^`~])(?:(?= {2,}\n)|(?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)|[\s\S]*?(?:(?=[\\<!\[`*~_]|\b_|https?:\/\/|ftp:\/\/|www\.|$)|[^ ](?= {2,}\n)|[^a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-](?=[a-zA-Z0-9.!#$%&'*+\/=?_`{\|}~-]+@)))/
-};
-var inlineBreaks = {
-  ...inlineGfm,
-  br: edit(br).replace("{2,}", "*").getRegex(),
-  text: edit(inlineGfm.text).replace("\\b_", "\\b_| {2,}\\n").replace(/\{2,\}/g, "*").getRegex()
-};
-var block = {
-  normal: blockNormal,
-  gfm: blockGfm,
-  pedantic: blockPedantic
-};
-var inline = {
-  normal: inlineNormal,
-  gfm: inlineGfm,
-  breaks: inlineBreaks,
-  pedantic: inlinePedantic
-};
-var _Lexer = class __Lexer {
-  tokens;
-  options;
-  state;
-  tokenizer;
-  inlineQueue;
-  constructor(options2) {
-    this.tokens = [];
-    this.tokens.links = /* @__PURE__ */ Object.create(null);
-    this.options = options2 || _defaults;
-    this.options.tokenizer = this.options.tokenizer || new _Tokenizer();
-    this.tokenizer = this.options.tokenizer;
-    this.tokenizer.options = this.options;
-    this.tokenizer.lexer = this;
-    this.inlineQueue = [];
-    this.state = {
-      inLink: false,
-      inRawBlock: false,
-      top: true
-    };
-    const rules = {
-      block: block.normal,
-      inline: inline.normal
-    };
-    if (this.options.pedantic) {
-      rules.block = block.pedantic;
-      rules.inline = inline.pedantic;
-    } else if (this.options.gfm) {
-      rules.block = block.gfm;
-      if (this.options.breaks) {
-        rules.inline = inline.breaks;
-      } else {
-        rules.inline = inline.gfm;
-      }
-    }
-    this.tokenizer.rules = rules;
-  }
-  /**
-   * Expose Rules
-   */
-  static get rules() {
-    return {
-      block,
-      inline
-    };
-  }
-  /**
-   * Static Lex Method
-   */
-  static lex(src, options2) {
-    const lexer2 = new __Lexer(options2);
-    return lexer2.lex(src);
-  }
-  /**
-   * Static Lex Inline Method
-   */
-  static lexInline(src, options2) {
-    const lexer2 = new __Lexer(options2);
-    return lexer2.inlineTokens(src);
-  }
-  /**
-   * Preprocessing
-   */
-  lex(src) {
-    src = src.replace(/\r\n|\r/g, "\n");
-    this.blockTokens(src, this.tokens);
-    for (let i = 0; i < this.inlineQueue.length; i++) {
-      const next = this.inlineQueue[i];
-      this.inlineTokens(next.src, next.tokens);
-    }
-    this.inlineQueue = [];
-    return this.tokens;
-  }
-  blockTokens(src, tokens = []) {
-    if (this.options.pedantic) {
-      src = src.replace(/\t/g, "    ").replace(/^ +$/gm, "");
-    } else {
-      src = src.replace(/^( *)(\t+)/gm, (_2, leading, tabs) => {
-        return leading + "    ".repeat(tabs.length);
-      });
-    }
-    let token;
-    let lastToken;
-    let cutSrc;
-    let lastParagraphClipped;
-    while (src) {
-      if (this.options.extensions && this.options.extensions.block && this.options.extensions.block.some((extTokenizer) => {
-        if (token = extTokenizer.call({ lexer: this }, src, tokens)) {
-          src = src.substring(token.raw.length);
-          tokens.push(token);
-          return true;
-        }
-        return false;
-      })) {
-        continue;
-      }
-      if (token = this.tokenizer.space(src)) {
-        src = src.substring(token.raw.length);
-        if (token.raw.length === 1 && tokens.length > 0) {
-          tokens[tokens.length - 1].raw += "\n";
-        } else {
-          tokens.push(token);
-        }
-        continue;
-      }
-      if (token = this.tokenizer.code(src)) {
-        src = src.substring(token.raw.length);
-        lastToken = tokens[tokens.length - 1];
-        if (lastToken && (lastToken.type === "paragraph" || lastToken.type === "text")) {
-          lastToken.raw += "\n" + token.raw;
-          lastToken.text += "\n" + token.text;
-          this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
-        } else {
-          tokens.push(token);
-        }
-        continue;
-      }
-      if (token = this.tokenizer.fences(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.heading(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.hr(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.blockquote(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.list(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.html(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.def(src)) {
-        src = src.substring(token.raw.length);
-        lastToken = tokens[tokens.length - 1];
-        if (lastToken && (lastToken.type === "paragraph" || lastToken.type === "text")) {
-          lastToken.raw += "\n" + token.raw;
-          lastToken.text += "\n" + token.raw;
-          this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
-        } else if (!this.tokens.links[token.tag]) {
-          this.tokens.links[token.tag] = {
-            href: token.href,
-            title: token.title
-          };
-        }
-        continue;
-      }
-      if (token = this.tokenizer.table(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.lheading(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      cutSrc = src;
-      if (this.options.extensions && this.options.extensions.startBlock) {
-        let startIndex = Infinity;
-        const tempSrc = src.slice(1);
-        let tempStart;
-        this.options.extensions.startBlock.forEach((getStartIndex) => {
-          tempStart = getStartIndex.call({ lexer: this }, tempSrc);
-          if (typeof tempStart === "number" && tempStart >= 0) {
-            startIndex = Math.min(startIndex, tempStart);
-          }
-        });
-        if (startIndex < Infinity && startIndex >= 0) {
-          cutSrc = src.substring(0, startIndex + 1);
-        }
-      }
-      if (this.state.top && (token = this.tokenizer.paragraph(cutSrc))) {
-        lastToken = tokens[tokens.length - 1];
-        if (lastParagraphClipped && lastToken.type === "paragraph") {
-          lastToken.raw += "\n" + token.raw;
-          lastToken.text += "\n" + token.text;
-          this.inlineQueue.pop();
-          this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
-        } else {
-          tokens.push(token);
-        }
-        lastParagraphClipped = cutSrc.length !== src.length;
-        src = src.substring(token.raw.length);
-        continue;
-      }
-      if (token = this.tokenizer.text(src)) {
-        src = src.substring(token.raw.length);
-        lastToken = tokens[tokens.length - 1];
-        if (lastToken && lastToken.type === "text") {
-          lastToken.raw += "\n" + token.raw;
-          lastToken.text += "\n" + token.text;
-          this.inlineQueue.pop();
-          this.inlineQueue[this.inlineQueue.length - 1].src = lastToken.text;
-        } else {
-          tokens.push(token);
-        }
-        continue;
-      }
-      if (src) {
-        const errMsg = "Infinite loop on byte: " + src.charCodeAt(0);
-        if (this.options.silent) {
-          console.error(errMsg);
-          break;
-        } else {
-          throw new Error(errMsg);
-        }
-      }
-    }
-    this.state.top = true;
-    return tokens;
-  }
-  inline(src, tokens = []) {
-    this.inlineQueue.push({ src, tokens });
-    return tokens;
-  }
-  /**
-   * Lexing/Compiling
-   */
-  inlineTokens(src, tokens = []) {
-    let token, lastToken, cutSrc;
-    let maskedSrc = src;
-    let match;
-    let keepPrevChar, prevChar;
-    if (this.tokens.links) {
-      const links = Object.keys(this.tokens.links);
-      if (links.length > 0) {
-        while ((match = this.tokenizer.rules.inline.reflinkSearch.exec(maskedSrc)) != null) {
-          if (links.includes(match[0].slice(match[0].lastIndexOf("[") + 1, -1))) {
-            maskedSrc = maskedSrc.slice(0, match.index) + "[" + "a".repeat(match[0].length - 2) + "]" + maskedSrc.slice(this.tokenizer.rules.inline.reflinkSearch.lastIndex);
-          }
-        }
-      }
-    }
-    while ((match = this.tokenizer.rules.inline.blockSkip.exec(maskedSrc)) != null) {
-      maskedSrc = maskedSrc.slice(0, match.index) + "[" + "a".repeat(match[0].length - 2) + "]" + maskedSrc.slice(this.tokenizer.rules.inline.blockSkip.lastIndex);
-    }
-    while ((match = this.tokenizer.rules.inline.anyPunctuation.exec(maskedSrc)) != null) {
-      maskedSrc = maskedSrc.slice(0, match.index) + "++" + maskedSrc.slice(this.tokenizer.rules.inline.anyPunctuation.lastIndex);
-    }
-    while (src) {
-      if (!keepPrevChar) {
-        prevChar = "";
-      }
-      keepPrevChar = false;
-      if (this.options.extensions && this.options.extensions.inline && this.options.extensions.inline.some((extTokenizer) => {
-        if (token = extTokenizer.call({ lexer: this }, src, tokens)) {
-          src = src.substring(token.raw.length);
-          tokens.push(token);
-          return true;
-        }
-        return false;
-      })) {
-        continue;
-      }
-      if (token = this.tokenizer.escape(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.tag(src)) {
-        src = src.substring(token.raw.length);
-        lastToken = tokens[tokens.length - 1];
-        if (lastToken && token.type === "text" && lastToken.type === "text") {
-          lastToken.raw += token.raw;
-          lastToken.text += token.text;
-        } else {
-          tokens.push(token);
-        }
-        continue;
-      }
-      if (token = this.tokenizer.link(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.reflink(src, this.tokens.links)) {
-        src = src.substring(token.raw.length);
-        lastToken = tokens[tokens.length - 1];
-        if (lastToken && token.type === "text" && lastToken.type === "text") {
-          lastToken.raw += token.raw;
-          lastToken.text += token.text;
-        } else {
-          tokens.push(token);
-        }
-        continue;
-      }
-      if (token = this.tokenizer.emStrong(src, maskedSrc, prevChar)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.codespan(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.br(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.del(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (token = this.tokenizer.autolink(src)) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      if (!this.state.inLink && (token = this.tokenizer.url(src))) {
-        src = src.substring(token.raw.length);
-        tokens.push(token);
-        continue;
-      }
-      cutSrc = src;
-      if (this.options.extensions && this.options.extensions.startInline) {
-        let startIndex = Infinity;
-        const tempSrc = src.slice(1);
-        let tempStart;
-        this.options.extensions.startInline.forEach((getStartIndex) => {
-          tempStart = getStartIndex.call({ lexer: this }, tempSrc);
-          if (typeof tempStart === "number" && tempStart >= 0) {
-            startIndex = Math.min(startIndex, tempStart);
-          }
-        });
-        if (startIndex < Infinity && startIndex >= 0) {
-          cutSrc = src.substring(0, startIndex + 1);
-        }
-      }
-      if (token = this.tokenizer.inlineText(cutSrc)) {
-        src = src.substring(token.raw.length);
-        if (token.raw.slice(-1) !== "_") {
-          prevChar = token.raw.slice(-1);
-        }
-        keepPrevChar = true;
-        lastToken = tokens[tokens.length - 1];
-        if (lastToken && lastToken.type === "text") {
-          lastToken.raw += token.raw;
-          lastToken.text += token.text;
-        } else {
-          tokens.push(token);
-        }
-        continue;
-      }
-      if (src) {
-        const errMsg = "Infinite loop on byte: " + src.charCodeAt(0);
-        if (this.options.silent) {
-          console.error(errMsg);
-          break;
-        } else {
-          throw new Error(errMsg);
-        }
-      }
-    }
-    return tokens;
-  }
-};
-var _Renderer = class {
-  options;
-  constructor(options2) {
-    this.options = options2 || _defaults;
-  }
-  code(code3, infostring, escaped) {
-    var _a2;
-    const lang = (_a2 = (infostring || "").match(/^\S*/)) == null ? void 0 : _a2[0];
-    code3 = code3.replace(/\n$/, "") + "\n";
-    if (!lang) {
-      return "<pre><code>" + (escaped ? code3 : escape$1(code3, true)) + "</code></pre>\n";
-    }
-    return '<pre><code class="language-' + escape$1(lang) + '">' + (escaped ? code3 : escape$1(code3, true)) + "</code></pre>\n";
-  }
-  blockquote(quote) {
-    return `<blockquote>
-${quote}</blockquote>
-`;
-  }
-  html(html5, block2) {
-    return html5;
-  }
-  heading(text3, level, raw) {
-    return `<h${level}>${text3}</h${level}>
-`;
-  }
-  hr() {
-    return "<hr>\n";
-  }
-  list(body, ordered, start) {
-    const type = ordered ? "ol" : "ul";
-    const startatt = ordered && start !== 1 ? ' start="' + start + '"' : "";
-    return "<" + type + startatt + ">\n" + body + "</" + type + ">\n";
-  }
-  listitem(text3, task, checked) {
-    return `<li>${text3}</li>
-`;
-  }
-  checkbox(checked) {
-    return "<input " + (checked ? 'checked="" ' : "") + 'disabled="" type="checkbox">';
-  }
-  paragraph(text3) {
-    return `<p>${text3}</p>
-`;
-  }
-  table(header, body) {
-    if (body)
-      body = `<tbody>${body}</tbody>`;
-    return "<table>\n<thead>\n" + header + "</thead>\n" + body + "</table>\n";
-  }
-  tablerow(content) {
-    return `<tr>
-${content}</tr>
-`;
-  }
-  tablecell(content, flags) {
-    const type = flags.header ? "th" : "td";
-    const tag2 = flags.align ? `<${type} align="${flags.align}">` : `<${type}>`;
-    return tag2 + content + `</${type}>
-`;
-  }
-  /**
-   * span level renderer
-   */
-  strong(text3) {
-    return `<strong>${text3}</strong>`;
-  }
-  em(text3) {
-    return `<em>${text3}</em>`;
-  }
-  codespan(text3) {
-    return `<code>${text3}</code>`;
-  }
-  br() {
-    return "<br>";
-  }
-  del(text3) {
-    return `<del>${text3}</del>`;
-  }
-  link(href, title, text3) {
-    const cleanHref = cleanUrl(href);
-    if (cleanHref === null) {
-      return text3;
-    }
-    href = cleanHref;
-    let out = '<a href="' + href + '"';
-    if (title) {
-      out += ' title="' + title + '"';
-    }
-    out += ">" + text3 + "</a>";
-    return out;
-  }
-  image(href, title, text3) {
-    const cleanHref = cleanUrl(href);
-    if (cleanHref === null) {
-      return text3;
-    }
-    href = cleanHref;
-    let out = `<img src="${href}" alt="${text3}"`;
-    if (title) {
-      out += ` title="${title}"`;
-    }
-    out += ">";
-    return out;
-  }
-  text(text3) {
-    return text3;
-  }
-};
-var _TextRenderer = class {
-  // no need for block level renderers
-  strong(text3) {
-    return text3;
-  }
-  em(text3) {
-    return text3;
-  }
-  codespan(text3) {
-    return text3;
-  }
-  del(text3) {
-    return text3;
-  }
-  html(text3) {
-    return text3;
-  }
-  text(text3) {
-    return text3;
-  }
-  link(href, title, text3) {
-    return "" + text3;
-  }
-  image(href, title, text3) {
-    return "" + text3;
-  }
-  br() {
-    return "";
-  }
-};
-var _Parser = class __Parser {
-  options;
-  renderer;
-  textRenderer;
-  constructor(options2) {
-    this.options = options2 || _defaults;
-    this.options.renderer = this.options.renderer || new _Renderer();
-    this.renderer = this.options.renderer;
-    this.renderer.options = this.options;
-    this.textRenderer = new _TextRenderer();
-  }
-  /**
-   * Static Parse Method
-   */
-  static parse(tokens, options2) {
-    const parser2 = new __Parser(options2);
-    return parser2.parse(tokens);
-  }
-  /**
-   * Static Parse Inline Method
-   */
-  static parseInline(tokens, options2) {
-    const parser2 = new __Parser(options2);
-    return parser2.parseInline(tokens);
-  }
-  /**
-   * Parse Loop
-   */
-  parse(tokens, top = true) {
-    let out = "";
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[token.type]) {
-        const genericToken = token;
-        const ret = this.options.extensions.renderers[genericToken.type].call({ parser: this }, genericToken);
-        if (ret !== false || !["space", "hr", "heading", "code", "table", "blockquote", "list", "html", "paragraph", "text"].includes(genericToken.type)) {
-          out += ret || "";
-          continue;
-        }
-      }
-      switch (token.type) {
-        case "space": {
-          continue;
-        }
-        case "hr": {
-          out += this.renderer.hr();
-          continue;
-        }
-        case "heading": {
-          const headingToken = token;
-          out += this.renderer.heading(this.parseInline(headingToken.tokens), headingToken.depth, unescape(this.parseInline(headingToken.tokens, this.textRenderer)));
-          continue;
-        }
-        case "code": {
-          const codeToken = token;
-          out += this.renderer.code(codeToken.text, codeToken.lang, !!codeToken.escaped);
-          continue;
-        }
-        case "table": {
-          const tableToken = token;
-          let header = "";
-          let cell = "";
-          for (let j = 0; j < tableToken.header.length; j++) {
-            cell += this.renderer.tablecell(this.parseInline(tableToken.header[j].tokens), { header: true, align: tableToken.align[j] });
-          }
-          header += this.renderer.tablerow(cell);
-          let body = "";
-          for (let j = 0; j < tableToken.rows.length; j++) {
-            const row = tableToken.rows[j];
-            cell = "";
-            for (let k = 0; k < row.length; k++) {
-              cell += this.renderer.tablecell(this.parseInline(row[k].tokens), { header: false, align: tableToken.align[k] });
-            }
-            body += this.renderer.tablerow(cell);
-          }
-          out += this.renderer.table(header, body);
-          continue;
-        }
-        case "blockquote": {
-          const blockquoteToken = token;
-          const body = this.parse(blockquoteToken.tokens);
-          out += this.renderer.blockquote(body);
-          continue;
-        }
-        case "list": {
-          const listToken = token;
-          const ordered = listToken.ordered;
-          const start = listToken.start;
-          const loose = listToken.loose;
-          let body = "";
-          for (let j = 0; j < listToken.items.length; j++) {
-            const item = listToken.items[j];
-            const checked = item.checked;
-            const task = item.task;
-            let itemBody = "";
-            if (item.task) {
-              const checkbox = this.renderer.checkbox(!!checked);
-              if (loose) {
-                if (item.tokens.length > 0 && item.tokens[0].type === "paragraph") {
-                  item.tokens[0].text = checkbox + " " + item.tokens[0].text;
-                  if (item.tokens[0].tokens && item.tokens[0].tokens.length > 0 && item.tokens[0].tokens[0].type === "text") {
-                    item.tokens[0].tokens[0].text = checkbox + " " + item.tokens[0].tokens[0].text;
+              if (bundle.dynamicImports) {
+                for (const dynamicImport of bundle.dynamicImports) {
+                  if (!linkBundleNames.includes(dynamicImport)) {
+                    linkBundleNames.push(dynamicImport);
                   }
-                } else {
-                  item.tokens.unshift({
-                    type: "text",
-                    text: checkbox + " "
-                  });
-                }
-              } else {
-                itemBody += checkbox + " ";
-              }
-            }
-            itemBody += this.parse(item.tokens, loose);
-            body += this.renderer.listitem(itemBody, task, !!checked);
-          }
-          out += this.renderer.list(body, ordered, start);
-          continue;
-        }
-        case "html": {
-          const htmlToken = token;
-          out += this.renderer.html(htmlToken.text, htmlToken.block);
-          continue;
-        }
-        case "paragraph": {
-          const paragraphToken = token;
-          out += this.renderer.paragraph(this.parseInline(paragraphToken.tokens));
-          continue;
-        }
-        case "text": {
-          let textToken = token;
-          let body = textToken.tokens ? this.parseInline(textToken.tokens) : textToken.text;
-          while (i + 1 < tokens.length && tokens[i + 1].type === "text") {
-            textToken = tokens[++i];
-            body += "\n" + (textToken.tokens ? this.parseInline(textToken.tokens) : textToken.text);
-          }
-          out += top ? this.renderer.paragraph(body) : body;
-          continue;
-        }
-        default: {
-          const errMsg = 'Token with "' + token.type + '" type was not found.';
-          if (this.options.silent) {
-            console.error(errMsg);
-            return "";
-          } else {
-            throw new Error(errMsg);
-          }
-        }
-      }
-    }
-    return out;
-  }
-  /**
-   * Parse Inline Tokens
-   */
-  parseInline(tokens, renderer) {
-    renderer = renderer || this.renderer;
-    let out = "";
-    for (let i = 0; i < tokens.length; i++) {
-      const token = tokens[i];
-      if (this.options.extensions && this.options.extensions.renderers && this.options.extensions.renderers[token.type]) {
-        const ret = this.options.extensions.renderers[token.type].call({ parser: this }, token);
-        if (ret !== false || !["escape", "html", "link", "image", "strong", "em", "codespan", "br", "del", "text"].includes(token.type)) {
-          out += ret || "";
-          continue;
-        }
-      }
-      switch (token.type) {
-        case "escape": {
-          const escapeToken = token;
-          out += renderer.text(escapeToken.text);
-          break;
-        }
-        case "html": {
-          const tagToken = token;
-          out += renderer.html(tagToken.text);
-          break;
-        }
-        case "link": {
-          const linkToken = token;
-          out += renderer.link(linkToken.href, linkToken.title, this.parseInline(linkToken.tokens, renderer));
-          break;
-        }
-        case "image": {
-          const imageToken = token;
-          out += renderer.image(imageToken.href, imageToken.title, imageToken.text);
-          break;
-        }
-        case "strong": {
-          const strongToken = token;
-          out += renderer.strong(this.parseInline(strongToken.tokens, renderer));
-          break;
-        }
-        case "em": {
-          const emToken = token;
-          out += renderer.em(this.parseInline(emToken.tokens, renderer));
-          break;
-        }
-        case "codespan": {
-          const codespanToken = token;
-          out += renderer.codespan(codespanToken.text);
-          break;
-        }
-        case "br": {
-          out += renderer.br();
-          break;
-        }
-        case "del": {
-          const delToken = token;
-          out += renderer.del(this.parseInline(delToken.tokens, renderer));
-          break;
-        }
-        case "text": {
-          const textToken = token;
-          out += renderer.text(textToken.text);
-          break;
-        }
-        default: {
-          const errMsg = 'Token with "' + token.type + '" type was not found.';
-          if (this.options.silent) {
-            console.error(errMsg);
-            return "";
-          } else {
-            throw new Error(errMsg);
-          }
-        }
-      }
-    }
-    return out;
-  }
-};
-var _Hooks = class {
-  options;
-  constructor(options2) {
-    this.options = options2 || _defaults;
-  }
-  static passThroughHooks = /* @__PURE__ */ new Set([
-    "preprocess",
-    "postprocess",
-    "processAllTokens"
-  ]);
-  /**
-   * Process markdown before marked
-   */
-  preprocess(markdown2) {
-    return markdown2;
-  }
-  /**
-   * Process HTML after marked is finished
-   */
-  postprocess(html5) {
-    return html5;
-  }
-  /**
-   * Process all tokens before walk tokens
-   */
-  processAllTokens(tokens) {
-    return tokens;
-  }
-};
-var Marked = class {
-  defaults = _getDefaults();
-  options = this.setOptions;
-  parse = this.#parseMarkdown(_Lexer.lex, _Parser.parse);
-  parseInline = this.#parseMarkdown(_Lexer.lexInline, _Parser.parseInline);
-  Parser = _Parser;
-  Renderer = _Renderer;
-  TextRenderer = _TextRenderer;
-  Lexer = _Lexer;
-  Tokenizer = _Tokenizer;
-  Hooks = _Hooks;
-  constructor(...args) {
-    this.use(...args);
-  }
-  /**
-   * Run callback for every token
-   */
-  walkTokens(tokens, callback) {
-    var _a2, _b2;
-    let values = [];
-    for (const token of tokens) {
-      values = values.concat(callback.call(this, token));
-      switch (token.type) {
-        case "table": {
-          const tableToken = token;
-          for (const cell of tableToken.header) {
-            values = values.concat(this.walkTokens(cell.tokens, callback));
-          }
-          for (const row of tableToken.rows) {
-            for (const cell of row) {
-              values = values.concat(this.walkTokens(cell.tokens, callback));
-            }
-          }
-          break;
-        }
-        case "list": {
-          const listToken = token;
-          values = values.concat(this.walkTokens(listToken.items, callback));
-          break;
-        }
-        default: {
-          const genericToken = token;
-          if ((_b2 = (_a2 = this.defaults.extensions) == null ? void 0 : _a2.childTokens) == null ? void 0 : _b2[genericToken.type]) {
-            this.defaults.extensions.childTokens[genericToken.type].forEach((childTokens) => {
-              const tokens2 = genericToken[childTokens].flat(Infinity);
-              values = values.concat(this.walkTokens(tokens2, callback));
-            });
-          } else if (genericToken.tokens) {
-            values = values.concat(this.walkTokens(genericToken.tokens, callback));
-          }
-        }
-      }
-    }
-    return values;
-  }
-  use(...args) {
-    const extensions = this.defaults.extensions || { renderers: {}, childTokens: {} };
-    args.forEach((pack) => {
-      const opts = { ...pack };
-      opts.async = this.defaults.async || opts.async || false;
-      if (pack.extensions) {
-        pack.extensions.forEach((ext) => {
-          if (!ext.name) {
-            throw new Error("extension name required");
-          }
-          if ("renderer" in ext) {
-            const prevRenderer = extensions.renderers[ext.name];
-            if (prevRenderer) {
-              extensions.renderers[ext.name] = function(...args2) {
-                let ret = ext.renderer.apply(this, args2);
-                if (ret === false) {
-                  ret = prevRenderer.apply(this, args2);
-                }
-                return ret;
-              };
-            } else {
-              extensions.renderers[ext.name] = ext.renderer;
-            }
-          }
-          if ("tokenizer" in ext) {
-            if (!ext.level || ext.level !== "block" && ext.level !== "inline") {
-              throw new Error("extension level must be 'block' or 'inline'");
-            }
-            const extLevel = extensions[ext.level];
-            if (extLevel) {
-              extLevel.unshift(ext.tokenizer);
-            } else {
-              extensions[ext.level] = [ext.tokenizer];
-            }
-            if (ext.start) {
-              if (ext.level === "block") {
-                if (extensions.startBlock) {
-                  extensions.startBlock.push(ext.start);
-                } else {
-                  extensions.startBlock = [ext.start];
-                }
-              } else if (ext.level === "inline") {
-                if (extensions.startInline) {
-                  extensions.startInline.push(ext.start);
-                } else {
-                  extensions.startInline = [ext.start];
                 }
               }
             }
           }
-          if ("childTokens" in ext && ext.childTokens) {
-            extensions.childTokens[ext.name] = ext.childTokens;
-          }
-        });
-        opts.extensions = extensions;
-      }
-      if (pack.renderer) {
-        const renderer = this.defaults.renderer || new _Renderer(this.defaults);
-        for (const prop in pack.renderer) {
-          if (!(prop in renderer)) {
-            throw new Error(`renderer '${prop}' does not exist`);
-          }
-          if (prop === "options") {
-            continue;
-          }
-          const rendererProp = prop;
-          const rendererFunc = pack.renderer[rendererProp];
-          const prevRenderer = renderer[rendererProp];
-          renderer[rendererProp] = (...args2) => {
-            let ret = rendererFunc.apply(renderer, args2);
-            if (ret === false) {
-              ret = prevRenderer.apply(renderer, args2);
-            }
-            return ret || "";
-          };
         }
-        opts.renderer = renderer;
-      }
-      if (pack.tokenizer) {
-        const tokenizer = this.defaults.tokenizer || new _Tokenizer(this.defaults);
-        for (const prop in pack.tokenizer) {
-          if (!(prop in tokenizer)) {
-            throw new Error(`tokenizer '${prop}' does not exist`);
-          }
-          if (["options", "rules", "lexer"].includes(prop)) {
-            continue;
-          }
-          const tokenizerProp = prop;
-          const tokenizerFunc = pack.tokenizer[tokenizerProp];
-          const prevTokenizer = tokenizer[tokenizerProp];
-          tokenizer[tokenizerProp] = (...args2) => {
-            let ret = tokenizerFunc.apply(tokenizer, args2);
-            if (ret === false) {
-              ret = prevTokenizer.apply(tokenizer, args2);
-            }
-            return ret;
-          };
-        }
-        opts.tokenizer = tokenizer;
-      }
-      if (pack.hooks) {
-        const hooks = this.defaults.hooks || new _Hooks();
-        for (const prop in pack.hooks) {
-          if (!(prop in hooks)) {
-            throw new Error(`hook '${prop}' does not exist`);
-          }
-          if (prop === "options") {
-            continue;
-          }
-          const hooksProp = prop;
-          const hooksFunc = pack.hooks[hooksProp];
-          const prevHook = hooks[hooksProp];
-          if (_Hooks.passThroughHooks.has(prop)) {
-            hooks[hooksProp] = (arg) => {
-              if (this.defaults.async) {
-                return Promise.resolve(hooksFunc.call(hooks, arg)).then((ret2) => {
-                  return prevHook.call(hooks, ret2);
-                });
-              }
-              const ret = hooksFunc.call(hooks, arg);
-              return prevHook.call(hooks, ret);
-            };
-          } else {
-            hooks[hooksProp] = (...args2) => {
-              let ret = hooksFunc.apply(hooks, args2);
-              if (ret === false) {
-                ret = prevHook.apply(hooks, args2);
-              }
-              return ret;
-            };
-          }
-        }
-        opts.hooks = hooks;
-      }
-      if (pack.walkTokens) {
-        const walkTokens2 = this.defaults.walkTokens;
-        const packWalktokens = pack.walkTokens;
-        opts.walkTokens = function(token) {
-          let values = [];
-          values.push(packWalktokens.call(this, token));
-          if (walkTokens2) {
-            values = values.concat(walkTokens2.call(this, token));
-          }
-          return values;
-        };
-      }
-      this.defaults = { ...this.defaults, ...opts };
-    });
-    return this;
-  }
-  setOptions(opt) {
-    this.defaults = { ...this.defaults, ...opt };
-    return this;
-  }
-  lexer(src, options2) {
-    return _Lexer.lex(src, options2 ?? this.defaults);
-  }
-  parser(tokens, options2) {
-    return _Parser.parse(tokens, options2 ?? this.defaults);
-  }
-  #parseMarkdown(lexer2, parser2) {
-    return (src, options2) => {
-      const origOpt = { ...options2 };
-      const opt = { ...this.defaults, ...origOpt };
-      if (this.defaults.async === true && origOpt.async === false) {
-        if (!opt.silent) {
-          console.warn("marked(): The async option was set to true by an extension. The async: false option sent to parse will be ignored.");
-        }
-        opt.async = true;
-      }
-      const throwError = this.#onError(!!opt.silent, !!opt.async);
-      if (typeof src === "undefined" || src === null) {
-        return throwError(new Error("marked(): input parameter is undefined or null"));
-      }
-      if (typeof src !== "string") {
-        return throwError(new Error("marked(): input parameter is of type " + Object.prototype.toString.call(src) + ", string expected"));
-      }
-      if (opt.hooks) {
-        opt.hooks.options = opt;
-      }
-      if (opt.async) {
-        return Promise.resolve(opt.hooks ? opt.hooks.preprocess(src) : src).then((src2) => lexer2(src2, opt)).then((tokens) => opt.hooks ? opt.hooks.processAllTokens(tokens) : tokens).then((tokens) => opt.walkTokens ? Promise.all(this.walkTokens(tokens, opt.walkTokens)).then(() => tokens) : tokens).then((tokens) => parser2(tokens, opt)).then((html5) => opt.hooks ? opt.hooks.postprocess(html5) : html5).catch(throwError);
-      }
-      try {
-        if (opt.hooks) {
-          src = opt.hooks.preprocess(src);
-        }
-        let tokens = lexer2(src, opt);
-        if (opt.hooks) {
-          tokens = opt.hooks.processAllTokens(tokens);
-        }
-        if (opt.walkTokens) {
-          this.walkTokens(tokens, opt.walkTokens);
-        }
-        let html5 = parser2(tokens, opt);
-        if (opt.hooks) {
-          html5 = opt.hooks.postprocess(html5);
-        }
-        return html5;
-      } catch (e) {
-        return throwError(e);
       }
     };
-  }
-  #onError(silent, async) {
-    return (e) => {
-      e.message += "\nPlease report this to https://github.com/markedjs/marked.";
-      if (silent) {
-        const msg = "<p>An error occurred:</p><pre>" + escape$1(e.message + "", true) + "</pre>";
-        if (async) {
-          return Promise.resolve(msg);
-        }
-        return msg;
-      }
-      if (async) {
-        return Promise.reject(e);
-      }
-      throw e;
-    };
-  }
-};
-var markedInstance = new Marked();
-function marked(src, opt) {
-  return markedInstance.parse(src, opt);
-}
-marked.options = marked.setOptions = function(options2) {
-  markedInstance.setOptions(options2);
-  marked.defaults = markedInstance.defaults;
-  changeDefaults(marked.defaults);
-  return marked;
-};
-marked.getDefaults = _getDefaults;
-marked.defaults = _defaults;
-marked.use = function(...args) {
-  markedInstance.use(...args);
-  marked.defaults = markedInstance.defaults;
-  changeDefaults(marked.defaults);
-  return marked;
-};
-marked.walkTokens = function(tokens, callback) {
-  return markedInstance.walkTokens(tokens, callback);
-};
-marked.parseInline = markedInstance.parseInline;
-marked.Parser = _Parser;
-marked.parser = _Parser.parse;
-marked.Renderer = _Renderer;
-marked.TextRenderer = _TextRenderer;
-marked.Lexer = _Lexer;
-marked.lexer = _Lexer.lex;
-marked.Tokenizer = _Tokenizer;
-marked.Hooks = _Hooks;
-marked.parse = marked;
-var options = marked.options;
-var setOptions = marked.setOptions;
-var use = marked.use;
-var walkTokens = marked.walkTokens;
-var parseInline = marked.parseInline;
-var parser = _Parser.parse;
-var lexer = _Lexer.lex;
-
-// packages/qwik-city/src/buildtime/markdown/menu.ts
-function createMenu(opts, filePath) {
-  const menu = {
-    pathname: getMenuPathname(opts, filePath),
-    filePath
-  };
-  return menu;
-}
-function resolveMenu(opts, menuSourceFile) {
-  return createMenu(opts, menuSourceFile.filePath);
-}
-async function transformMenu(opts, filePath, content) {
-  const parsedMenu = parseMenu(opts, filePath, content);
-  const id = createFileId(opts.routesDir, filePath);
-  const code3 = `const ${id} = ${JSON.stringify(parsedMenu, null, 2)};`;
-  return `${code3} export default ${id}`;
-}
-function parseMenu(opts, filePath, content, checkFileExists = true) {
-  const tokens = marked.lexer(content, {});
-  let currentDepth = 0;
-  const stack = [];
-  for (const t of tokens) {
-    if (t.type === "heading") {
-      const diff2 = currentDepth - t.depth;
-      if (diff2 >= 0) {
-        stack.length -= diff2 + 1;
-      }
-      if (diff2 < -1) {
-        throw new Error(
-          `Menu hierarchy skipped a level, went from <h${"#".repeat(
-            currentDepth
-          )}> to <h${"#".repeat(t.depth)}>, in menu: ${filePath}`
-        );
-      }
-      currentDepth = t.depth;
-      const parentNode = stack[stack.length - 1];
-      for (const h2Token of t.tokens || []) {
-        const lastNode = {
-          text: ""
-        };
-        if (h2Token.type === "text") {
-          lastNode.text = h2Token.text;
-        } else if (h2Token.type === "link") {
-          lastNode.text = h2Token.text;
-          lastNode.href = getMarkdownRelativeUrl(opts, filePath, h2Token.href, checkFileExists);
-        } else {
-          throw new Error(
-            `Headings can only be a text or link. Received "${h2Token.type}", value "${h2Token.raw}", in menu: ${filePath}`
-          );
-        }
-        if (parentNode) {
-          parentNode.items = parentNode.items || [];
-          parentNode.items.push(lastNode);
-        }
-        stack.push(lastNode);
-      }
-    } else if (t.type === "list") {
-      const parentNode = stack[stack.length - 1];
-      parentNode.items = parentNode.items || [];
-      for (const li of t.items) {
-        if (li.type === "list_item") {
-          for (const liToken of li.tokens) {
-            if (liToken.type === "text") {
-              for (const liItem of liToken.tokens) {
-                if (liItem.type === "text") {
-                  parentNode.items.push({ text: liItem.text });
-                } else if (liItem.type === "link") {
-                  parentNode.items.push({
-                    text: liItem.text,
-                    href: getMarkdownRelativeUrl(opts, filePath, liItem.href, checkFileExists)
-                  });
-                } else {
-                  throw new Error(
-                    `List items can only be a text or link. Received "${liItem.type}", value "${liItem.raw}", in menu: ${filePath}`
-                  );
-                }
-              }
-            } else if (liToken.type === "link") {
-              parentNode.items.push({
-                text: liToken.text,
-                href: getMarkdownRelativeUrl(opts, filePath, liToken.href, checkFileExists)
-              });
-            } else {
-              throw new Error(
-                `List items can only be a text or link. Received "${liToken.type}", value "${liToken.raw}", in menu: ${filePath}`
-              );
-            }
-          }
-        } else {
-          throw new Error(
-            `Only list items can be used in lists. Received "${li.type}", value "${li.raw}", in menu: ${filePath}`
-          );
-        }
-      }
-    } else if (t.type === "space") {
-      continue;
-    } else {
-      throw new Error(
-        `Menu has a "${t.type}" with the value "${t.raw}". However, only headings and lists can be used in the menu: ${filePath}`
-      );
+    for (const layout of r2.layouts) {
+      addFileBundles(layout.filePath);
     }
-  }
-  if (stack.length === 0) {
-    throw new Error(`Menu must start with an h1 in the index: ${filePath}`);
-  }
-  return stack[0];
-}
-
-// packages/qwik-city/src/buildtime/routing/parse-pathname.ts
-function parseRoutePathname(basePathname, pathname) {
-  if (pathname === basePathname) {
-    return {
-      pattern: new RegExp("^" + pathname.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "$"),
-      routeName: pathname,
-      paramNames: [],
-      segments: [[{ content: "", dynamic: false, rest: false }]]
-    };
-  }
-  pathname = pathname.slice(1);
-  const segments = pathname.split("/");
-  const paramNames = [];
-  const pattern = new RegExp(
-    `^${segments.filter((segment) => segment.length > 0).map((s2) => {
-      const segment = decodeURI(s2);
-      const catchAll = /^\[\.\.\.(\w+)?\]$/.exec(segment);
-      if (catchAll) {
-        paramNames.push(catchAll[1]);
-        return "(?:/(.*))?";
-      }
-      return "/" + segment.split(DYNAMIC_SEGMENT).map((content, i) => {
-        if (i % 2) {
-          const rg = PARAM_PATTERN.exec(content);
-          if (rg) {
-            const [, rest, name] = rg;
-            paramNames.push(name);
-            return rest ? "(.*?)" : "([^/]+?)";
+    addFileBundles(r2.filePath);
+    if (prefetch) {
+      const symbolsForRoute = prefetch.find((p) => p.route === r2.routeName);
+      (_b2 = symbolsForRoute == null ? void 0 : symbolsForRoute.symbols) == null ? void 0 : _b2.reverse().forEach((symbol) => {
+        const bundle = symbolToBundle.get(symbol);
+        if (bundle) {
+          const idx = linkBundleNames.indexOf(bundle);
+          if (idx !== -1) {
+            linkBundleNames.splice(idx, 1);
           }
-        }
-        return encodeURI(content).normalize().replace(/%5[Bb]/g, "[").replace(/%5[Dd]/g, "]").replace(/#/g, "%23").replace(/\?/g, "%3F").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      }).join("");
-    }).join("")}/?$`
-    // always match with and without a trailing slash
-  );
-  return {
-    pattern,
-    routeName: pathname,
-    paramNames,
-    segments: segments.map((segment) => {
-      const parts = [];
-      segment.split(/\[(.+?)\]/).map((content, i) => {
-        if (content) {
-          const dynamic = !!(i % 2);
-          parts.push({
-            content,
-            dynamic,
-            rest: dynamic && content.startsWith("...")
-          });
+          linkBundleNames.unshift(bundle);
         }
       });
-      return parts;
-    })
-  };
-}
-var PARAM_PATTERN = /^(\.\.\.)?(\w+)?$/;
-var DYNAMIC_SEGMENT = /\[(.+?)\]/;
-
-// packages/qwik-city/src/buildtime/routing/sort-routes.ts
-function routeSortCompare(a, b) {
-  const maxSegments = Math.max(a.segments.length, b.segments.length);
-  for (let i = 0; i < maxSegments; i += 1) {
-    const sa = a.segments[i];
-    const sb = b.segments[i];
-    if (!sa) {
-      return a.pathname.includes("[...") ? 1 : -1;
     }
-    if (!sb) {
-      return b.pathname.includes("[...") ? -1 : 1;
-    }
-    const maxParts = Math.max(sa.length, sb.length);
-    for (let i2 = 0; i2 < maxParts; i2 += 1) {
-      const pa = sa[i2];
-      const pb = sb[i2];
-      if (pa === void 0) {
-        return pb.dynamic ? -1 : 1;
-      }
-      if (pb === void 0) {
-        return pa.dynamic ? 1 : -1;
-      }
-      if (pa.dynamic !== pb.dynamic) {
-        return pa.dynamic ? 1 : -1;
-      }
-      if (pa.dynamic) {
-        if (pa.rest !== pb.rest) {
-          return pa.rest ? 1 : -1;
-        }
-      }
-    }
-  }
-  if (a.pathname === b.pathname) {
-    return a.ext > b.ext ? -1 : 1;
-  }
-  return a.pathname < b.pathname ? -1 : 1;
-}
-
-// packages/qwik-city/src/buildtime/routing/resolve-source-file.ts
-function resolveSourceFiles(opts, sourceFiles) {
-  const layouts = sourceFiles.filter((s2) => s2.type === "layout").map((s2) => resolveLayout(opts, s2)).sort((a, b) => {
-    return a.id < b.id ? -1 : 1;
-  });
-  const routes = sourceFiles.filter((s2) => s2.type === "route").map((s2) => resolveRoute(opts, layouts, s2)).sort(routeSortCompare);
-  const entries = sourceFiles.filter((s2) => s2.type === "entry").map((s2) => resolveEntry(opts, s2)).sort((a, b) => {
-    return a.chunkFileName < b.chunkFileName ? -1 : 1;
-  });
-  const serviceWorkers = sourceFiles.filter((s2) => s2.type === "service-worker").map((p) => resolveServiceWorkerEntry(opts, p)).sort((a, b) => {
-    return a.chunkFileName < b.chunkFileName ? -1 : 1;
-  });
-  const menus = sourceFiles.filter((s2) => s2.type === "menu").map((p) => resolveMenu(opts, p)).sort((a, b) => {
-    return a.pathname < b.pathname ? -1 : 1;
-  });
-  let inc = 0;
-  const ids = /* @__PURE__ */ new Set();
-  const uniqueIds = (b) => {
-    for (const r2 of b) {
-      let id = r2.id;
-      while (ids.has(id)) {
-        id = `${r2.id}_${inc++}`;
-      }
-      r2.id = id;
-      ids.add(id);
-    }
-  };
-  uniqueIds(layouts);
-  uniqueIds(routes);
-  uniqueIds(entries);
-  uniqueIds(serviceWorkers);
-  return { layouts, routes, entries, menus, serviceWorkers };
-}
-function resolveLayout(opts, layoutSourceFile) {
-  let extlessName = layoutSourceFile.extlessName;
-  const filePath = layoutSourceFile.filePath;
-  const dirPath = layoutSourceFile.dirPath;
-  let layoutName;
-  let layoutType;
-  if (extlessName.endsWith(LAYOUT_TOP_SUFFIX)) {
-    layoutType = "top";
-    extlessName = extlessName.slice(0, extlessName.length - 1);
-  } else {
-    layoutType = "nested";
-  }
-  if (extlessName.startsWith(LAYOUT_NAMED_PREFIX)) {
-    layoutName = extlessName.slice(LAYOUT_NAMED_PREFIX.length);
-  } else {
-    layoutName = "";
-  }
-  const layout = {
-    id: createFileId(opts.routesDir, filePath),
-    filePath,
-    dirPath,
-    layoutType,
-    layoutName
-  };
-  return layout;
-}
-var LAYOUT_ID = "layout";
-var LAYOUT_NAMED_PREFIX = LAYOUT_ID + "-";
-var LAYOUT_TOP_SUFFIX = "!";
-function resolveRoute(opts, appLayouts, sourceFile) {
-  const filePath = sourceFile.filePath;
-  const layouts = [];
-  const routesDir = opts.routesDir;
-  const { layoutName, layoutStop } = parseRouteIndexName(sourceFile.extlessName);
-  let pathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
-  if (sourceFile.extlessName === "404") {
-    pathname += sourceFile.extlessName + ".html";
-  }
-  if (!layoutStop) {
-    let currentDir = normalizePath((0, import_node_path5.dirname)(filePath));
-    let hasFoundNamedLayout = false;
-    const hasNamedLayout = layoutName !== "";
-    for (let i = 0; i < 20; i++) {
-      let layout = void 0;
-      if (hasNamedLayout && !hasFoundNamedLayout) {
-        layout = appLayouts.find((l) => l.dirPath === currentDir && l.layoutName === layoutName);
-        if (layout) {
-          hasFoundNamedLayout = true;
-        }
-      } else {
-        layout = appLayouts.find((l) => l.dirPath === currentDir && l.layoutName === "");
-      }
-      if (layout) {
-        layouts.push(layout);
-        if (layout.layoutType === "top") {
-          break;
-        }
-      }
-      if (currentDir === routesDir) {
-        break;
-      }
-      currentDir = normalizePath((0, import_node_path5.dirname)(currentDir));
-    }
-  }
-  const buildRoute = {
-    id: createFileId(opts.routesDir, filePath, "Route"),
-    filePath,
-    pathname,
-    layouts: layouts.reverse(),
-    ext: sourceFile.ext,
-    ...parseRoutePathname(opts.basePathname, pathname)
-  };
-  return buildRoute;
-}
-function resolveEntry(opts, sourceFile) {
-  const pathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
-  const chunkFileName = pathname.slice(opts.basePathname.length);
-  const buildEntry = {
-    id: createFileId(opts.routesDir, sourceFile.filePath, "Route"),
-    filePath: sourceFile.filePath,
-    chunkFileName,
-    ...parseRoutePathname(opts.basePathname, pathname)
-  };
-  return buildEntry;
-}
-function resolveServiceWorkerEntry(opts, sourceFile) {
-  const dirPathname = getPathnameFromDirPath(opts, sourceFile.dirPath);
-  const pathname = dirPathname + sourceFile.extlessName + ".js";
-  const chunkFileName = pathname.slice(opts.basePathname.length);
-  const buildEntry = {
-    id: createFileId(opts.routesDir, sourceFile.filePath, "ServiceWorker"),
-    filePath: sourceFile.filePath,
-    chunkFileName,
-    ...parseRoutePathname(opts.basePathname, pathname)
-  };
-  return buildEntry;
-}
-
-// packages/qwik-city/src/buildtime/routing/walk-routes-dir.ts
-var import_node_fs3 = __toESM(require("node:fs"), 1);
-var import_node_path6 = require("node:path");
-async function walkRoutes(routesDir) {
-  const sourceFiles = [];
-  await walkRouteDir(sourceFiles, normalizePath(routesDir), (0, import_node_path6.basename)(routesDir));
-  return sourceFiles;
-}
-async function walkRouteDir(sourceFiles, dirPath, dirName) {
-  const dirItemNames = await import_node_fs3.default.promises.readdir(dirPath);
-  await Promise.all(
-    dirItemNames.map(async (itemName) => {
-      const itemPath = normalizePath((0, import_node_path6.join)(dirPath, itemName));
-      const stat = await import_node_fs3.default.promises.stat(itemPath);
-      if (stat.isDirectory()) {
-        await walkRouteDir(sourceFiles, itemPath, itemName);
-      } else {
-        const sourceFileName = getSourceFile(itemName);
-        if (sourceFileName !== null) {
-          sourceFiles.push({
-            ...sourceFileName,
-            fileName: itemName,
-            filePath: itemPath,
-            dirName,
-            dirPath
-          });
-        }
-      }
-    })
-  );
-}
-
-// packages/qwik-city/src/buildtime/routing/walk-server-plugins.ts
-var import_node_fs4 = __toESM(require("node:fs"), 1);
-var import_node_path7 = require("node:path");
-async function walkServerPlugins(opts) {
-  const dirPath = opts.serverPluginsDir;
-  const dirItemNames = await import_node_fs4.default.promises.readdir(dirPath);
-  const sourceFiles = [];
-  await Promise.all(
-    dirItemNames.map(async (itemName) => {
-      const itemPath = normalizePath((0, import_node_path7.join)(dirPath, itemName));
-      const ext = getExtension(itemName);
-      const extlessName = removeExtension(itemName);
-      if ((isModuleExt(ext) || isPageModuleExt(ext)) && isPluginModule(extlessName)) {
-        sourceFiles.push({
-          id: createFileId(opts.serverPluginsDir, itemPath, "Plugin"),
-          filePath: itemPath,
-          ext
-        });
-      }
-    })
-  );
-  return sourceFiles;
-}
-
-// packages/qwik-city/src/buildtime/build.ts
-async function build(ctx) {
-  try {
-    await updateBuildContext(ctx);
-    validateBuild(ctx);
-  } catch (e) {
-    addError(ctx, e);
-  }
-  for (const d of ctx.diagnostics) {
-    if (d.type === "error") {
-      throw new Error(d.message);
-    } else {
-      console.warn(d.message);
-    }
-  }
-}
-async function updateBuildContext(ctx) {
-  if (!ctx.activeBuild) {
-    ctx.activeBuild = new Promise((resolve4, reject) => {
-      walkServerPlugins(ctx.opts).then((serverPlugins) => {
-        ctx.serverPlugins = serverPlugins;
-        return walkRoutes(ctx.opts.routesDir);
-      }).then((sourceFiles) => {
-        const resolved = resolveSourceFiles(ctx.opts, sourceFiles);
-        rewriteRoutes(ctx, resolved);
-        ctx.layouts = resolved.layouts;
-        ctx.routes = resolved.routes;
-        ctx.entries = resolved.entries;
-        ctx.serviceWorkers = resolved.serviceWorkers;
-        ctx.menus = resolved.menus;
-        resolve4();
-      }, reject).finally(() => {
-        ctx.activeBuild = null;
-      });
-    });
-  }
-  return ctx.activeBuild;
-}
-function rewriteRoutes(ctx, resolvedFiles) {
-  if (!ctx.opts.rewriteRoutes || !resolvedFiles.routes) {
-    return;
-  }
-  const translatedRoutes = [];
-  let segmentsToTranslate = ctx.opts.rewriteRoutes.flatMap((rewriteConfig) => {
-    return Object.keys(rewriteConfig.paths || {});
-  });
-  segmentsToTranslate = Array.from(new Set(segmentsToTranslate));
-  resolvedFiles.routes.forEach((route) => {
-    translatedRoutes.push(route);
-    const currentRouteSegments = route.pathname.split("/");
-    const foundSegmentToTranslate = currentRouteSegments.some(
-      (segment) => segmentsToTranslate.includes(segment)
+    linkBundles.push(
+      `[${r2.pattern.toString()},${JSON.stringify(
+        linkBundleNames.map((bundleName) => getAppBundleIndex(appBundles, bundleName))
+      )}]`
     );
-    if (foundSegmentToTranslate || route.pathname === "/") {
-      ctx.opts.rewriteRoutes.forEach((config, configIndex) => {
-        if (route.pathname === "/" && !config.prefix) {
-          return;
-        }
-        const routeToPush = translateRoute(route, config, configIndex);
-        translatedRoutes.push(routeToPush);
-      });
-    }
-  });
-  resolvedFiles.routes = translatedRoutes;
-}
-function translateRoute(route, config, configIndex) {
-  var _a2;
-  const replacePath = (part) => (config.paths || {})[part] ?? part;
-  const pathnamePrefix = config.prefix ? "/" + config.prefix : "";
-  const routeNamePrefix = config.prefix ? config.prefix + "/" : "";
-  const idSuffix = (_a2 = config.prefix) == null ? void 0 : _a2.toUpperCase().replace(/-/g, "");
-  const patternInfix = config.prefix ? [config.prefix] : [];
-  const splittedPathName = route.pathname.split("/");
-  const translatedPathParts = splittedPathName.map(replacePath);
-  const splittedRouteName = route.routeName.split("/");
-  const translatedRouteParts = splittedRouteName.map(replacePath);
-  const splittedPattern = route.pattern.toString().split("\\/");
-  const [translatedPatternFirst, ...translatedPatternOthers] = splittedPattern.map(replacePath);
-  const translatedPatternParts = [
-    translatedPatternFirst,
-    ...patternInfix,
-    ...translatedPatternOthers
-  ];
-  const translatedPatternString = translatedPatternParts.join("\\/");
-  const translatedRegExp = translatedPatternString.substring(
-    1,
-    route.pathname === "/" ? translatedPatternString.length - 1 : translatedPatternString.length - 2
-  );
-  const translatedSegments = route.segments.map(
-    (segment) => segment.map((item) => ({ ...item, content: replacePath(item.content) }))
-  );
-  if (config.prefix) {
-    translatedSegments.splice(0, 0, [
-      {
-        content: config.prefix,
-        dynamic: false,
-        rest: false
-      }
-    ]);
+    routeToBundles[r2.routeName] = linkBundleNames;
   }
-  const translatedPath = translatedPathParts.join("/");
-  const translatedRoute = translatedRouteParts.join("/");
-  const routeToPush = {
-    ...route,
-    id: route.id + (idSuffix || configIndex),
-    pathname: pathnamePrefix + translatedPath,
-    routeName: routeNamePrefix + (translatedRoute !== "/" ? translatedRoute : ""),
-    pattern: new RegExp(translatedRegExp),
-    segments: translatedSegments
-  };
-  return routeToPush;
+  return [`const linkBundles=[${linkBundles.join(",")}];`, routeToBundles];
 }
-function validateBuild(ctx) {
-  const pathnames = Array.from(new Set(ctx.routes.map((r2) => r2.pathname))).sort();
-  for (const pathname of pathnames) {
-    const foundRoutes = ctx.routes.filter((r2) => r2.pathname === pathname);
-    if (foundRoutes.length > 1) {
-      addError(
-        ctx,
-        `More than one route has been found for pathname "${pathname}". Please narrow it down to only one of these:
-${foundRoutes.map((r2) => `  - ${r2.filePath}`).join("\n")}`
-      );
-    }
+function getAppBundleIndex(appBundles, bundleName) {
+  return appBundles.findIndex((b) => b[0] === bundleName);
+}
+var SW_UNREGISTER = `
+navigator.serviceWorker?.getRegistrations().then((regs) => {
+  for (const reg of regs) {
+    reg.unregister();
   }
-  ctx.layouts.filter((l) => l.layoutType === "top").forEach((l) => {
-    addWarning(
-      ctx,
-      `The "top" layout feature, which is used by "${l.filePath}" has been deprecated and will be removed from future versions. In most cases the "group" layout feature can be used in its place: https://qwik.dev/qwikcity/layout/grouped/`
-    );
-  });
-}
+});
+`;
 
 // packages/qwik-city/src/buildtime/vite/dev-server.ts
 var import_node_fs6 = __toESM(require("node:fs"), 1);
@@ -24906,1273 +26439,6 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
   };
   return serverRequestEv;
 }
-
-// packages/qwik-city/src/runtime/src/constants.ts
-var QACTION_KEY = "qaction";
-var QFN_KEY = "qfunc";
-var QDATA_KEY = "qdata";
-
-// packages/qwik-city/src/middleware/request-handler/error-handler.ts
-var ServerError = class extends Error {
-  constructor(status, data) {
-    super();
-    this.status = status;
-    this.data = data;
-  }
-};
-var ErrorResponse = class extends Error {
-  constructor(status, message) {
-    super(message);
-    this.status = status;
-  }
-};
-function getErrorHtml(status, e) {
-  let message = "Server Error";
-  if (e != null) {
-    if (typeof e.message === "string") {
-      message = e.message;
-    } else {
-      message = String(e);
-    }
-  }
-  return `<html>` + minimalHtmlResponse(status, message) + `</html>`;
-}
-function minimalHtmlResponse(status, message) {
-  if (typeof status !== "number") {
-    status = 500;
-  }
-  if (typeof message === "string") {
-    message = escapeHtml(message);
-  } else {
-    message = "";
-  }
-  const width = typeof message === "string" ? "600px" : "300px";
-  const color2 = status >= 500 ? COLOR_500 : COLOR_400;
-  return `
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Status" content="${status}">
-  <title>${status} ${message}</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <style>
-    body { color: ${color2}; background-color: #fafafa; padding: 30px; font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif; }
-    p { max-width: ${width}; margin: 60px auto 30px auto; background: white; border-radius: 4px; box-shadow: 0px 0px 50px -20px ${color2}; overflow: hidden; }
-    strong { display: inline-block; padding: 15px; background: ${color2}; color: white; }
-    span { display: inline-block; padding: 15px; }
-  </style>
-</head>
-<body><p><strong>${status}</strong> <span>${message}</span></p></body>
-`;
-}
-var ESCAPE_HTML = /[&<>]/g;
-var escapeHtml = (s2) => {
-  return s2.replace(ESCAPE_HTML, (c2) => {
-    switch (c2) {
-      case "&":
-        return "&amp;";
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      default:
-        return "";
-    }
-  });
-};
-var COLOR_400 = "#006ce9";
-var COLOR_500 = "#713fc2";
-
-// packages/qwik-city/src/middleware/request-handler/redirect-handler.ts
-var AbortMessage = class {
-};
-var RedirectMessage = class extends AbortMessage {
-};
-
-// packages/qwik-city/src/middleware/request-handler/cookie.ts
-var SAMESITE = {
-  lax: "Lax",
-  Lax: "Lax",
-  None: "None",
-  none: "None",
-  strict: "Strict",
-  Strict: "Strict"
-};
-var UNIT = {
-  seconds: 1,
-  minutes: 1 * 60,
-  hours: 1 * 60 * 60,
-  days: 1 * 60 * 60 * 24,
-  weeks: 1 * 60 * 60 * 24 * 7
-};
-var createSetCookieValue = (cookieName, cookieValue, options2) => {
-  const c2 = [`${cookieName}=${cookieValue}`];
-  if (typeof options2.domain === "string") {
-    c2.push(`Domain=${options2.domain}`);
-  }
-  if (typeof options2.maxAge === "number") {
-    c2.push(`Max-Age=${options2.maxAge}`);
-  } else if (Array.isArray(options2.maxAge)) {
-    c2.push(`Max-Age=${options2.maxAge[0] * UNIT[options2.maxAge[1]]}`);
-  } else if (typeof options2.expires === "number" || typeof options2.expires == "string") {
-    c2.push(`Expires=${options2.expires}`);
-  } else if (options2.expires instanceof Date) {
-    c2.push(`Expires=${options2.expires.toUTCString()}`);
-  }
-  if (options2.httpOnly) {
-    c2.push("HttpOnly");
-  }
-  if (typeof options2.path === "string") {
-    c2.push(`Path=${options2.path}`);
-  }
-  const sameSite = resolveSameSite(options2.sameSite);
-  if (sameSite) {
-    c2.push(`SameSite=${sameSite}`);
-  }
-  if (options2.secure) {
-    c2.push("Secure");
-  }
-  return c2.join("; ");
-};
-function tryDecodeUriComponent(str) {
-  try {
-    return decodeURIComponent(str);
-  } catch {
-    return str;
-  }
-}
-var parseCookieString = (cookieString) => {
-  const cookie = {};
-  if (typeof cookieString === "string" && cookieString !== "") {
-    const cookieSegments = cookieString.split(";");
-    for (const cookieSegment of cookieSegments) {
-      const separatorIndex = cookieSegment.indexOf("=");
-      if (separatorIndex !== -1) {
-        cookie[tryDecodeUriComponent(cookieSegment.slice(0, separatorIndex).trim())] = tryDecodeUriComponent(cookieSegment.slice(separatorIndex + 1).trim());
-      }
-    }
-  }
-  return cookie;
-};
-function resolveSameSite(sameSite) {
-  if (sameSite === true) {
-    return "Strict";
-  }
-  if (sameSite === false) {
-    return "None";
-  }
-  if (sameSite) {
-    return SAMESITE[sameSite];
-  }
-  return void 0;
-}
-var REQ_COOKIE = Symbol("request-cookies");
-var RES_COOKIE = Symbol("response-cookies");
-var LIVE_COOKIE = Symbol("live-cookies");
-var _a, _b;
-var Cookie = class {
-  constructor(cookieString) {
-    this[_a] = {};
-    this[_b] = {};
-    this.appendCounter = 0;
-    this[REQ_COOKIE] = parseCookieString(cookieString);
-    this[LIVE_COOKIE] = { ...this[REQ_COOKIE] };
-  }
-  get(cookieName, live = true) {
-    const value2 = this[live ? LIVE_COOKIE : REQ_COOKIE][cookieName];
-    if (!value2) {
-      return null;
-    }
-    return {
-      value: value2,
-      json() {
-        return JSON.parse(value2);
-      },
-      number() {
-        return Number(value2);
-      }
-    };
-  }
-  getAll(live = true) {
-    return Object.keys(this[live ? LIVE_COOKIE : REQ_COOKIE]).reduce(
-      (cookies, cookieName) => {
-        cookies[cookieName] = this.get(cookieName);
-        return cookies;
-      },
-      {}
-    );
-  }
-  has(cookieName, live = true) {
-    return !!this[live ? LIVE_COOKIE : REQ_COOKIE][cookieName];
-  }
-  set(cookieName, cookieValue, options2 = {}) {
-    this[LIVE_COOKIE][cookieName] = typeof cookieValue === "string" ? cookieValue : JSON.stringify(cookieValue);
-    const resolvedValue = typeof cookieValue === "string" ? cookieValue : encodeURIComponent(JSON.stringify(cookieValue));
-    this[RES_COOKIE][cookieName] = createSetCookieValue(cookieName, resolvedValue, options2);
-  }
-  append(cookieName, cookieValue, options2 = {}) {
-    this[LIVE_COOKIE][cookieName] = typeof cookieValue === "string" ? cookieValue : JSON.stringify(cookieValue);
-    const resolvedValue = typeof cookieValue === "string" ? cookieValue : encodeURIComponent(JSON.stringify(cookieValue));
-    this[RES_COOKIE][++this.appendCounter] = createSetCookieValue(
-      cookieName,
-      resolvedValue,
-      options2
-    );
-  }
-  delete(name, options2) {
-    this.set(name, "deleted", { ...options2, maxAge: 0 });
-    this[LIVE_COOKIE][name] = null;
-  }
-  headers() {
-    return Object.values(this[RES_COOKIE]);
-  }
-};
-REQ_COOKIE, _a = RES_COOKIE, _b = LIVE_COOKIE;
-
-// packages/qwik-city/src/middleware/request-handler/cache-control.ts
-function createCacheControl(cacheControl) {
-  const controls = [];
-  if (cacheControl === "day") {
-    cacheControl = 60 * 60 * 24;
-  } else if (cacheControl === "week") {
-    cacheControl = 60 * 60 * 24 * 7;
-  } else if (cacheControl === "month") {
-    cacheControl = 60 * 60 * 24 * 30;
-  } else if (cacheControl === "year") {
-    cacheControl = 60 * 60 * 24 * 365;
-  } else if (cacheControl === "private") {
-    cacheControl = {
-      private: true,
-      noCache: true
-    };
-  } else if (cacheControl === "immutable") {
-    cacheControl = {
-      public: true,
-      immutable: true,
-      maxAge: 60 * 60 * 24 * 365,
-      staleWhileRevalidate: 60 * 60 * 24 * 365
-    };
-  } else if (cacheControl === "no-cache") {
-    cacheControl = {
-      noCache: true
-    };
-  }
-  if (typeof cacheControl === "number") {
-    cacheControl = {
-      maxAge: cacheControl,
-      sMaxAge: cacheControl,
-      staleWhileRevalidate: cacheControl
-    };
-  }
-  if (cacheControl.immutable) {
-    controls.push("immutable");
-  }
-  if (cacheControl.maxAge) {
-    controls.push(`max-age=${cacheControl.maxAge}`);
-  }
-  if (cacheControl.sMaxAge) {
-    controls.push(`s-maxage=${cacheControl.sMaxAge}`);
-  }
-  if (cacheControl.noStore) {
-    controls.push("no-store");
-  }
-  if (cacheControl.noCache) {
-    controls.push("no-cache");
-  }
-  if (cacheControl.private) {
-    controls.push("private");
-  }
-  if (cacheControl.public) {
-    controls.push("public");
-  }
-  if (cacheControl.staleWhileRevalidate) {
-    controls.push(`stale-while-revalidate=${cacheControl.staleWhileRevalidate}`);
-  }
-  if (cacheControl.staleIfError) {
-    controls.push(`stale-if-error=${cacheControl.staleIfError}`);
-  }
-  return controls.join(", ");
-}
-
-// packages/qwik-city/src/middleware/request-handler/user-response.ts
-var asyncStore;
-import("node:async_hooks").then((module2) => {
-  const AsyncLocalStorage = module2.AsyncLocalStorage;
-  asyncStore = new AsyncLocalStorage();
-  globalThis.qcAsyncRequestStore = asyncStore;
-}).catch((err) => {
-  console.warn(
-    "AsyncLocalStorage not available, continuing without it. This might impact concurrent server calls.",
-    err
-  );
-});
-function runQwikCity(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash = true, basePathname = "/", qwikSerializer) {
-  let resolve4;
-  const responsePromise = new Promise((r2) => resolve4 = r2);
-  const requestEv = createRequestEvent(
-    serverRequestEv,
-    loadedRoute,
-    requestHandlers,
-    manifest,
-    trailingSlash,
-    basePathname,
-    qwikSerializer,
-    resolve4
-  );
-  return {
-    response: responsePromise,
-    requestEv,
-    completion: asyncStore ? asyncStore.run(requestEv, runNext, requestEv, resolve4) : runNext(requestEv, resolve4)
-  };
-}
-async function runNext(requestEv, resolve4) {
-  try {
-    await requestEv.next();
-  } catch (e) {
-    if (e instanceof RedirectMessage) {
-      const stream = requestEv.getWritableStream();
-      await stream.close();
-    } else if (e instanceof ErrorResponse) {
-      console.error(e);
-      if (!requestEv.headersSent) {
-        const html5 = getErrorHtml(e.status, e);
-        const status = e.status;
-        requestEv.html(status, html5);
-      }
-    } else if (!(e instanceof AbortMessage)) {
-      if (getRequestMode(requestEv) !== "dev") {
-        try {
-          if (!requestEv.headersSent) {
-            requestEv.headers.set("content-type", "text/html; charset=utf-8");
-            requestEv.cacheControl({ noCache: true });
-            requestEv.status(500);
-          }
-          const stream = requestEv.getWritableStream();
-          if (!stream.locked) {
-            const writer = stream.getWriter();
-            await writer.write(encoder.encode(minimalHtmlResponse(500, "Internal Server Error")));
-            await writer.close();
-          }
-        } catch {
-          console.error("Unable to render error page");
-        }
-      }
-      return e;
-    }
-  } finally {
-    if (!requestEv.isDirty()) {
-      resolve4(null);
-    }
-  }
-  return void 0;
-}
-function getRouteMatchPathname(pathname, trailingSlash) {
-  if (pathname.endsWith(QDATA_JSON)) {
-    const trimEnd = pathname.length - QDATA_JSON_LEN + (trailingSlash ? 1 : 0);
-    pathname = pathname.slice(0, trimEnd);
-    if (pathname === "") {
-      pathname = "/";
-    }
-  }
-  return pathname;
-}
-var IsQData = "@isQData";
-var QDATA_JSON = "/q-data.json";
-var QDATA_JSON_LEN = QDATA_JSON.length;
-
-// packages/qwik-city/src/runtime/src/utils.ts
-var isPromise = (value2) => {
-  return value2 && typeof value2.then === "function";
-};
-
-// packages/qwik-city/src/middleware/request-handler/request-event.ts
-var RequestEvLoaders = Symbol("RequestEvLoaders");
-var RequestEvMode = Symbol("RequestEvMode");
-var RequestEvRoute = Symbol("RequestEvRoute");
-var RequestEvQwikSerializer = Symbol("RequestEvQwikSerializer");
-var RequestEvTrailingSlash = Symbol("RequestEvTrailingSlash");
-var RequestRouteName = "@routeName";
-var RequestEvSharedActionId = "@actionId";
-var RequestEvSharedActionFormData = "@actionFormData";
-var RequestEvSharedNonce = "@nonce";
-function createRequestEvent(serverRequestEv, loadedRoute, requestHandlers, manifest, trailingSlash, basePathname, qwikSerializer, resolved) {
-  const { request, platform, env: env2 } = serverRequestEv;
-  const sharedMap = /* @__PURE__ */ new Map();
-  const cookie = new Cookie(request.headers.get("cookie"));
-  const headers = new Headers();
-  const url = new URL(request.url);
-  if (url.pathname.endsWith(QDATA_JSON)) {
-    url.pathname = url.pathname.slice(0, -QDATA_JSON_LEN);
-    if (trailingSlash && !url.pathname.endsWith("/")) {
-      url.pathname += "/";
-    }
-    sharedMap.set(IsQData, true);
-  }
-  sharedMap.set("@manifest", manifest);
-  let routeModuleIndex = -1;
-  let writableStream = null;
-  let requestData = void 0;
-  let locale = serverRequestEv.locale;
-  let status = 200;
-  const next = async () => {
-    routeModuleIndex++;
-    while (routeModuleIndex < requestHandlers.length) {
-      const moduleRequestHandler = requestHandlers[routeModuleIndex];
-      const asyncStore2 = globalThis.qcAsyncRequestStore;
-      const result = (asyncStore2 == null ? void 0 : asyncStore2.run) ? asyncStore2.run(requestEv, moduleRequestHandler, requestEv) : moduleRequestHandler(requestEv);
-      if (isPromise(result)) {
-        await result;
-      }
-      routeModuleIndex++;
-    }
-  };
-  const check = () => {
-    if (writableStream !== null) {
-      throw new Error("Response already sent");
-    }
-  };
-  const send = (statusOrResponse, body) => {
-    check();
-    if (typeof statusOrResponse === "number") {
-      status = statusOrResponse;
-      const writableStream2 = requestEv.getWritableStream();
-      const writer = writableStream2.getWriter();
-      writer.write(typeof body === "string" ? encoder.encode(body) : body);
-      writer.close();
-    } else {
-      status = statusOrResponse.status;
-      statusOrResponse.headers.forEach((value2, key) => {
-        headers.append(key, value2);
-      });
-      if (statusOrResponse.body) {
-        const writableStream2 = requestEv.getWritableStream();
-        statusOrResponse.body.pipeTo(writableStream2);
-      } else {
-        if (status >= 300 && status < 400) {
-          return new RedirectMessage();
-        } else {
-          requestEv.getWritableStream().getWriter().close();
-        }
-      }
-    }
-    return exit2();
-  };
-  const exit2 = () => {
-    routeModuleIndex = ABORT_INDEX;
-    return new AbortMessage();
-  };
-  const loaders = {};
-  const requestEv = {
-    [RequestEvLoaders]: loaders,
-    [RequestEvMode]: serverRequestEv.mode,
-    [RequestEvTrailingSlash]: trailingSlash,
-    [RequestEvRoute]: loadedRoute,
-    [RequestEvQwikSerializer]: qwikSerializer,
-    cookie,
-    headers,
-    env: env2,
-    method: request.method,
-    signal: request.signal,
-    params: (loadedRoute == null ? void 0 : loadedRoute[1]) ?? {},
-    pathname: url.pathname,
-    platform,
-    query: url.searchParams,
-    request,
-    url,
-    basePathname,
-    sharedMap,
-    get headersSent() {
-      return writableStream !== null;
-    },
-    get exited() {
-      return routeModuleIndex >= ABORT_INDEX;
-    },
-    get clientConn() {
-      return serverRequestEv.getClientConn();
-    },
-    next,
-    exit: exit2,
-    cacheControl: (cacheControl, target = "Cache-Control") => {
-      check();
-      headers.set(target, createCacheControl(cacheControl));
-    },
-    resolveValue: async (loaderOrAction) => {
-      const id = loaderOrAction.__id;
-      if (loaderOrAction.__brand === "server_loader") {
-        if (!(id in loaders)) {
-          throw new Error(
-            "You can not get the returned data of a loader that has not been executed for this request."
-          );
-        }
-      }
-      return loaders[id];
-    },
-    status: (statusCode) => {
-      if (typeof statusCode === "number") {
-        check();
-        status = statusCode;
-        return statusCode;
-      }
-      return status;
-    },
-    locale: (_locale) => {
-      if (typeof _locale === "string") {
-        locale = _locale;
-      }
-      return locale || "";
-    },
-    error: (statusCode, message) => {
-      status = statusCode;
-      headers.delete("Cache-Control");
-      return new ErrorResponse(statusCode, message);
-    },
-    redirect: (statusCode, url2) => {
-      check();
-      status = statusCode;
-      if (url2) {
-        const fixedURL = url2.replace(/([^:])\/{2,}/g, "$1/");
-        if (url2 !== fixedURL) {
-          console.warn(`Redirect URL ${url2} is invalid, fixing to ${fixedURL}`);
-        }
-        headers.set("Location", fixedURL);
-      }
-      headers.delete("Cache-Control");
-      if (statusCode > 301) {
-        headers.set("Cache-Control", "no-store");
-      }
-      exit2();
-      return new RedirectMessage();
-    },
-    defer: (returnData) => {
-      return typeof returnData === "function" ? returnData : () => returnData;
-    },
-    fail: (statusCode, data) => {
-      check();
-      status = statusCode;
-      headers.delete("Cache-Control");
-      return {
-        failed: true,
-        ...data
-      };
-    },
-    text: (statusCode, text3) => {
-      headers.set("Content-Type", "text/plain; charset=utf-8");
-      return send(statusCode, text3);
-    },
-    html: (statusCode, html5) => {
-      headers.set("Content-Type", "text/html; charset=utf-8");
-      return send(statusCode, html5);
-    },
-    parseBody: async () => {
-      if (requestData !== void 0) {
-        return requestData;
-      }
-      return requestData = parseRequest(requestEv, sharedMap, qwikSerializer);
-    },
-    json: (statusCode, data) => {
-      headers.set("Content-Type", "application/json; charset=utf-8");
-      return send(statusCode, JSON.stringify(data));
-    },
-    send,
-    isDirty: () => {
-      return writableStream !== null;
-    },
-    getWritableStream: () => {
-      if (writableStream === null) {
-        if (serverRequestEv.mode === "dev") {
-          const serverTiming = sharedMap.get("@serverTiming");
-          if (serverTiming) {
-            headers.set("Server-Timing", serverTiming.map((a) => `${a[0]};dur=${a[1]}`).join(","));
-          }
-        }
-        writableStream = serverRequestEv.getWritableStream(
-          status,
-          headers,
-          cookie,
-          resolved,
-          requestEv
-        );
-      }
-      return writableStream;
-    }
-  };
-  return Object.freeze(requestEv);
-}
-function getRequestLoaders(requestEv) {
-  return requestEv[RequestEvLoaders];
-}
-function getRequestTrailingSlash(requestEv) {
-  return requestEv[RequestEvTrailingSlash];
-}
-function getRequestRoute(requestEv) {
-  return requestEv[RequestEvRoute];
-}
-function getRequestMode(requestEv) {
-  return requestEv[RequestEvMode];
-}
-var ABORT_INDEX = Number.MAX_SAFE_INTEGER;
-var parseRequest = async ({ request, method, query }, sharedMap, qwikSerializer) => {
-  var _a2;
-  const type = ((_a2 = request.headers.get("content-type")) == null ? void 0 : _a2.split(/[;,]/, 1)[0].trim()) ?? "";
-  if (type === "application/x-www-form-urlencoded" || type === "multipart/form-data") {
-    const formData = await request.formData();
-    sharedMap.set(RequestEvSharedActionFormData, formData);
-    return formToObj(formData);
-  } else if (type === "application/json") {
-    const data = await request.json();
-    return data;
-  } else if (type === "application/qwik-json") {
-    if (method === "GET" && query.has(QDATA_KEY)) {
-      const data = query.get(QDATA_KEY);
-      if (data) {
-        try {
-          return qwikSerializer._deserialize(decodeURIComponent(data));
-        } catch (err) {
-        }
-      }
-    }
-    return qwikSerializer._deserialize(await request.text());
-  }
-  return void 0;
-};
-var formToObj = (formData) => {
-  const values = [...formData.entries()].reduce((values2, [name, value2]) => {
-    name.split(".").reduce((object, key, index, keys2) => {
-      if (key.endsWith("[]")) {
-        const arrayKey = key.slice(0, -2);
-        object[arrayKey] = object[arrayKey] || [];
-        return object[arrayKey] = [...object[arrayKey], value2];
-      }
-      if (index < keys2.length - 1) {
-        return object[key] = object[key] || (Number.isNaN(+keys2[index + 1]) ? {} : []);
-      }
-      return object[key] = value2;
-    }, values2);
-    return values2;
-  }, {});
-  return values;
-};
-
-// packages/qwik-city/src/middleware/request-handler/response-page.ts
-function getQwikCityServerData(requestEv) {
-  const { url, params, request, status, locale } = requestEv;
-  const requestHeaders = {};
-  request.headers.forEach((value2, key) => requestHeaders[key] = value2);
-  const action = requestEv.sharedMap.get(RequestEvSharedActionId);
-  const formData = requestEv.sharedMap.get(RequestEvSharedActionFormData);
-  const routeName = requestEv.sharedMap.get(RequestRouteName);
-  const nonce = requestEv.sharedMap.get(RequestEvSharedNonce);
-  const headers = requestEv.request.headers;
-  const reconstructedUrl = new URL(url.pathname + url.search, url);
-  const host = headers.get("X-Forwarded-Host");
-  const protocol = headers.get("X-Forwarded-Proto");
-  if (host) {
-    reconstructedUrl.port = "";
-    reconstructedUrl.host = host;
-  }
-  if (protocol) {
-    reconstructedUrl.protocol = protocol;
-  }
-  return {
-    url: reconstructedUrl.href,
-    requestHeaders,
-    locale: locale(),
-    nonce,
-    containerAttributes: {
-      "q:route": routeName
-    },
-    qwikcity: {
-      routeName,
-      ev: requestEv,
-      params: { ...params },
-      loadedRoute: getRequestRoute(requestEv),
-      response: {
-        status: status(),
-        loaders: getRequestLoaders(requestEv),
-        action,
-        formData
-      }
-    }
-  };
-}
-
-// packages/qwik-city/src/middleware/request-handler/resolve-request-handlers.ts
-var resolveRequestHandlers = (serverPlugins, route, method, checkOrigin, renderHandler) => {
-  const routeLoaders = [];
-  const routeActions = [];
-  const requestHandlers = [];
-  const isPageRoute = !!(route && isLastModulePageRoute(route[2]));
-  if (serverPlugins) {
-    _resolveRequestHandlers(
-      routeLoaders,
-      routeActions,
-      requestHandlers,
-      serverPlugins,
-      isPageRoute,
-      method
-    );
-  }
-  if (route) {
-    const routeName = route[0];
-    if (checkOrigin && (method === "POST" || method === "PUT" || method === "PATCH" || method === "DELETE")) {
-      requestHandlers.unshift(csrfCheckMiddleware);
-    }
-    if (isPageRoute) {
-      if (method === "POST" || method === "GET") {
-        requestHandlers.push(pureServerFunction);
-      }
-      requestHandlers.push(fixTrailingSlash);
-      requestHandlers.push(renderQData);
-    }
-    const routeModules = route[2];
-    requestHandlers.push(handleRedirect);
-    _resolveRequestHandlers(
-      routeLoaders,
-      routeActions,
-      requestHandlers,
-      routeModules,
-      isPageRoute,
-      method
-    );
-    if (isPageRoute) {
-      requestHandlers.push((ev) => {
-        ev.sharedMap.set(RequestRouteName, routeName);
-      });
-      requestHandlers.push(actionsMiddleware(routeActions, routeLoaders));
-      requestHandlers.push(renderHandler);
-    }
-  }
-  return requestHandlers;
-};
-var _resolveRequestHandlers = (routeLoaders, routeActions, requestHandlers, routeModules, collectActions, method) => {
-  for (const routeModule of routeModules) {
-    if (typeof routeModule.onRequest === "function") {
-      requestHandlers.push(routeModule.onRequest);
-    } else if (Array.isArray(routeModule.onRequest)) {
-      requestHandlers.push(...routeModule.onRequest);
-    }
-    let methodReqHandler;
-    switch (method) {
-      case "GET": {
-        methodReqHandler = routeModule.onGet;
-        break;
-      }
-      case "POST": {
-        methodReqHandler = routeModule.onPost;
-        break;
-      }
-      case "PUT": {
-        methodReqHandler = routeModule.onPut;
-        break;
-      }
-      case "PATCH": {
-        methodReqHandler = routeModule.onPatch;
-        break;
-      }
-      case "DELETE": {
-        methodReqHandler = routeModule.onDelete;
-        break;
-      }
-      case "OPTIONS": {
-        methodReqHandler = routeModule.onOptions;
-        break;
-      }
-      case "HEAD": {
-        methodReqHandler = routeModule.onHead;
-        break;
-      }
-    }
-    if (typeof methodReqHandler === "function") {
-      requestHandlers.push(methodReqHandler);
-    } else if (Array.isArray(methodReqHandler)) {
-      requestHandlers.push(...methodReqHandler);
-    }
-    if (collectActions) {
-      for (const module2 of Object.values(routeModule)) {
-        if (typeof module2 === "function") {
-          if (module2.__brand === "server_loader") {
-            routeLoaders.push(module2);
-          } else if (module2.__brand === "server_action") {
-            routeActions.push(module2);
-          }
-        }
-      }
-    }
-  }
-};
-var checkBrand = (obj, brand) => {
-  return obj && typeof obj === "function" && obj.__brand === brand;
-};
-function actionsMiddleware(routeActions, routeLoaders) {
-  return async (requestEv) => {
-    if (requestEv.headersSent) {
-      requestEv.exit();
-      return;
-    }
-    const { method } = requestEv;
-    const loaders = getRequestLoaders(requestEv);
-    const isDev = getRequestMode(requestEv) === "dev";
-    const qwikSerializer = requestEv[RequestEvQwikSerializer];
-    if (isDev && method === "GET") {
-      if (requestEv.query.has(QACTION_KEY)) {
-        console.warn(
-          'Seems like you are submitting a Qwik Action via GET request. Qwik Actions should be submitted via POST request.\nMake sure your <form> has method="POST" attribute, like this: <form method="POST">'
-        );
-      }
-    }
-    if (method === "POST") {
-      const selectedActionId = requestEv.query.get(QACTION_KEY);
-      if (selectedActionId) {
-        const serverActionsMap = globalThis._qwikActionsMap;
-        const action = routeActions.find((action2) => action2.__id === selectedActionId) ?? (serverActionsMap == null ? void 0 : serverActionsMap.get(selectedActionId));
-        if (action) {
-          requestEv.sharedMap.set(RequestEvSharedActionId, selectedActionId);
-          const data = await requestEv.parseBody();
-          if (!data || typeof data !== "object") {
-            throw new Error(
-              `Expected request data for the action id ${selectedActionId} to be an object`
-            );
-          }
-          const result = await runValidators(requestEv, action.__validators, data, isDev);
-          if (!result.success) {
-            loaders[selectedActionId] = requestEv.fail(result.status ?? 500, result.error);
-          } else {
-            const actionResolved = isDev ? await measure(
-              requestEv,
-              action.__qrl.getSymbol().split("_", 1)[0],
-              () => action.__qrl.call(requestEv, result.data, requestEv)
-            ) : await action.__qrl.call(requestEv, result.data, requestEv);
-            if (isDev) {
-              verifySerializable(qwikSerializer, actionResolved, action.__qrl);
-            }
-            loaders[selectedActionId] = actionResolved;
-          }
-        }
-      }
-    }
-    if (routeLoaders.length > 0) {
-      const resolvedLoadersPromises = routeLoaders.map((loader) => {
-        const loaderId = loader.__id;
-        loaders[loaderId] = runValidators(
-          requestEv,
-          loader.__validators,
-          void 0,
-          // data
-          isDev
-        ).then((res) => {
-          if (res.success) {
-            if (isDev) {
-              return measure(
-                requestEv,
-                loader.__qrl.getSymbol().split("_", 1)[0],
-                () => loader.__qrl.call(requestEv, requestEv)
-              );
-            } else {
-              return loader.__qrl.call(requestEv, requestEv);
-            }
-          } else {
-            return requestEv.fail(res.status ?? 500, res.error);
-          }
-        }).then((resolvedLoader) => {
-          if (typeof resolvedLoader === "function") {
-            loaders[loaderId] = resolvedLoader();
-          } else {
-            if (isDev) {
-              verifySerializable(qwikSerializer, resolvedLoader, loader.__qrl);
-            }
-            loaders[loaderId] = resolvedLoader;
-          }
-          return resolvedLoader;
-        });
-        return loaders[loaderId];
-      });
-      await Promise.all(resolvedLoadersPromises);
-    }
-  };
-}
-async function runValidators(requestEv, validators, data, isDev) {
-  let lastResult = {
-    success: true,
-    data
-  };
-  if (validators) {
-    for (const validator of validators) {
-      if (isDev) {
-        lastResult = await measure(
-          requestEv,
-          `validator$`,
-          () => validator.validate(requestEv, data)
-        );
-      } else {
-        lastResult = await validator.validate(requestEv, data);
-      }
-      if (!lastResult.success) {
-        return lastResult;
-      } else {
-        data = lastResult.data;
-      }
-    }
-  }
-  return lastResult;
-}
-function isAsyncIterator(obj) {
-  return obj ? typeof obj === "object" && Symbol.asyncIterator in obj : false;
-}
-async function pureServerFunction(ev) {
-  const fn = ev.query.get(QFN_KEY);
-  if (fn && ev.request.headers.get("X-QRL") === fn && ev.request.headers.get("Content-Type") === "application/qwik-json") {
-    ev.exit();
-    const isDev = getRequestMode(ev) === "dev";
-    const qwikSerializer = ev[RequestEvQwikSerializer];
-    const data = await ev.parseBody();
-    if (Array.isArray(data)) {
-      const [qrl, ...args] = data;
-      if (isQrl(qrl) && qrl.getHash() === fn) {
-        let result;
-        try {
-          if (isDev) {
-            result = await measure(
-              ev,
-              `server_${qrl.getSymbol()}`,
-              () => qrl.apply(ev, args)
-            );
-          } else {
-            result = await qrl.apply(ev, args);
-          }
-        } catch (err) {
-          if (err instanceof ServerError) {
-            ev.headers.set("Content-Type", "application/qwik-json");
-            ev.send(err.status, await qwikSerializer._serialize([err.data]));
-            return;
-          }
-          ev.headers.set("Content-Type", "application/qwik-json");
-          ev.send(500, await qwikSerializer._serialize([err]));
-          return;
-        }
-        if (isAsyncIterator(result)) {
-          ev.headers.set("Content-Type", "text/qwik-json-stream");
-          const writable = ev.getWritableStream();
-          const stream = writable.getWriter();
-          for await (const item of result) {
-            if (isDev) {
-              verifySerializable(qwikSerializer, item, qrl);
-            }
-            const message = await qwikSerializer._serialize([item]);
-            if (ev.signal.aborted) {
-              break;
-            }
-            await stream.write(encoder.encode(`${message}
-`));
-          }
-          stream.close();
-        } else {
-          verifySerializable(qwikSerializer, result, qrl);
-          ev.headers.set("Content-Type", "application/qwik-json");
-          const message = await qwikSerializer._serialize([result]);
-          ev.send(200, message);
-        }
-        return;
-      }
-    }
-    throw ev.error(500, "Invalid request");
-  }
-}
-function fixTrailingSlash(ev) {
-  const trailingSlash = getRequestTrailingSlash(ev);
-  const { basePathname, pathname, url, sharedMap } = ev;
-  const isQData = sharedMap.has(IsQData);
-  if (!isQData && pathname !== basePathname && !pathname.endsWith(".html")) {
-    if (trailingSlash) {
-      if (!pathname.endsWith("/")) {
-        throw ev.redirect(301 /* MovedPermanently */, pathname + "/" + url.search);
-      }
-    } else {
-      if (pathname.endsWith("/")) {
-        throw ev.redirect(
-          301 /* MovedPermanently */,
-          pathname.slice(0, pathname.length - 1) + url.search
-        );
-      }
-    }
-  }
-}
-function verifySerializable(qwikSerializer, data, qrl) {
-  try {
-    qwikSerializer._verifySerializable(data, void 0);
-  } catch (e) {
-    if (e instanceof Error && qrl.dev) {
-      e.loc = qrl.dev;
-    }
-    throw e;
-  }
-}
-var isQrl = (value2) => {
-  return typeof value2 === "function" && typeof value2.getSymbol === "function";
-};
-function isLastModulePageRoute(routeModules) {
-  const lastRouteModule = routeModules[routeModules.length - 1];
-  return lastRouteModule && typeof lastRouteModule.default === "function";
-}
-function getPathname(url, trailingSlash) {
-  url = new URL(url);
-  if (url.pathname.endsWith(QDATA_JSON)) {
-    url.pathname = url.pathname.slice(0, -QDATA_JSON.length);
-  }
-  if (trailingSlash) {
-    if (!url.pathname.endsWith("/")) {
-      url.pathname += "/";
-    }
-  } else {
-    if (url.pathname.endsWith("/")) {
-      url.pathname = url.pathname.slice(0, -1);
-    }
-  }
-  const search2 = url.search.slice(1).replaceAll(/&?q(action|data|func)=[^&]+/g, "");
-  return `${url.pathname}${search2 ? `?${search2}` : ""}${url.hash}`;
-}
-var encoder = /* @__PURE__ */ new TextEncoder();
-function csrfCheckMiddleware(requestEv) {
-  const isForm = isContentType(
-    requestEv.request.headers,
-    "application/x-www-form-urlencoded",
-    "multipart/form-data",
-    "text/plain"
-  );
-  if (isForm) {
-    const inputOrigin = requestEv.request.headers.get("origin");
-    const origin = requestEv.url.origin;
-    const forbidden = inputOrigin !== origin;
-    if (forbidden) {
-      throw requestEv.error(
-        403,
-        `CSRF check failed. Cross-site ${requestEv.method} form submissions are forbidden.
-The request origin "${inputOrigin}" does not match the server origin "${origin}".`
-      );
-    }
-  }
-}
-async function handleRedirect(requestEv) {
-  const isPageDataReq = requestEv.sharedMap.has(IsQData);
-  if (!isPageDataReq) {
-    return;
-  }
-  try {
-    await requestEv.next();
-  } catch (err) {
-    if (!(err instanceof RedirectMessage)) {
-      throw err;
-    }
-  }
-  if (requestEv.headersSent) {
-    return;
-  }
-  const status = requestEv.status();
-  const location2 = requestEv.headers.get("Location");
-  const isRedirect = status >= 301 && status <= 308 && location2;
-  if (isRedirect) {
-    const adaptedLocation = makeQDataPath(location2);
-    if (adaptedLocation) {
-      requestEv.headers.set("Location", adaptedLocation);
-      requestEv.getWritableStream().close();
-      return;
-    } else {
-      requestEv.status(200);
-      requestEv.headers.delete("Location");
-    }
-  }
-}
-async function renderQData(requestEv) {
-  const isPageDataReq = requestEv.sharedMap.has(IsQData);
-  if (!isPageDataReq) {
-    return;
-  }
-  await requestEv.next();
-  if (requestEv.headersSent || requestEv.exited) {
-    return;
-  }
-  const status = requestEv.status();
-  const location2 = requestEv.headers.get("Location");
-  const trailingSlash = getRequestTrailingSlash(requestEv);
-  const requestHeaders = {};
-  requestEv.request.headers.forEach((value2, key) => requestHeaders[key] = value2);
-  requestEv.headers.set("Content-Type", "application/json; charset=utf-8");
-  const qData = {
-    loaders: getRequestLoaders(requestEv),
-    action: requestEv.sharedMap.get(RequestEvSharedActionId),
-    status: status !== 200 ? status : 200,
-    href: getPathname(requestEv.url, trailingSlash),
-    redirect: location2 ?? void 0
-  };
-  const writer = requestEv.getWritableStream().getWriter();
-  const qwikSerializer = requestEv[RequestEvQwikSerializer];
-  const data = await qwikSerializer._serialize([qData]);
-  writer.write(encoder.encode(data));
-  requestEv.sharedMap.set("qData", qData);
-  writer.close();
-}
-function makeQDataPath(href) {
-  if (href.startsWith("/")) {
-    const append = QDATA_JSON;
-    const url = new URL(href, "http://localhost");
-    const pathname = url.pathname.endsWith("/") ? url.pathname.slice(0, -1) : url.pathname;
-    return pathname + (append.startsWith("/") ? "" : "/") + append + url.search;
-  } else {
-    return void 0;
-  }
-}
-function now() {
-  return typeof performance !== "undefined" ? performance.now() : 0;
-}
-async function measure(requestEv, name, fn) {
-  const start = now();
-  try {
-    return await fn();
-  } finally {
-    const duration = now() - start;
-    let measurements = requestEv.sharedMap.get("@serverTiming");
-    if (!measurements) {
-      requestEv.sharedMap.set("@serverTiming", measurements = []);
-    }
-    measurements.push([name, duration]);
-  }
-}
-function isContentType(headers, ...types) {
-  var _a2;
-  const type = ((_a2 = headers.get("content-type")) == null ? void 0 : _a2.split(/;,/, 1)[0].trim()) ?? "";
-  return types.includes(type);
-}
-
-// packages/qwik-city/src/runtime/src/route-matcher.ts
-function matchRoute(route, path3) {
-  const routeIdx = startIdxSkipSlash(route);
-  const routeLength = lengthNoTrailingSlash(route);
-  const pathIdx = startIdxSkipSlash(path3);
-  const pathLength = lengthNoTrailingSlash(path3);
-  return matchRoutePart(route, routeIdx, routeLength, path3, pathIdx, pathLength);
-}
-function matchRoutePart(route, routeIdx, routeLength, path3, pathIdx, pathLength) {
-  let params = null;
-  while (routeIdx < routeLength) {
-    const routeCh = route.charCodeAt(routeIdx++);
-    const pathCh = path3.charCodeAt(pathIdx++);
-    if (routeCh === 91 /* OPEN_BRACKET */) {
-      const isMany = isThreeDots(route, routeIdx);
-      const paramNameStart = routeIdx + (isMany ? 3 : 0);
-      const paramNameEnd = scan(route, paramNameStart, routeLength, 93 /* CLOSE_BRACKET */);
-      const paramName = route.substring(paramNameStart, paramNameEnd);
-      const paramSuffixEnd = scan(route, paramNameEnd + 1, routeLength, 47 /* SLASH */);
-      const suffix = route.substring(paramNameEnd + 1, paramSuffixEnd);
-      routeIdx = paramNameEnd + 1;
-      const paramValueStart = pathIdx - 1;
-      if (isMany) {
-        const match = recursiveScan(
-          paramName,
-          suffix,
-          path3,
-          paramValueStart,
-          pathLength,
-          route,
-          routeIdx + suffix.length + 1,
-          routeLength
-        );
-        if (match) {
-          return Object.assign(params || (params = {}), match);
-        }
-      }
-      const paramValueEnd = scan(path3, paramValueStart, pathLength, 47 /* SLASH */, suffix);
-      if (paramValueEnd == -1) {
-        return null;
-      }
-      const paramValue = path3.substring(paramValueStart, paramValueEnd);
-      if (!isMany && !suffix && !paramValue) {
-        return null;
-      }
-      pathIdx = paramValueEnd;
-      (params || (params = {}))[paramName] = decodeURIComponent(paramValue);
-    } else if (routeCh !== pathCh) {
-      if (!(isNaN(pathCh) && isRestParameter(route, routeIdx))) {
-        return null;
-      }
-    }
-  }
-  if (allConsumed(route, routeIdx) && allConsumed(path3, pathIdx)) {
-    return params || {};
-  } else {
-    return null;
-  }
-}
-function isRestParameter(text3, idx) {
-  return text3.charCodeAt(idx) === 91 /* OPEN_BRACKET */ && isThreeDots(text3, idx + 1);
-}
-function lengthNoTrailingSlash(text3) {
-  const length = text3.length;
-  return length > 1 && text3.charCodeAt(length - 1) === 47 /* SLASH */ ? length - 1 : length;
-}
-function allConsumed(text3, idx) {
-  const length = text3.length;
-  return idx >= length || idx == length - 1 && text3.charCodeAt(idx) === 47 /* SLASH */;
-}
-function startIdxSkipSlash(text3) {
-  return text3.charCodeAt(0) === 47 /* SLASH */ ? 1 : 0;
-}
-function isThreeDots(text3, idx) {
-  return text3.charCodeAt(idx) === 46 /* DOT */ && text3.charCodeAt(idx + 1) === 46 /* DOT */ && text3.charCodeAt(idx + 2) === 46 /* DOT */;
-}
-function scan(text3, idx, end, ch, suffix = "") {
-  while (idx < end && text3.charCodeAt(idx) !== ch) {
-    idx++;
-  }
-  const suffixLength = suffix.length;
-  for (let i = 0; i < suffixLength; i++) {
-    if (text3.charCodeAt(idx - suffixLength + i) !== suffix.charCodeAt(i)) {
-      return -1;
-    }
-  }
-  return idx - suffixLength;
-}
-function recursiveScan(paramName, suffix, path3, pathStart, pathLength, route, routeStart, routeLength) {
-  if (path3.charCodeAt(pathStart) === 47 /* SLASH */) {
-    pathStart++;
-  }
-  let pathIdx = pathLength;
-  const sep = suffix + "/";
-  while (pathIdx >= pathStart) {
-    const match = matchRoutePart(route, routeStart, routeLength, path3, pathIdx, pathLength);
-    if (match) {
-      let value2 = path3.substring(pathStart, Math.min(pathIdx, pathLength));
-      if (value2.endsWith(sep)) {
-        value2 = value2.substring(0, value2.length - sep.length);
-      }
-      match[paramName] = decodeURIComponent(value2);
-      return match;
-    }
-    const newPathIdx = lastIndexOf(path3, pathStart, sep, pathIdx, pathStart - 1) + sep.length;
-    if (pathIdx === newPathIdx) {
-      break;
-    }
-    pathIdx = newPathIdx;
-  }
-  return null;
-}
-function lastIndexOf(text3, start, match, searchIdx, notFoundIdx) {
-  let idx = text3.lastIndexOf(match, searchIdx);
-  if (idx == searchIdx - match.length) {
-    idx = text3.lastIndexOf(match, searchIdx - match.length - 1);
-  }
-  return idx > start ? idx : notFoundIdx;
-}
-
-// packages/qwik-city/src/runtime/src/routing.ts
-var getMenuLoader = (menus, pathname) => {
-  if (menus) {
-    pathname = pathname.endsWith("/") ? pathname : pathname + "/";
-    const menu = menus.find(
-      (m) => m[0] === pathname || pathname.startsWith(m[0] + (pathname.endsWith("/") ? "" : "/"))
-    );
-    if (menu) {
-      return menu[1];
-    }
-  }
-};
 
 // packages/qwik/src/optimizer/src/plugins/vite-utils.ts
 var findLocation = (e) => {
@@ -26728,302 +26994,10 @@ self.addEventListener('install', () => self.skipWaiting());
 self.addEventListener('activate', (ev) => ev.waitUntil(self.clients.claim()));
 `;
 
-// packages/qwik-city/src/buildtime/vite/plugin.ts
-var import_node_fs9 = __toESM(require("node:fs"), 1);
-
-// packages/qwik-city/src/buildtime/runtime-generation/generate-service-worker.ts
-function generateServiceWorkerRegister(ctx, swRegister) {
-  let swReg;
-  if (ctx.isDevServer) {
-    swReg = SW_UNREGISTER;
-  } else {
-    swReg = swRegister;
-    let swUrl = "/service-worker.js";
-    if (ctx.serviceWorkers.length > 0) {
-      const sw = ctx.serviceWorkers.sort(
-        (a, b) => a.chunkFileName.length < b.chunkFileName.length ? -1 : 1
-      )[0];
-      swUrl = ctx.opts.basePathname + sw.chunkFileName;
-    }
-    swReg = swReg.replace("__url", swUrl);
-  }
-  return `export default ${JSON.stringify(swReg)};`;
-}
-function prependManifestToServiceWorker(ctx, manifest, prefetch, swCode) {
-  const key = `/* Qwik Service Worker */`;
-  if (swCode.includes(key)) {
-    return null;
-  }
-  const appBundles = [];
-  const appBundlesCode = generateAppBundles(appBundles, manifest);
-  const libraryBundlesCode = generateLibraryBundles(appBundles, manifest);
-  const [linkBundlesCode] = generateLinkBundles(ctx, appBundles, manifest, prefetch);
-  return [key, appBundlesCode, libraryBundlesCode, linkBundlesCode, swCode].join("\n");
-}
-function generateAppBundles(appBundles, manifest) {
-  const sortedBundles = Object.keys(manifest.bundles).sort();
-  for (const appBundleName of sortedBundles) {
-    const appBundle = [appBundleName, []];
-    appBundles.push(appBundle);
-    const symbolHashesInBundle = [];
-    const manifestBundle = manifest.bundles[appBundleName];
-    const importedBundleNames = Array.isArray(manifestBundle.imports) ? manifestBundle.imports : [];
-    const depsSet = new Set(importedBundleNames);
-    for (const importedBundleName of importedBundleNames) {
-      clearTransitiveDeps(depsSet, /* @__PURE__ */ new Set(), importedBundleName);
-    }
-    appBundle[1] = Array.from(depsSet).map((dep) => sortedBundles.indexOf(dep));
-    if (manifestBundle.symbols) {
-      for (const manifestBundleSymbolName of manifestBundle.symbols) {
-        const symbol = manifest.symbols[manifestBundleSymbolName];
-        if ((symbol == null ? void 0 : symbol.hash) && !symbolHashesInBundle.includes(symbol.hash)) {
-          symbolHashesInBundle.push(symbol.hash);
-        }
-      }
-    }
-    if (symbolHashesInBundle.length > 0) {
-      appBundle[2] = symbolHashesInBundle;
-    }
-  }
-  function clearTransitiveDeps(deps, seen, depName) {
-    const childBundle = manifest.bundles[depName];
-    for (const childDepImport of childBundle.imports || []) {
-      if (deps.has(childDepImport)) {
-        deps.delete(childDepImport);
-      }
-      if (!seen.has(childDepImport)) {
-        seen.add(childDepImport);
-        clearTransitiveDeps(deps, seen, childDepImport);
-      }
-    }
-  }
-  return `const appBundles=${JSON.stringify(appBundles)};`;
-}
-function generateLibraryBundles(appBundles, manifest) {
-  const libraryBundleIds = [];
-  for (const [bundleName, bundle] of Object.entries(manifest.bundles)) {
-    if (bundle.origins && bundle.origins.includes("@qwik-city-plan")) {
-      libraryBundleIds.push(getAppBundleIndex(appBundles, bundleName));
-      break;
-    }
-  }
-  return `const libraryBundleIds=${JSON.stringify(libraryBundleIds)};`;
-}
-function generateLinkBundles(ctx, appBundles, manifest, prefetch) {
-  var _a2, _b2;
-  const linkBundles = [];
-  const symbolToBundle = /* @__PURE__ */ new Map();
-  const routeToBundles = {};
-  for (const bundleName in manifest.bundles || []) {
-    (_a2 = manifest.bundles[bundleName].symbols) == null ? void 0 : _a2.forEach((symbol) => {
-      const idx = symbol.lastIndexOf("_");
-      symbolToBundle.set(idx === -1 ? symbol : symbol.substring(idx + 1), bundleName);
-    });
-  }
-  for (const r2 of ctx.routes) {
-    const linkBundleNames = [];
-    const addFileBundles = (filePath) => {
-      for (const [bundleName, bundle] of Object.entries(manifest.bundles)) {
-        if (bundle.origins) {
-          for (const bundleOrigin of bundle.origins) {
-            const srcPath = removeExtension(filePath);
-            const bundleOriginPath = removeExtension(bundleOrigin);
-            if (srcPath.endsWith(bundleOriginPath)) {
-              if (!linkBundleNames.includes(bundleName)) {
-                linkBundleNames.push(bundleName);
-              }
-              if (bundle.dynamicImports) {
-                for (const dynamicImport of bundle.dynamicImports) {
-                  if (!linkBundleNames.includes(dynamicImport)) {
-                    linkBundleNames.push(dynamicImport);
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    };
-    for (const layout of r2.layouts) {
-      addFileBundles(layout.filePath);
-    }
-    addFileBundles(r2.filePath);
-    if (prefetch) {
-      const symbolsForRoute = prefetch.find((p) => p.route === r2.routeName);
-      (_b2 = symbolsForRoute == null ? void 0 : symbolsForRoute.symbols) == null ? void 0 : _b2.reverse().forEach((symbol) => {
-        const bundle = symbolToBundle.get(symbol);
-        if (bundle) {
-          const idx = linkBundleNames.indexOf(bundle);
-          if (idx !== -1) {
-            linkBundleNames.splice(idx, 1);
-          }
-          linkBundleNames.unshift(bundle);
-        }
-      });
-    }
-    linkBundles.push(
-      `[${r2.pattern.toString()},${JSON.stringify(
-        linkBundleNames.map((bundleName) => getAppBundleIndex(appBundles, bundleName))
-      )}]`
-    );
-    routeToBundles[r2.routeName] = linkBundleNames;
-  }
-  return [`const linkBundles=[${linkBundles.join(",")}];`, routeToBundles];
-}
-function getAppBundleIndex(appBundles, bundleName) {
-  return appBundles.findIndex((b) => b[0] === bundleName);
-}
-var SW_UNREGISTER = `
-navigator.serviceWorker?.getRegistrations().then((regs) => {
-  for (const reg of regs) {
-    reg.unregister();
-  }
-});
-`;
-
-// packages/qwik-city/src/adapters/shared/vite/post-build.ts
-var import_node_fs7 = __toESM(require("node:fs"), 1);
-var import_node_path9 = require("node:path");
-async function postBuild(clientOutDir, pathName, userStaticPaths, format, cleanStatic) {
-  if (pathName && !pathName.endsWith("/")) {
-    pathName += "/";
-  }
-  const ignorePathnames = /* @__PURE__ */ new Set([pathName + "build/", pathName + "assets/"]);
-  const staticPaths = new Set(userStaticPaths.map(normalizeTrailingSlash));
-  const notFounds = [];
-  const loadItem = async (fsDir, fsName, pathname) => {
-    pathname = normalizeTrailingSlash(pathname);
-    if (ignorePathnames.has(pathname)) {
-      return;
-    }
-    const fsPath = (0, import_node_path9.join)(fsDir, fsName);
-    if (fsName === "index.html" || fsName === "q-data.json") {
-      if (!staticPaths.has(pathname) && cleanStatic) {
-        await import_node_fs7.default.promises.unlink(fsPath);
-      }
-      return;
-    }
-    if (fsName === "404.html") {
-      const notFoundHtml = await import_node_fs7.default.promises.readFile(fsPath, "utf-8");
-      notFounds.push([pathname, notFoundHtml]);
-      return;
-    }
-    const stat = await import_node_fs7.default.promises.stat(fsPath);
-    if (stat.isDirectory()) {
-      await loadDir(fsPath, pathname + fsName + "/");
-    } else if (stat.isFile()) {
-      staticPaths.add(pathname + fsName);
-    }
-  };
-  const loadDir = async (fsDir, pathname) => {
-    const itemNames = await import_node_fs7.default.promises.readdir(fsDir);
-    await Promise.all(itemNames.map((i) => loadItem(fsDir, i, pathname)));
-  };
-  if (import_node_fs7.default.existsSync(clientOutDir)) {
-    await loadDir(clientOutDir, pathName);
-  }
-  const notFoundPathsCode = createNotFoundPathsModule(pathName, notFounds, format);
-  const staticPathsCode = createStaticPathsModule(pathName, staticPaths, format);
-  return {
-    notFoundPathsCode,
-    staticPathsCode
-  };
-}
-function normalizeTrailingSlash(pathname) {
-  if (!pathname.endsWith("/")) {
-    return pathname + "/";
-  }
-  return pathname;
-}
-function createNotFoundPathsModule(basePathname, notFounds, format) {
-  notFounds.sort((a, b) => {
-    if (a[0].length > b[0].length) {
-      return -1;
-    }
-    if (a[0].length < b[0].length) {
-      return 1;
-    }
-    if (a[0] < b[0]) {
-      return -1;
-    }
-    if (a[0] > b[0]) {
-      return 1;
-    }
-    return 0;
-  });
-  if (!notFounds.some((r2) => r2[0] === basePathname)) {
-    const html5 = getErrorHtml(404, "Resource Not Found");
-    notFounds.push([basePathname, html5]);
-  }
-  const c2 = [];
-  c2.push(`const notFounds = ${JSON.stringify(notFounds, null, 2)};`);
-  c2.push(`function getNotFound(p) {`);
-  c2.push(`  for (const r of notFounds) {`);
-  c2.push(`    if (p.startsWith(r[0])) {`);
-  c2.push(`      return r[1];`);
-  c2.push(`    }`);
-  c2.push(`  }`);
-  c2.push(`  return "Resource Not Found";`);
-  c2.push(`}`);
-  if (format === "cjs") {
-    c2.push("exports.getNotFound = getNotFound;");
-  } else {
-    c2.push("export { getNotFound };");
-  }
-  return c2.join("\n");
-}
-function createStaticPathsModule(basePathname, staticPaths, format) {
-  const assetsPath = basePathname + "assets/";
-  const baseBuildPath = basePathname + "build/";
-  const c2 = [];
-  c2.push(
-    `const staticPaths = new Set(${JSON.stringify(
-      Array.from(new Set(staticPaths)).sort()
-    )});`
-  );
-  c2.push(`function isStaticPath(method, url) {`);
-  c2.push(`  if (method.toUpperCase() !== 'GET') {`);
-  c2.push(`    return false;`);
-  c2.push(`  }`);
-  c2.push(`  const p = url.pathname;`);
-  c2.push(`  if (p.startsWith(${JSON.stringify(baseBuildPath)})) {`);
-  c2.push(`    return true;`);
-  c2.push(`  }`);
-  c2.push(`  if (p.startsWith(${JSON.stringify(assetsPath)})) {`);
-  c2.push(`    return true;`);
-  c2.push(`  }`);
-  c2.push(`  if (staticPaths.has(p)) {`);
-  c2.push(`    return true;`);
-  c2.push(`  }`);
-  c2.push(`  if (p.endsWith('/q-data.json')) {`);
-  c2.push(`    const pWithoutQdata = p.replace(/\\/q-data.json$/, '');`);
-  c2.push(`    if (staticPaths.has(pWithoutQdata + '/')) {`);
-  c2.push(`      return true;`);
-  c2.push(`    }`);
-  c2.push(`    if (staticPaths.has(pWithoutQdata)) {`);
-  c2.push(`      return true;`);
-  c2.push(`    }`);
-  c2.push(`  }`);
-  c2.push(`  return false;`);
-  c2.push(`}`);
-  if (format === "cjs") {
-    c2.push("exports.isStaticPath = isStaticPath;");
-  } else {
-    c2.push("export { isStaticPath };");
-  }
-  return c2.join("\n");
-}
-
-// packages/qwik-city/src/adapters/shared/vite/index.ts
-var STATIC_PATHS_ID = "@qwik-city-static-paths";
-var RESOLVED_STATIC_PATHS_ID = `${STATIC_PATHS_ID}.js`;
-var NOT_FOUND_PATHS_ID = "@qwik-city-not-found-paths";
-var RESOLVED_NOT_FOUND_PATHS_ID = `${NOT_FOUND_PATHS_ID}.js`;
-
 // packages/qwik-city/src/buildtime/vite/image-jsx.ts
 var import_svgo = require("svgo");
-var import_node_fs8 = __toESM(require("node:fs"), 1);
-var import_node_path10 = __toESM(require("node:path"), 1);
+var import_node_fs7 = __toESM(require("node:fs"), 1);
+var import_node_path9 = __toESM(require("node:path"), 1);
 
 // packages/qwik/src/optimizer/src/versions.ts
 var versions = {
@@ -27099,9 +27073,9 @@ function imagePlugin(userOpts) {
         order: "pre",
         handler: async (id) => {
           const { params, pathId } = parseId(id);
-          const extension = import_node_path10.default.extname(pathId).toLowerCase();
+          const extension = import_node_path9.default.extname(pathId).toLowerCase();
           if (extension === ".svg" && params.has("jsx")) {
-            const code3 = await import_node_fs8.default.promises.readFile(pathId, "utf-8");
+            const code3 = await import_node_fs7.default.promises.readFile(pathId, "utf-8");
             return {
               code: code3,
               moduleSideEffects: false
@@ -27113,7 +27087,7 @@ function imagePlugin(userOpts) {
         id = id.toLowerCase();
         const { params, pathId } = parseId(id);
         if (params.has("jsx")) {
-          const extension = import_node_path10.default.extname(pathId).toLowerCase();
+          const extension = import_node_path9.default.extname(pathId).toLowerCase();
           if (supportedExtensions.includes(extension)) {
             if (!code3.includes("srcSet")) {
               this.error(`Image '${id}' could not be optimized to JSX`);
@@ -27121,7 +27095,7 @@ function imagePlugin(userOpts) {
             const index = code3.indexOf("export default");
             return {
               code: code3.slice(0, index) + `
-  import { _jsxSorted } from '@builder.io/qwik';
+  import { _jsxSorted } from '@qwik.dev/core';
   const PROPS = {srcSet, width, height};
   export default function (props, key, _, dev) {
     return _jsxSorted('img', {...{decoding: 'async', loading: 'lazy'}, ...props}, PROPS, undefined, 3, key, dev);
@@ -27132,7 +27106,7 @@ function imagePlugin(userOpts) {
             const { svgAttributes } = optimizeSvg({ code: code3, path: pathId }, userOpts);
             return {
               code: `
-  import { _jsxSorted } from '@builder.io/qwik';
+  import { _jsxSorted } from '@qwik.dev/core';
   const PROPS = ${JSON.stringify(svgAttributes)};
   export default function (props, key, _, dev) {
     return _jsxSorted('svg', props, PROPS, undefined, 3, key, dev);
@@ -27207,6 +27181,28 @@ function optimizeSvg({ code: code3, path: path3 }, userOpts) {
   };
 }
 
+// packages/qwik-city/src/buildtime/vite/validate-plugin.ts
+var import_node_fs8 = __toESM(require("node:fs"), 1);
+var import_node_path10 = require("node:path");
+async function validatePlugin(opts) {
+  if (typeof opts.routesDir !== "string") {
+    throw new Error(`qwikCity plugin "routesDir" option missing`);
+  }
+  if (!(0, import_node_path10.isAbsolute)(opts.routesDir)) {
+    throw new Error(
+      `qwikCity plugin "routesDir" option must be an absolute path: ${opts.routesDir}`
+    );
+  }
+  try {
+    const s2 = await import_node_fs8.default.promises.stat(opts.routesDir);
+    if (!s2.isDirectory()) {
+      throw new Error(`qwikCity plugin "routesDir" option must be a directory: ${opts.routesDir}`);
+    }
+  } catch (e) {
+    throw new Error(`qwikCity plugin "routesDir" not found: ${e}`);
+  }
+}
+
 // packages/qwik-city/src/buildtime/vite/plugin.ts
 function qwikCity(userOpts) {
   return [qwikCityPlugin(userOpts), ...imagePlugin(userOpts)];
@@ -27235,6 +27231,12 @@ function qwikCityPlugin(userOpts) {
     async config() {
       const updatedViteConfig = {
         appType: "custom",
+        resolve: {
+          alias: [
+            { find: "@builder.io/qwik-city", replacement: "@qwik.dev/city" },
+            { find: /^@builder\.io\/qwik-city\/(.*)/, replacement: "@qwik.dev/city/$1" }
+          ]
+        },
         optimizeDeps: {
           exclude: [QWIK_CITY, QWIK_CITY_PLAN_ID, QWIK_CITY_ENTRIES_ID, QWIK_CITY_SW_REGISTER]
         },
@@ -27317,7 +27319,7 @@ function qwikCityPlugin(userOpts) {
         const isCityPlan = id.endsWith(QWIK_CITY_PLAN_ID);
         const isSwRegister = id.endsWith(QWIK_CITY_SW_REGISTER);
         if (isSerializer) {
-          return `export {_deserialize, _serialize, _verifySerializable} from '@builder.io/qwik'`;
+          return `export {_deserialize, _serialize, _verifySerializable} from '@qwik.dev/core'`;
         }
         if (isCityPlan || isSwRegister) {
           if (!ctx.isDevServer && ctx.isDirty) {
@@ -27472,7 +27474,7 @@ function qwikCityPlugin(userOpts) {
 var QWIK_SERIALIZER = "@qwik-serializer";
 var QWIK_CITY_PLAN_ID = "@qwik-city-plan";
 var QWIK_CITY_ENTRIES_ID = "@qwik-city-entries";
-var QWIK_CITY = "@builder.io/qwik-city";
+var QWIK_CITY = "@qwik.dev/city";
 var QWIK_CITY_SW_REGISTER = "@qwik-city-sw-register";
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {

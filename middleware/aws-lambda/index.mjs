@@ -1,5 +1,5 @@
 // packages/qwik-city/src/middleware/aws-lambda/index.ts
-import { createQwikCity as createQwikCityNode } from "@builder.io/qwik-city/middleware/node";
+import { createQwikCity as createQwikCityNode } from "@qwik.dev/city/middleware/node";
 function createQwikCity(opts) {
   try {
     const { router, staticFile, notFound } = createQwikCityNode({

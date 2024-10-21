@@ -1,5 +1,4 @@
 // packages/qwik-city/src/adapters/cloudflare-pages/vite/index.ts
-import { viteAdapter } from "../../shared/vite/index.mjs";
 import fs from "node:fs";
 import { join, relative } from "node:path";
 
@@ -18,6 +17,7 @@ function normalizePathSlash(path) {
 }
 
 // packages/qwik-city/src/adapters/cloudflare-pages/vite/index.ts
+import { viteAdapter } from "../../shared/vite/index.mjs";
 function cloudflarePagesAdapter(opts = {}) {
   const env = process == null ? void 0 : process.env;
   return viteAdapter({

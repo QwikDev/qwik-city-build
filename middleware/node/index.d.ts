@@ -1,9 +1,9 @@
 /// <reference types="node" />
 
-import type { ClientConn } from '@builder.io/qwik-city/middleware/request-handler';
+import type { ClientConn } from '@qwik.dev/city/middleware/request-handler';
 import type { Http2ServerRequest } from 'node:http2';
 import type { IncomingMessage } from 'node:http';
-import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
+import type { ServerRenderOptions } from '@qwik.dev/city/middleware/request-handler';
 import type { ServerResponse } from 'node:http';
 
 /** @public */

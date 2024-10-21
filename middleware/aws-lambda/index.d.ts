@@ -1,19 +1,19 @@
 /// <reference types="node" />
 
-import type { EnvGetter } from '@builder.io/qwik-city/middleware/request-handler';
+import type { EnvGetter } from '@qwik.dev/city/middleware/request-handler';
 import { Http2ServerRequest } from 'http2';
 import { IncomingMessage } from 'http';
-import { NodeRequestNextFunction } from '@builder.io/qwik-city/middleware/node';
-import type { QwikIntrinsicElements } from '@builder.io/qwik';
-import type { QwikManifest } from '@builder.io/qwik/optimizer';
-import type { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
-import type { ResolvedManifest } from '@builder.io/qwik/optimizer';
-import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-handler';
-import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
+import { NodeRequestNextFunction } from '@qwik.dev/city/middleware/node';
+import type { QwikIntrinsicElements } from '@qwik.dev/core';
+import type { QwikManifest } from '@qwik.dev/core/optimizer';
+import type { RequestHandler } from '@qwik.dev/city/middleware/request-handler';
+import type { ResolvedManifest } from '@qwik.dev/core/optimizer';
+import type { ResolveSyncValue } from '@qwik.dev/city/middleware/request-handler';
+import type { ServerRenderOptions } from '@qwik.dev/city/middleware/request-handler';
 import { ServerResponse } from 'http';
-import type { SnapshotResult } from '@builder.io/qwik';
-import type { StreamWriter } from '@builder.io/qwik';
-import type { SymbolMapperFn } from '@builder.io/qwik/optimizer';
+import type { SnapshotResult } from '@qwik.dev/core';
+import type { StreamWriter } from '@qwik.dev/core';
+import type { SymbolMapperFn } from '@qwik.dev/core/optimizer';
 
 declare interface AwsOpt {
     render: Render;

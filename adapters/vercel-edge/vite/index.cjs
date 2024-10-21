@@ -33,9 +33,9 @@ __export(vite_exports, {
   vercelEdgeAdapter: () => vercelEdgeAdapter
 });
 module.exports = __toCommonJS(vite_exports);
-var import_vite = require("../../shared/vite/index.cjs");
 var import_node_fs = __toESM(require("node:fs"), 1);
 var import_node_path = require("node:path");
+var import_vite = require("../../shared/vite/index.cjs");
 function vercelEdgeAdapter(opts = {}) {
   var _a;
   return (0, import_vite.viteAdapter)({

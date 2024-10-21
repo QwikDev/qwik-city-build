@@ -1,5 +1,5 @@
 import type { Context } from '@netlify/edge-functions';
-import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
+import type { ServerRenderOptions } from '@qwik.dev/city/middleware/request-handler';
 
 /** @public */
 export declare function createQwikCity(opts: QwikCityNetlifyOptions): (request: Request, context: Context) => Promise<Response>;

@@ -95,9 +95,9 @@ function normalizePathSlash(path) {
 
 // packages/qwik-city/src/static/worker-thread.ts
 var import_request_handler = require("../middleware/request-handler/index.cjs");
-var import_node_url = require("node:url");
+var import_core = require("@qwik.dev/core");
 var import_web = require("node:stream/web");
-var import_qwik = require("@builder.io/qwik");
+var import_node_url = require("node:url");
 async function workerThread(sys) {
   const ssgOpts = sys.getOptions();
   const pendingPromises = /* @__PURE__ */ new Set();
@@ -138,9 +138,9 @@ async function createSingleThreadWorker(sys) {
 }
 async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
   const qwikSerializer = {
-    _deserialize: import_qwik._deserialize,
-    _serialize: import_qwik._serialize,
-    _verifySerializable: import_qwik._verifySerializable
+    _deserialize: import_core._deserialize,
+    _serialize: import_core._serialize,
+    _verifySerializable: import_core._verifySerializable
   };
   const url = new URL(staticRoute.pathname, opts.origin);
   const result = {
@@ -243,7 +243,7 @@ async function workerRender(sys, opts, staticRoute, pendingPromises, callback) {
                       stack: e.stack
                     };
                   });
-                  const serialized = await (0, import_qwik._serialize)([qData]);
+                  const serialized = await (0, import_core._serialize)([qData]);
                   dataWriter.write(serialized);
                   writePromises.push(
                     new Promise((resolve2) => {
@@ -634,77 +634,6 @@ var access = async (path) => {
 // packages/qwik-city/src/static/node/index.ts
 var import_node_worker_threads3 = require("node:worker_threads");
 
-// packages/qwik-city/src/static/routes.ts
-function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
-  const includes = routesToRegExps(includeRoutes);
-  const excludes = routesToRegExps(excludeRoutes);
-  return (pathname) => {
-    if (pathname.endsWith("404.html")) {
-      return true;
-    }
-    if (basePathname !== "/") {
-      pathname = pathname.slice(basePathname.length - 1);
-    }
-    for (const exclude of excludes) {
-      if (exclude.test(pathname)) {
-        return false;
-      }
-    }
-    for (const include of includes) {
-      if (include.test(pathname)) {
-        return true;
-      }
-    }
-    return false;
-  };
-}
-function routesToRegExps(routes) {
-  if (!Array.isArray(routes)) {
-    return [];
-  }
-  return routes.filter((r) => typeof r === "string").map(routeToRegExp);
-}
-function routeToRegExp(rule) {
-  let transformedRule;
-  if (rule === "/" || rule === "/*") {
-    transformedRule = rule;
-  } else if (rule.endsWith("/*")) {
-    transformedRule = `${rule.substring(0, rule.length - 2)}(/*)?`;
-  } else if (rule.endsWith("/")) {
-    transformedRule = `${rule.substring(0, rule.length - 1)}(/)?`;
-  } else if (rule.endsWith("*")) {
-    transformedRule = rule;
-  } else {
-    transformedRule = `${rule}(/)?`;
-  }
-  transformedRule = `^${transformedRule.replace(/\*/g, ".*")}$`;
-  return new RegExp(transformedRule);
-}
-
-// packages/qwik-city/src/static/not-found.ts
-var import_request_handler2 = require("../middleware/request-handler/index.cjs");
-async function generateNotFoundPages(sys, opts, routes) {
-  if (opts.emit404Pages !== false) {
-    const basePathname = opts.basePathname || "/";
-    const rootNotFoundPathname = basePathname + "404.html";
-    const hasRootNotFound = routes.some((r) => r[2] === rootNotFoundPathname);
-    if (!hasRootNotFound) {
-      const filePath = sys.getRouteFilePath(rootNotFoundPathname, true);
-      const html = (0, import_request_handler2.getErrorHtml)(404, "Resource Not Found");
-      await sys.ensureDir(filePath);
-      return new Promise((resolve2) => {
-        const writer = sys.createWriteStream(filePath);
-        writer.write(html);
-        writer.end(resolve2);
-      });
-    }
-  }
-}
-
-// packages/qwik-city/src/static/main-thread.ts
-var import_node_url2 = require("node:url");
-var import_node_path4 = require("node:path");
-
 // node_modules/.pnpm/kleur@4.1.5/node_modules/kleur/colors.mjs
 var FORCE_COLOR;
 var NODE_DISABLE_COLORS;
@@ -753,6 +682,11 @@ var bgBlue = init(44, 49);
 var bgMagenta = init(45, 49);
 var bgCyan = init(46, 49);
 var bgWhite = init(47, 49);
+
+// packages/qwik-city/src/static/main-thread.ts
+var import_node_path4 = require("node:path");
+var import_node_url2 = require("node:url");
+var import_vite = require("vite");
 
 // packages/qwik/src/optimizer/src/plugins/vite-utils.ts
 var findLocation = (e) => {
@@ -880,9 +814,6 @@ function formatError(e) {
   return e;
 }
 
-// packages/qwik-city/src/static/main-thread.ts
-var import_vite = require("vite");
-
 // packages/qwik-city/src/static/extract-params.ts
 function extractParamNames(routeName) {
   const params = [];
@@ -899,6 +830,73 @@ function extractParamNames(routeName) {
     }
   }
   return params;
+}
+
+// packages/qwik-city/src/static/not-found.ts
+var import_request_handler2 = require("../middleware/request-handler/index.cjs");
+async function generateNotFoundPages(sys, opts, routes) {
+  if (opts.emit404Pages !== false) {
+    const basePathname = opts.basePathname || "/";
+    const rootNotFoundPathname = basePathname + "404.html";
+    const hasRootNotFound = routes.some((r) => r[2] === rootNotFoundPathname);
+    if (!hasRootNotFound) {
+      const filePath = sys.getRouteFilePath(rootNotFoundPathname, true);
+      const html = (0, import_request_handler2.getErrorHtml)(404, "Resource Not Found");
+      await sys.ensureDir(filePath);
+      return new Promise((resolve2) => {
+        const writer = sys.createWriteStream(filePath);
+        writer.write(html);
+        writer.end(resolve2);
+      });
+    }
+  }
+}
+
+// packages/qwik-city/src/static/routes.ts
+function createRouteTester(basePathname, includeRoutes, excludeRoutes) {
+  const includes = routesToRegExps(includeRoutes);
+  const excludes = routesToRegExps(excludeRoutes);
+  return (pathname) => {
+    if (pathname.endsWith("404.html")) {
+      return true;
+    }
+    if (basePathname !== "/") {
+      pathname = pathname.slice(basePathname.length - 1);
+    }
+    for (const exclude of excludes) {
+      if (exclude.test(pathname)) {
+        return false;
+      }
+    }
+    for (const include of includes) {
+      if (include.test(pathname)) {
+        return true;
+      }
+    }
+    return false;
+  };
+}
+function routesToRegExps(routes) {
+  if (!Array.isArray(routes)) {
+    return [];
+  }
+  return routes.filter((r) => typeof r === "string").map(routeToRegExp);
+}
+function routeToRegExp(rule) {
+  let transformedRule;
+  if (rule === "/" || rule === "/*") {
+    transformedRule = rule;
+  } else if (rule.endsWith("/*")) {
+    transformedRule = `${rule.substring(0, rule.length - 2)}(/*)?`;
+  } else if (rule.endsWith("/")) {
+    transformedRule = `${rule.substring(0, rule.length - 1)}(/)?`;
+  } else if (rule.endsWith("*")) {
+    transformedRule = rule;
+  } else {
+    transformedRule = `${rule}(/)?`;
+  }
+  transformedRule = `^${transformedRule.replace(/\*/g, ".*")}$`;
+  return new RegExp(transformedRule);
 }
 
 // packages/qwik-city/src/static/main-thread.ts

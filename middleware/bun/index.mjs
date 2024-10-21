@@ -1,13 +1,14 @@
 // packages/qwik-city/src/middleware/bun/index.ts
-import {
-  mergeHeadersCookies,
-  requestHandler,
-  _TextEncoderStream_polyfill
-} from "../request-handler/index.mjs";
 import { getNotFound } from "@qwik-city-not-found-paths";
 import { isStaticPath } from "@qwik-city-static-paths";
-import { _deserialize, _serialize, _verifySerializable } from "@builder.io/qwik";
-import { setServerPlatform } from "@builder.io/qwik/server";
+import {
+  _TextEncoderStream_polyfill,
+  mergeHeadersCookies,
+  requestHandler
+} from "../request-handler/index.mjs";
+import { _deserialize, _serialize, _verifySerializable } from "@qwik.dev/core";
+import { setServerPlatform } from "@qwik.dev/core/server";
+import { extname, join } from "node:path";
 
 // packages/qwik-city/src/middleware/request-handler/mime-types.ts
 var MIME_TYPES = {
@@ -62,7 +63,6 @@ var MIME_TYPES = {
 };
 
 // packages/qwik-city/src/middleware/bun/index.ts
-import { join, extname } from "node:path";
 function createQwikCity(opts) {
   var _a;
   globalThis.TextEncoderStream ||= _TextEncoderStream_polyfill;

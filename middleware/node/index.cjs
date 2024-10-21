@@ -23,13 +23,66 @@ __export(node_exports, {
   createQwikCity: () => createQwikCity
 });
 module.exports = __toCommonJS(node_exports);
-var import_request_handler = require("../request-handler/index.cjs");
-var import_server = require("@builder.io/qwik/server");
 var import_qwik_city_not_found_paths = require("@qwik-city-not-found-paths");
 var import_qwik_city_static_paths = require("@qwik-city-static-paths");
+var import_request_handler = require("../request-handler/index.cjs");
+var import_core = require("@qwik.dev/core");
+var import_server = require("@qwik.dev/core/server");
 var import_node_fs = require("node:fs");
 var import_node_path = require("node:path");
 var import_node_url = require("node:url");
+
+// packages/qwik-city/src/middleware/request-handler/mime-types.ts
+var MIME_TYPES = {
+  "3gp": "video/3gpp",
+  "3gpp": "video/3gpp",
+  asf: "video/x-ms-asf",
+  asx: "video/x-ms-asf",
+  avi: "video/x-msvideo",
+  avif: "image/avif",
+  bmp: "image/x-ms-bmp",
+  css: "text/css",
+  flv: "video/x-flv",
+  gif: "image/gif",
+  htm: "text/html",
+  html: "text/html",
+  ico: "image/x-icon",
+  jng: "image/x-jng",
+  jpeg: "image/jpeg",
+  jpg: "image/jpeg",
+  js: "application/javascript",
+  json: "application/json",
+  kar: "audio/midi",
+  m4a: "audio/x-m4a",
+  m4v: "video/x-m4v",
+  mid: "audio/midi",
+  midi: "audio/midi",
+  mng: "video/x-mng",
+  mov: "video/quicktime",
+  mp3: "audio/mpeg",
+  mp4: "video/mp4",
+  mpeg: "video/mpeg",
+  mpg: "video/mpeg",
+  ogg: "audio/ogg",
+  pdf: "application/pdf",
+  png: "image/png",
+  rar: "application/x-rar-compressed",
+  shtml: "text/html",
+  svg: "image/svg+xml",
+  svgz: "image/svg+xml",
+  tif: "image/tiff",
+  tiff: "image/tiff",
+  ts: "video/mp2t",
+  txt: "text/plain",
+  wbmp: "image/vnd.wap.wbmp",
+  webm: "video/webm",
+  webp: "image/webp",
+  wmv: "video/x-ms-wmv",
+  woff: "font/woff",
+  woff2: "font/woff2",
+  xml: "text/xml",
+  zip: "application/zip"
+};
 
 // packages/qwik-city/src/middleware/node/http.ts
 var import_node_http2 = require("node:http2");
@@ -150,67 +203,14 @@ async function fromNodeHttp(url, req, res, mode, getClientConn) {
   return serverRequestEv;
 }
 
-// packages/qwik-city/src/middleware/request-handler/mime-types.ts
-var MIME_TYPES = {
-  "3gp": "video/3gpp",
-  "3gpp": "video/3gpp",
-  asf: "video/x-ms-asf",
-  asx: "video/x-ms-asf",
-  avi: "video/x-msvideo",
-  avif: "image/avif",
-  bmp: "image/x-ms-bmp",
-  css: "text/css",
-  flv: "video/x-flv",
-  gif: "image/gif",
-  htm: "text/html",
-  html: "text/html",
-  ico: "image/x-icon",
-  jng: "image/x-jng",
-  jpeg: "image/jpeg",
-  jpg: "image/jpeg",
-  js: "application/javascript",
-  json: "application/json",
-  kar: "audio/midi",
-  m4a: "audio/x-m4a",
-  m4v: "video/x-m4v",
-  mid: "audio/midi",
-  midi: "audio/midi",
-  mng: "video/x-mng",
-  mov: "video/quicktime",
-  mp3: "audio/mpeg",
-  mp4: "video/mp4",
-  mpeg: "video/mpeg",
-  mpg: "video/mpeg",
-  ogg: "audio/ogg",
-  pdf: "application/pdf",
-  png: "image/png",
-  rar: "application/x-rar-compressed",
-  shtml: "text/html",
-  svg: "image/svg+xml",
-  svgz: "image/svg+xml",
-  tif: "image/tiff",
-  tiff: "image/tiff",
-  ts: "video/mp2t",
-  txt: "text/plain",
-  wbmp: "image/vnd.wap.wbmp",
-  webm: "video/webm",
-  webp: "image/webp",
-  wmv: "video/x-ms-wmv",
-  woff: "font/woff",
-  woff2: "font/woff2",
-  xml: "text/xml",
-  zip: "application/zip"
-};
-
 // packages/qwik-city/src/middleware/node/index.ts
-var import_qwik = require("@builder.io/qwik");
 var import_meta = {};
 function createQwikCity(opts) {
   var _a;
   const qwikSerializer = {
-    _deserialize: import_qwik._deserialize,
-    _serialize: import_qwik._serialize,
-    _verifySerializable: import_qwik._verifySerializable
+    _deserialize: import_core._deserialize,
+    _serialize: import_core._serialize,
+    _verifySerializable: import_core._verifySerializable
   };
   if (opts.manifest) {
     (0, import_server.setServerPlatform)(opts.manifest);
