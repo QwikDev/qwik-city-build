@@ -482,7 +482,7 @@ async function createNodeMainProcess(sys, opts) {
       }
     });
     nodeWorker.on("error", (e) => {
-      console.error(`worker error: ${e}`);
+      console.error(`worker error`, e);
     });
     nodeWorker.on("exit", (code) => {
       if (code !== 1) {
@@ -652,7 +652,7 @@ var access = async (path) => {
   try {
     await import_node_fs2.default.promises.access(path);
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 };
@@ -1009,7 +1009,7 @@ ${green("SSG results")}`);
             const err = new Error(result.error.message);
             err.stack = result.error.stack;
             log.error(`
-${bold(red("Error during SSG"))}`);
+${bold(red(`!!! ${result.pathname}: Error during SSG`))}`);
             log.error(red(err.message));
             log.error(`  Pathname: ${magenta(staticRoute.pathname)}`);
             Object.assign(formatError(err), {
