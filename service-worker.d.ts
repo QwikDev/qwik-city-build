@@ -1,4 +1,2 @@
-/** @public */
-export declare const setupServiceWorker: () => void;
-
-export { }
+// re-export for typescript in old resolution mode
+export * from './lib/service-worker';
