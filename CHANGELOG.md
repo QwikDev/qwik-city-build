@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 🐞🩹 MDX content now accepts `props`, including `components` that lets you use your own custom components (by [@double-thinker](https://github.com/double-thinker) in [#7277](https://github.com/QwikDev/qwik/pull/7277))
+- 🐞🩹 MDX content now accepts a prop of type `components` that lets you use your own custom components (by [@double-thinker](https://github.com/double-thinker) in [#7277](https://github.com/QwikDev/qwik/pull/7277))
 
   To add custom components to your MDX content, you can now do this:
 
