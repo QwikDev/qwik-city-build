@@ -99,7 +99,7 @@ export declare interface ClientConn {
  * HTTP Client Error Status Codes Status codes in the 4xx range indicate that the client's request
  * was malformed or invalid and could not be understood or processed by the server.
  */
-declare type ClientErrorCode = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 421 | 422 | 423 | 424 | 425 | 426 | 428 | 429 | 431 | 451;
+declare type ClientErrorCode = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 421 | 422 | 423 | 424 | 425 | 426 | 428 | 429 | 431 | 451 | 499;
 
 /** @public */
 declare interface ContentHeading {
@@ -284,11 +284,6 @@ export declare interface EnvGetter {
 }
 
 declare type ErrorCodes = ClientErrorCode | ServerErrorCode;
-
-declare class ErrorResponse extends Error {
-    status: number;
-    constructor(status: number, message?: string);
-}
 
 /** @public */
 export declare function getErrorHtml(status: number, e: any): string;
@@ -485,7 +480,7 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends
      * to end a response with `404`, and use the 404 handler in the routes directory. See
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status for which status code should be used.
      */
-    readonly error: (statusCode: ErrorCodes, message: string) => ErrorResponse;
+    readonly error: <T = any>(statusCode: ErrorCodes, message: T) => ServerError<T>;
     /**
      * Convenience method to send an text body response. The response will be automatically set the
      * `Content-Type` header to`text/plain; charset=utf-8`. An `text()` response can only be called
@@ -593,7 +588,7 @@ declare interface SendMethod {
 }
 
 /** @public */
-export declare class ServerError<T = Record<any, any>> extends Error {
+export declare class ServerError<T = any> extends Error {
     status: number;
     data: T;
     constructor(status: number, data: T);
