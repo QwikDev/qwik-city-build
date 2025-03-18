@@ -277,6 +277,14 @@ export declare interface DocumentStyle {
 
 declare type EndpointModuleLoader = () => Promise<RouteModule>;
 
+/** @public */
+export declare const ErrorBoundary: Component<ErrorBoundaryProps>;
+
+/** @public */
+declare interface ErrorBoundaryProps {
+    fallback$?: QRL<(error: any) => any>;
+}
+
 declare type Failed = {
     failed: true;
 };
