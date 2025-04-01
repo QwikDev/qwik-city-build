@@ -1,7 +1,7 @@
 {
   "name": "@builder.io/qwik-city",
   "description": "The meta-framework for Qwik.",
-  "version": "1.12.0",
+  "version": "1.13.0",
   "bugs": "https://github.com/QwikDev/qwik/issues",
   "dependencies": {
     "@mdx-js/mdx": "^3",
@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@azure/functions": "3.5.1",
-    "@builder.io/qwik": "1.12.0",
+    "@builder.io/qwik": "1.13.0",
     "@microsoft/api-extractor": "7.43.1",
     "@netlify/edge-functions": "2.10.0",
     "@types/mdast": "4.0.4",
