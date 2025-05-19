@@ -304,7 +304,7 @@ declare interface RenderOptions extends SerializeDocumentOptions {
      * Defaults to `{ include: true }`.
      */
     qwikLoader?: QwikLoaderOptions;
-    preloader?: PreloaderOptions | boolean;
+    preloader?: PreloaderOptions | false;
     /** @deprecated Use `preloader` instead */
     qwikPrefetchServiceWorker?: QwikPrefetchServiceWorkerOptions;
     /** @deprecated Use `preloader` instead */
