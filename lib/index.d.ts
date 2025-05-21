@@ -6,7 +6,6 @@ import { CookieOptions } from '@builder.io/qwik-city/middleware/request-handler'
 import { CookieValue } from '@builder.io/qwik-city/middleware/request-handler';
 import { DeferReturn } from '@builder.io/qwik-city/middleware/request-handler';
 import type { EnvGetter } from '@builder.io/qwik-city/middleware/request-handler';
-import { JSXNode } from '@builder.io/qwik';
 import { JSXOutput } from '@builder.io/qwik';
 import { QRL } from '@builder.io/qwik';
 import { QRLEventHandlerMulti } from '@builder.io/qwik';
@@ -372,7 +371,7 @@ export declare interface LinkProps extends AnchorAttributes {
      *
      * This **improves UX performance** for client-side (**SPA**) navigations.
      *
-     * Prefetching occurs when a the Link enters the viewport in production (**`on:qvisibile`**), or
+     * Prefetching occurs when a the Link enters the viewport in production (**`on:qvisible`**), or
      * with **`mouseover`/`focus`** during dev.
      *
      * Prefetching will not occur if the user has the **data saver** setting enabled.
@@ -591,10 +590,16 @@ export declare type ServerQRL<T extends ServerFunction> = QRL<((abort: AbortSign
 /** @public */
 export declare const serverQrl: <T extends ServerFunction>(qrl: QRL<T>, options?: ServerConfig) => ServerQRL<T>;
 
-/** @public */
+/**
+ * Loads the service workers that are defined in the routes. Any file named `service-worker.*` (all
+ * JS extensions are allowed) will be picked up, bundled into a separate file, and registered as a
+ * service worker.
+ *
+ * @public
+ */
 export declare const ServiceWorkerRegister: (props: {
     nonce?: string;
-}) => JSXNode<"script">;
+}) => JSXOutput;
 
 /** @public */
 export declare interface StaticGenerate {
