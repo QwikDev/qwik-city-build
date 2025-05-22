@@ -410,6 +410,18 @@ export declare interface RequestEventBase<PLATFORM = QwikCityPlatform> {
     readonly query: URLSearchParams;
     /** HTTP request URL. */
     readonly url: URL;
+    /**
+     * The original HTTP request URL.
+     *
+     * This property was introduced to support the rewrite feature.
+     *
+     * If rewrite is called, the url property will be changed to the rewritten url. while originalUrl
+     * will stay the same(e.g the url inserted to the address bar).
+     *
+     * If rewrite is never called as part of the request, the url property and the originalUrl are
+     * equal.
+     */
+    readonly originalUrl: URL;
     /** The base pathname of the request, which can be configured at build time. Defaults to `/`. */
     readonly basePathname: string;
     /** HTTP request information. */
@@ -476,6 +488,14 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends
      */
     readonly redirect: (statusCode: RedirectCode, url: string) => RedirectMessage;
     /**
+     * When called, qwik-city will execute the path's matching route flow.
+     *
+     * The url in the browser will remain unchanged.
+     *
+     * @param pathname - The pathname to rewrite to.
+     */
+    readonly rewrite: (pathname: string) => RewriteMessage;
+    /**
      * When called, the response will immediately end with the given status code. This could be useful
      * to end a response with `404`, and use the 404 handler in the routes directory. See
      * https://developer.mozilla.org/en-US/docs/Web/HTTP/Status for which status code should be used.
@@ -519,6 +539,14 @@ declare interface RequestEventInternal extends RequestEvent, RequestEventLoader 
      * @returns `true`, if `getWritableStream()` has already been called.
      */
     isDirty(): boolean;
+    /**
+     * Reset the request event to the given route data.
+     *
+     * @param loadedRoute - The new loaded route.
+     * @param requestHandlers - The new request handlers.
+     * @param url - The new URL of the route.
+     */
+    resetRoute(loadedRoute: LoadedRoute | null, requestHandlers: RequestHandler<any>[], url: URL): void;
 }
 
 /** @public */
@@ -560,6 +588,12 @@ export declare interface ResolveSyncValue {
 export declare interface ResolveValue {
     <T>(loader: Loader_2<T>): Awaited<T> extends () => any ? never : Promise<T>;
     <T>(action: Action<T>): Promise<T | undefined>;
+}
+
+/** @public */
+export declare class RewriteMessage extends AbortMessage {
+    readonly pathname: string;
+    constructor(pathname: string);
 }
 
 /** @public */
