@@ -9,6 +9,7 @@ import type { QwikManifest } from '@builder.io/qwik/optimizer';
 import type { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ResolvedManifest } from '@builder.io/qwik/optimizer';
 import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-handler';
+import type { ServerQwikManifest } from '@builder.io/qwik/optimizer';
 import type { ServerRenderOptions } from '@builder.io/qwik-city/middleware/request-handler';
 import { ServerResponse } from 'http';
 import type { SnapshotResult } from '@builder.io/qwik';
@@ -269,7 +270,15 @@ declare interface QwikCityPlan {
 
 /** @public */
 declare interface QwikLoaderOptions {
+    /**
+     * Whether to include the qwikloader script in the document. Normally you don't need to worry
+     * about this, but in case of multi-container apps using different Qwik versions, you might want
+     * to only enable it on one of the containers.
+     *
+     * Defaults to `'auto'`.
+     */
     include?: 'always' | 'never' | 'auto';
+    /** @deprecated No longer used, the qwikloader is always loaded as soon as possible */
     position?: 'top' | 'bottom';
 }
 
@@ -323,7 +332,7 @@ declare interface RenderResult {
     prefetchResources: PrefetchResource[];
     snapshotResult: SnapshotResult | undefined;
     isStatic: boolean;
-    manifest?: QwikManifest;
+    manifest?: ServerQwikManifest;
 }
 
 /** @public */
@@ -420,7 +429,7 @@ declare interface StreamingOptions {
  * @public
  */
 declare type SymbolsToPrefetch = 'auto' | ((opts: {
-    manifest: QwikManifest;
+    manifest: ServerQwikManifest;
 }) => PrefetchResource[]);
 
 export { }
