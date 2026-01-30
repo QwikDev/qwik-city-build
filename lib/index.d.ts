@@ -20,7 +20,7 @@ import { RequestEventLoader } from '@builder.io/qwik-city/middleware/request-han
 import { RequestHandler } from '@builder.io/qwik-city/middleware/request-handler';
 import type { ResolveSyncValue } from '@builder.io/qwik-city/middleware/request-handler';
 import type * as v from 'valibot';
-import type { ValueOrPromise } from '@builder.io/qwik';
+import { ValueOrPromise } from '@builder.io/qwik';
 import { z } from 'zod';
 import type * as z_2 from 'zod';
 
@@ -461,10 +461,61 @@ export declare type PreventNavigateCallback = (url?: number | URL) => ValueOrPro
 export declare const QWIK_CITY_SCROLLER = "_qCityScroller";
 
 /** @public */
+export declare interface QwikCityMockActionProp<T = any> {
+    /** The action function to mock. */
+    action: Action<T>;
+    /** The QRL function that will be called when the action is submitted. */
+    handler: QRL<(data: T) => ValueOrPromise<RouteActionResolver>>;
+}
+
+/** @public */
+export declare interface QwikCityMockLoaderProp<T = any> {
+    /** The loader function to mock. */
+    loader: Loader_2<T>;
+    /** The data to return when the loader is called. */
+    data: T;
+}
+
+/** @public */
 export declare interface QwikCityMockProps {
+    /**
+     * Allow mocking the url returned by `useLocation` hook.
+     *
+     * Default: `http://localhost/`
+     */
     url?: string;
+    /** Allow mocking the route params returned by `useLocation` hook. */
     params?: Record<string, string>;
+    /** Allow mocking the `goto` function returned by `useNavigate` hook. */
     goto?: RouteNavigate;
+    /**
+     * Allow mocking data for loaders defined with `routeLoader$` function.
+     *
+     * ```
+     * [
+     *   {
+     *     loader: useProductData,
+     *     data: { product: { name: 'Test Product' } },
+     *   },
+     * ];
+     * ```
+     */
+    loaders?: Array<QwikCityMockLoaderProp<any>>;
+    /**
+     * Allow mocking actions defined with `routeAction$` function.
+     *
+     * ```
+     * [
+     *   {
+     *     action: useAddUser,
+     *     handler: $(async (data) => {
+     *       console.log('useAddUser action called with data:', data);
+     *     }),
+     *   },
+     * ];
+     * ```
+     */
+    actions?: Array<QwikCityMockActionProp<any>>;
 }
 
 /** @public */
@@ -517,6 +568,11 @@ export declare const routeAction$: ActionConstructor;
 
 /** @public */
 export declare const routeActionQrl: ActionConstructorQRL;
+
+declare type RouteActionResolver = {
+    status: number;
+    result: unknown;
+};
 
 /** @public */
 export declare type RouteData = [routeName: string, loaders: ModuleLoader[]] | [
