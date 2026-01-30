@@ -527,12 +527,12 @@ export declare interface RequestEventCommon<PLATFORM = QwikCityPlatform> extends
     readonly exit: () => AbortMessage;
 }
 
-declare interface RequestEventInternal extends RequestEvent, RequestEventLoader {
-    [RequestEvLoaders]: Record<string, ValueOrPromise<unknown> | undefined>;
-    [RequestEvMode]: ServerRequestMode;
-    [RequestEvTrailingSlash]: boolean;
-    [RequestEvRoute]: LoadedRoute | null;
-    [RequestEvQwikSerializer]: QwikSerializer;
+declare interface RequestEventInternal extends Readonly<RequestEvent>, Readonly<RequestEventLoader> {
+    readonly [RequestEvLoaders]: Record<string, ValueOrPromise<unknown> | undefined>;
+    readonly [RequestEvMode]: ServerRequestMode;
+    readonly [RequestEvTrailingSlash]: boolean;
+    readonly [RequestEvRoute]: LoadedRoute | null;
+    readonly [RequestEvQwikSerializer]: QwikSerializer;
     /**
      * Check if this request is already written to.
      *

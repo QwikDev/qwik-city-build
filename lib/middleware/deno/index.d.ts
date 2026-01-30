@@ -24,6 +24,17 @@ export declare interface QwikCityDenoOptions extends ServerRenderOptions {
         /** Set the Cache-Control header for all static files */
         cacheControl?: string;
     };
+    /**
+     * Provide a function that computes the origin of the server, used to resolve relative URLs and
+     * validate the request origin against CSRF attacks.
+     *
+     * When not specified, it defaults to the `ORIGIN` environment variable (if set).
+     *
+     * If `ORIGIN` is not set, it's derived from the incoming request, which is not recommended for
+     * production use.
+     */
+    getOrigin?: (request: Request, info?: ServeHandlerInfo) => string | null;
+    /** Provide a function that returns a `ClientConn` for the given request. */
     getClientConn?: (request: Request, info: ServeHandlerInfo) => ClientConn;
 }
 
